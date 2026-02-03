@@ -13,7 +13,9 @@ final class NonceStore
         $this->dir = rtrim($dir, '/');
         $this->ttl = max(1, $ttlSec);
         $this->max = max(1, $max);
-        if (!is_dir($this->dir)) @mkdir($this->dir, 0777, true);
+        if (!is_dir($this->dir)) {
+            mkdir($this->dir, 0777, true);
+        }
     }
 
     /** returns true if nonce is new and stored; false if seen (valid window) */
@@ -32,7 +34,7 @@ final class NonceStore
             if ($exp > $now) return false;
         }
         // write new expiry
-        @file_put_contents($path, (string)($ts + $this->ttl));
+        file_put_contents($path, (string)($ts + $this->ttl), LOCK_EX);
         return true;
     }
 

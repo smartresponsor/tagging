@@ -42,10 +42,14 @@ final class Observe
                 'path' => $path,
                 'method' => $method,
             ], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-            $pathFile = (string)($this->cfg['slowlog_path'] ?? 'report/tag/slowlog.ndjson');
-            $dir = dirname($pathFile);
-            if (!is_dir($dir)) @mkdir($dir, 0777, true);
-            file_put_contents($pathFile, $line . "\n", FILE_APPEND);
+            if ($line !== false) {
+                $pathFile = (string)($this->cfg['slowlog_path'] ?? 'report/tag/slowlog.ndjson');
+                $dir = dirname($pathFile);
+                if (!is_dir($dir) && !mkdir($dir, 0777, true) && !is_dir($dir)) {
+                    return $resp;
+                }
+                file_put_contents($pathFile, $line . "\n", FILE_APPEND | LOCK_EX);
+            }
         }
 
         return $resp;

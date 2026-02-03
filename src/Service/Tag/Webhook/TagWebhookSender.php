@@ -92,13 +92,22 @@ final class TagWebhookSender
         $line = json_encode(['ts'=>gmdate('c'), 'job'=>$j], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         $path = $this->dlq();
         $dir = dirname($path);
-        if (!is_dir($dir)) @mkdir($dir, $this->dirMode(), true);
+        if ($line === false) {
+            return;
+        }
+        if (!is_dir($dir) && !mkdir($dir, $this->dirMode(), true) && !is_dir($dir)) {
+            return;
+        }
         file_put_contents($path, $line."\n", FILE_APPEND | LOCK_EX);
     }
 
     private function deliver(array $j): bool
     {
         $body = json_encode(['ts'=>gmdate('c'), 'type'=>$j['type'], 'payload'=>$j['payload']], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+        if ($body === false) {
+            TagMetrics::inc('tag_webhook_failed_total', 1.0, ['url'=>$j['url'],'type'=>$j['type']]);
+            return false;
+        }
         $ch = curl_init($j['url']);
         if ($ch === false) return false;
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -124,9 +133,15 @@ final class TagWebhookSender
     private function writeJsonFile(string $path, array $payload): void
     {
         $dir = dirname($path);
-        if (!is_dir($dir)) @mkdir($dir, $this->dirMode(), true);
+        if (!is_dir($dir) && !mkdir($dir, $this->dirMode(), true) && !is_dir($dir)) {
+            return;
+        }
         $tmp = $path . '.' . bin2hex(random_bytes(8)) . '.tmp';
-        file_put_contents($tmp, json_encode($payload, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE), LOCK_EX);
+        $json = json_encode($payload, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+        if ($json === false) {
+            return;
+        }
+        file_put_contents($tmp, $json, LOCK_EX);
         rename($tmp, $path);
     }
 

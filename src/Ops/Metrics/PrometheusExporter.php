@@ -12,7 +12,7 @@ final class PrometheusExporter
 
     /** @var array<string,array{help:string,labels:array<int,string>,buckets:array<int,float>}> */
     private array $histograms = [];
-    /** @var array<string,array{sum:float,counts:array<int,int>,series:array<string,int>}> */
+    /** @var array<string,array{series:array<string,array{count:int,sum:float,buckets:array<int,int>}>}> */
     private array $histValues = [];
 
     public function counter(string $name, string $help, array $labels = []): void {
@@ -28,25 +28,28 @@ final class PrometheusExporter
     public function histogram(string $name, string $help, array $buckets, array $labels = []): void {
         sort($buckets, SORT_NUMERIC);
         $this->histograms[$name] = ['help'=>$help,'labels'=>$labels,'buckets'=>$buckets];
-        $this->histValues[$name] = ['sum'=>0.0,'counts'=>array_fill(0, count($buckets), 0),'series'=>[]];
+        $this->histValues[$name] = ['series'=>[]];
     }
     public function observe(string $name, float $value, array $labels = []): void {
         if (!isset($this->histograms[$name])) return;
         $spec = $this->histograms[$name];
-        $idx = 0;
-        foreach ($spec['buckets'] as $i => $b) {
-            if ($value <= $b) { $idx = $i; break; }
-            $idx = $i;
-        }
-        $this->histValues[$name]['sum'] += $value;
         $seriesKey = $this->labelsKey($labels);
         if (!isset($this->histValues[$name]['series'][$seriesKey])) {
-            $this->histValues[$name]['series'][$seriesKey] = 0;
+            $this->histValues[$name]['series'][$seriesKey] = [
+                'count'=>0,
+                'sum'=>0.0,
+                'buckets'=>array_fill(0, count($spec['buckets']), 0),
+            ];
         }
-        $this->histValues[$name]['series'][$seriesKey] += 1;
-        // increment buckets up to idx for this series (cumulative)
-        // store per-series buckets separately to make export simple
-        // here we store cumulative at export time
+        $series = &$this->histValues[$name]['series'][$seriesKey];
+        $series['count'] += 1;
+        $series['sum'] += $value;
+        if (!$spec['buckets']) return;
+        $idx = count($spec['buckets']) - 1;
+        foreach ($spec['buckets'] as $i => $b) {
+            if ($value <= $b) { $idx = $i; break; }
+        }
+        $series['buckets'][$idx] += 1;
     }
 
     private function labelsKey(array $labels): string {
@@ -71,18 +74,17 @@ final class PrometheusExporter
         foreach ($this->histograms as $name=>$meta) {
             $out[] = "# HELP $name ".$this->esc($meta['help']);
             $out[] = "# TYPE $name histogram";
-            $vals = $this->histValues[$name] ?? ['sum'=>0.0,'series'=>[]];
-            foreach ($vals['series'] as $seriesKey=>$count) {
+            $vals = $this->histValues[$name] ?? ['series'=>[]];
+            foreach ($vals['series'] as $seriesKey=>$series) {
                 $labels = $this->labelsFromKey($seriesKey);
                 $cumulative = 0;
-                foreach ($meta['buckets'] as $b) {
-                    // naive: distribute all points to final bucket only; real impl should track distribution per observation
-                    // for now we assume exporter is called with pre-bucketed values or external aggregation
+                foreach ($meta['buckets'] as $i => $b) {
+                    $cumulative += $series['buckets'][$i] ?? 0;
                     $le = is_infinite($b) ? "+Inf" : (string)$b;
                     $out[] = $name."_bucket".$this->fmtLabels(array_merge($labels, ['le'=>$le])) ." ". (string)$cumulative;
                 }
-                $out[] = $name."_count".$this->fmtLabels($labels)." ".(string)$count;
-                $out[] = $name."_sum".$this->fmtLabels($labels)." ".(string)$vals['sum'];
+                $out[] = $name."_count".$this->fmtLabels($labels)." ".(string)$series['count'];
+                $out[] = $name."_sum".$this->fmtLabels($labels)." ".(string)$series['sum'];
             }
         }
         return implode("\n", $out)."\n";

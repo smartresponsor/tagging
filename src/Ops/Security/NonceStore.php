@@ -46,7 +46,7 @@ final class NonceStore
         $files = @scandir($this->dir) ?: [];
         $n = 0;
         foreach ($files as $f) {
-            if ($f === '.' || $f === '-') continue;
+            if ($f === '.' || $f === '..') continue;
             $p = $this->dir . '/' . $f;
             if (!is_file($p)) continue;
             $n++;

@@ -6,9 +6,7 @@ use App\ServiceInterface\Tag\TagRepositoryInterface;
 use App\Domain\Tag\Tag;
 use App\Domain\Tag\TagAssignment;
 
-/**
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class InMemoryTagRepository implements TagRepositoryInterface {
     /** @var array<string,Tag> */
     private array $tags = [];

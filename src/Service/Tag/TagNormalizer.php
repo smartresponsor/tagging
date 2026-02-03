@@ -2,9 +2,7 @@
 declare(strict_types=1);
 namespace App\Service\Tag;
 
-/**
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class TagNormalizer {
     public static function normalizeLabel(string $label): string {
         $label = trim($label);

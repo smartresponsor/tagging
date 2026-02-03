@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
-/*
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 $dsn = getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app';
 $user = getenv('DB_USER') ?: 'app';
 $pass = getenv('DB_PASS') ?: 'app';

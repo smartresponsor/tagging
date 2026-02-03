@@ -1,0 +1,13 @@
+{
+  "name": "tag-rc5-e8-fixtures-demo",
+  "version": "rc5-e8",
+  "generated_at": "2025-10-27T20:57:49.353037",
+  "paths": [
+    "fixtures/tag-demo.json",
+    "fixtures/tag-demo.sql",
+    "tools/seed/tag-seed.php",
+    "public/tag/demo/requests.http",
+    "docs/fixtures/demo.md",
+    "docs/acceptance/e8.md"
+  ]
+}

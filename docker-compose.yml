@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    ports: ["5432:5432"]
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  tag:
+    build:
+      context: ./host
+    environment:
+      DB_DSN: pgsql:host=db;port=5432;dbname=${POSTGRES_DB:-app}
+      DB_USER: ${POSTGRES_USER:-app}
+      DB_PASS: ${POSTGRES_PASSWORD:-app}
+      TENANT: ${TENANT:-demo}
+    ports: ["${PORT:-8080}:8080"]
+    volumes:
+      - ${SRC_ROOT:-./bundle}/host-minimal:/app/host-minimal:ro
+      - ${SRC_ROOT:-./bundle}/config:/app/config:ro
+      - ${SRC_ROOT:-./bundle}/db:/app/db:ro
+      - ${SRC_ROOT:-./bundle}/docs:/app/docs:ro
+      - cache:/app/var/cache
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/tag/search?q=s || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  dbdata:
+  cache:

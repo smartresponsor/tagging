@@ -1,0 +1,12 @@
+enforce: true
+header: "X-Tenant-Id"         # имя заголовка
+default_tenant: ""            # пусто = запрещать анонимный доступ
+paths:
+  base: "report/tag"          # корневая папка для файлового стора
+quotas:
+  max_tags: 5000              # мягкая квота на количество тегов в тенанте
+  max_assignments: 200000     # мягкая квота на число связок в тенанте
+responses:
+  on_missing: 401             # или 400
+  on_cross_tenant: 403
+  on_quota_exceeded: 429

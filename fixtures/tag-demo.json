@@ -1,0 +1,80 @@
+{
+  "tenant": "demo",
+  "tags": [
+    {
+      "name": "Summer Sale",
+      "slug": "summer-sale",
+      "locale": "en",
+      "weight": 20
+    },
+    {
+      "name": "New Arrivals",
+      "slug": "new-arrivals",
+      "locale": "en",
+      "weight": 18
+    },
+    {
+      "name": "Eco",
+      "slug": "eco",
+      "locale": "en",
+      "weight": 15
+    },
+    {
+      "name": "Clearance",
+      "slug": "clearance",
+      "locale": "en",
+      "weight": 14
+    },
+    {
+      "name": "Featured",
+      "slug": "featured",
+      "locale": "en",
+      "weight": 16
+    },
+    {
+      "name": "Проект Хьюстон",
+      "slug": "proekt-khyuston",
+      "locale": "uk",
+      "weight": 10
+    },
+    {
+      "name": "Тестовый тег",
+      "slug": "testovyi-teg",
+      "locale": "ru",
+      "weight": 8
+    }
+  ],
+  "links": [
+    {
+      "entity_type": "product",
+      "entity_id": "p-1001",
+      "slug": "summer-sale"
+    },
+    {
+      "entity_type": "product",
+      "entity_id": "p-1002",
+      "slug": "summer-sale"
+    },
+    {
+      "entity_type": "product",
+      "entity_id": "p-2001",
+      "slug": "new-arrivals"
+    },
+    {
+      "entity_type": "category",
+      "entity_id": "c-appliances",
+      "slug": "featured"
+    },
+    {
+      "entity_type": "project",
+      "entity_id": "proj-houston",
+      "slug": "proekt-khyuston"
+    },
+    {
+      "entity_type": "text",
+      "entity_id": "post-hello",
+      "slug": "testovyi-teg"
+    }
+  ],
+  "generated_at": "2025-10-27T20:57:49.353037"
+}

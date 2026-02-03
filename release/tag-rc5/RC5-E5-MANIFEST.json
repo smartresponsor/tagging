@@ -1,0 +1,13 @@
+{
+  "name": "tag-rc5-e5-observability-slo",
+  "version": "rc5-e5",
+  "generated_at": "2025-10-27T20:51:56.442731",
+  "paths": [
+    "ops/grafana/tag-dashboard.json",
+    "ops/alerts/tag-alerts.yaml",
+    "tools/synthetic/tag-slo-gate.sh",
+    ".github/workflows/slo-gate.yml",
+    "docs/ops/slo.md",
+    "docs/acceptance/e5.md"
+  ]
+}

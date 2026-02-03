@@ -1,0 +1,10 @@
+# E25 observability config
+slowlog_path: report/tag/slowlog.ndjson
+threshold_ms:
+  read: 500
+  write: 1000
+status:
+  checks:
+    - name: 'metrics_up'
+      type: 'counter_exists'
+      key: 'tag_up'

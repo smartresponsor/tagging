@@ -1,0 +1,17 @@
+{
+  "name": "tag-rc5-e3-assign-idempotency",
+  "version": "rc5-e3",
+  "generated_at": "2025-10-27T20:29:49.144068",
+  "paths": [
+    "db/postgres/migrations/2025_10_27_idempotency_outbox.sql",
+    "src/Domain/Event/TagAssigned.php",
+    "src/Domain/Event/TagUnassigned.php",
+    "src/Infra/Outbox/OutboxPublisher.php",
+    "src/Service/Tag/IdempotencyStore.php",
+    "src/Service/Tag/AssignService.php",
+    "src/Service/Tag/UnassignService.php",
+    "docs/api/assign.md",
+    "docs/acceptance/e3.md",
+    "tests/tag/AssignFlowTest.php"
+  ]
+}

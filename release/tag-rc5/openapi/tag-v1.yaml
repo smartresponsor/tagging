@@ -1,0 +1,209 @@
+openapi: 3.1.0
+info:
+  title: SmartResponsor Tag API
+  version: "1.0.0-rc5-e1 (frozen)"
+  description: |
+    Tag component public API v1.0 (frozen). Headers:
+      - X-Tenant-Id (required)
+      - X-Idempotency-Key (optional on mutating)
+      - X-SR-Signature + X-SR-Nonce (if HMAC A1 enabled)
+servers:
+  - url: https://api.example.com
+    description: Production
+  - url: http://localhost:8080
+    description: Local
+components:
+  securitySchemes:
+    HmacSignature:
+      type: apiKey
+      in: header
+      name: X-SR-Signature
+  parameters:
+    TenantId:
+      name: X-Tenant-Id
+      in: header
+      required: true
+      schema: { type: string }
+    IdempotencyKey:
+      name: X-Idempotency-Key
+      in: header
+      required: false
+      schema: { type: string }
+    TagId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+  schemas:
+    Tag:
+      type: object
+      required: [id, slug, name, locale, weight]
+      properties:
+        id: { type: string, description: ULID }
+        slug: { type: string }
+        name: { type: string }
+        locale: { type: string }
+        weight: { type: integer, minimum: 0 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    TagCreate:
+      type: object
+      required: [slug, name]
+      properties:
+        slug: { type: string }
+        name: { type: string }
+        locale: { type: string, default: "en" }
+        weight: { type: integer, default: 0 }
+    TagUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        locale: { type: string }
+        weight: { type: integer }
+    AssignRequest:
+      type: object
+      required: [entity_type, entity_id]
+      properties:
+        entity_type:
+          type: string
+          enum: [category, product, project, text]
+        entity_id: { type: string }
+    SearchResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Tag' }
+        total: { type: integer }
+        nextPageToken: { type: string, nullable: true }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+paths:
+  /tag:
+    post:
+      summary: Create tag
+      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TagCreate' }
+      responses:
+        '201':
+          description: Created
+          content: { application/json: { schema: { $ref: '#/components/schemas/Tag' } } }
+        '400': { description: Bad Request, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '409': { description: Conflict, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { description: Too Many Requests, headers: { Retry-After: { schema: { type: string } } }, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '500': { description: Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /tag/{id}:
+    get:
+      summary: Get tag by id
+      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/TagId' } ]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tag' } } } }
+        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    patch:
+      summary: Update tag
+      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' }, { $ref: '#/components/parameters/TagId' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TagUpdate' }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tag' } } } }
+        '409': { description: Conflict, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    delete:
+      summary: Delete tag
+      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' }, { $ref: '#/components/parameters/TagId' } ]
+      responses:
+        '204': { description: No Content }
+  /tag/{id}/assign:
+    post:
+      summary: Assign tag to entity
+      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' }, { $ref: '#/components/parameters/TagId' } ]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/AssignRequest' } } }
+      responses:
+        '200': { description: OK }
+        '404': { description: Not Found }
+        '409': { description: Conflict }
+        '429': { description: Too Many Requests }
+  /tag/{id}/unassign:
+    post:
+      summary: Unassign tag from entity
+      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' }, { $ref: '#/components/parameters/TagId' } ]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/AssignRequest' } } }
+      responses:
+        '200': { description: OK }
+        '404': { description: Not Found }
+        '429': { description: Too Many Requests }
+  /tag/assign-bulk:
+    post:
+      summary: Bulk assign tags
+      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [operations]
+              properties:
+                operations:
+                  type: array
+                  items:
+                    type: object
+                    required: [op, tag_id, entity_type, entity_id]
+                    properties:
+                      op: { type: string, enum: [assign, unassign] }
+                      tag_id: { type: string }
+                      entity_type: { type: string, enum: [category, product, project, text] }
+                      entity_id: { type: string }
+      responses:
+        '200': { description: OK }
+        '429': { description: Too Many Requests }
+  /tag/search:
+    get:
+      summary: Search tags
+      parameters:
+        - { $ref: '#/components/parameters/TenantId' }
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          required: false
+          schema: { type: integer, default: 20, maximum: 100 }
+        - name: pageToken
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SearchResponse' } } } }
+  /tag/suggest:
+    get:
+      summary: Suggest tags by prefix
+      parameters:
+        - { $ref: '#/components/parameters/TenantId' }
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 10, maximum: 50 }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SearchResponse' } } } }

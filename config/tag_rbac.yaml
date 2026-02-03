@@ -1,0 +1,14 @@
+# E23 Role-gate config
+fallback_allow_all: true   # when true, authorization returns allow (for early integration)
+headers:
+  actor: X-Actor-Id
+  roles: X-Roles         # CSV list of roles, e.g. "tag.viewer,tag.editor"
+ops:
+  read:  [tag.viewer, tag.editor, tag.owner]
+  write: [tag.editor, tag.owner]
+  admin: [tag.owner]
+path_overrides:
+  # Optional: explicit operation mapping by path prefix
+  - { prefix: "/tag/_webhooks", op: "admin" }
+  - { prefix: "/tag/_metrics",  op: "read" }
+  - { prefix: "/tag/_status",   op: "read" }

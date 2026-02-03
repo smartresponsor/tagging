@@ -1,0 +1,24 @@
+# Tag policy (E15)
+max_length: 255
+reserved_slugs:
+  - admin
+  - system
+  - default
+allowed_prefixes:
+  - ""
+denied_prefixes:
+  - "bad-"
+allowed_regex: []
+denied_regex:
+  - "^(test|tmp)-.*$"
+max_tags_per_entity: 250
+normalize:
+  lowercase: true
+  collapse_spaces: true
+  strip_symbols: true
+i18n:
+  default_locale: en-US
+  allowed_locales:
+    - en-US
+    - uk-UA
+    - ru-RU

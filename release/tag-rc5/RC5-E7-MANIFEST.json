@@ -1,0 +1,15 @@
+{
+  "name": "tag-rc5-e7-http-wiring",
+  "version": "rc5-e7",
+  "generated_at": "2025-10-27T20:56:13.260638",
+  "paths": [
+    "src/Http/Middleware/IdempotencyMiddleware.php",
+    "src/Http/Middleware/HmacMiddleware.php",
+    "src/Http/Tag/TagController.php",
+    "src/Http/Tag/AssignController.php",
+    "host-minimal/index.php",
+    "docs/http/http-wiring.md",
+    "public/tag/examples/http.http",
+    "docs/acceptance/e7.md"
+  ]
+}

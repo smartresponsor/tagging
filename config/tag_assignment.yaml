@@ -1,0 +1,13 @@
+store:
+  driver: file                   # file | pdo (future)
+  path: "report/tag/assignment.ndjson"
+
+# Allowed entity types for tag assignments.
+# - Use "*" to allow any entity type (validated by pattern only).
+# - Or provide an explicit allowlist.
+entity_types:
+  - "*"
+  # - category
+  # - product
+  # - project
+  # - text

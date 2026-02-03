@@ -1,0 +1,35 @@
+name: tag-slo-gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Target Tag base URL"
+        required: true
+        default: "http://localhost:8080"
+      tenant:
+        description: "Tenant header"
+        required: true
+        default: "demo"
+      read_p95_max:
+        description: "Max read p95 seconds"
+        required: true
+        default: "0.25"
+      error_rate_max:
+        description: "Max error rate"
+        required: true
+        default: "0.005"
+
+jobs:
+  slo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run SLO gate
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url }}
+          TENANT: ${{ github.event.inputs.tenant }}
+          READ_P95_MAX: ${{ github.event.inputs.read_p95_max }}
+          ERROR_RATE_MAX: ${{ github.event.inputs.error_rate_max }}
+        run: |
+          bash tools/synthetic/tag-slo-gate.sh

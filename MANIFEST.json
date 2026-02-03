@@ -1,0 +1,17 @@
+{
+  "envelope": "E31",
+  "slice": "ATOM",
+  "goal": "Admin UI v4: Search, Assignments, Synonyms; bulk ops; keyboard shortcuts; HMAC V2 signing; tenant header.",
+  "limits": {
+    "files_max": 16,
+    "loc_max": 1100
+  },
+  "created_at": "2025-10-27T19:35:45.642122",
+  "canon": [
+    "single-hyphen",
+    "singular naming",
+    "mirror interfaces",
+    "EN-only comments",
+    "copyright header"
+  ]
+}

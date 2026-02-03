@@ -1,0 +1,10 @@
+### Seed (CLI)
+# TENANT=demo php tools/seed/tag-seed.php
+
+### Quick search smoke (after seed)
+GET http://localhost:8080/tag/search?q=s
+X-Tenant-Id: demo
+
+### Suggest smoke
+GET http://localhost:8080/tag/suggest?q=s
+X-Tenant-Id: demo

@@ -1,0 +1,20 @@
+# E19 webhooks config
+timeout_ms: 1000
+signature_header: X-SR-Signature
+secret_fallback: change-me
+events_allow:
+  - tag.created
+  - tag.updated
+  - tag.deleted
+  - tag.assigned
+  - tag.merged
+  - tag.split
+registry_path: report/webhook/registry.json
+audit_path: report/tag/audit.ndjson
+
+# E24 additions
+retries: 5
+base_delay_ms: 200
+max_delay_ms: 10000
+spool_dir: report/webhook/spool
+dlq_path: report/webhook/dlq.ndjson

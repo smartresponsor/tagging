@@ -1,0 +1,6 @@
+search:
+  dir: "var/cache/tag-search"
+  ttl_seconds: 60
+suggest:
+  dir: "var/cache/tag-suggest"
+  ttl_seconds: 60

@@ -1,0 +1,13 @@
+### Demo seed smoke
+# @baseUrl = http://localhost:8080
+
+### optional: purge before
+POST {{baseUrl}}/tag/_purge
+Content-Type: application/json
+X-Tenant-Id: demo
+
+{"action":"all"}
+
+### search demo
+GET {{baseUrl}}/tag/search?q=demo
+X-Tenant-Id: demo

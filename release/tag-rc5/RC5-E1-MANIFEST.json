@@ -1,0 +1,10 @@
+{
+  "name": "tag-rc5-e1-api-contract",
+  "version": "rc5-e1",
+  "generated_at": "2025-10-27T20:23:28.764999",
+  "paths": [
+    "release/tag-rc5/openapi/tag-v1.yaml",
+    "release/tag-rc5/docs/tag-contract.md",
+    "release/tag-rc5/docs/tag-error-catalog.md"
+  ]
+}

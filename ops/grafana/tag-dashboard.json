@@ -1,0 +1,41 @@
+{
+  "title": "SmartResponsor \u00b7 Tag",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Tag Assign/Unassign",
+      "targets": [
+        {
+          "expr": "sum(rate(tag_assign_total[5m])) by (tenant)"
+        },
+        {
+          "expr": "sum(rate(tag_unassign_total[5m])) by (tenant)"
+        }
+      ],
+      "id": 1
+    },
+    {
+      "type": "graph",
+      "title": "Search RPS",
+      "targets": [
+        {
+          "expr": "sum(rate(tag_search_total[5m]))"
+        }
+      ],
+      "id": 2
+    },
+    {
+      "type": "graph",
+      "title": "HTTP p95 (by route)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le,route))"
+        }
+      ],
+      "id": 3
+    }
+  ],
+  "schemaVersion": 30,
+  "version": 1
+}

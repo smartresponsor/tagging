@@ -1,0 +1,18 @@
+# E21 signature/security config
+hmac:
+  current: "CHANGE_ME_CURRENT"
+  previous: "CHANGE_ME_PREV"
+  skew_seconds: 300     # 5 minutes
+nonce_cache:
+  ttl_seconds: 600      # keep nonce for 10 minutes
+headers:
+  signature: "X-SR-Signature"
+  timestamp: "X-SR-Timestamp"
+  nonce: "X-SR-Nonce"
+canonical:
+  # method + '
+' + path + '
+' + timestamp + '
+' + nonce + '
+' + sha256(body)
+  include_body_sha256: true

@@ -1,0 +1,19 @@
+openapi: 3.0.3
+info:
+  title: SmartResponsor Tag API
+  version: "1.3.0-draft"
+paths:
+  /tag/search:
+    get:
+      summary: Search tags by label/slug/synonym
+      parameters:
+        - { in: query, name: q, schema: { type: string }, required: true }
+      responses: { "200": { description: OK } }
+  /entity/search:
+    get:
+      summary: Search entities by tag ids
+      parameters:
+        - { in: query, name: tagId, schema: { type: array, items: { type: string } } }
+        - { in: query, name: limit,  schema: { type: integer, default: 50 } }
+        - { in: query, name: offset, schema: { type: integer, default: 0 } }
+      responses: { "200": { description: OK } }

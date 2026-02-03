@@ -1,0 +1,7 @@
+prefer_db: false          # true → использовать БД-индексы и SQL
+max_items: 50
+etag: true                # включить weak ETag для списков
+files:
+  label_map: "report/tag/label.ndjson"          # {tagId,label,slug,usageCount}
+  synonym_map: "report/tag/synonym.ndjson"      # из E28
+  assignment_map: "report/tag/assignment.ndjson"# из E27

@@ -1,0 +1,17 @@
+lowercase: true
+max_length: 64
+suffix_strategy: numeric   # numeric | hash
+min_length: 2
+allow_unicode: false
+reserved_words:
+  - admin
+  - api
+  - tag
+  - search
+  - suggest
+  - login
+  - logout
+  - metrics
+  - status
+  - health
+  - _internal

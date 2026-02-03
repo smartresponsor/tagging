@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "allowedPrefixes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "deniedPrefixes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "allowedSlugs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "maxLength": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "additionalProperties": true
+}

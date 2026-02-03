@@ -1,0 +1,17 @@
+# Default: keep LF in repo
+* text=auto eol=lf
+
+# Windows scripts should be CRLF in working tree
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary (never touch)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.zip binary
+*.exe binary
+*.dll binary

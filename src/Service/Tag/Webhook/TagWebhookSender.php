@@ -17,6 +17,7 @@ final class TagWebhookSender
     private function retries(): int { return max(0, (int)($this->cfg['retries'] ?? 5)); }
     private function baseDelay(): int { return max(1, (int)($this->cfg['base_delay_ms'] ?? 200)); }
     private function maxDelay(): int { return max(1000, (int)($this->cfg['max_delay_ms'] ?? 10000)); }
+    private function dirMode(): int { return (int)($this->cfg['dir_mode'] ?? 0700); }
 
     public function enqueue(string $url, string $secret, string $type, array $payload): void
     {
@@ -31,8 +32,8 @@ final class TagWebhookSender
             'next_at' => microtime(true),
         ];
         $dir = $this->dir();
-        if (!is_dir($dir)) @mkdir($dir, 0777, true);
-        file_put_contents($dir . '/' . $job['id'] . '.json', json_encode($job, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));
+        if (!is_dir($dir)) @mkdir($dir, $this->dirMode(), true);
+        $this->writeJsonFile($dir . '/' . $job['id'] . '.json', $job);
     }
 
     /** @return int processed count */
@@ -45,13 +46,28 @@ final class TagWebhookSender
         $n = 0;
         foreach ($files as $f) {
             if ($n >= $limit) break;
-            $j = json_decode((string)file_get_contents($f), true);
-            if (!is_array($j)) { @unlink($f); continue; }
-            if (($j['next_at'] ?? 0) > $now) continue; // backoff window not reached
+            $fp = @fopen($f, 'c+');
+            if (!is_resource($fp)) continue;
+            if (!flock($fp, LOCK_EX | LOCK_NB)) {
+                fclose($fp);
+                continue;
+            }
+            $contents = stream_get_contents($fp);
+            $j = json_decode((string)$contents, true);
+            if (!is_array($j)) {
+                @unlink($f);
+                fclose($fp);
+                continue;
+            }
+            if (($j['next_at'] ?? 0) > $now) {
+                fclose($fp);
+                continue; // backoff window not reached
+            }
 
             $ok = $this->deliver($j);
             if ($ok) {
                 @unlink($f);
+                fclose($fp);
                 $n++;
                 continue;
             }
@@ -59,13 +75,15 @@ final class TagWebhookSender
             if ($j['attempt'] > $this->retries()) {
                 $this->toDlq($j);
                 @unlink($f);
+                fclose($fp);
                 TagMetrics::inc('tag_webhook_dlq_total', 1.0, ['url'=>$j['url'],'type'=>$j['type']]);
             } else {
                 $delay = min($this->maxDelay(), $this->baseDelay() * (1 << ($j['attempt']-1)));
                 $j['next_at'] = microtime(true) + ($delay/1000.0);
-                file_put_contents($f, json_encode($j, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));
+                $this->rewriteLockedFile($fp, $j);
                 TagMetrics::inc('tag_webhook_retried_total', 1.0, ['url'=>$j['url'],'type'=>$j['type']]);
             }
+            fclose($fp);
             $n++;
         }
         return $n;
@@ -76,8 +94,8 @@ final class TagWebhookSender
         $line = json_encode(['ts'=>gmdate('c'), 'job'=>$j], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         $path = $this->dlq();
         $dir = dirname($path);
-        if (!is_dir($dir)) @mkdir($dir, 0777, true);
-        file_put_contents($path, $line."\n", FILE_APPEND);
+        if (!is_dir($dir)) @mkdir($dir, $this->dirMode(), true);
+        file_put_contents($path, $line."\n", FILE_APPEND | LOCK_EX);
     }
 
     private function deliver(array $j): bool
@@ -103,5 +121,26 @@ final class TagWebhookSender
         }
         TagMetrics::inc('tag_webhook_failed_total', 1.0, ['url'=>$j['url'],'type'=>$j['type']]);
         return false;
+    }
+
+    private function writeJsonFile(string $path, array $payload): void
+    {
+        $dir = dirname($path);
+        if (!is_dir($dir)) @mkdir($dir, $this->dirMode(), true);
+        $tmp = $path . '.' . bin2hex(random_bytes(8)) . '.tmp';
+        file_put_contents($tmp, json_encode($payload, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE), LOCK_EX);
+        rename($tmp, $path);
+    }
+
+    private function rewriteLockedFile($fp, array $payload): void
+    {
+        $json = json_encode($payload, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+        if ($json === false) {
+            return;
+        }
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, $json);
+        fflush($fp);
     }
 }

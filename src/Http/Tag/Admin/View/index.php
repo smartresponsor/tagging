@@ -1,5 +1,6 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
 /** @var string $q */ ?>
 <section class="panel">
   <form method="get" action="/admin/tag">

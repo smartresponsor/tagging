@@ -1,10 +1,10 @@
 <?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 namespace App\Service\Tag;
 
 use App\ServiceInterface\Tag\TagRepositoryInterface as TagRepositoryContract;
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class TagPropagationService {
     public function __construct(private TagRepositoryContract $repo){}
 

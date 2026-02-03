@@ -1,6 +1,6 @@
 <?php
-declare(strict_types=1);
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
 // Minimal in-process metrics registry (Prometheus exposition).
 // No external agent; use GET /tag/_metrics to scrape.
 namespace App\Service\Tag\Metric;

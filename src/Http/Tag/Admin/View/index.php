@@ -1,4 +1,6 @@
-<?php /** @var string $q */ ?>
+<?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+/** @var string $q */ ?>
 <section class="panel">
   <form method="get" action="/admin/tag">
     <input type="text" name="q" placeholder="Search tags…" value="<?php echo htmlspecialchars($q); ?>"/>

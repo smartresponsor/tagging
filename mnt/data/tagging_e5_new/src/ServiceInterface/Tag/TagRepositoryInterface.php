@@ -1,4 +1,5 @@
 <?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 namespace App\ServiceInterface\Tag;
 
@@ -8,7 +9,6 @@ use App\Domain\Tag\TagSynonym;
 use App\Domain\Tag\TagRelation;
 use App\Domain\Tag\TagScheme;
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 interface TagRepositoryInterface {
     public function saveTag(Tag $tag): void;
     public function getById(string $id): ?Tag;

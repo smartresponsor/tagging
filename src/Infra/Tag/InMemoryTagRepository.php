@@ -1,4 +1,5 @@
 <?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 namespace App\Infra\Tag;
 
@@ -6,7 +7,6 @@ use App\ServiceInterface\Tag\TagRepositoryInterface;
 use App\Domain\Tag\Tag;
 use App\Domain\Tag\TagAssignment;
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class InMemoryTagRepository implements TagRepositoryInterface {
     /** @var array<string,Tag> */
     private array $tags = [];

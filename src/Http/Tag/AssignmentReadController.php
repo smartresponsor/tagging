@@ -1,6 +1,6 @@
 <?php
-declare(strict_types=1);
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
 namespace App\Http\Tag;
 
 use App\Infra\Tag\TagReadModel;

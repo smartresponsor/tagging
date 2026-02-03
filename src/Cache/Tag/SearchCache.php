@@ -10,11 +10,20 @@ final class SearchCache
         if (!is_dir($this->dir)) @mkdir($this->dir, 0777, true);
     }
 
+    private function safeSegment(string $value): string
+    {
+        $normalized = strtolower(trim($value));
+        $safe = preg_replace('/[^a-z0-9]+/', '-', $normalized) ?? 'tenant';
+        return trim($safe, '-') ?: 'tenant';
+    }
+
     private function key(string $tenant, string $q, int $limit, int $offset): string
     {
         $norm = strtolower(trim($q));
         $hash = sha1($tenant.'|'.$norm.'|'.$limit.'|'.$offset);
-        return $this->dir . DIRECTORY_SEPARATOR . $tenant . '__q_' . preg_replace('/[^a-z0-9]+/','-', $norm) . '__' . $hash . '.json';
+        $tenantSafe = $this->safeSegment($tenant);
+        $querySafe = $this->safeSegment($norm);
+        return $this->dir . DIRECTORY_SEPARATOR . $tenantSafe . '__q_' . $querySafe . '__' . $hash . '.json';
     }
 
     /** @return array{hit:bool,data?:array<string,mixed>} */

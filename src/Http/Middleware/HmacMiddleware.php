@@ -9,8 +9,16 @@ final class HmacMiddleware
     {
         $secret = getenv('SR_HMAC_SECRET') ?: '';
         if ($secret === '') return true; // no-op if not configured
-        $nonce = $headers['x-sr-nonce'] ?? '';
-        $sig = $headers['x-sr-signature'] ?? '';
+        $normalized = [];
+        foreach ($headers as $key => $value) {
+            $name = strtolower((string)$key);
+            if (is_array($value)) {
+                $value = implode(',', $value);
+            }
+            $normalized[$name] = (string)$value;
+        }
+        $nonce = $normalized['x-sr-nonce'] ?? '';
+        $sig = $normalized['x-sr-signature'] ?? '';
         if ($nonce === '' || $sig === '') return false;
         $calc = base64_encode(hash_hmac('sha256', $nonce.'|'.$rawBody, $secret, true));
         return hash_equals($calc, $sig);

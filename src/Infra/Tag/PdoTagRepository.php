@@ -28,7 +28,8 @@ final class PdoTagRepository implements TagRepositoryInterface {
         $r=$stmt->fetch(PDO::FETCH_ASSOC); return $r? new Tag($r['id'],$r['slug'],$r['label'], new \DateTimeImmutable($r['created_at'])):null;
     }
     public function search(?string $query, int $limit, int $offset): array {
-        if ($query) { $stmt=$this->pdo->prepare('SELECT * FROM tag WHERE slug ILIKE :q OR label ILIKE :q ORDER BY created_at DESC LIMIT :l OFFSET :o'); $stmt->bindValue(':q','%'.$query.'%'); }
+        $hasQuery = $query !== null && $query !== '';
+        if ($hasQuery) { $stmt=$this->pdo->prepare('SELECT * FROM tag WHERE slug ILIKE :q OR label ILIKE :q ORDER BY created_at DESC LIMIT :l OFFSET :o'); $stmt->bindValue(':q','%'.$query.'%'); }
         else { $stmt=$this->pdo->prepare('SELECT * FROM tag ORDER BY created_at DESC LIMIT :l OFFSET :o'); }
         $stmt->bindValue(':l',$limit,PDO::PARAM_INT); $stmt->bindValue(':o',$offset,PDO::PARAM_INT); $stmt->execute();
         $rows=$stmt->fetchAll(PDO::FETCH_ASSOC); return array_map(fn($r)=> new Tag($r['id'],$r['slug'],$r['label'], new \DateTimeImmutable($r['created_at'])), $rows);
@@ -43,8 +44,8 @@ final class PdoTagRepository implements TagRepositoryInterface {
     public function deleteAssignment(string $assignmentId): void { $this->pdo->prepare('DELETE FROM tag_assignment WHERE id=:id')->execute([':id'=>$assignmentId]); }
     public function listAssignments(string $tagId, ?string $type = null, ?string $assignedId = null): array {
         $sql='SELECT * FROM tag_assignment WHERE tag_id=:tid'; $p=[':tid'=>$tagId];
-        if ($type) { $sql.=' AND assigned_type=:t'; $p[':t']=$type; }
-        if ($assignedId) { $sql.=' AND assigned_id=:aid'; $p[':aid']=$assignedId; }
+        if ($type !== null) { $sql.=' AND assigned_type=:t'; $p[':t']=$type; }
+        if ($assignedId !== null) { $sql.=' AND assigned_id=:aid'; $p[':aid']=$assignedId; }
         $st=$this->pdo->prepare($sql); $st->execute($p);
         $rows=$st->fetchAll(PDO::FETCH_ASSOC); return array_map(fn($r)=> new TagAssignment($r['id'],$r['tag_id'],$r['assigned_type'],$r['assigned_id'], new \DateTimeImmutable($r['created_at'])), $rows);
     }
@@ -121,7 +122,7 @@ public function listAllTags(): array {
 public function getPolicy(): array {
     $st=$this->pdo->query('SELECT policy FROM tag_policy WHERE id=1');
     $row=$st->fetch(PDO::FETCH_ASSOC);
-    return $row ? json_decode($row['policy'], true) : [];
+    return $row ? json_decode($row['policy'], true, 512, JSON_THROW_ON_ERROR) : [];
 }
 public function setPolicy(array $policy): void {
     $st=$this->pdo->prepare('INSERT INTO tag_policy(id, policy) VALUES (1, :p) ON CONFLICT (id) DO UPDATE SET policy=EXCLUDED.policy');

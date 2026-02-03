@@ -17,7 +17,7 @@ final class TagService {
         private TagConfig $cfg = new TagConfig()
     ){}
 
-    public function create(string $slugOrNull, string $label): Tag {
+    public function create(?string $slugOrNull, string $label): Tag {
         $label = TagNormalizer::normalizeLabel($label);
         $slug = ($slugOrNull === '' || $slugOrNull === null) ? TagNormalizer::slugify($label) : TagNormalizer::slugify($slugOrNull);
         $this->validateLengths($slug, $label);
@@ -70,7 +70,9 @@ final class TagService {
     }
     private function enforceCaps(string $tagId, string $type, string $assignedId): void {
         $current = $this->repo->listAssignments($tagId, $type, $assignedId);
-        if (count($current) >= 1) return;
+        if (count($current) >= 1) {
+            throw new \InvalidArgumentException('assignment_exists');
+        }
     }
 
     // E5 policy hooks

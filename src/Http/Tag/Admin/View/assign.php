@@ -1,5 +1,6 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
 /** @var string $id */ ?>
 <section class="panel">
   <h2>Assign/Unassign — Tag <?php echo htmlspecialchars($id); ?></h2>

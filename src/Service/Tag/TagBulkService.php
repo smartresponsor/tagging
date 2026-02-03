@@ -1,11 +1,12 @@
 <?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 namespace App\Service\Tag;
 
-use App\ServiceInterface\Tag\TagBulkRepositoryContract as TagBulkRepositoryContract;
+use App\ServiceInterface\Tag\TagBulkRepositoryInterface;
 
 final class TagBulkService {
-    public function __construct(private TagBulkRepositoryContract $repo){}
+    public function __construct(private TagBulkRepositoryInterface $repo){}
 
     public function bulkImport(array $items): string {
         $jobId = bin2hex(random_bytes(16));

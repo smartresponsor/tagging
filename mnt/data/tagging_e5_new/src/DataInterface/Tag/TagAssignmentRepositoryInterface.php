@@ -5,9 +5,7 @@ namespace App\DataInterface\Tag;
 
 use App\Data\Tag\AssignmentRecord;
 
-/**
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 interface TagAssignmentRepositoryInterface
 {
     /** Idempotent: returns true if created, false if existed */

@@ -8,9 +8,7 @@ use App\Domain\Tag\TagSynonym;
 use App\Domain\Tag\TagRelation;
 use App\Domain\Tag\TagScheme;
 
-/**
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 interface TagRepositoryInterface {
     public function saveTag(Tag $tag): void;
     public function getById(string $id): ?Tag;

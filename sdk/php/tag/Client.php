@@ -1,13 +1,12 @@
-/* version: 1.2.0 (was 1.1.0 */
 <?php
 declare(strict_types=1);
 namespace SR\SDK\Tag;
 
 /**
- * SmartResponsor Tag SDK (PHP, E11)
+ * Smartresponsor Tag SDK (PHP, E11)
  */
 final class Client {
-  public function __construct(private string $baseUrl, private array $headers = []){}
+  public function __construct(private readonly string $baseUrl, private array $headers = []){}
   private function req(string $path, string $method='GET', ?array $body=null): array {
     $ch = curl_init(rtrim($this->baseUrl,'/') . $path);
     $hdrs = array_merge(['Content-Type: application/json'], array_map(fn($k,$v)=>"$k: $v", array_keys($this->headers), $this->headers));

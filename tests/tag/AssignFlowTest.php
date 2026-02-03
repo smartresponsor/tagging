@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
-/*
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- * NOTE: This is a minimal integration-style script; adapt for your test framework.
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+// NOTE: This is a minimal integration-style script; adapt for your test framework.
 use App\Infra\Outbox\OutboxPublisher;
 use App\Service\Tag\{AssignService,UnassignService,IdempotencyStore};
 

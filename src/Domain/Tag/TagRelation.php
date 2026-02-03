@@ -2,9 +2,7 @@
 declare(strict_types=1);
 namespace App\Domain\Tag;
 
-/**
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class TagRelation {
     public function __construct(
         private string $id,

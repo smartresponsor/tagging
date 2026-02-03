@@ -10,9 +10,7 @@ use App\Domain\Tag\TagSynonym;
 use App\Domain\Tag\TagRelation;
 use App\Domain\Tag\TagScheme;
 
-/**
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class TagService {
     public function __construct(
         private TagRepositoryContract $repo,

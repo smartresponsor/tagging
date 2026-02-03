@@ -1,10 +1,8 @@
 #!/usr/bin/env php
 <?php
 declare(strict_types=1);
-/*
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- * Tag webhook spool worker (E24)
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+// Tag webhook spool worker (E24)
 require_once __DIR__.'/../bootstrap.php'; // optional if you have autoload
 
 use App\Service\Tag\Webhook\TagWebhookSender;

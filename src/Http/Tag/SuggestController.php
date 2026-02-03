@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
-/*
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 namespace App\Http\Tag;
 
 use App\Service\Tag\SuggestService;

@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
-declare(strict_types=1);
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
 // Tag webhook spool worker (E24)
 require_once __DIR__.'/../bootstrap.php'; // optional if you have autoload
 

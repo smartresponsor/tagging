@@ -7,9 +7,7 @@ use App\ServiceInterface\Tag\TagRepositoryInterface as TagRepositoryContract;
 use App\Domain\Tag\Tag;
 use App\Domain\Tag\TagAssignment;
 
-/**
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class TagModerationService {
     public function __construct(private TagRepositoryContract $repo){}
 

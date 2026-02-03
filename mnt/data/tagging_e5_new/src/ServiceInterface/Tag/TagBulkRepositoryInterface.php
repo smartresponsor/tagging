@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace App\ServiceInterface\Tag;
 
-/**
- * Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
- */
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 interface TagBulkRepositoryInterface
 {
     public function createJob(string $id, string $type): void;

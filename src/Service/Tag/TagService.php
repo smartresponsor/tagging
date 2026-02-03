@@ -1,4 +1,5 @@
 <?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 namespace App\Service\Tag;
 
@@ -10,7 +11,6 @@ use App\Domain\Tag\TagSynonym;
 use App\Domain\Tag\TagRelation;
 use App\Domain\Tag\TagScheme;
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class TagService {
     public function __construct(
         private TagRepositoryContract $repo,

@@ -1,1 +1,129 @@
-<?php\ndeclare(strict_types=1);\n# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp\nnamespace App\\Http\\Tag\\Middleware;\n\nuse App\\Service\\Tag\\RateLimiter;\n\nfinal class QuotaGate\n{\n    public function __construct(private RateLimiter $limiter, private array $cfg = []) {}\n\n    /** @param array{method:string,path:string,headers:array,body:string} $req */\n    public function handle(array $req, callable $next): array\n    {\n        if (!$this->isProtected($req['path'] ?? '/')) {\n            return $next($req);\n        }\n        if (!($this->cfg['enforce'] ?? true)) {\n            return $next($req);\n        }\n\n        $tenant = (string)($req['headers']['X-Tenant-Id'] ?? $req['headers']['x-tenant-id'] ?? '');\n        if ($tenant === '') $tenant = 'tenant-unknown';\n        $route = $this->routeKey($req['method'] ?? 'GET', $req['path'] ?? '/');\n\n        $g = $this->cfg['hard']['global'] ?? ['rps'=>1000,'burst'=>2000];\n        $pt = $this->cfg['hard']['per_tenant'] ?? ['rps'=>50,'burst'=>100];\n        $globalKey = 'global|' . $route;\n        $tenantKey = 'tenant|' . $tenant . '|' . $route;\n\n        $allowed = $this->limiter->allow($globalKey, (float)($g['rps']??1000), (int)($g['burst']??2000));\n        if (!$allowed['ok']) {\n            $this->bumpMetric('tag_ratelimit_throttled_total', ['scope'=>'global','route'=>$route]);\n            return $this->tooMany($allowed['retry_after'], 'rate_limit_global');\n        }\n        $allowed = $this->limiter->allow($tenantKey, (float)($pt['rps']??50), (int)($pt['burst']??100));\n        if (!$allowed['ok']) {\n            $this->bumpMetric('tag_ratelimit_throttled_total', ['scope'=>'tenant','route'=>$route,'tenant'=>$tenant]);\n            return $this->tooMany($allowed['retry_after'], 'rate_limit_tenant');\n        }\n\n        $op = $this->opFromPath($req['path'] ?? '/');\n        $soft = $this->cfg['soft']['per_tenant'] ?? [];\n        $limit = 0;\n        if ($op === 'assign') $limit = (int)($soft['assign_per_minute'] ?? 0);\n        elseif ($op === 'search') $limit = (int)($soft['search_per_minute'] ?? 0);\n\n        if ($limit > 0) {\n            $slotKey = 'soft|' . $tenant . '|' . $op;\n            $res = $this->limiter->softAllow($slotKey, $limit, (int)($this->cfg['window_sec'] ?? 60));\n            if (!$res['ok']) {\n                $this->bumpMetric('tag_quota_exceeded_total', ['tenant'=>$tenant,'op'=>$op]);\n                return $this->tooMany((int)($res['retry_after'] ?? 1), 'quota_soft_exceeded');\n            }\n        }\n\n        return $next($req);\n    }\n\n    private function isProtected(string $path): bool\n    {\n        $ignore = $this->cfg['paths']['ignore'] ?? ['/tag/_status','/tag/_metrics'];\n        foreach ($ignore as $pat) if ($this->match($pat, $path)) return false;\n        $prot = $this->cfg['paths']['protected'] ?? ['/tag/**'];\n        foreach ($prot as $pat) if ($this->match($pat, $path)) return true;\n        return false;\n    }\n\n    private function match(string $pat, string $path): bool\n    {\n        $re = preg_quote($pat, '#');\n        $re = str_replace(['\\*\\*','\\*'], ['.*','[^/]*'], $re);\n        $re = '#^' . $re . '$#';\n        return (bool)preg_match($re, $path);\n    }\n\n    private function routeKey(string $method, string $path): string\n    {\n        $norm = preg_replace('#/[A-Za-z0-9_-]+#', '/:id', $path, 1);\n        return strtoupper($method) . ' ' . $norm;\n    }\n\n    private function opFromPath(string $path): string\n    {\n        if (preg_match('#^/tag/[^/]+/assign$#', $path)) return 'assign';\n        if (preg_match('#^/tag/assign-bulk$#', $path)) return 'assign';\n        if (preg_match('#^/tag/search#', $path)) return 'search';\n        return 'other';\n    }\n\n    private function tooMany(int $retryAfter, string $code): array\n    {\n        return [429, ['Content-Type'=>'application/json','Retry-After'=>(string)max(1,$retryAfter)], json_encode(['code'=>$code])];\n    }\n\n    private function bumpMetric(string $name, array $labels): void\n    {\n        if (class_exists('App\\Ops\\Metrics\\TagMetrics')) {\n            $exp = \App\Ops\Metrics\TagMetrics::exporter();\n            if (method_exists($exp, 'inc')) {\n                $exp->inc($name, $labels, 1);\n            }\n        }\n    }\n}\n
+<?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
+
+namespace App\Http\Tag\Middleware;
+
+use App\Service\Tag\RateLimiter;
+
+final class QuotaGate
+{
+    public function __construct(private RateLimiter $limiter, private array $cfg = []) {}
+
+    /** @param array{method:string,path:string,headers:array,body:string} $req */
+    public function handle(array $req, callable $next): array
+    {
+        if (!$this->isProtected($req['path'] ?? '/')) {
+            return $next($req);
+        }
+        if (!($this->cfg['enforce'] ?? true)) {
+            return $next($req);
+        }
+
+        $tenant = (string)($req['headers']['X-Tenant-Id'] ?? $req['headers']['x-tenant-id'] ?? '');
+        if ($tenant === '') {
+            $tenant = 'tenant-unknown';
+        }
+        $route = $this->routeKey($req['method'] ?? 'GET', $req['path'] ?? '/');
+
+        $g = $this->cfg['hard']['global'] ?? ['rps' => 1000, 'burst' => 2000];
+        $pt = $this->cfg['hard']['per_tenant'] ?? ['rps' => 50, 'burst' => 100];
+        $globalKey = 'global|' . $route;
+        $tenantKey = 'tenant|' . $tenant . '|' . $route;
+
+        $allowed = $this->limiter->allow($globalKey, (float)($g['rps'] ?? 1000), (int)($g['burst'] ?? 2000));
+        if (!$allowed['ok']) {
+            $this->bumpMetric('tag_ratelimit_throttled_total', ['scope' => 'global', 'route' => $route]);
+            return $this->tooMany($allowed['retry_after'], 'rate_limit_global');
+        }
+        $allowed = $this->limiter->allow($tenantKey, (float)($pt['rps'] ?? 50), (int)($pt['burst'] ?? 100));
+        if (!$allowed['ok']) {
+            $this->bumpMetric('tag_ratelimit_throttled_total', ['scope' => 'tenant', 'route' => $route, 'tenant' => $tenant]);
+            return $this->tooMany($allowed['retry_after'], 'rate_limit_tenant');
+        }
+
+        $op = $this->opFromPath($req['path'] ?? '/');
+        $soft = $this->cfg['soft']['per_tenant'] ?? [];
+        $limit = 0;
+        if ($op === 'assign') {
+            $limit = (int)($soft['assign_per_minute'] ?? 0);
+        } elseif ($op === 'search') {
+            $limit = (int)($soft['search_per_minute'] ?? 0);
+        }
+
+        if ($limit > 0) {
+            $slotKey = 'soft|' . $tenant . '|' . $op;
+            $res = $this->limiter->softAllow($slotKey, $limit, (int)($this->cfg['window_sec'] ?? 60));
+            if (!$res['ok']) {
+                $this->bumpMetric('tag_quota_exceeded_total', ['tenant' => $tenant, 'op' => $op]);
+                return $this->tooMany((int)($res['retry_after'] ?? 1), 'quota_soft_exceeded');
+            }
+        }
+
+        return $next($req);
+    }
+
+    private function isProtected(string $path): bool
+    {
+        $ignore = $this->cfg['paths']['ignore'] ?? ['/tag/_status', '/tag/_metrics'];
+        foreach ($ignore as $pat) {
+            if ($this->match($pat, $path)) {
+                return false;
+            }
+        }
+        $prot = $this->cfg['paths']['protected'] ?? ['/tag/**'];
+        foreach ($prot as $pat) {
+            if ($this->match($pat, $path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function match(string $pat, string $path): bool
+    {
+        $re = preg_quote($pat, '#');
+        $re = str_replace(['\\*\\*', '\\*'], ['.*', '[^/]*'], $re);
+        $re = '#^' . $re . '$#';
+        return (bool)preg_match($re, $path);
+    }
+
+    private function routeKey(string $method, string $path): string
+    {
+        $norm = preg_replace('#/[A-Za-z0-9_-]+#', '/:id', $path, 1);
+        return strtoupper($method) . ' ' . $norm;
+    }
+
+    private function opFromPath(string $path): string
+    {
+        if (preg_match('#^/tag/[^/]+/assign$#', $path)) {
+            return 'assign';
+        }
+        if (preg_match('#^/tag/assign-bulk$#', $path)) {
+            return 'assign';
+        }
+        if (preg_match('#^/tag/search#', $path)) {
+            return 'search';
+        }
+        return 'other';
+    }
+
+    private function tooMany(int $retryAfter, string $code): array
+    {
+        return [
+            429,
+            ['Content-Type' => 'application/json', 'Retry-After' => (string)max(1, $retryAfter)],
+            json_encode(['code' => $code]),
+        ];
+    }
+
+    private function bumpMetric(string $name, array $labels): void
+    {
+        if (class_exists('App\\Ops\\Metrics\\TagMetrics')) {
+            $exp = \App\Ops\Metrics\TagMetrics::exporter();
+            if (method_exists($exp, 'inc')) {
+                $exp->inc($name, $labels, 1);
+            }
+        }
+    }
+}

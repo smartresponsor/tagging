@@ -1,10 +1,10 @@
 <?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 namespace App\Service\Tag;
 
 use App\Domain\Tag\TagRelation;
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class TagGraph {
     /** @param array<string, TagRelation[]> $adj */
     public static function wouldCreateCycle(string $from, string $to, array $adj): bool {

@@ -1,8 +1,8 @@
 <?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 namespace App\Service\Tag;
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 final class TagPolicyEngine {
     public function __construct(private array $policy){}
 

@@ -1,6 +1,6 @@
 <?php
-declare(strict_types=1);
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
 // /tag/_metrics endpoint (plain text). Framework-agnostic stub.
 namespace App\Http\Tag;
 

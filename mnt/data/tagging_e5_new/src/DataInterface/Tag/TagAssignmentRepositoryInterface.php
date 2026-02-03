@@ -1,11 +1,11 @@
 <?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace App\DataInterface\Tag;
 
 use App\Data\Tag\AssignmentRecord;
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 interface TagAssignmentRepositoryInterface
 {
     /** Idempotent: returns true if created, false if existed */

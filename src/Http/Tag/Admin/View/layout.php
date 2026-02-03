@@ -1,4 +1,6 @@
-<?php /** @var string $content */ ?>
+<?php
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+/** @var string $content */ ?>
 <!doctype html>
 <html>
 <head>

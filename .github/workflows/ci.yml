@@ -1,21 +1,203 @@
 name: ci
 
 on:
-  push:
   pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  validate:
+    name: validate (php ${{ matrix.php }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3']
     steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php }}
           coverage: none
-      - name: Validate composer
-        run: composer validate
+          tools: composer:v2
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php }}-
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
-      - name: Lint
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Lint PHP files
         run: composer lint
+
+  unit:
+    name: unit (php ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: pcov
+          tools: composer:v2, phpunit
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php }}-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run unit tests with JUnit + coverage
+        run: |
+          mkdir -p build/phpunit build/coverage
+          phpunit --testsuite unit \
+            --log-junit build/phpunit/junit-unit.xml \
+            --coverage-clover build/coverage/clover.xml
+
+      - name: Upload unit test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-php-${{ matrix.php }}
+          path: |
+            build/phpunit/junit-unit.xml
+            build/coverage/clover.xml
+          if-no-files-found: warn
+
+  static:
+    name: static (php ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer:v2, phpstan
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php }}-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run static analysis (PHPStan)
+        run: phpstan analyse --configuration=phpstan.neon.dist
+
+  integration:
+    name: integration (postgres, php 8.3)
+    runs-on: ubuntu-latest
+    needs: validate
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: tag_test
+          POSTGRES_USER: tag
+          POSTGRES_PASSWORD: tag
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U tag -d tag_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DB_DSN: pgsql:host=127.0.0.1;port=5432;dbname=tag_test
+      DB_USER: tag
+      DB_PASS: tag
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2, phpunit
+          extensions: pdo_pgsql
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ runner.os }}-8.3-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-8.3-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Wait for Postgres readiness
+        run: |
+          php -r '
+          $dsn = "pgsql:host=127.0.0.1;port=5432;dbname=tag_test";
+          for ($i = 0; $i < 30; $i++) {
+              try {
+                  new PDO($dsn, "tag", "tag");
+                  exit(0);
+              } catch (Throwable $e) {
+                  usleep(500000);
+              }
+          }
+          fwrite(STDERR, "Postgres service is not ready after 15 seconds.\n");
+          exit(1);
+          '
+
+      - name: Run integration tests with JUnit report
+        run: |
+          mkdir -p build/phpunit
+          phpunit --testsuite integration \
+            --log-junit build/phpunit/junit-integration.xml
+
+      - name: Upload integration test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-junit
+          path: build/phpunit/junit-integration.xml
+          if-no-files-found: warn

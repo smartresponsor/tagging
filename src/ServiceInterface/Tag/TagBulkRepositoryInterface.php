@@ -6,19 +6,19 @@ namespace App\ServiceInterface\Tag;
 
 interface TagBulkRepositoryInterface
 {
-    public function createJob(string $id, string $type): void;
+    public function createJob(string $tenantId, string $id, string $type): void;
 
-    public function setJobStatus(string $id, string $status, ?string $error = null): void;
+    public function setJobStatus(string $tenantId, string $id, string $status, ?string $error = null): void;
 
-    public function addItem(string $id, string $jobId, array $payload): void;
+    public function addItem(string $tenantId, string $id, string $jobId, array $payload): void;
 
-    public function listItems(string $jobId): array;
+    public function listItems(string $tenantId, string $jobId): array;
 
-    public function getJob(string $jobId): array;
+    public function getJob(string $tenantId, string $jobId): array;
 
-    public function resolveRedirect(string $fromTagId): ?string;
+    public function resolveRedirect(string $tenantId, string $fromTagId): ?string;
 
-    public function mergeTags(string $from, string $to, bool $moveAssignments = true, bool $copySynonyms = true): array;
+    public function mergeTags(string $tenantId, string $from, string $to, bool $moveAssignments = true, bool $copySynonyms = true): array;
 
-    public function splitTag(string $id, array $newTags): array;
+    public function splitTag(string $tenantId, string $id, array $newTags): array;
 }

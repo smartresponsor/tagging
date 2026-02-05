@@ -17,49 +17,48 @@ final class TagService {
         private TagConfig $cfg = new TagConfig()
     ){}
 
-    public function create(?string $slugOrNull, string $label): Tag {
+    public function create(string $tenantId, ?string $slugOrNull, string $label): Tag {
         $label = TagNormalizer::normalizeLabel($label);
         $slug = ($slugOrNull === '' || $slugOrNull === null) ? TagNormalizer::slugify($label) : TagNormalizer::slugify($slugOrNull);
         $this->validateLengths($slug, $label);
-        if ($this->repo->getBySlug($slug)) throw new \InvalidArgumentException("Slug already exists");
+        if ($this->repo->getBySlug($tenantId, $slug)) throw new \InvalidArgumentException("Slug already exists");
         $tag = Tag::create(UlidGenerator::generate(), $slug, $label);
-        $this->repo->saveTag($tag);
+        $this->repo->saveTag($tenantId, $tag);
         return $tag;
     }
-    public function list(?string $q, int $limit = 20, int $offset = 0): array { return $this->repo->search($q, $limit, $offset); }
-    public function delete(string $id): void { $this->repo->deleteTag($id); }
+    public function list(string $tenantId, ?string $q, int $limit = 20, int $offset = 0): array { return $this->repo->search($tenantId, $q, $limit, $offset); }
+    public function delete(string $tenantId, string $id): void { $this->repo->deleteTag($tenantId, $id); }
 
-    public function assign(string $tagId, string $type, string $assignedId): TagAssignment {
-        $this->enforceCaps($tagId, $type, $assignedId);
+    public function assign(string $tenantId, string $tagId, string $type, string $assignedId): TagAssignment {
+        $this->enforceCaps($tenantId, $tagId, $type, $assignedId);
         $a = TagAssignment::create(UlidGenerator::generate(), $tagId, $type, $assignedId);
-        $this->repo->saveAssignment($a);
+        $this->repo->saveAssignment($tenantId, $a);
         return $a;
     }
 
-    public function addSynonym(string $tagId, string $label): TagSynonym {
+    public function addSynonym(string $tenantId, string $tagId, string $label): TagSynonym {
         $label = TagNormalizer::normalizeLabel($label);
         $s = TagSynonym::create(UlidGenerator::generate(), $tagId, $label);
-        $this->repo->saveSynonym($s);
+        $this->repo->saveSynonym($tenantId, $s);
         return $s;
     }
 
-    public function addRelation(string $fromTagId, string $toTagId, string $type): TagRelation {
+    public function addRelation(string $tenantId, string $fromTagId, string $toTagId, string $type): TagRelation {
         if ($type === 'broader') {
-            // prevent cycles
             $adj = [];
-            $all = $this->repo->listRelations($toTagId, 'broader');
+            $all = $this->repo->listRelations($tenantId, $toTagId, 'broader');
             $adj[$toTagId] = $all;
             if (TagGraph::wouldCreateCycle($fromTagId, $toTagId, $adj)) throw new \InvalidArgumentException('broader cycle');
         }
         $r = TagRelation::create(UlidGenerator::generate(), $fromTagId, $toTagId, $type);
-        $this->repo->saveRelation($r);
+        $this->repo->saveRelation($tenantId, $r);
         return $r;
     }
 
-    public function createScheme(string $name, ?string $locale): TagScheme {
-        if ($this->repo->getSchemeByName($name)) throw new \InvalidArgumentException('scheme exists');
+    public function createScheme(string $tenantId, string $name, ?string $locale): TagScheme {
+        if ($this->repo->getSchemeByName($tenantId, $name)) throw new \InvalidArgumentException('scheme exists');
         $s = TagScheme::create(UlidGenerator::generate(), $name, $locale);
-        $this->repo->saveScheme($s);
+        $this->repo->saveScheme($tenantId, $s);
         return $s;
     }
 
@@ -68,17 +67,16 @@ final class TagService {
         if (mb_strlen($label) > $this->cfg->maxTagLength) throw new \InvalidArgumentException("label too long");
         if ($slug === '' || $label === '') throw new \InvalidArgumentException("slug/label must not be empty");
     }
-    private function enforceCaps(string $tagId, string $type, string $assignedId): void {
-        $current = $this->repo->listAssignments($tagId, $type, $assignedId);
+    private function enforceCaps(string $tenantId, string $tagId, string $type, string $assignedId): void {
+        $current = $this->repo->listAssignments($tenantId, $tagId, $type, $assignedId);
         if (count($current) >= 1) {
             throw new \InvalidArgumentException('assignment_exists');
         }
     }
 
-    // E5 policy hooks
-    private function loadPolicyEngine(): TagPolicyEngine
+    private function loadPolicyEngine(string $tenantId): TagPolicyEngine
     {
-        $policy = $this->repo->getPolicy();
+        $policy = $this->repo->getPolicy($tenantId);
         return new TagPolicyEngine($policy);
     }
 

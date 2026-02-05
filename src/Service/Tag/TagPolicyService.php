@@ -19,23 +19,23 @@ final class TagPolicyService
         return $s;
     }
 
-    public function validateBeforeCreate(TagRepositoryContract $repo, string $label, ?string $slug=null): void
+    public function validateBeforeCreate(string $tenantId, TagRepositoryContract $repo, string $label, ?string $slug=null): void
     {
         $this->validator->validateLabel($label);
         $slug = $slug ?? $this->normalizeSlug($label);
         $this->applyRules($slug);
         $this->validator->validateSlug($slug);
-        $this->validator->ensureUniqueness($repo, $slug, null);
+        $this->validator->ensureUniqueness($tenantId, $repo, $slug, null);
     }
 
-    public function validateBeforeUpdate(TagRepositoryContract $repo, string $tagId, string $label, ?string $slug=null): void
+    public function validateBeforeUpdate(string $tenantId, TagRepositoryContract $repo, string $tagId, string $label, ?string $slug=null): void
     {
         $this->validator->validateLabel($label);
         if ($slug !== null) {
             $slug = $this->normalizeSlug($slug);
             $this->applyRules($slug);
             $this->validator->validateSlug($slug);
-            $this->validator->ensureUniqueness($repo, $slug, $tagId);
+            $this->validator->ensureUniqueness($tenantId, $repo, $slug, $tagId);
         }
     }
 

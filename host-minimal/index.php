@@ -5,10 +5,12 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use App\Cache\Tag\{SearchCache,SuggestCache};
 use App\Http\Middleware\IdempotencyMiddleware;
+use App\Application\Tag\UseCase\{CreateTag,DeleteTag,PatchTag};
 use App\Http\Tag\{AssignController,AssignmentReadController,RedirectController,SearchController,StatusController,SuggestController,SynonymController,TagController};
+use App\Http\Tag\Responder\TagWriteResponder;
 use App\Infra\Outbox\OutboxPublisher;
 use App\Infra\Tag\{PdoTagEntityRepository,TagReadModel};
-use App\Service\Tag\{AssignService,IdempotencyStore,SearchService,SuggestService,TagEntityService,UnassignService};
+use App\Service\Tag\{AssignService,IdempotencyStore,PdoTransactionRunner,SearchService,SuggestService,TagEntityService,UnassignService};
 use App\Service\Tag\Slug\{Slugifier,SlugPolicy};
 
 $pdo = new PDO(
@@ -25,9 +27,14 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
 $slugifier = new Slugifier();
+$slugPolicy = new SlugPolicy($pdo, $slugifier);
 $tagRepo = new PdoTagEntityRepository($pdo);
-$tagSvc = new TagEntityService($tagRepo, new SlugPolicy($pdo, $slugifier));
-$tagCtl = new TagController($tagSvc);
+$tx = new PdoTransactionRunner($pdo);
+$tagSvc = new TagEntityService($tagRepo, $slugPolicy);
+$createTag = new CreateTag($tagRepo, $slugPolicy, $tx);
+$patchTag = new PatchTag($tagRepo, $tx);
+$deleteTag = new DeleteTag($tagRepo, $tx);
+$tagCtl = new TagController($tagSvc, $createTag, $patchTag, $deleteTag, new TagWriteResponder());
 
 $readModel = new TagReadModel($pdo);
 

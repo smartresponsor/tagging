@@ -4,13 +4,24 @@ declare(strict_types=1);
 
 namespace App\Http\Tag;
 
+use App\Application\Tag\Dto\CreateTagCommand;
+use App\Application\Tag\Dto\DeleteTagCommand;
+use App\Application\Tag\Dto\PatchTagCommand;
+use App\Application\Tag\UseCase\CreateTag;
+use App\Application\Tag\UseCase\DeleteTag;
+use App\Application\Tag\UseCase\PatchTag;
+use App\Http\Tag\Responder\TagWriteResponder;
 use App\Service\Tag\TagEntityService;
-use PDOException;
 
 final class TagController
 {
-    public function __construct(private TagEntityService $service)
-    {
+    public function __construct(
+        private TagEntityService $queryService,
+        private CreateTag $createTag,
+        private PatchTag $patchTag,
+        private DeleteTag $deleteTag,
+        private TagWriteResponder $responder,
+    ) {
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
@@ -19,14 +30,7 @@ final class TagController
         $tenant = (string)($req['headers']['x-tenant-id'] ?? '');
         $payload = is_array($req['body'] ?? null) ? $req['body'] : [];
 
-        try {
-            $created = $this->service->create($tenant, $payload);
-            return self::ok(201, $created);
-        } catch (\InvalidArgumentException $e) {
-            return self::bad($e->getMessage());
-        } catch (PDOException $e) {
-            return self::conflict('conflict');
-        }
+        return $this->responder->respond($this->createTag->execute(new CreateTagCommand($tenant, $payload)));
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
@@ -35,7 +39,7 @@ final class TagController
         $tenant = (string)($req['headers']['x-tenant-id'] ?? '');
 
         try {
-            $row = $this->service->get($tenant, $id);
+            $row = $this->queryService->get($tenant, $id);
             if ($row === null) {
                 return self::notFound();
             }
@@ -51,12 +55,7 @@ final class TagController
         $tenant = (string)($req['headers']['x-tenant-id'] ?? '');
         $payload = is_array($req['body'] ?? null) ? $req['body'] : [];
 
-        try {
-            $this->service->patch($tenant, $id, $payload);
-            return self::ok(200, ['id' => $id]);
-        } catch (\InvalidArgumentException $e) {
-            return self::bad($e->getMessage());
-        }
+        return $this->responder->respond($this->patchTag->execute(new PatchTagCommand($tenant, $id, $payload)));
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
@@ -64,12 +63,7 @@ final class TagController
     {
         $tenant = (string)($req['headers']['x-tenant-id'] ?? '');
 
-        try {
-            $this->service->delete($tenant, $id);
-            return [204, ['Content-Type' => 'application/json'], ''];
-        } catch (\InvalidArgumentException $e) {
-            return self::bad($e->getMessage());
-        }
+        return $this->responder->respond($this->deleteTag->execute(new DeleteTagCommand($tenant, $id)));
     }
 
     private static function ok(int $code, array $body): array
@@ -80,11 +74,6 @@ final class TagController
     private static function bad(string $code): array
     {
         return [400, ['Content-Type' => 'application/json'], json_encode(['code' => $code]) ?: '{"code":"validation_failed"}'];
-    }
-
-    private static function conflict(string $code): array
-    {
-        return [409, ['Content-Type' => 'application/json'], json_encode(['code' => $code]) ?: '{"code":"conflict"}'];
     }
 
     private static function notFound(): array

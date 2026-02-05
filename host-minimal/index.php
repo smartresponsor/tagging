@@ -7,9 +7,9 @@ use App\Cache\Tag\{SearchCache,SuggestCache};
 use App\Http\Middleware\IdempotencyMiddleware;
 use App\Http\Tag\{AssignController,AssignmentReadController,RedirectController,SearchController,StatusController,SuggestController,SynonymController,TagController};
 use App\Infra\Outbox\OutboxPublisher;
-use App\Infra\Tag\TagReadModel;
-use App\Service\Tag\{AssignService,IdempotencyStore,SearchService,SuggestService,UnassignService};
-use App\Service\Tag\Slug\Slugifier;
+use App\Infra\Tag\{PdoTagEntityRepository,TagReadModel};
+use App\Service\Tag\{AssignService,IdempotencyStore,SearchService,SuggestService,TagEntityService,UnassignService};
+use App\Service\Tag\Slug\{Slugifier,SlugPolicy};
 
 $pdo = new PDO(
     getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app',
@@ -25,7 +25,9 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
 $slugifier = new Slugifier();
-$tagCtl = new TagController($pdo, $slugifier);
+$tagRepo = new PdoTagEntityRepository($pdo);
+$tagSvc = new TagEntityService($tagRepo, new SlugPolicy($pdo, $slugifier));
+$tagCtl = new TagController($tagSvc);
 
 $readModel = new TagReadModel($pdo);
 

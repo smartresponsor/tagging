@@ -10,5 +10,9 @@
     "psr-4": {
       "App\\": "src/"
     }
-  }
+  },
+  "scripts": {
+    "lint": "find src tests host-minimal -name \"*.php\" -print0 | xargs -0 -n1 php -l"
+  },
+  "description": "Smartresponsor canonical tagging component library."
 }

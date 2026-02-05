@@ -24,7 +24,7 @@ final class IdempotencyStore
         // Insert pending
         $ins = $this->pdo->prepare(
             'INSERT INTO idempotency_store (tenant, key, op, checksum, status, result_json)
-             VALUES (:t,:k,:op,:c,:st,:res::jsonb)'
+             VALUES (:t,:k,:op,:c,:st,CAST(:res AS jsonb))'
         );
         $ins->execute([
             ':t'=>$tenant, ':k'=>$key, ':op'=>$op, ':c'=>$checksum, ':st'=>'pending', ':res'=>json_encode([]),
@@ -36,7 +36,7 @@ final class IdempotencyStore
     public function complete(string $tenant, string $key, array $result): void
     {
         $upd = $this->pdo->prepare(
-            'UPDATE idempotency_store SET status=:st, result_json=:res::jsonb WHERE tenant=:t AND key=:k'
+            'UPDATE idempotency_store SET status=:st, result_json=CAST(:res AS jsonb) WHERE tenant=:t AND key=:k'
         );
         $upd->execute([
             ':st'=>'done',

@@ -1,141 +1,35 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
-require_once __DIR__.'/../vendor/autoload.php';
 
-use App\Cache\Tag\{SearchCache,SuggestCache};
-use App\Http\Middleware\IdempotencyMiddleware;
-use App\Application\Tag\UseCase\{CreateTag,DeleteTag,PatchTag};
-use App\Http\Tag\{AssignController,AssignmentReadController,RedirectController,SearchController,StatusController,SuggestController,SynonymController,TagController};
-use App\Http\Tag\Responder\TagWriteResponder;
-use App\Infra\Outbox\OutboxPublisher;
-use App\Infra\Tag\{PdoTagEntityRepository,TagReadModel};
-use App\Service\Tag\{AssignService,IdempotencyStore,PdoTransactionRunner,SearchService,SuggestService,TagEntityService,UnassignService};
-use App\Service\Tag\Slug\{Slugifier,SlugPolicy};
-
-$pdo = new PDO(
-    getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app',
-    getenv('DB_USER') ?: 'app',
-    getenv('DB_PASS') ?: 'app',
-    [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]
-);
-
-$mw = new IdempotencyMiddleware();
-$norm = $mw->normalize($_SERVER, $_GET, file_get_contents('php://input') ?: '');
+/** @var array<string, callable():mixed> $container */
+$container = require __DIR__.'/bootstrap.php';
+/** @var callable(array<string, callable():mixed>):array<int,array{method:string,pattern:string,handler:callable}> $routeFactory */
+$routeFactory = require __DIR__.'/route.php';
+$routes = $routeFactory($container);
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$rawBody = file_get_contents('php://input') ?: '';
+$norm = $container['idempotencyMiddleware']()->normalize($_SERVER, $_GET, $rawBody);
 
-$slugifier = new Slugifier();
-$slugPolicy = new SlugPolicy($pdo, $slugifier);
-$tagRepo = new PdoTagEntityRepository($pdo);
-$tx = new PdoTransactionRunner($pdo);
-$tagSvc = new TagEntityService($tagRepo, $slugPolicy);
-$createTag = new CreateTag($tagRepo, $slugPolicy, $tx);
-$patchTag = new PatchTag($tagRepo, $tx);
-$deleteTag = new DeleteTag($tagRepo, $tx);
-$tagCtl = new TagController($tagSvc, $createTag, $patchTag, $deleteTag, new TagWriteResponder());
-
-$readModel = new TagReadModel($pdo);
-
-$outbox = new OutboxPublisher($pdo);
-$idemStore = new IdempotencyStore($pdo);
-$assignSvc = new AssignService($pdo, $outbox, $idemStore);
-$unassignSvc = new UnassignService($pdo, $outbox, $idemStore);
-$typesEnv = getenv('TAG_ENTITY_TYPES') ?: '*';
-$types = array_values(array_filter(array_map('trim', explode(',', $typesEnv)), static fn($v) => $v !== ''));
-if ($types === []) $types = ['*'];
-
-$assignCtl = new AssignController($assignSvc, $unassignSvc, ['entity_types'=>$types]);
-
-$searchSvc = new SearchService($readModel, new SearchCache());
-$suggestSvc = new SuggestService($pdo, new SuggestCache());
-$searchCtl = new SearchController($searchSvc);
-$suggestCtl = new SuggestController($suggestSvc);
-
-$assignmentReadCtl = new AssignmentReadController($readModel);
-
-// Framework-agnostic controllers for file-based features
-$synonymCtl = new SynonymController();
-$redirectCtl = new RedirectController();
-$statusCtl = new StatusController();
-
-/** @param array{0:int,1:array<string,string>,2:string} $r */
-$send = static function(array $r): void {
-    [$c,$h,$b] = $r;
-    http_response_code($c);
-    foreach($h as $k=>$v){ header($k.': '.$v); }
-    echo $b;
+/** @param array{0:int,1:array<string,string>,2:string} $response */
+$send = static function (array $response): never {
+    [$code, $headers, $body] = $response;
+    http_response_code($code);
+    foreach ($headers as $name => $value) {
+        header($name.': '.$value);
+    }
+    echo $body;
     exit;
 };
 
-// Tag CRUD
-if ($method === 'POST' && $path === '/tag') {
-    $send($tagCtl->create($norm));
-}
-if ($method === 'GET' && preg_match('#^/tag/([A-Za-z0-9]{26})$#', $path, $m)) {
-    $send($tagCtl->get($norm, $m[1]));
-}
-if ($method === 'PATCH' && preg_match('#^/tag/([A-Za-z0-9]{26})$#', $path, $m)) {
-    $send($tagCtl->patch($norm, $m[1]));
-}
-if ($method === 'DELETE' && preg_match('#^/tag/([A-Za-z0-9]{26})$#', $path, $m)) {
-    $send($tagCtl->delete($norm, $m[1]));
+foreach ($routes as $route) {
+    if ($route['method'] !== $method || !preg_match($route['pattern'], $path, $matches)) {
+        continue;
+    }
+
+    $send($route['handler']($norm, $matches));
 }
 
-// Assign / unassign
-if ($method === 'POST' && preg_match('#^/tag/([A-Za-z0-9]{26})/assign$#', $path, $m)) {
-    $send($assignCtl->assign($norm, $m[1]));
-}
-if ($method === 'POST' && preg_match('#^/tag/([A-Za-z0-9]{26})/unassign$#', $path, $m)) {
-    $send($assignCtl->unassign($norm, $m[1]));
-}
-
-// Bulk operations + bulk assign-to-entity
-if ($method === 'POST' && $path === '/tag/assign-bulk') {
-    $send($assignCtl->bulk($norm));
-}
-if ($method === 'POST' && $path === '/tag/assignment/bulk') {
-    $send($assignCtl->assignBulkToEntity($norm));
-}
-
-// Read assignments
-if ($method === 'GET' && $path === '/tag/assignments') {
-    $send($assignmentReadCtl->listByEntity($norm));
-}
-
-// Search/suggest
-if ($method === 'GET' && $path === '/tag/search') {
-    $send($searchCtl->get($norm));
-}
-if ($method === 'GET' && $path === '/tag/suggest') {
-    $send($suggestCtl->get($norm));
-}
-
-// Synonyms
-if ($method === 'GET' && preg_match('#^/tag/([A-Za-z0-9]{26})/synonym$#', $path, $m)) {
-    $send($synonymCtl->list(['id'=>$m[1]]));
-}
-if ($method === 'POST' && preg_match('#^/tag/([A-Za-z0-9]{26})/synonym$#', $path, $m)) {
-    $send($synonymCtl->add(['id'=>$m[1]], is_array($norm['body'] ?? null) ? $norm['body'] : []));
-}
-if ($method === 'DELETE' && preg_match('#^/tag/([A-Za-z0-9]{26})/synonym$#', $path, $m)) {
-    $send($synonymCtl->remove(['id'=>$m[1]], is_array($norm['body'] ?? null) ? $norm['body'] : []));
-}
-
-// Redirect resolve
-if ($method === 'GET' && preg_match('#^/tag/redirect/([A-Za-z0-9]{26})$#', $path, $m)) {
-    $send($redirectCtl->resolve(['fromId'=>$m[1]]));
-}
-
-// Status
-if ($method === 'GET' && $path === '/tag/_status') {
-    http_response_code(200);
-    header('Content-Type: application/json');
-    echo json_encode($statusCtl->status(), JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-http_response_code(404);
-header('Content-Type: application/json');
-echo json_encode(['code'=>'not_found']);
+$send([404, ['Content-Type' => 'application/json'], json_encode(['code' => 'not_found']) ?: '{"code":"not_found"}']);

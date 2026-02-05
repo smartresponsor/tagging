@@ -11,9 +11,10 @@ final class TagCoreTest extends TestCase {
     public function testCreateAndList(): void {
         $repo = new InMemoryTagRepository();
         $svc = new TagService($repo);
-        $t = $svc->create('alpha','Alpha');
+        $tenantId = 'tenant-a';
+        $t = $svc->create($tenantId, 'alpha','Alpha');
         $this->assertNotEmpty($t->id());
-        $items = $svc->list('alp', 10, 0);
+        $items = $svc->list($tenantId, 'alp', 10, 0);
         $this->assertCount(1, $items);
     }
 }

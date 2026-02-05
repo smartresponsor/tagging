@@ -8,40 +8,40 @@ use App\ServiceInterface\Tag\TagRepositoryInterface as TagRepositoryContract;
 final class TagPropagationService {
     public function __construct(private TagRepositoryContract $repo){}
 
-    public function putClassificationForTag(string $tagId, string $key, string $value): void {
-        $this->repo->putClassification(UlidGenerator::generate(), 'tag', $tagId, $key, $value);
+    public function putClassificationForTag(string $tenantId, string $tagId, string $key, string $value): void {
+        $this->repo->putClassification($tenantId, UlidGenerator::generate(), 'tag', $tagId, $key, $value);
     }
 
-    public function putClassificationForScheme(string $schemeName, string $key, string $value): void {
-        $this->repo->putClassification(UlidGenerator::generate(), 'scheme', $schemeName, $key, $value);
+    public function putClassificationForScheme(string $tenantId, string $schemeName, string $key, string $value): void {
+        $this->repo->putClassification($tenantId, UlidGenerator::generate(), 'scheme', $schemeName, $key, $value);
     }
 
-    public function replayForTag(string $tagId): int {
-        $this->repo->clearEffectsForSource('tag', $tagId);
-        $class = $this->repo->listClassifications('tag', $tagId);
+    public function replayForTag(string $tenantId, string $tagId): int {
+        $this->repo->clearEffectsForSource($tenantId, 'tag', $tagId);
+        $class = $this->repo->listClassifications($tenantId, 'tag', $tagId);
         if (!$class) return 0;
-        $pairs = $this->repo->listAssignmentsByTag($tagId);
+        $pairs = $this->repo->listAssignmentsByTag($tenantId, $tagId);
         $n=0;
         foreach ($pairs as $p) {
             foreach ($class as $c) {
-                $this->repo->putEffect(UlidGenerator::generate(), $p['assigned_type'], $p['assigned_id'], $c['key'], $c['value'], 'tag', $tagId);
+                $this->repo->putEffect($tenantId, UlidGenerator::generate(), $p['assigned_type'], $p['assigned_id'], $c['key'], $c['value'], 'tag', $tagId);
                 $n++;
             }
         }
         return $n;
     }
 
-    public function replayForScheme(string $schemeName): int {
-        $this->repo->clearEffectsForSource('scheme', $schemeName);
-        $class = $this->repo->listClassifications('scheme', $schemeName);
+    public function replayForScheme(string $tenantId, string $schemeName): int {
+        $this->repo->clearEffectsForSource($tenantId, 'scheme', $schemeName);
+        $class = $this->repo->listClassifications($tenantId, 'scheme', $schemeName);
         if (!$class) return 0;
-        $tags = $this->repo->listTagsByScheme($schemeName);
+        $tags = $this->repo->listTagsByScheme($tenantId, $schemeName);
         $n=0;
         foreach ($tags as $t) {
-            $pairs = $this->repo->listAssignmentsByTag($t['tag_id']);
+            $pairs = $this->repo->listAssignmentsByTag($tenantId, $t['tag_id']);
             foreach ($pairs as $p) {
                 foreach ($class as $c) {
-                    $this->repo->putEffect(UlidGenerator::generate(), $p['assigned_type'], $p['assigned_id'], $c['key'], $c['value'], 'scheme', $schemeName);
+                    $this->repo->putEffect($tenantId, UlidGenerator::generate(), $p['assigned_type'], $p['assigned_id'], $c['key'], $c['value'], 'scheme', $schemeName);
                     $n++;
                 }
             }
@@ -49,9 +49,9 @@ final class TagPropagationService {
         return $n;
     }
 
-    public function dryRunForTag(string $tagId): array {
-        $class = $this->repo->listClassifications('tag', $tagId);
-        $pairs = $this->repo->listAssignmentsByTag($tagId);
+    public function dryRunForTag(string $tenantId, string $tagId): array {
+        $class = $this->repo->listClassifications($tenantId, 'tag', $tagId);
+        $pairs = $this->repo->listAssignmentsByTag($tenantId, $tagId);
         $out=[];
         foreach ($pairs as $p) foreach ($class as $c) $out[] = $p['assigned_type'].':'.$p['assigned_id'].' -> '.$c['key'].'='.$c['value'];
         return $out;

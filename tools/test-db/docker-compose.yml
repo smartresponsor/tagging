@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tag-integration-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tag_test
+      POSTGRES_USER: tag
+      POSTGRES_PASSWORD: tag
+    ports:
+      - "55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tag -d tag_test"]
+      interval: 2s
+      timeout: 2s
+      retries: 30

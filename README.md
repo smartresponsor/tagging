@@ -48,6 +48,23 @@ Environment variables used by code:
 - `SR_HMAC_SECRET` (optional; enable signature verification)
 - `TAG_BASE_URL` (optional; used for webhooks/redirect URLs)
 
+
+## Integration tests (Postgres harness)
+
+1) Start isolated Postgres test DB:
+
+- `tools/test-db-start.sh`
+
+2) Export environment values from the script output and run integration suite:
+
+- `vendor/bin/phpunit --testsuite integration`
+
+3) Stop and cleanup test DB:
+
+- `tools/test-db-stop.sh`
+
+The integration tests are deterministic: schema is bootstrapped in-test and tables are truncated before each test case.
+
 ## Demo scenario
 
 See: `docs/demo/tag-quick-demo.md`

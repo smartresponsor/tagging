@@ -26,6 +26,26 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+function Load-SliceExcludePolicy([string]$repoRoot) {
+  $p = Join-Path $repoRoot ".commanding/policy/slice-exclude.json"
+  if (!(Test-Path -LiteralPath $p)) { return $null }
+  try {
+    $raw = Get-Content -LiteralPath $p -Raw -Encoding UTF8
+    return ($raw | ConvertFrom-Json)
+  } catch {
+    throw "Failed to read slice exclude policy at: $p"
+  }
+}
+
+function Merge-Unique([string[]]$base, [object]$extra) {
+  if ($null -eq $extra) { return $base }
+  $set = New-Object 'System.Collections.Generic.HashSet[string]'
+  foreach ($x in $base) { if (![string]::IsNullOrWhiteSpace($x)) { [void]$set.Add($x) } }
+  foreach ($x in $extra) { if (![string]::IsNullOrWhiteSpace($x)) { [void]$set.Add([string]$x) } }
+  return @($set)
+}
+
+
 function Find-RepoRoot([string]$startPath) {
   $p = (Resolve-Path -LiteralPath $startPath).Path
   while ($true) {
@@ -75,6 +95,12 @@ if (-not $repoRoot) {
 }
 
 $RootPath = $repoRoot
+
+$policy = Load-SliceExcludePolicy $RootPath
+if ($null -ne $policy) {
+  if ($null -ne $policy.excludeDir) { $ExcludeDir = Merge-Unique $ExcludeDir $policy.excludeDir }
+  if ($null -ne $policy.excludeExt) { $ExcludeExt = Merge-Unique $ExcludeExt $policy.excludeExt }
+}
 
 # Component name = repo root folder name
 $Component = Split-Path -Leaf $RootPath

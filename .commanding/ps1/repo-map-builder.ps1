@@ -47,6 +47,27 @@ function Normalize-Root([string]$p) {
   return $full.TrimEnd('\','/')
 }
 
+function Add-ZipEntryWithRetry(
+  [System.IO.Compression.ZipArchive]$zip,
+  [string]$sourcePath,
+  [string]$entryName,
+  [int]$retries = 12,
+  [int]$delayMs = 250
+) {
+  for ($i=0; $i -le $retries; $i++) {
+    try {
+      [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+        $zip, $sourcePath, $entryName, [System.IO.Compression.CompressionLevel]::Optimal
+      ) | Out-Null
+      return
+    }
+    catch [System.IO.IOException] {
+      if ($i -eq $retries) { throw }
+      Start-Sleep -Milliseconds $delayMs
+    }
+  }
+}
+
 # Discover repo root from current location
 $repoRoot = Find-RepoRoot (Get-Location).Path
 if (-not $repoRoot) {
@@ -169,6 +190,9 @@ if ($MakeZip) {
     $files = Get-ChildItem -LiteralPath $rootPath -Recurse -Force -File
 
     foreach ($f in $files) {
+      # Never include the target zip itself
+      if ($f.FullName -ieq $ZipFile) { continue }
+
       # Skip excluded directories (match path segments)
       $skip = $false
       foreach ($d in $ExcludeDir) {
@@ -185,9 +209,7 @@ if ($MakeZip) {
       $rel = $f.FullName.Substring($rootPath.Length).TrimStart('\','/')
       $rel = $rel -replace '\\','/'
 
-      [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-        $zip, $f.FullName, $rel, [System.IO.Compression.CompressionLevel]::Optimal
-      ) | Out-Null
+      Add-ZipEntryWithRetry -zip $zip -sourcePath $f.FullName -entryName $rel
     }
   }
   finally {

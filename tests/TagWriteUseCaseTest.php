@@ -21,6 +21,15 @@ use PHPUnit\Framework\TestCase;
 
 final class TagWriteUseCaseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Unit suite MUST NOT hard-fail if PDO driver is missing on the host.
+        // DB-backed coverage belongs to the integration suite.
+        if (!\extension_loaded('pdo_pgsql')) {
+            $this->markTestSkipped('pdo_pgsql extension is not available on this PHP runtime.');
+        }
     public function testCreateTagMapsUniqueViolationToConflict(): void
     {
         $repo = new class implements TagEntityRepositoryInterface {

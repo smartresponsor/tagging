@@ -2,6 +2,8 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
+require_once __DIR__ . '/IntegrationDbTestCase.php';
+
 namespace Tests\Integration;
 
 use App\Infra\Outbox\OutboxPublisher;

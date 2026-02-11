@@ -36,7 +36,7 @@ resolve_script() {
     7) printf "%s" "$COMMANDING_SH_DIR/docker.sh" ;;
     8) printf "%s" "$COMMANDING_SH_DIR/migration.sh" ;;
     9) printf "%s" "$COMMANDING_SH_DIR/composer.sh" ;;
-    g|G) printf "%s" "$COMMANDING_DIR/git/commanding.sh" ;;
+    g|G) printf "%s" "$COMMANDING_DIR/sh/git.sh" ;;
     l|L) printf "%s" "$COMMANDING_SH_DIR/log.sh" ;;
     c|C) printf "%s" "$COMMANDING_SH_DIR/cache.sh" ;;
     d|D) printf "%s" "$COMMANDING_SH_DIR/dot.sh" ;;

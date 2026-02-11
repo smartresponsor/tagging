@@ -1,20 +1,44 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Service\Tag;
 
 use PDO;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
+
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class IdempotencyStore
 {
-    public function __construct(private PDO $pdo) {}
+    /**
+     * @param \PDO $pdo
+     */
+    /**
+     * @param \PDO $pdo
+     */
+    public function __construct(private readonly readonly PDO $pdo)
+    {
+    }
 
     /** @return array{state:string,result?:array<string,mixed>} state: fresh|duplicate */
     public function begin(string $tenant, string $key, string $op, string $checksum): array
     {
         // Check existing record
         $sel = $this->pdo->prepare('SELECT status, result_json FROM idempotency_store WHERE tenant=:t AND key=:k');
-        $sel->execute([':t'=>$tenant, ':k'=>$key]);
+        $sel->execute([':t' => $tenant, ':k' => $key]);
         $row = $sel->fetch(PDO::FETCH_ASSOC);
         if ($row) {
             // Optional checksum verification can be added here
@@ -27,7 +51,7 @@ final class IdempotencyStore
              VALUES (:t,:k,:op,:c,:st,CAST(:res AS jsonb))'
         );
         $ins->execute([
-            ':t'=>$tenant, ':k'=>$key, ':op'=>$op, ':c'=>$checksum, ':st'=>'pending', ':res'=>json_encode([]),
+            ':t' => $tenant, ':k' => $key, ':op' => $op, ':c' => $checksum, ':st' => 'pending', ':res' => json_encode([]),
         ]);
         return ['state' => 'fresh'];
     }
@@ -39,10 +63,10 @@ final class IdempotencyStore
             'UPDATE idempotency_store SET status=:st, result_json=CAST(:res AS jsonb) WHERE tenant=:t AND key=:k'
         );
         $upd->execute([
-            ':st'=>'done',
-            ':res'=>json_encode($result, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),
-            ':t'=>$tenant,
-            ':k'=>$key,
+            ':st' => 'done',
+            ':res' => json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            ':t' => $tenant,
+            ':k' => $key,
         ]);
     }
 }

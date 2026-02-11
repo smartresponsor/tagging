@@ -8,7 +8,7 @@ allowed_prefixes:
   - ""
 denied_prefixes:
   - "bad-"
-allowed_regex: []
+allowed_regex: [ ]
 denied_regex:
   - "^(test|tmp)-.*$"
 max_tags_per_entity: 250

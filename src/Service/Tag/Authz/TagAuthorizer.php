@@ -1,8 +1,16 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Service\Tag\Authz;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class TagAuthorizer
 {
     /** @var array<string, mixed> */
@@ -10,6 +18,9 @@ final class TagAuthorizer
     /** @var array<string, array<int, string>> */
     private array $ops;
 
+    /**
+     * @param array $cfg
+     */
     public function __construct(array $cfg)
     {
         $this->cfg = $cfg;
@@ -28,6 +39,11 @@ final class TagAuthorizer
         return false;
     }
 
+    /**
+     * @param string $method
+     * @param string $path
+     * @return string
+     */
     public function detectOp(string $method, string $path): string
     {
         // Explicit overrides first
@@ -39,7 +55,7 @@ final class TagAuthorizer
         }
         // Basic inference: GET=read, HEAD=read, others=write
         $m = strtoupper($method);
-        return in_array($m, ['GET','HEAD','OPTIONS'], true) ? 'read' : 'write';
+        return in_array($m, ['GET', 'HEAD', 'OPTIONS'], true) ? 'read' : 'write';
     }
 
     /** @return string[] */

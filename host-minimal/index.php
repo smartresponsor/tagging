@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /** @var array<string, callable():mixed> $container */
-$container = require __DIR__.'/bootstrap.php';
+$container = require __DIR__ . '/bootstrap.php';
 /** @var callable(array<string, callable():mixed>):callable(string,string,array<string,mixed>):array{0:int,1:array<string,string>,2:string} $routerFactory */
-$routerFactory = require __DIR__.'/route.php';
+$routerFactory = require __DIR__ . '/route.php';
 $dispatch = $routerFactory($container);
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -16,7 +16,7 @@ $norm = $container['idempotencyMiddleware']()->normalize($_SERVER, $_GET, $rawBo
 
 http_response_code($code);
 foreach ($headers as $name => $value) {
-    header($name.': '.$value);
+    header($name . ': ' . $value);
 }
 
 echo $body;

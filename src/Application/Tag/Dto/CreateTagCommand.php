@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace App\Application\Tag\Dto;
 
-final class CreateTagCommand
+/**
+ *
+ */
+
+/**
+ *
+ */
+final readonly class CreateTagCommand
 {
     /** @param array<string,mixed> $payload */
     public function __construct(
-        public readonly string $tenant,
-        public readonly array $payload,
-    ) {
+        public string $tenant,
+        public array  $payload,
+    )
+    {
     }
 }

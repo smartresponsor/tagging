@@ -1,16 +1,29 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Http\Tag;
 
-use App\Service\Tag\{AssignService,UnassignService};
+use App\Service\Tag\{AssignService, UnassignService};
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class AssignController
 {
     /** @var string[] */
     private array $allowedTypes;
 
-    public function __construct(private AssignService $assign, private UnassignService $unassign, array $cfg = [])
+    /**
+     * @param \App\Service\Tag\AssignService $assign
+     * @param \App\Service\Tag\UnassignService $unassign
+     * @param array $cfg
+     */
+    public function __construct(private readonly AssignService $assign, private readonly UnassignService $unassign, array $cfg = [])
     {
         $types = $cfg['entity_types'] ?? ['*'];
         if (!is_array($types)) $types = ['*'];
@@ -36,7 +49,7 @@ final class AssignController
 
         $idem = (string)($req['idemKey'] ?? '');
         $res = $this->assign->assign($tenant, $tagId, $etype, $eid, $idem ?: null);
-        return self::ok(['ok'=>$res['ok'] ?? false, 'duplicated'=>$res['duplicated'] ?? false]);
+        return self::ok(['ok' => $res['ok'] ?? false, 'duplicated' => $res['duplicated'] ?? false]);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
@@ -51,7 +64,7 @@ final class AssignController
 
         $idem = (string)($req['idemKey'] ?? '');
         $res = $this->unassign->unassign($tenant, $tagId, $etype, $eid, $idem ?: null);
-        return self::ok(['ok'=>$res['ok'] ?? false, 'not_found'=>$res['not_found'] ?? false]);
+        return self::ok(['ok' => $res['ok'] ?? false, 'not_found' => $res['not_found'] ?? false]);
     }
 
     /**
@@ -73,26 +86,33 @@ final class AssignController
         $errors = 0;
 
         foreach ($ops as $op) {
-            if (!is_array($op)) { $errors++; continue; }
+            if (!is_array($op)) {
+                $errors++;
+                continue;
+            }
             $optype = (string)($op['op'] ?? '');
             $tagId = (string)($op['tagId'] ?? ($op['tag_id'] ?? ''));
             [$etype, $eid] = $this->readEntity($op);
             $idem = (string)($op['idem'] ?? '');
 
-            if ($optype === '' || $tagId === '' || $etype === '' || $eid === '') { $errors++; continue; }
+            if ($optype === '' || $tagId === '' || $etype === '' || $eid === '') {
+                $errors++;
+                continue;
+            }
 
             if ($optype === 'assign') {
                 $r = $this->assign->assign($tenant, $tagId, $etype, $eid, $idem ?: null);
             } elseif ($optype === 'unassign') {
                 $r = $this->unassign->unassign($tenant, $tagId, $etype, $eid, $idem ?: null);
             } else {
-                $errors++; continue;
+                $errors++;
+                continue;
             }
 
             $done += ($r['ok'] ?? false) ? 1 : 0;
         }
 
-        return self::ok(['done'=>$done,'errors'=>$errors]);
+        return self::ok(['done' => $done, 'errors' => $errors]);
     }
 
     /**
@@ -119,14 +139,18 @@ final class AssignController
         foreach ($tagIds as $tagId) {
             $tagId = (string)$tagId;
             if ($tagId === '') continue;
-            $r = $this->assign->assign($tenant, $tagId, $etype, $eid, null);
+            $r = $this->assign->assign($tenant, $tagId, $etype, $eid);
             $ok += ($r['ok'] ?? false) ? 1 : 0;
         }
 
-        return self::ok(['ok'=>true,'assigned'=>$ok]);
+        return self::ok(['ok' => true, 'assigned' => $ok]);
     }
 
 
+    /**
+     * @param string $etype
+     * @return bool
+     */
     private function isAllowedType(string $etype): bool
     {
         if ($etype === '') return false;
@@ -134,6 +158,10 @@ final class AssignController
         return in_array($etype, $this->allowedTypes, true);
     }
 
+    /**
+     * @param string $etype
+     * @return string
+     */
     private static function normalizeEntityType(string $etype): string
     {
         $etype = strtolower(trim($etype));
@@ -142,6 +170,10 @@ final class AssignController
         return $etype;
     }
 
+    /**
+     * @param string $eid
+     * @return string
+     */
     private static function normalizeEntityId(string $eid): string
     {
         $eid = trim($eid);
@@ -152,19 +184,23 @@ final class AssignController
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     private static function ok(array $body): array
-    { return [200, ['Content-Type'=>'application/json'], json_encode($body)]; }
+    {
+        return [200, ['Content-Type' => 'application/json'], json_encode($body)];
+    }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     private static function bad(string $code): array
-    { return [400, ['Content-Type'=>'application/json'], json_encode(['code'=>$code])]; }
+    {
+        return [400, ['Content-Type' => 'application/json'], json_encode(['code' => $code])];
+    }
 
     /** @return array{0:string,1:string} */
     private function readEntity(array $body): array
     {
         $etypeRaw = (string)($body['entityType'] ?? ($body['entity_type'] ?? ''));
-        $eidRaw   = (string)($body['entityId']   ?? ($body['entity_id'] ?? ''));
+        $eidRaw = (string)($body['entityId'] ?? ($body['entity_id'] ?? ''));
         $etype = self::normalizeEntityType($etypeRaw);
-        $eid   = self::normalizeEntityId($eidRaw);
+        $eid = self::normalizeEntityId($eidRaw);
         if ($etype === '' || $eid === '') return ['', ''];
         if (!$this->isAllowedType($etype)) return ['', ''];
         return [$etype, $eid];

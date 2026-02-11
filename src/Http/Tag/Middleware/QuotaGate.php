@@ -4,11 +4,25 @@ declare(strict_types=1);
 
 namespace App\Http\Tag\Middleware;
 
+use App\Ops\Metrics\TagMetrics;
 use App\Service\Tag\RateLimiter;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class QuotaGate
 {
-    public function __construct(private RateLimiter $limiter, private array $cfg = []) {}
+    /**
+     * @param \App\Service\Tag\RateLimiter $limiter
+     * @param array $cfg
+     */
+    public function __construct(private readonly RateLimiter $limiter, private readonly array $cfg = [])
+    {
+    }
 
     /** @param array{method:string,path:string,headers:array,body:string} $req */
     public function handle(array $req, callable $next): array
@@ -63,6 +77,10 @@ final class QuotaGate
         return $next($req);
     }
 
+    /**
+     * @param string $path
+     * @return bool
+     */
     private function isProtected(string $path): bool
     {
         $ignore = $this->cfg['paths']['ignore'] ?? ['/tag/_status', '/tag/_metrics'];
@@ -80,6 +98,11 @@ final class QuotaGate
         return false;
     }
 
+    /**
+     * @param string $pat
+     * @param string $path
+     * @return bool
+     */
     private function match(string $pat, string $path): bool
     {
         $re = preg_quote($pat, '#');
@@ -88,26 +111,40 @@ final class QuotaGate
         return (bool)preg_match($re, $path);
     }
 
+    /**
+     * @param string $method
+     * @param string $path
+     * @return string
+     */
     private function routeKey(string $method, string $path): string
     {
         $norm = preg_replace('#/[A-Za-z0-9_-]+#', '/:id', $path, 1);
         return strtoupper($method) . ' ' . $norm;
     }
 
+    /**
+     * @param string $path
+     * @return string
+     */
     private function opFromPath(string $path): string
     {
         if (preg_match('#^/tag/[^/]+/assign$#', $path)) {
             return 'assign';
         }
-        if (preg_match('#^/tag/assign-bulk$#', $path)) {
+        if ($path === '/tag/assign-bulk') {
             return 'assign';
         }
-        if (preg_match('#^/tag/search#', $path)) {
+        if (str_starts_with($path, '/tag/search')) {
             return 'search';
         }
         return 'other';
     }
 
+    /**
+     * @param int $retryAfter
+     * @param string $code
+     * @return array
+     */
     private function tooMany(int $retryAfter, string $code): array
     {
         return [
@@ -117,12 +154,17 @@ final class QuotaGate
         ];
     }
 
+    /**
+     * @param string $name
+     * @param array $labels
+     * @return void
+     */
     private function bumpMetric(string $name, array $labels): void
     {
         if (class_exists('App\\Ops\\Metrics\\TagMetrics')) {
-            $exp = \App\Ops\Metrics\TagMetrics::exporter();
+            $exp = TagMetrics::exporter();
             if (method_exists($exp, 'inc')) {
-                $exp->inc($name, $labels, 1);
+                $exp->inc($name, $labels);
             }
         }
     }

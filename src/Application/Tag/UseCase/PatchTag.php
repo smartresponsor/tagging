@@ -10,14 +10,30 @@ use App\Application\Tag\Dto\TagResult;
 use App\ServiceInterface\Tag\TagEntityRepositoryInterface;
 use App\ServiceInterface\Tag\TransactionRunnerInterface;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class PatchTag
 {
+    /**
+     * @param \App\ServiceInterface\Tag\TagEntityRepositoryInterface $repo
+     * @param \App\ServiceInterface\Tag\TransactionRunnerInterface $transaction
+     */
     public function __construct(
-        private TagEntityRepositoryInterface $repo,
-        private TransactionRunnerInterface $transaction,
-    ) {
+        private readonly TagEntityRepositoryInterface $repo,
+        private readonly TransactionRunnerInterface   $transaction,
+    )
+    {
     }
 
+    /**
+     * @param \App\Application\Tag\Dto\PatchTagCommand $command
+     * @return \App\Application\Tag\Dto\TagResult
+     */
     public function execute(PatchTagCommand $command): TagResult
     {
         if ($command->tenant === '') {
@@ -41,7 +57,8 @@ final class PatchTag
     }
 
     /** @param array<string,mixed> $payload
-     * @return array{name?:string,locale?:string,weight?:int}|null */
+     * @return array{name?:string,locale?:string,weight?:int}|null
+     */
     private function normalizePatch(array $payload): ?array
     {
         $patch = [];

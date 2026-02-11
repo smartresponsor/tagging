@@ -1,15 +1,34 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Domain\Event;
 
-final class TagAssigned
+use DateTimeImmutable;
+
+/**
+ *
+ */
+
+/**
+ *
+ */
+final readonly class TagAssigned
 {
+    /**
+     * @param string $tenant
+     * @param string $tagId
+     * @param string $entityType
+     * @param string $entityId
+     * @param \DateTimeImmutable $at
+     */
     public function __construct(
-        public readonly string $tenant,
-        public readonly string $tagId,
-        public readonly string $entityType,
-        public readonly string $entityId,
-        public readonly \DateTimeImmutable $at
-    ) {}
+        public string             $tenant,
+        public string             $tagId,
+        public string             $entityType,
+        public string             $entityId,
+        public DateTimeImmutable $at
+    )
+    {
+    }
 }

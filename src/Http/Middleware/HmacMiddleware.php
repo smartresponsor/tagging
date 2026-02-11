@@ -1,10 +1,23 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class HmacMiddleware
 {
+    /**
+     * @param array $headers
+     * @param string $rawBody
+     * @return bool
+     */
     public function verify(array $headers, string $rawBody): bool
     {
         $secret = getenv('SR_HMAC_SECRET') ?: '';
@@ -20,7 +33,7 @@ final class HmacMiddleware
         $nonce = $normalized['x-sr-nonce'] ?? '';
         $sig = $normalized['x-sr-signature'] ?? '';
         if ($nonce === '' || $sig === '') return false;
-        $calc = base64_encode(hash_hmac('sha256', $nonce.'|'.$rawBody, $secret, true));
+        $calc = base64_encode(hash_hmac('sha256', $nonce . '|' . $rawBody, $secret, true));
         return hash_equals($calc, $sig);
     }
 }

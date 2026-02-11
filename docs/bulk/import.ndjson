@@ -1,3 +1,32 @@
-{"label":"red","slug":"red","synonyms":["crimson","scarlet"],"assign":[{"type":"product","id":"p1"}]}
-{"label":"green","assign":[{"type":"product","id":"p2"}]}
-{"label":"blue","relations":[{"toTagId":"$ID_RED","type":"related"}]}
+{
+  "label": "red",
+  "slug": "red",
+  "synonyms": [
+    "crimson",
+    "scarlet"
+  ],
+  "assign": [
+    {
+      "type": "product",
+      "id": "p1"
+    }
+  ]
+}
+{
+  "label": "green",
+  "assign": [
+    {
+      "type": "product",
+      "id": "p2"
+    }
+  ]
+}
+{
+  "label": "blue",
+  "relations": [
+    {
+      "toTagId": "$ID_RED",
+      "type": "related"
+    }
+  ]
+}

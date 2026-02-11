@@ -1,11 +1,26 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Service\Tag;
 
-final class TagConfig {
+/**
+ *
+ */
+
+/**
+ *
+ */
+final readonly class TagConfig
+{
+    /**
+     * @param int $maxTagLength
+     * @param int $defaultMaxTagsPerEntity
+     */
     public function __construct(
-        public readonly int $maxTagLength = 255,
-        public readonly int $defaultMaxTagsPerEntity = 250
-    ){}
+        public int $maxTagLength = 255,
+        public int $defaultMaxTagsPerEntity = 250
+    )
+    {
+    }
 }

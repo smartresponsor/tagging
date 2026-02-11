@@ -10,14 +10,30 @@ use App\Application\Tag\Dto\TagResult;
 use App\ServiceInterface\Tag\TagEntityRepositoryInterface;
 use App\ServiceInterface\Tag\TransactionRunnerInterface;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class DeleteTag
 {
+    /**
+     * @param \App\ServiceInterface\Tag\TagEntityRepositoryInterface $repo
+     * @param \App\ServiceInterface\Tag\TransactionRunnerInterface $transaction
+     */
     public function __construct(
-        private TagEntityRepositoryInterface $repo,
-        private TransactionRunnerInterface $transaction,
-    ) {
+        private readonly TagEntityRepositoryInterface $repo,
+        private readonly TransactionRunnerInterface   $transaction,
+    )
+    {
     }
 
+    /**
+     * @param \App\Application\Tag\Dto\DeleteTagCommand $command
+     * @return \App\Application\Tag\Dto\TagResult
+     */
     public function execute(DeleteTagCommand $command): TagResult
     {
         if ($command->tenant === '') {

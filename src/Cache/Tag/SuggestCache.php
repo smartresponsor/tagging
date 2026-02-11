@@ -1,15 +1,31 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Cache\Tag;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class SuggestCache
 {
-    public function __construct(private string $dir = 'var/cache/tag-suggest', private int $ttl = 60)
+    /**
+     * @param string $dir
+     * @param int $ttl
+     */
+    public function __construct(private readonly string $dir = 'var/cache/tag-suggest', private readonly int $ttl = 60)
     {
         if (!is_dir($this->dir)) @mkdir($this->dir, 0777, true);
     }
 
+    /**
+     * @param string $value
+     * @return string
+     */
     private function safeSegment(string $value): string
     {
         $normalized = strtolower(trim($value));
@@ -17,10 +33,16 @@ final class SuggestCache
         return trim($safe, '-') ?: 'tenant';
     }
 
+    /**
+     * @param string $tenant
+     * @param string $q
+     * @param int $limit
+     * @return string
+     */
     private function key(string $tenant, string $q, int $limit): string
     {
         $norm = strtolower(trim($q));
-        $hash = sha1($tenant.'|'.$norm.'|'.$limit);
+        $hash = sha1($tenant . '|' . $norm . '|' . $limit);
         $tenantSafe = $this->safeSegment($tenant);
         $querySafe = $this->safeSegment($norm);
         return $this->dir . DIRECTORY_SEPARATOR . $tenantSafe . '__q_' . $querySafe . '__' . $hash . '.json';
@@ -30,16 +52,19 @@ final class SuggestCache
     public function get(string $tenant, string $q, int $limit): array
     {
         $file = $this->key($tenant, $q, $limit);
-        if (!is_file($file)) return ['hit'=>false];
-        if (filemtime($file) + $this->ttl < time()) { @unlink($file); return ['hit'=>false]; }
+        if (!is_file($file)) return ['hit' => false];
+        if (filemtime($file) + $this->ttl < time()) {
+            @unlink($file);
+            return ['hit' => false];
+        }
         $raw = file_get_contents($file);
-        return ['hit'=>true, 'data'=> json_decode($raw ?: "{}", true) ?: []];
+        return ['hit' => true, 'data' => json_decode($raw ?: '{}', true) ?: []];
     }
 
     /** @param array<string,mixed> $data */
     public function set(string $tenant, string $q, int $limit, array $data): void
     {
         $file = $this->key($tenant, $q, $limit);
-        file_put_contents($file, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+        file_put_contents($file, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
 }

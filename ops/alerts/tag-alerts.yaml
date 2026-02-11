@@ -1,27 +1,27 @@
 groups:
-- name: tag-slo.rules
-  interval: 30s
-  rules:
-  - alert: TagHighLatencyP95Read
-    expr: histogram_quantile(0.95, sum(rate(tag_http_request_duration_seconds_bucket{route=~"/tag/.+",method="GET"}[5m])) by (le)) > 0.25
-    for: 5m
-    labels: {severity: warning}
-    annotations:
-      summary: "Tag read p95 > 250ms"
-      description: "Read p95 latency above 250ms for 5m window."
+  - name: tag-slo.rules
+    interval: 30s
+    rules:
+      - alert: TagHighLatencyP95Read
+        expr: histogram_quantile(0.95, sum(rate(tag_http_request_duration_seconds_bucket{route=~"/tag/.+",method="GET"}[5m])) by (le)) > 0.25
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Tag read p95 > 250ms"
+          description: "Read p95 latency above 250ms for 5m window."
 
-  - alert: TagHighErrorRate
-    expr: (sum(rate(tag_http_requests_total{status=~"5..|4.."}[5m])) / ignoring(status) sum(rate(tag_http_requests_total[5m]))) > 0.005
-    for: 5m
-    labels: {severity: critical}
-    annotations:
-      summary: "Tag error rate > 0.5%"
-      description: "Error budget is burning; investigate."
+      - alert: TagHighErrorRate
+        expr: (sum(rate(tag_http_requests_total{status=~"5..|4.."}[5m])) / ignoring(status) sum(rate(tag_http_requests_total[5m]))) > 0.005
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "Tag error rate > 0.5%"
+          description: "Error budget is burning; investigate."
 
-  - alert: TagRateLimitExceeded
-    expr: sum(rate(tag_quota_rate_limit_exceeded_total[1m])) > 0
-    for: 2m
-    labels: {severity: info}
-    annotations:
-      summary: "Tag rate limit events seen"
-      description: "Requests are being throttled; check quotas."
+      - alert: TagRateLimitExceeded
+        expr: sum(rate(tag_quota_rate_limit_exceeded_total[1m])) > 0
+        for: 2m
+        labels: { severity: info }
+        annotations:
+          summary: "Tag rate limit events seen"
+          description: "Requests are being throttled; check quotas."

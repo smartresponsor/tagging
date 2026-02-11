@@ -12,15 +12,32 @@ use App\ServiceInterface\Tag\TagEntityRepositoryInterface;
 use App\ServiceInterface\Tag\TransactionRunnerInterface;
 use PDOException;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class CreateTag
 {
+    /**
+     * @param \App\ServiceInterface\Tag\TagEntityRepositoryInterface $repo
+     * @param \App\Service\Tag\Slug\SlugPolicy $slugPolicy
+     * @param \App\ServiceInterface\Tag\TransactionRunnerInterface $transaction
+     */
     public function __construct(
-        private TagEntityRepositoryInterface $repo,
-        private SlugPolicy $slugPolicy,
-        private TransactionRunnerInterface $transaction,
-    ) {
+        private readonly TagEntityRepositoryInterface $repo,
+        private readonly SlugPolicy                   $slugPolicy,
+        private readonly TransactionRunnerInterface   $transaction,
+    )
+    {
     }
 
+    /**
+     * @param \App\Application\Tag\Dto\CreateTagCommand $command
+     * @return \App\Application\Tag\Dto\TagResult
+     */
     public function execute(CreateTagCommand $command): TagResult
     {
         if ($command->tenant === '') {
@@ -66,6 +83,10 @@ final class CreateTag
         }
     }
 
+    /**
+     * @return string
+     * @throws \Random\RandomException
+     */
     private function ulid(): string
     {
         return substr(strtoupper(bin2hex(random_bytes(13))), 0, 26);

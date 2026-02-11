@@ -4,7 +4,10 @@
   "license": "proprietary",
   "require": {
     "php": "^8.2",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "ext-curl": "*",
+    "ext-mbstring": "*",
+    "ext-ctype": "*"
   },
   "autoload": {
     "psr-4": {

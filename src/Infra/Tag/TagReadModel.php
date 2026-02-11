@@ -1,13 +1,27 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Infra\Tag;
 
+use Locale;
 use PDO;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class TagReadModel
 {
-    public function __construct(private PDO $pdo) {}
+    /**
+     * @param \PDO $pdo
+     */
+    public function __construct(private readonly PDO $pdo)
+    {
+    }
 
     /** @return array<int, array{id:string,slug:string,name:string,locale:?string,weight:int}> */
     public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array

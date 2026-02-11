@@ -1,6 +1,7 @@
 # Tag Demo Seed
 
 ## Run
+
 ```bash
 export DB_DSN="pgsql:host=localhost;port=5432;dbname=app"
 export DB_USER="app"
@@ -10,6 +11,7 @@ php tools/seed/tag-seed.php
 ```
 
 ## Clear
+
 ```bash
 php tools/seed/tag-clear.php
 ```

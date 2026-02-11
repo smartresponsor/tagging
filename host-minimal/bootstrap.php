@@ -2,17 +2,30 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-use App\Application\Tag\UseCase\{CreateTag,DeleteTag,PatchTag};
-use App\Cache\Tag\{SearchCache,SuggestCache};
+use App\Application\Tag\UseCase\{CreateTag, DeleteTag, PatchTag};
+use App\Cache\Tag\{SearchCache, SuggestCache};
 use App\Http\Middleware\IdempotencyMiddleware;
-use App\Http\Tag\{AssignController,AssignmentReadController,RedirectController,SearchController,StatusController,SuggestController,SynonymController,TagController};
+use App\Http\Tag\{AssignController,
+    AssignmentReadController,
+    RedirectController,
+    SearchController,
+    StatusController,
+    SuggestController,
+    SynonymController,
+    TagController};
 use App\Http\Tag\Responder\TagWriteResponder;
 use App\Infra\Outbox\OutboxPublisher;
-use App\Infra\Tag\{PdoTagEntityRepository,TagReadModel};
-use App\Service\Tag\{AssignService,IdempotencyStore,PdoTransactionRunner,SearchService,SuggestService,TagEntityService,UnassignService};
-use App\Service\Tag\Slug\{Slugifier,SlugPolicy};
+use App\Infra\Tag\{PdoTagEntityRepository, TagReadModel};
+use App\Service\Tag\{AssignService,
+    IdempotencyStore,
+    PdoTransactionRunner,
+    SearchService,
+    SuggestService,
+    TagEntityService,
+    UnassignService};
+use App\Service\Tag\Slug\{Slugifier, SlugPolicy};
 
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
  * @return array<string, callable(): mixed>
@@ -38,15 +51,15 @@ return (static function (): array {
         };
     };
 
-    $pdo = $shared(static fn (): PDO => new PDO(
+    $pdo = $shared(static fn(): PDO => new PDO(
         getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app',
         getenv('DB_USER') ?: 'app',
         getenv('DB_PASS') ?: 'app',
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     ));
 
-    $idempotencyMiddleware = $shared(static fn (): IdempotencyMiddleware => new IdempotencyMiddleware());
-    $statusController = $shared(static fn (): StatusController => new StatusController());
+    $idempotencyMiddleware = $shared(static fn(): IdempotencyMiddleware => new IdempotencyMiddleware());
+    $statusController = $shared(static fn(): StatusController => new StatusController());
 
     $tagController = $shared(static function () use ($pdo): TagController {
         $slugifier = new Slugifier();
@@ -61,7 +74,7 @@ return (static function (): array {
         return new TagController($tagSvc, $createTag, $patchTag, $deleteTag, new TagWriteResponder());
     });
 
-    $tagReadModel = $shared(static fn (): TagReadModel => new TagReadModel($pdo()));
+    $tagReadModel = $shared(static fn(): TagReadModel => new TagReadModel($pdo()));
 
     $assignController = $shared(static function () use ($pdo): AssignController {
         $outbox = new OutboxPublisher($pdo());
@@ -70,7 +83,7 @@ return (static function (): array {
         $unassignSvc = new UnassignService($pdo(), $outbox, $idemStore);
 
         $typesEnv = getenv('TAG_ENTITY_TYPES') ?: '*';
-        $types = array_values(array_filter(array_map('trim', explode(',', $typesEnv)), static fn ($v): bool => $v !== ''));
+        $types = array_values(array_filter(array_map('trim', explode(',', $typesEnv)), static fn($v): bool => $v !== ''));
         if ($types === []) {
             $types = ['*'];
         }
@@ -88,9 +101,9 @@ return (static function (): array {
         return new SuggestController($suggestSvc);
     });
 
-    $assignmentReadController = $shared(static fn (): AssignmentReadController => new AssignmentReadController($tagReadModel()));
-    $synonymController = $shared(static fn (): SynonymController => new SynonymController());
-    $redirectController = $shared(static fn (): RedirectController => new RedirectController());
+    $assignmentReadController = $shared(static fn(): AssignmentReadController => new AssignmentReadController($tagReadModel()));
+    $synonymController = $shared(static fn(): SynonymController => new SynonymController());
+    $redirectController = $shared(static fn(): RedirectController => new RedirectController());
 
     return [
         'idempotencyMiddleware' => $idempotencyMiddleware,

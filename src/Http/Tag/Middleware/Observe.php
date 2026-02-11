@@ -1,14 +1,32 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Http\Tag\Middleware;
 
 use App\Service\Tag\Metric\TagMetrics;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class Observe
 {
-    public function __construct(private array $cfg){}
+    /**
+     * @param array $cfg
+     */
+    public function __construct(private readonly array $cfg)
+    {
+    }
 
+    /**
+     * @param array $request
+     * @param callable $next
+     * @return array
+     */
     public function handle(array $request, callable $next): array
     {
         $t0 = microtime(true);
@@ -17,22 +35,22 @@ final class Observe
 
         $code = (int)($resp[0] ?? 200);
         $method = strtoupper((string)($request['method'] ?? 'GET'));
-        $path   = (string)($request['path'] ?? '/');
-        $op = in_array($method, ['GET','HEAD','OPTIONS'], true) ? 'read' : 'write';
+        $path = (string)($request['path'] ?? '/');
+        $op = in_array($method, ['GET', 'HEAD', 'OPTIONS'], true) ? 'read' : 'write';
         $ms = (int)round(1000.0 * ($t1 - $t0));
 
         // latency summary
-        TagMetrics::observe('tag_request_latency_seconds', $ms / 1000.0, ['op'=>$op]);
+        TagMetrics::observe('tag_request_latency_seconds', $ms / 1000.0, ['op' => $op]);
 
         // error class counters
         if ($code >= 500) {
-            TagMetrics::inc('tag_error_total', 1.0, ['op'=>$op, 'cls'=>'5xx']);
+            TagMetrics::inc('tag_error_total', 1.0, ['op' => $op, 'cls' => '5xx']);
         } elseif ($code >= 400) {
-            TagMetrics::inc('tag_error_total', 1.0, ['op'=>$op, 'cls'=>'4xx']);
+            TagMetrics::inc('tag_error_total', 1.0, ['op' => $op, 'cls' => '4xx']);
         }
 
         // slowlog
-        $thr = (int)($this->cfg['threshold_ms'][$op] ?? ($op==='read' ? 500 : 1000));
+        $thr = (int)($this->cfg['threshold_ms'][$op] ?? ($op === 'read' ? 500 : 1000));
         if ($ms > $thr) {
             $line = json_encode([
                 'ts' => gmdate('c'),
@@ -41,7 +59,7 @@ final class Observe
                 'code' => $code,
                 'path' => $path,
                 'method' => $method,
-            ], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
             if ($line !== false) {
                 $pathFile = (string)($this->cfg['slowlog_path'] ?? 'report/tag/slowlog.ndjson');
                 $dir = dirname($pathFile);

@@ -3,7 +3,10 @@ POST http://localhost:8080/tag
 X-Tenant-Id: demo
 Content-Type: application/json
 
-{ "name":"Summer Sale 2026","weight":10 }
+{
+  "name": "Summer Sale 2026",
+  "weight": 10
+}
 
 ### get
 GET http://localhost:8080/tag/01HTESTASSIGN00000000000000
@@ -15,4 +18,7 @@ X-Tenant-Id: demo
 X-Idempotency-Key: op-1
 Content-Type: application/json
 
-{ "entity_type":"product","entity_id":"p-1001" }
+{
+  "entity_type": "product",
+  "entity_id": "p-1001"
+}

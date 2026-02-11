@@ -7,6 +7,13 @@ namespace App\Http\Tag\Responder;
 use App\Application\Tag\Dto\TagError;
 use App\Application\Tag\Dto\TagResult;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class TagWriteResponder
 {
     /** @return array{0:int,1:array<string,string>,2:string} */
@@ -25,7 +32,6 @@ final class TagWriteResponder
         }
 
         $status = match ($result->error) {
-            TagError::InvalidTenant, TagError::ValidationFailed => 400,
             TagError::NotFound => 404,
             TagError::Conflict => 409,
             default => 400,

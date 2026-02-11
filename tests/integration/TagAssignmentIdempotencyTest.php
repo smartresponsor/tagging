@@ -10,8 +10,18 @@ use App\Infra\Outbox\OutboxPublisher;
 use App\Service\Tag\AssignService;
 use App\Service\Tag\IdempotencyStore;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class TagAssignmentIdempotencyTest extends IntegrationDbTestCase
 {
+    /**
+     * @return void
+     */
     public function testAssignWithSameIdempotencyKeyIsStableOnRepeat(): void
     {
         $pdo = self::pdo();
@@ -22,14 +32,14 @@ final class TagAssignmentIdempotencyTest extends IntegrationDbTestCase
         $first = $service->assign('tenant-idem', 'tag-idem', 'product', 'p-1001', 'idem-key-1');
         $second = $service->assign('tenant-idem', 'tag-idem', 'product', 'p-1001', 'idem-key-1');
 
-        $linkCount = (int) $pdo->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-idem'")->fetchColumn();
-        $outboxCount = (int) $pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-idem' AND topic='tag.assigned'")->fetchColumn();
+        $linkCount = (int)$pdo->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-idem'")->fetchColumn();
+        $outboxCount = (int)$pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-idem' AND topic='tag.assigned'")->fetchColumn();
         $status = $pdo->query("SELECT status FROM idempotency_store WHERE tenant='tenant-idem' AND key='idem-key-1'")->fetchColumn();
 
-        $this->assertSame(['ok' => true], $first);
-        $this->assertSame(['ok' => true, 'duplicated' => true], $second);
-        $this->assertSame(1, $linkCount);
-        $this->assertSame(1, $outboxCount);
-        $this->assertSame('done', $status);
+        static::assertSame(['ok' => true], $first);
+        static::assertSame(['ok' => true, 'duplicated' => true], $second);
+        static::assertSame(1, $linkCount);
+        static::assertSame(1, $outboxCount);
+        static::assertSame('done', $status);
     }
 }

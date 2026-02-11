@@ -10,8 +10,18 @@ use App\Infra\Outbox\OutboxPublisher;
 use App\Service\Tag\AssignService;
 use App\Service\Tag\IdempotencyStore;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class TenantIsolationTest extends IntegrationDbTestCase
 {
+    /**
+     * @return void
+     */
     public function testAssignRejectsCrossTenantTagAndKeepsWritesIsolated(): void
     {
         $pdo = self::pdo();
@@ -23,16 +33,16 @@ final class TenantIsolationTest extends IntegrationDbTestCase
         $ok = $service->assign('tenant-a', 'tag-a', 'product', 'p-1', 'idem-tenant-a-1');
         $crossTenant = $service->assign('tenant-a', 'tag-b', 'product', 'p-2', 'idem-tenant-a-2');
 
-        $tenantALinks = (int) $pdo->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-a'")->fetchColumn();
-        $tenantBLinks = (int) $pdo->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-b'")->fetchColumn();
-        $tenantAOutbox = (int) $pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.assigned'")->fetchColumn();
-        $tenantBOutbox = (int) $pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.assigned'")->fetchColumn();
+        $tenantALinks = (int)$pdo->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-a'")->fetchColumn();
+        $tenantBLinks = (int)$pdo->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-b'")->fetchColumn();
+        $tenantAOutbox = (int)$pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.assigned'")->fetchColumn();
+        $tenantBOutbox = (int)$pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.assigned'")->fetchColumn();
 
-        $this->assertSame(['ok' => true], $ok);
-        $this->assertSame(['ok' => false], $crossTenant);
-        $this->assertSame(1, $tenantALinks);
-        $this->assertSame(0, $tenantBLinks);
-        $this->assertSame(1, $tenantAOutbox);
-        $this->assertSame(0, $tenantBOutbox);
+        static::assertSame(['ok' => true], $ok);
+        static::assertSame(['ok' => false], $crossTenant);
+        static::assertSame(1, $tenantALinks);
+        static::assertSame(0, $tenantBLinks);
+        static::assertSame(1, $tenantAOutbox);
+        static::assertSame(0, $tenantBOutbox);
     }
 }

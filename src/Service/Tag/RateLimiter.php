@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service\Tag;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class RateLimiter
 {
     /** @var array<string,array{tokens:float,ts:float,burst:int,rps:float}> */

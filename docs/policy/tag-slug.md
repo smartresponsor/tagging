@@ -6,11 +6,12 @@
 - Conflict resolution: numeric suffix `-2`, `-3`, … with safe truncate to max_length.
 
 ## Examples
-| source                         | slug             |
-|--------------------------------|------------------|
-| "Зелений чай"                  | zelenyi-chai     |
-| "Тестовый тег"                 | testovyi-teg     |
-| "Admin"                        | admin-x          |
-| "summer-sale" (duplicate #2)   | summer-sale-2    |
+
+| source                       | slug          |
+|------------------------------|---------------|
+| "Зелений чай"                | zelenyi-chai  |
+| "Тестовый тег"               | testovyi-teg  |
+| "Admin"                      | admin-x       |
+| "summer-sale" (duplicate #2) | summer-sale-2 |
 
 Generated: 2025-10-27T20:54:00.843306

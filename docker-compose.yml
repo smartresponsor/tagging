@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
       POSTGRES_DB: ${POSTGRES_DB:-app}
       POSTGRES_USER: ${POSTGRES_USER:-app}
-    ports: ["5432:5432"]
+    ports: [ "5432:5432" ]
     volumes:
       - dbdata:/var/lib/postgresql/data
 
@@ -18,7 +18,7 @@ services:
       DB_USER: ${POSTGRES_USER:-app}
       DB_PASS: ${POSTGRES_PASSWORD:-app}
       TENANT: ${TENANT:-demo}
-    ports: ["${PORT:-8080}:8080"]
+    ports: [ "${PORT:-8080}:8080" ]
     volumes:
       - ${SRC_ROOT:-./bundle}/host-minimal:/app/host-minimal:ro
       - ${SRC_ROOT:-./bundle}/config:/app/config:ro
@@ -28,7 +28,7 @@ services:
     depends_on:
       - db
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/tag/search?q=s || exit 1"]
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/tag/search?q=s || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 15

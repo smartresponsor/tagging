@@ -33,11 +33,11 @@ Prereqs:
 
 - `composer install`
 
-2) Apply migrations (example using psql):
+1) Apply migrations (example using psql):
 
 - `psql "$DB_DSN" -U "$DB_USER" -f db/postgres/migrations/2025_10_27_tag.sql`
 
-3) Run:
+1) Run:
 
 - `php -S 127.0.0.1:8080 host-minimal/index.php`
 
@@ -48,18 +48,17 @@ Environment variables used by code:
 - `SR_HMAC_SECRET` (optional; enable signature verification)
 - `TAG_BASE_URL` (optional; used for webhooks/redirect URLs)
 
-
 ## Integration tests (Postgres harness)
 
 1) Start isolated Postgres test DB:
 
 - `tools/test-db-start.sh`
 
-2) Export environment values from the script output and run integration suite:
+1) Export environment values from the script output and run integration suite:
 
 - `vendor/bin/phpunit --testsuite integration`
 
-3) Stop and cleanup test DB:
+1) Stop and cleanup test DB:
 
 - `tools/test-db-stop.sh`
 

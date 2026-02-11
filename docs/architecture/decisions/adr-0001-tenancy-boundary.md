@@ -4,7 +4,8 @@ Status: Accepted
 
 ## Context
 
-The schema is tenant-centric, but some service/repository methods did not require tenant in the contract. This makes cross-tenant operations possible by mistake.
+The schema is tenant-centric, but some service/repository methods did not require tenant in the contract. This makes
+cross-tenant operations possible by mistake.
 
 ## Decision
 

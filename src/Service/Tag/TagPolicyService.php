@@ -1,17 +1,36 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Service\Tag;
 
 use App\ServiceInterface\Tag\TagRepositoryInterface as TagRepositoryContract;
+use InvalidArgumentException;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class TagPolicyService
 {
+    /**
+     * @param \App\Service\Tag\TagValidator $validator
+     * @param array $cfg
+     */
     public function __construct(
-        private TagValidator $validator,
-        private array $cfg // from config/tag_policy.yaml
-    ){}
+        private readonly TagValidator $validator,
+        private readonly array        $cfg // from config/tag_policy.yaml
+    )
+    {
+    }
 
+    /**
+     * @param string $input
+     * @return string
+     */
     public function normalizeSlug(string $input): string
     {
         $s = $this->validator->normalizeSlug($input);
@@ -19,16 +38,31 @@ final class TagPolicyService
         return $s;
     }
 
-    public function validateBeforeCreate(string $tenantId, TagRepositoryContract $repo, string $label, ?string $slug=null): void
+    /**
+     * @param string $tenantId
+     * @param \App\ServiceInterface\Tag\TagRepositoryInterface $repo
+     * @param string $label
+     * @param string|null $slug
+     * @return void
+     */
+    public function validateBeforeCreate(string $tenantId, TagRepositoryContract $repo, string $label, ?string $slug = null): void
     {
         $this->validator->validateLabel($label);
         $slug = $slug ?? $this->normalizeSlug($label);
         $this->applyRules($slug);
         $this->validator->validateSlug($slug);
-        $this->validator->ensureUniqueness($tenantId, $repo, $slug, null);
+        $this->validator->ensureUniqueness($tenantId, $repo, $slug);
     }
 
-    public function validateBeforeUpdate(string $tenantId, TagRepositoryContract $repo, string $tagId, string $label, ?string $slug=null): void
+    /**
+     * @param string $tenantId
+     * @param \App\ServiceInterface\Tag\TagRepositoryInterface $repo
+     * @param string $tagId
+     * @param string $label
+     * @param string|null $slug
+     * @return void
+     */
+    public function validateBeforeUpdate(string $tenantId, TagRepositoryContract $repo, string $tagId, string $label, ?string $slug = null): void
     {
         $this->validator->validateLabel($label);
         if ($slug !== null) {
@@ -39,20 +73,24 @@ final class TagPolicyService
         }
     }
 
+    /**
+     * @param string $slug
+     * @return void
+     */
     private function applyRules(string $slug): void
     {
         if (in_array($slug, $this->cfg['reserved_slugs'] ?? [], true)) {
-            throw new \InvalidArgumentException('slug_reserved');
+            throw new InvalidArgumentException('slug_reserved');
         }
         foreach (($this->cfg['denied_prefixes'] ?? []) as $p) {
             if ($p !== '' && str_starts_with($slug, $p)) {
-                throw new \InvalidArgumentException('slug_denied_prefix');
+                throw new InvalidArgumentException('slug_denied_prefix');
             }
         }
         foreach (($this->cfg['denied_regex'] ?? []) as $rx) {
-            if ($rx !== '' && @preg_match('/'.$rx.'/', $slug)) {
-                if (preg_match('/'.$rx.'/', $slug)) {
-                    throw new \InvalidArgumentException('slug_denied_regex');
+            if ($rx !== '' && @preg_match('/' . $rx . '/', $slug)) {
+                if (preg_match('/' . $rx . '/', $slug)) {
+                    throw new InvalidArgumentException('slug_denied_regex');
                 }
             }
         }

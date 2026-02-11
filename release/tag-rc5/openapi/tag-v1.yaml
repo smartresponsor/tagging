@@ -37,7 +37,7 @@ components:
   schemas:
     Tag:
       type: object
-      required: [id, slug, name, locale, weight]
+      required: [ id, slug, name, locale, weight ]
       properties:
         id: { type: string, description: ULID }
         slug: { type: string }
@@ -48,7 +48,7 @@ components:
         updatedAt: { type: string, format: date-time }
     TagCreate:
       type: object
-      required: [slug, name]
+      required: [ slug, name ]
       properties:
         slug: { type: string }
         name: { type: string }
@@ -62,11 +62,11 @@ components:
         weight: { type: integer }
     AssignRequest:
       type: object
-      required: [entity_type, entity_id]
+      required: [ entity_type, entity_id ]
       properties:
         entity_type:
           type: string
-          enum: [category, product, project, text]
+          enum: [ category, product, project, text ]
         entity_id: { type: string }
     SearchResponse:
       type: object
@@ -78,7 +78,7 @@ components:
         nextPageToken: { type: string, nullable: true }
     Error:
       type: object
-      required: [code, message]
+      required: [ code, message ]
       properties:
         code: { type: string }
         message: { type: string }
@@ -159,17 +159,17 @@ paths:
           application/json:
             schema:
               type: object
-              required: [operations]
+              required: [ operations ]
               properties:
                 operations:
                   type: array
                   items:
                     type: object
-                    required: [op, tag_id, entity_type, entity_id]
+                    required: [ op, tag_id, entity_type, entity_id ]
                     properties:
-                      op: { type: string, enum: [assign, unassign] }
+                      op: { type: string, enum: [ assign, unassign ] }
                       tag_id: { type: string }
-                      entity_type: { type: string, enum: [category, product, project, text] }
+                      entity_type: { type: string, enum: [ category, product, project, text ] }
                       entity_id: { type: string }
       responses:
         '200': { description: OK }

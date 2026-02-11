@@ -10,10 +10,27 @@ use App\Domain\Tag\TagRelation;
 use App\Domain\Tag\TagScheme;
 use App\Domain\Tag\TagSynonym;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 interface TagReadRepositoryInterface
 {
+    /**
+     * @param string $tenantId
+     * @param string $id
+     * @return \App\Domain\Tag\Tag|null
+     */
     public function getById(string $tenantId, string $id): ?Tag;
 
+    /**
+     * @param string $tenantId
+     * @param string $slug
+     * @return \App\Domain\Tag\Tag|null
+     */
     public function getBySlug(string $tenantId, string $slug): ?Tag;
 
     /** @return Tag[] */
@@ -28,6 +45,11 @@ interface TagReadRepositoryInterface
     /** @return TagRelation[] */
     public function listRelations(string $tenantId, string $tagId, ?string $type = null): array;
 
+    /**
+     * @param string $tenantId
+     * @param string $name
+     * @return \App\Domain\Tag\TagScheme|null
+     */
     public function getSchemeByName(string $tenantId, string $name): ?TagScheme;
 
     /** @return Tag[] */

@@ -1,79 +1,79 @@
 tag_create:
   path: /tag
   controller: App\Http\Tag\TagController::create
-  methods: [POST]
+  methods: [ POST ]
 
 tag_get:
   path: /tag/{id}
   controller: App\Http\Tag\TagController::get
-  methods: [GET]
+  methods: [ GET ]
 
 tag_patch:
   path: /tag/{id}
   controller: App\Http\Tag\TagController::patch
-  methods: [PATCH]
+  methods: [ PATCH ]
 
 tag_delete:
   path: /tag/{id}
   controller: App\Http\Tag\TagController::delete
-  methods: [DELETE]
+  methods: [ DELETE ]
 
 tag_assign:
   path: /tag/{id}/assign
   controller: App\Http\Tag\AssignController::assign
-  methods: [POST]
+  methods: [ POST ]
 
 tag_unassign:
   path: /tag/{id}/unassign
   controller: App\Http\Tag\AssignController::unassign
-  methods: [POST]
+  methods: [ POST ]
 
 tag_assign_bulk:
   path: /tag/assign-bulk
   controller: App\Http\Tag\AssignController::bulk
-  methods: [POST]
+  methods: [ POST ]
 
 tag_assignment_bulk:
   path: /tag/assignment/bulk
   controller: App\Http\Tag\AssignController::assignBulkToEntity
-  methods: [POST]
+  methods: [ POST ]
 
 tag_assignments:
   path: /tag/assignments
   controller: App\Http\Tag\AssignmentReadController::listByEntity
-  methods: [GET]
+  methods: [ GET ]
 
 tag_search:
   path: /tag/search
   controller: App\Http\Tag\SearchController::get
-  methods: [GET]
+  methods: [ GET ]
 
 tag_suggest:
   path: /tag/suggest
   controller: App\Http\Tag\SuggestController::get
-  methods: [GET]
+  methods: [ GET ]
 
 tag_synonym_list:
   path: /tag/{id}/synonym
   controller: App\Http\Tag\SynonymController::list
-  methods: [GET]
+  methods: [ GET ]
 
 tag_synonym_add:
   path: /tag/{id}/synonym
   controller: App\Http\Tag\SynonymController::add
-  methods: [POST]
+  methods: [ POST ]
 
 tag_synonym_remove:
   path: /tag/{id}/synonym
   controller: App\Http\Tag\SynonymController::remove
-  methods: [DELETE]
+  methods: [ DELETE ]
 
 tag_redirect_resolve:
   path: /tag/redirect/{fromId}
   controller: App\Http\Tag\RedirectController::resolve
-  methods: [GET]
+  methods: [ GET ]
 
 tag_status:
   path: /tag/_status
   controller: App\Http\Tag\StatusController::status
-  methods: [GET]
+  methods: [ GET ]

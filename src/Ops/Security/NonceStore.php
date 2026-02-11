@@ -1,14 +1,28 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Ops\Security;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class NonceStore
 {
     private string $dir;
     private int $ttl;
     private int $max;
-    public function __construct(string $dir='var/cache/nonce', int $ttlSec=300, int $max=100000)
+
+    /**
+     * @param string $dir
+     * @param int $ttlSec
+     * @param int $max
+     */
+    public function __construct(string $dir = 'var/cache/nonce', int $ttlSec = 300, int $max = 100000)
     {
         $this->dir = rtrim($dir, '/');
         $this->ttl = max(1, $ttlSec);
@@ -38,11 +52,20 @@ final class NonceStore
         return true;
     }
 
+    /**
+     * @param string $nonce
+     * @param int $ts
+     * @return string
+     */
     private function key(string $nonce, int $ts): string
     {
-        return substr(hash('sha256', $nonce . '|' . $ts, false), 0, 40);
+        return substr(hash('sha256', $nonce . '|' . $ts), 0, 40);
     }
 
+    /**
+     * @param int $now
+     * @return void
+     */
     private function gc(int $now): void
     {
         $files = @scandir($this->dir) ?: [];

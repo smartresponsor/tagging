@@ -1,6 +1,7 @@
 # Quotas & RateLimit
 
 ## Config
+
 See `config/tag_quota.yaml`.
 
 - **hard.per_tenant**: token bucket per tenant+route (rps, burst).
@@ -10,6 +11,7 @@ See `config/tag_quota.yaml`.
 - **retry_after_sec**: hint returned in `Retry-After` header on 429.
 
 ## Wiring (host-minimal example)
+
 ```php
 $cfg = yaml_parse_file(__DIR__.'/../config/tag_quota.yaml') ?: [];
 $mw = new App\Http\Tag\Middleware\QuotaGate(new App\Service\Tag\RateLimiter(), $cfg);
@@ -24,6 +26,7 @@ http_response_code($code); foreach ($hdr as $k=>$v){ header($k.': '.$v); } echo 
 ```
 
 ## Metrics
+
 - `tag_ratelimit_throttled_total{scope,route,tenant?}`
 - `tag_quota_exceeded_total{tenant,op}`
-(Requires A2 addon; otherwise counters are no-op.)
+  (Requires A2 addon; otherwise counters are no-op.)

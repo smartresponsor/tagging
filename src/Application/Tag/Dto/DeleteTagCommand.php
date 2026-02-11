@@ -4,11 +4,23 @@ declare(strict_types=1);
 
 namespace App\Application\Tag\Dto;
 
-final class DeleteTagCommand
+/**
+ *
+ */
+
+/**
+ *
+ */
+final readonly class DeleteTagCommand
 {
+    /**
+     * @param string $tenant
+     * @param string $id
+     */
     public function __construct(
-        public readonly string $tenant,
-        public readonly string $id,
-    ) {
+        public string $tenant,
+        public string $id,
+    )
+    {
     }
 }

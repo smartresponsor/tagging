@@ -1,20 +1,35 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Service\Tag\Slug;
 
 use PDO;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class SlugPolicy
 {
     /** @param list<string> $reserved */
     public function __construct(
-        private PDO $pdo,
-        private Slugifier $slugifier,
-        private array $reserved = [],
-        private int $maxLen = 64,
-    ){}
+        private readonly PDO       $pdo,
+        private readonly Slugifier $slugifier,
+        private readonly array     $reserved = [],
+        private readonly int       $maxLen = 64,
+    )
+    {
+    }
 
+    /**
+     * @param string $tenant
+     * @param string $source
+     * @return string
+     */
     public function make(string $tenant, string $source): string
     {
         $base = $this->slugifier->slugify($source);
@@ -32,6 +47,10 @@ final class SlugPolicy
         return $slug;
     }
 
+    /**
+     * @param string $slug
+     * @return bool
+     */
     public function validate(string $slug): bool
     {
         $len = strlen($slug);
@@ -41,15 +60,24 @@ final class SlugPolicy
         return true;
     }
 
+    /**
+     * @param string $slug
+     * @return bool
+     */
     private function isReserved(string $slug): bool
     {
         return in_array($slug, $this->reserved, true);
     }
 
+    /**
+     * @param string $tenant
+     * @param string $slug
+     * @return bool
+     */
     private function exists(string $tenant, string $slug): bool
     {
         $stmt = $this->pdo->prepare('SELECT 1 FROM tag_entity WHERE tenant=:t AND slug=:s');
-        $stmt->execute([':t'=>$tenant, ':s'=>$slug]);
+        $stmt->execute([':t' => $tenant, ':s' => $slug]);
         return (bool)$stmt->fetchColumn();
     }
 }

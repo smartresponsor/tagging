@@ -4,5 +4,5 @@ skew_sec: 120              # allowed clock skew (seconds)
 nonce_ttl_sec: 300         # nonce validity window (seconds)
 max_entries: 100000        # soft LRU cap for nonce cache
 apply:
-  include: ["/tag/**"]     # which paths to enforce (minimatch-style)
-  exclude: ["/tag/_status","/tag/_metrics"]  # public endpoints
+  include: [ "/tag/**" ]     # which paths to enforce (minimatch-style)
+  exclude: [ "/tag/_status","/tag/_metrics" ]  # public endpoints

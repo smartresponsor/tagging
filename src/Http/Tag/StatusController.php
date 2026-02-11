@@ -1,10 +1,21 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Http\Tag;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class StatusController
 {
+    /**
+     * @return array
+     */
     public function status(): array
     {
         // Minimal health payload; in real app add DB/cache checks

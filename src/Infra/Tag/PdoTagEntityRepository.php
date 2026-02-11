@@ -7,12 +7,27 @@ namespace App\Infra\Tag;
 use App\ServiceInterface\Tag\TagEntityRepositoryInterface;
 use PDO;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class PdoTagEntityRepository implements TagEntityRepositoryInterface
 {
-    public function __construct(private PDO $pdo)
+    /**
+     * @param \PDO $pdo
+     */
+    public function __construct(private readonly PDO $pdo)
     {
     }
 
+    /**
+     * @param string $tenant
+     * @param string $id
+     * @return array|null
+     */
     public function findById(string $tenant, string $id): ?array
     {
         $sel = $this->pdo->prepare('SELECT id,slug,name,locale,weight,created_at,updated_at FROM tag_entity WHERE tenant=:t AND id=:id');
@@ -21,6 +36,15 @@ final class PdoTagEntityRepository implements TagEntityRepositoryInterface
         return is_array($row) ? $row : null;
     }
 
+    /**
+     * @param string $tenant
+     * @param string $id
+     * @param string $slug
+     * @param string $name
+     * @param string $locale
+     * @param int $weight
+     * @return array
+     */
     public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
     {
         $stmt = $this->pdo->prepare('INSERT INTO tag_entity (id,tenant,slug,name,locale,weight) VALUES (:id,:t,:s,:n,:l,:w)');
@@ -28,6 +52,12 @@ final class PdoTagEntityRepository implements TagEntityRepositoryInterface
         return ['id' => $id, 'slug' => $slug, 'name' => $name, 'locale' => $locale, 'weight' => $weight];
     }
 
+    /**
+     * @param string $tenant
+     * @param string $id
+     * @param array $patch
+     * @return void
+     */
     public function patch(string $tenant, string $id, array $patch): void
     {
         $fields = [];
@@ -48,6 +78,11 @@ final class PdoTagEntityRepository implements TagEntityRepositoryInterface
         $upd->execute($params);
     }
 
+    /**
+     * @param string $tenant
+     * @param string $id
+     * @return void
+     */
     public function delete(string $tenant, string $id): void
     {
         $del = $this->pdo->prepare('DELETE FROM tag_entity WHERE tenant=:t AND id=:id');

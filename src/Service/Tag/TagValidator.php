@@ -1,16 +1,30 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Service\Tag;
 
 use App\ServiceInterface\Tag\TagRepositoryInterface as TagRepositoryContract;
+use InvalidArgumentException;
+use RuntimeException;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class TagValidator
 {
     private const MAX_LEN = 255;
     /** @var string[] */
     private array $reserved = [];
 
+    /**
+     * @param string $input
+     * @return string
+     */
     public function normalizeSlug(string $input): string
     {
         // Lowercase, trim, collapse spaces/underscores to hyphens, strip unsafe chars
@@ -20,25 +34,33 @@ final class TagValidator
         return trim($s, '-');
     }
 
+    /**
+     * @param string $label
+     * @return void
+     */
     public function validateLabel(string $label): void
     {
         $len = mb_strlen($label);
         if ($len === 0 || $len > self::MAX_LEN) {
-            throw new \InvalidArgumentException('label_length_invalid');
+            throw new InvalidArgumentException('label_length_invalid');
         }
     }
 
+    /**
+     * @param string $slug
+     * @return void
+     */
     public function validateSlug(string $slug): void
     {
         $len = mb_strlen($slug);
         if ($len === 0 || $len > self::MAX_LEN) {
-            throw new \InvalidArgumentException('slug_length_invalid');
+            throw new InvalidArgumentException('slug_length_invalid');
         }
         if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
-            throw new \InvalidArgumentException('slug_format_invalid');
+            throw new InvalidArgumentException('slug_format_invalid');
         }
         if (in_array($slug, $this->reserved, true)) {
-            throw new \InvalidArgumentException('slug_reserved');
+            throw new InvalidArgumentException('slug_reserved');
         }
     }
 
@@ -49,7 +71,7 @@ final class TagValidator
     public function ensureUniqueness(string $tenantId, TagRepositoryContract $repo, string $slug, ?string $tagId = null): void
     {
         if ($repo->existsSlug($tenantId, $slug, $tagId)) {
-            throw new \RuntimeException('slug_conflict');
+            throw new RuntimeException('slug_conflict');
         }
     }
 }

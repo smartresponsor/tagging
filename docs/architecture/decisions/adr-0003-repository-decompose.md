@@ -4,7 +4,8 @@ Status: Accepted
 
 ## Context
 
-A single broad repository interface aggregated unrelated concerns (CRUD + policy + moderation + analytics + effects). This violates interface segregation and increases coupling.
+A single broad repository interface aggregated unrelated concerns (CRUD + policy + moderation + analytics + effects).
+This violates interface segregation and increases coupling.
 
 ## Decision
 

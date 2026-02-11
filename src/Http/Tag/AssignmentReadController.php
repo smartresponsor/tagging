@@ -1,13 +1,26 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Http\Tag;
 
 use App\Infra\Tag\TagReadModel;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class AssignmentReadController
 {
-    public function __construct(private TagReadModel $read) {}
+    /**
+     * @param \App\Infra\Tag\TagReadModel $read
+     */
+    public function __construct(private readonly TagReadModel $read)
+    {
+    }
 
     /**
      * GET /tag/assignments?entityType=...&entityId=...&limit=...
@@ -21,21 +34,25 @@ final class AssignmentReadController
 
         $q = is_array($req['query'] ?? null) ? $req['query'] : [];
         $etype = (string)($q['entityType'] ?? ($q['entity_type'] ?? ''));
-        $eid   = (string)($q['entityId']   ?? ($q['entity_id'] ?? ''));
+        $eid = (string)($q['entityId'] ?? ($q['entity_id'] ?? ''));
         $limit = (int)($q['limit'] ?? 100);
         $limit = max(1, min(500, $limit));
 
         if ($etype === '' || $eid === '') return self::bad('validation_failed');
 
         $items = $this->read->tagsForEntity($tenant, $etype, $eid, $limit);
-        return self::ok(['ok'=>true, 'items'=>$items]);
+        return self::ok(['ok' => true, 'items' => $items]);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     private static function ok(array $body): array
-    { return [200, ['Content-Type'=>'application/json'], json_encode($body)]; }
+    {
+        return [200, ['Content-Type' => 'application/json'], json_encode($body)];
+    }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     private static function bad(string $code): array
-    { return [400, ['Content-Type'=>'application/json'], json_encode(['code'=>$code])]; }
+    {
+        return [400, ['Content-Type' => 'application/json'], json_encode(['code' => $code])];
+    }
 }

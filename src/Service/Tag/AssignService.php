@@ -1,28 +1,44 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Service\Tag;
 
 use App\Infra\Outbox\OutboxPublisher;
-use App\Domain\Event\TagAssigned;
+use DateTimeImmutable;
 use PDO;
+use Throwable;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class AssignService
 {
+    /**
+     * @param \PDO $pdo
+     * @param \App\Infra\Outbox\OutboxPublisher $outbox
+     * @param \App\Service\Tag\IdempotencyStore|null $idem
+     */
     public function __construct(
-        private PDO $pdo,
-        private OutboxPublisher $outbox,
-        private ?IdempotencyStore $idem = null,
-    ) {}
+        private readonly PDO               $pdo,
+        private readonly OutboxPublisher   $outbox,
+        private readonly ?IdempotencyStore $idem = null,
+    )
+    {
+    }
 
     /** @return array{ok:bool, duplicated?:bool} */
     public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
     {
-        $checksum = hash('sha256', implode('|', [$tenant,$tagId,$entityType,$entityId]));
+        $checksum = hash('sha256', implode('|', [$tenant, $tagId, $entityType, $entityId]));
         if ($idemKey && $this->idem) {
             $st = $this->idem->begin($tenant, $idemKey, 'tag.assign', $checksum);
             if ($st['state'] === 'duplicate') {
-                return ['ok'=>true, 'duplicated'=>true];
+                return ['ok' => true, 'duplicated' => true];
             }
         }
 
@@ -30,10 +46,10 @@ final class AssignService
         try {
             // Ensure tag exists (optional strict check)
             $chk = $this->pdo->prepare('SELECT 1 FROM tag_entity WHERE tenant=:t AND id=:id');
-            $chk->execute([':t'=>$tenant, ':id'=>$tagId]);
+            $chk->execute([':t' => $tenant, ':id' => $tagId]);
             if (!$chk->fetch()) {
                 $this->pdo->rollBack();
-                return ['ok'=>false];
+                return ['ok' => false];
             }
 
             $ins = $this->pdo->prepare(
@@ -41,19 +57,19 @@ final class AssignService
                  VALUES (:t,:et,:eid,:tid)
                  ON CONFLICT (tenant, entity_type, entity_id, tag_id) DO NOTHING'
             );
-            $ins->execute([':t'=>$tenant, ':et'=>$entityType, ':eid'=>$entityId, ':tid'=>$tagId]);
+            $ins->execute([':t' => $tenant, ':et' => $entityType, ':eid' => $entityId, ':tid' => $tagId]);
 
             $this->outbox->publish($tenant, 'tag.assigned', [
-                'tenant'=>$tenant, 'tag_id'=>$tagId, 'entity_type'=>$entityType, 'entity_id'=>$entityId,
-                'at'=>(new \DateTimeImmutable())->format(DATE_ATOM),
+                'tenant' => $tenant, 'tag_id' => $tagId, 'entity_type' => $entityType, 'entity_id' => $entityId,
+                'at' => (new DateTimeImmutable())->format(DATE_ATOM),
             ]);
 
             $this->pdo->commit();
-            if ($idemKey && $this->idem) $this->idem->complete($tenant, $idemKey, ['ok'=>true]);
-            return ['ok'=>true];
-        } catch (\Throwable $e) {
+            if ($idemKey && $this->idem) $this->idem->complete($tenant, $idemKey, ['ok' => true]);
+            return ['ok' => true];
+        } catch (Throwable $e) {
             if ($this->pdo->inTransaction()) $this->pdo->rollBack();
-            return ['ok'=>false];
+            return ['ok' => false];
         }
     }
 }

@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\ServiceInterface\Tag;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 interface TagEntityRepositoryInterface
 {
     /** @return array{id:string,slug:string,name:string,locale:string,weight:int,created_at?:string,updated_at?:string}|null */
@@ -15,5 +22,10 @@ interface TagEntityRepositoryInterface
     /** @param array{name?:string,locale?:string,weight?:int} $patch */
     public function patch(string $tenant, string $id, array $patch): void;
 
+    /**
+     * @param string $tenant
+     * @param string $id
+     * @return void
+     */
     public function delete(string $tenant, string $id): void;
 }

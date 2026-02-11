@@ -5,6 +5,7 @@
 - ULID stored as `CHAR(26)`.
 
 ## Indexes
+
 - trigram GIN on `slug`, `name` (Postgres)
 - `tag_link(tenant, entity_type, entity_id)` for entity→tags
 - `tag_link(tenant, tag_id)` for tag→entities

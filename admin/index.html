@@ -1,75 +1,75 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>Tag Admin v4</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="utf-8"/>
+    <title>Tag Admin v4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 <header>
-  <h1>SmartResponsor · Tag Admin v4</h1>
-  <section class="cfg">
-    <label>API Base <input id="apiBase" placeholder="/"/></label>
-    <label>Tenant <input id="tenant" placeholder="tenant-1"/></label>
-    <label>HMAC Secret <input id="secret" placeholder="change-me" type="password"/></label>
-    <button id="saveCfg">Save</button>
-    <button id="ping">Ping</button>
-    <span id="pingOut" class="muted"></span>
-  </section>
-  <nav>
-    <button data-tab="search">Search</button>
-    <button data-tab="assign">Assignments</button>
-    <button data-tab="synonym">Synonyms</button>
-  </nav>
+    <h1>SmartResponsor · Tag Admin v4</h1>
+    <section class="cfg">
+        <label>API Base <input id="apiBase" placeholder="/"/></label>
+        <label>Tenant <input id="tenant" placeholder="tenant-1"/></label>
+        <label>HMAC Secret <input id="secret" placeholder="change-me" type="password"/></label>
+        <button id="saveCfg">Save</button>
+        <button id="ping">Ping</button>
+        <span id="pingOut" class="muted"></span>
+    </section>
+    <nav>
+        <button data-tab="search">Search</button>
+        <button data-tab="assign">Assignments</button>
+        <button data-tab="synonym">Synonyms</button>
+    </nav>
 </header>
 
 <main>
-  <section id="tab-search" class="tab">
-    <form id="formSearch" onsubmit="return false;">
-      <input id="q" placeholder="find tag by label/slug/synonym"/>
-      <button id="btnSearch">Search (Ctrl+K)</button>
-    </form>
-    <div id="searchOut" class="out"></div>
-  </section>
+    <section id="tab-search" class="tab">
+        <form id="formSearch" onsubmit="return false;">
+            <input id="q" placeholder="find tag by label/slug/synonym"/>
+            <button id="btnSearch">Search (Ctrl+K)</button>
+        </form>
+        <div id="searchOut" class="out"></div>
+    </section>
 
-  <section id="tab-assign" class="tab">
-    <form id="formAssign" onsubmit="return false;">
-      <label>entityType <input id="entityType" placeholder="product"/></label>
-      <label>entityId <input id="entityId" placeholder="P123"/></label>
-      <label>tagId <input id="tagId" placeholder="T1"/></label>
-      <button id="btnAssign">Assign (A)</button>
-      <button id="btnUnassign">Unassign (U)</button>
-    </form>
-    <form id="formAssignBulk" onsubmit="return false;">
-      <label>tagIds (comma-separated) <input id="tagIds" placeholder="T1,T2,T3"/></label>
-      <button id="btnAssignBulk">Assign Bulk (B)</button>
-    </form>
-    <div>
-      <button id="btnListAssignments">List Assignments</button>
-    </div>
-    <div id="assignOut" class="out"></div>
-  </section>
+    <section id="tab-assign" class="tab">
+        <form id="formAssign" onsubmit="return false;">
+            <label>entityType <input id="entityType" placeholder="product"/></label>
+            <label>entityId <input id="entityId" placeholder="P123"/></label>
+            <label>tagId <input id="tagId" placeholder="T1"/></label>
+            <button id="btnAssign">Assign (A)</button>
+            <button id="btnUnassign">Unassign (U)</button>
+        </form>
+        <form id="formAssignBulk" onsubmit="return false;">
+            <label>tagIds (comma-separated) <input id="tagIds" placeholder="T1,T2,T3"/></label>
+            <button id="btnAssignBulk">Assign Bulk (B)</button>
+        </form>
+        <div>
+            <button id="btnListAssignments">List Assignments</button>
+        </div>
+        <div id="assignOut" class="out"></div>
+    </section>
 
-  <section id="tab-synonym" class="tab">
-    <form id="formSynList" onsubmit="return false;">
-      <label>tagId <input id="synTagId" placeholder="T1"/></label>
-      <button id="btnSynList">List</button>
-    </form>
-    <form id="formSynAdd" onsubmit="return false;">
-      <label>label <input id="synLabel" placeholder="also-known-as"/></label>
-      <button id="btnSynAdd">Add</button>
-    </form>
-    <form id="formSynDel" onsubmit="return false;">
-      <label>label <input id="synLabelDel" placeholder="to-delete"/></label>
-      <button id="btnSynDel">Delete</button>
-    </form>
-    <div id="synOut" class="out"></div>
-  </section>
+    <section id="tab-synonym" class="tab">
+        <form id="formSynList" onsubmit="return false;">
+            <label>tagId <input id="synTagId" placeholder="T1"/></label>
+            <button id="btnSynList">List</button>
+        </form>
+        <form id="formSynAdd" onsubmit="return false;">
+            <label>label <input id="synLabel" placeholder="also-known-as"/></label>
+            <button id="btnSynAdd">Add</button>
+        </form>
+        <form id="formSynDel" onsubmit="return false;">
+            <label>label <input id="synLabelDel" placeholder="to-delete"/></label>
+            <button id="btnSynDel">Delete</button>
+        </form>
+        <div id="synOut" class="out"></div>
+    </section>
 </main>
 
 <footer>
-  <p class="muted">Shortcuts: Ctrl+1 Search, Ctrl+2 Assign, Ctrl+3 Synonyms; Ctrl+K focus search.</p>
+    <p class="muted">Shortcuts: Ctrl+1 Search, Ctrl+2 Assign, Ctrl+3 Synonyms; Ctrl+K focus search.</p>
 </footer>
 
 <script src="app.js"></script>

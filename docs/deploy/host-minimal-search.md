@@ -1,4 +1,5 @@
 # Host-minimal wiring (example)
+
 ```php
 $cfg = yaml_parse_file(__DIR__.'/../config/tag_cache.yaml') ?: [];
 $searchCache = new App\Cache\Tag\SearchCache($cfg['search']['dir'] ?? 'var/cache/tag-search', (int)($cfg['search']['ttl_seconds'] ?? 60));

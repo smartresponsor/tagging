@@ -6,13 +6,29 @@ namespace App\Service\Tag;
 
 use App\ServiceInterface\Tag\TransactionRunnerInterface;
 use PDO;
+use Throwable;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class PdoTransactionRunner implements TransactionRunnerInterface
 {
-    public function __construct(private PDO $pdo)
+    /**
+     * @param \PDO $pdo
+     */
+    public function __construct(private readonly PDO $pdo)
     {
     }
 
+    /**
+     * @param callable $callback
+     * @return mixed
+     * @throws \Throwable
+     */
     public function run(callable $callback): mixed
     {
         $this->pdo->beginTransaction();
@@ -21,7 +37,7 @@ final class PdoTransactionRunner implements TransactionRunnerInterface
             $result = $callback();
             $this->pdo->commit();
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }

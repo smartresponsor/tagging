@@ -7,22 +7,40 @@ namespace Tests\Integration;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
+use function extension_loaded;
+use function getenv;
+use function sprintf;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 abstract class IntegrationDbTestCase extends TestCase
 {
+    /**
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
     protected function getEnv(string $key, string $default): string
     {
-        $v = \getenv($key);
+        $v = getenv($key);
         if ($v === false || $v === '') {
             return $default;
         }
         return $v;
     }
 
+    /**
+     * @return \PDO
+     */
     protected function createPdo(): PDO
     {
-        if (!\extension_loaded('pdo_pgsql')) {
-            $this->markTestSkipped('pdo_pgsql extension is not available on this PHP runtime.');
+        if (!extension_loaded('pdo_pgsql')) {
+            static::markTestSkipped('pdo_pgsql extension is not available on this PHP runtime.');
         }
 
         $db = $this->getEnv('POSTGRES_DB', 'app');
@@ -31,12 +49,10 @@ abstract class IntegrationDbTestCase extends TestCase
         $host = $this->getEnv('DB_HOST', '127.0.0.1');
         $port = $this->getEnv('DB_PORT', '5432');
 
-        $dsn = \sprintf('pgsql:host=%s;port=%s;dbname=%s', $host, $port, $db);
-        $pdo = new PDO($dsn, $user, $pass, [
+        $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s', $host, $port, $db);
+        return new PDO($dsn, $user, $pass, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
-
-        return $pdo;
     }
 }

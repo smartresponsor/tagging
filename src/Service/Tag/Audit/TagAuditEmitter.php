@@ -1,16 +1,33 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Service\Tag\Audit;
 
-use App\Service\Tag\Metric\TagMetrics;
-use App\Service\Tag\Webhook\TagWebhookRegistry;
 use App\Service\Tag\Webhook\TagWebhookSender;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class TagAuditEmitter
 {
-    public function __construct(private array $cfg, private ?TagWebhookSender $sender=null){}
+    /**
+     * @param array $cfg
+     * @param \App\Service\Tag\Webhook\TagWebhookSender|null $sender
+     */
+    public function __construct(private readonly array $cfg, private readonly ?TagWebhookSender $sender = null)
+    {
+    }
 
+    /**
+     * @param string $type
+     * @param array $payload
+     * @return void
+     */
     public function emit(string $type, array $payload): void
     {
         $allow = $this->cfg['events_allow'] ?? [];
@@ -30,6 +47,11 @@ final class TagAuditEmitter
         $this->fanout($type, $payload);
     }
 
+    /**
+     * @param string $type
+     * @param array $payload
+     * @return void
+     */
     private function fanout(string $type, array $payload): void
     {
         $regPath = $this->cfg['registry_path'] ?? 'report/webhook/registry.json';
@@ -42,9 +64,7 @@ final class TagAuditEmitter
             $url = $sub['url'] ?? null;
             if (!$url) continue;
             $secret = $sub['secret'] ?? ($this->cfg['secret_fallback'] ?? '');
-            if ($this->sender) {
-                $this->sender->enqueue($url, $secret, $type, $payload);
-            }
+            $this->sender?->enqueue($url, $secret, $type, $payload);
         }
     }
 }

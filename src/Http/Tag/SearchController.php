@@ -1,13 +1,26 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
 namespace App\Http\Tag;
 
 use App\Service\Tag\SearchService;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 final class SearchController
 {
-    public function __construct(private SearchService $svc) {}
+    /**
+     * @param \App\Service\Tag\SearchService $svc
+     */
+    public function __construct(private readonly SearchService $svc)
+    {
+    }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function get(array $req): array
@@ -17,8 +30,8 @@ final class SearchController
         $q = (string)($req['query']['q'] ?? '');
         $ps = (int)($req['query']['pageSize'] ?? 20);
         $pt = (string)($req['query']['pageToken'] ?? '');
-        if ($tenant === '' || $q === '') return [400, ['Content-Type'=>'application/json'], json_encode(['ok'=>false,'code'=>'validation_failed'])];
+        if ($tenant === '' || $q === '') return [400, ['Content-Type' => 'application/json'], json_encode(['ok' => false, 'code' => 'validation_failed'])];
         $res = $this->svc->search($tenant, $q, $ps, $pt ?: null);
-        return [200, ['Content-Type'=>'application/json'], json_encode(['ok'=>true,'result'=>$res])];
+        return [200, ['Content-Type' => 'application/json'], json_encode(['ok' => true, 'result' => $res])];
     }
 }

@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Application\Tag\Dto;
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 enum TagError: string
 {
     case InvalidTenant = 'invalid_tenant';

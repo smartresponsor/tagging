@@ -38,11 +38,11 @@ final class TenantIsolationTest extends IntegrationDbTestCase
         $tenantAOutbox = (int)$pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.assigned'")->fetchColumn();
         $tenantBOutbox = (int)$pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.assigned'")->fetchColumn();
 
-        static::assertSame(['ok' => true], $ok);
-        static::assertSame(['ok' => false], $crossTenant);
-        static::assertSame(1, $tenantALinks);
-        static::assertSame(0, $tenantBLinks);
-        static::assertSame(1, $tenantAOutbox);
-        static::assertSame(0, $tenantBOutbox);
+        TenantIsolationTest::assertSame(['ok' => true], $ok);
+        TenantIsolationTest::assertSame(['ok' => false], $crossTenant);
+        TenantIsolationTest::assertSame(1, $tenantALinks);
+        TenantIsolationTest::assertSame(0, $tenantBLinks);
+        TenantIsolationTest::assertSame(1, $tenantAOutbox);
+        TenantIsolationTest::assertSame(0, $tenantBOutbox);
     }
 }

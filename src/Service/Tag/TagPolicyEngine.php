@@ -13,12 +13,12 @@ use InvalidArgumentException;
 /**
  *
  */
-final class TagPolicyEngine
+final readonly class TagPolicyEngine
 {
     /**
      * @param array $policy
      */
-    public function __construct(private readonly array $policy)
+    public function __construct(private array $policy)
     {
     }
 

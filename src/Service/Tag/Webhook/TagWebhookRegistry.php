@@ -13,12 +13,12 @@ use InvalidArgumentException;
 /**
  *
  */
-final class TagWebhookRegistry
+final readonly class TagWebhookRegistry
 {
     /**
      * @param string $path
      */
-    public function __construct(private readonly string $path)
+    public function __construct(private string $path)
     {
     }
 

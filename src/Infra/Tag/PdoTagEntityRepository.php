@@ -14,12 +14,12 @@ use PDO;
 /**
  *
  */
-final class PdoTagEntityRepository implements TagEntityRepositoryInterface
+final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterface
 {
     /**
      * @param \PDO $pdo
      */
-    public function __construct(private readonly PDO $pdo)
+    public function __construct(private PDO $pdo)
     {
     }
 

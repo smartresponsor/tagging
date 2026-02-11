@@ -13,67 +13,63 @@ use App\DataInterface\Tag\TagAssignmentRepositoryInterface;
 /**
  *
  */
-final class AssignmentService
+final readonly class AssignmentService
 {
     /**
      * @param \App\DataInterface\Tag\TagAssignmentRepositoryInterface $repo
      */
-    public function __construct(private readonly TagAssignmentRepositoryInterface $repo)
+    public function __construct(private TagAssignmentRepositoryInterface $repo)
     {
     }
 
     /**
-     * @param string $tenantId
      * @param string $tagId
      * @param string $entityType
      * @param string $entityId
      * @return int[]
      */
-    public function assign(string $tenantId, string $tagId, string $entityType, string $entityId): array
+    public function assign(string $tagId, string $entityType, string $entityId): array
     {
-        $created = $this->repo->assign($tenantId, $tagId, $entityType, $entityId);
+        $created = $this->repo->assign($tagId, $entityType, $entityId);
         return ['assigned' => $created ? 1 : 0];
     }
 
     /**
-     * @param string $tenantId
      * @param string $tagId
      * @param string $entityType
      * @param string $entityId
      * @return int[]
      */
-    public function unassign(string $tenantId, string $tagId, string $entityType, string $entityId): array
+    public function unassign(string $tagId, string $entityType, string $entityId): array
     {
-        $removed = $this->repo->unassign($tenantId, $tagId, $entityType, $entityId);
+        $removed = $this->repo->unassign($tagId, $entityType, $entityId);
         return ['removed' => $removed ? 1 : 0];
     }
 
     /**
-     * @param string $tenantId
      * @param string $entityType
      * @param string $entityId
      * @param int $limit
      * @param int $offset
      * @return array
      */
-    public function listByEntity(string $tenantId, string $entityType, string $entityId, int $limit = 50, int $offset = 0): array
+    public function listByEntity(string $entityType, string $entityId, int $limit = 50, int $offset = 0): array
     {
-        $rows = $this->repo->listByEntity($tenantId, $entityType, $entityId, $limit, $offset);
+        $rows = $this->repo->listByEntity($entityType, $entityId, $limit, $offset);
         return ['items' => array_map(fn($r) => ['tagId' => $r->tagId, 'createdAt' => $r->createdAt], $rows)];
     }
 
     /**
-     * @param string $tenantId
      * @param string $entityType
      * @param string $entityId
      * @param array $tagIds
      * @return int[]
      */
-    public function assignBulk(string $tenantId, string $entityType, string $entityId, array $tagIds): array
+    public function assignBulk(string $entityType, string $entityId, array $tagIds): array
     {
         $ok = 0;
         foreach ($tagIds as $t) {
-            if ($this->repo->assign($tenantId, (string)$t, $entityType, $entityId)) $ok++;
+            if ($this->repo->assign((string)$t, $entityType, $entityId)) $ok++;
         }
         return ['assigned' => $ok];
     }

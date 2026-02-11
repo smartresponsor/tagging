@@ -13,12 +13,12 @@ use App\Service\Tag\RedirectResolver;
 /**
  *
  */
-final class RedirectController
+final readonly class RedirectController
 {
     /**
      * @param \App\Service\Tag\RedirectResolver $svc
      */
-    public function __construct(private readonly RedirectResolver $svc = new RedirectResolver())
+    public function __construct(private RedirectResolver $svc = new RedirectResolver())
     {
     }
 

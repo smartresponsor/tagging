@@ -14,13 +14,13 @@ use PDO;
 /**
  *
  */
-final class SuggestService
+final readonly class SuggestService
 {
     /**
      * @param \PDO $pdo
      * @param \App\Cache\Tag\SuggestCache $cache
      */
-    public function __construct(private readonly PDO $pdo, private readonly SuggestCache $cache)
+    public function __construct(private PDO $pdo, private SuggestCache $cache)
     {
     }
 

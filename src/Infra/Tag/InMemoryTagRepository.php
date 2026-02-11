@@ -268,7 +268,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
 
     /**
      * @param string $tenantId
-     * @return array|mixed[]
+     * @return array|array
      */
     public function getPolicy(string $tenantId): array
     {

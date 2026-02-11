@@ -13,12 +13,12 @@ use App\Service\Tag\Metric\TagMetrics;
 /**
  *
  */
-final class TagWebhookSender
+final readonly class TagWebhookSender
 {
     /**
      * @param array $cfg
      */
-    public function __construct(private readonly array $cfg)
+    public function __construct(private array $cfg)
     {
     }
 

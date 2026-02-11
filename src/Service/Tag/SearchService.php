@@ -14,13 +14,13 @@ use App\Infra\Tag\TagReadModel;
 /**
  *
  */
-final class SearchService
+final readonly class SearchService
 {
     /**
      * @param \App\Infra\Tag\TagReadModel $read
      * @param \App\Cache\Tag\SearchCache $cache
      */
-    public function __construct(private readonly TagReadModel $read, private readonly SearchCache $cache)
+    public function __construct(private TagReadModel $read, private SearchCache $cache)
     {
     }
 

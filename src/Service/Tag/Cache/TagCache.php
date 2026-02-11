@@ -50,7 +50,7 @@ final class TagCache
      * @param array $params
      * @return mixed|null
      */
-    public function get(string $kind, array $params)
+    public function get(string $kind, array $params): mixed
     {
         $k = $this->key($kind, $params);
         $now = time();

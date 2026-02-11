@@ -14,7 +14,7 @@ $rawBody = file_get_contents('php://input') ?: '';
 $norm = $container['idempotencyMiddleware']()->normalize($_SERVER, $_GET, $rawBody);
 [$code, $headers, $body] = $dispatch($method, $path, $norm);
 
-http_response_code($code);
+http_response_code((int)$code);
 foreach ($headers as $name => $value) {
     header($name . ': ' . $value);
 }

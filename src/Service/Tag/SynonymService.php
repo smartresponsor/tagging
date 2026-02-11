@@ -13,12 +13,12 @@ use App\Data\Tag\FileTagSynonymRepository;
 /**
  *
  */
-final class SynonymService
+final readonly class SynonymService
 {
     /**
      * @param \App\Data\Tag\FileTagSynonymRepository $repo
      */
-    public function __construct(private readonly FileTagSynonymRepository $repo = new FileTagSynonymRepository())
+    public function __construct(private FileTagSynonymRepository $repo = new FileTagSynonymRepository())
     {
     }
 

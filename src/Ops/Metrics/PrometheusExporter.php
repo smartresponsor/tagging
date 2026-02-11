@@ -154,7 +154,7 @@ final class PrometheusExporter
      * @param string $key
      * @return array
      */
-    private function labelsFromKey(string $key): array
+    private function labelsFromKey(\string $key): array
     {
         if ($key === '__') return [];
         $out = [];

@@ -21,7 +21,7 @@ use PDO;
 /**
  *
  */
-final class IdempotencyStore
+final readonly class IdempotencyStore
 {
     /**
      * @param \PDO $pdo
@@ -29,7 +29,7 @@ final class IdempotencyStore
     /**
      * @param \PDO $pdo
      */
-    public function __construct(private readonly readonly PDO $pdo)
+    public function __construct(private readonly PDO $pdo)
     {
     }
 

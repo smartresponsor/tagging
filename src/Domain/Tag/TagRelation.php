@@ -13,7 +13,7 @@ use InvalidArgumentException;
 /**
  *
  */
-final class TagRelation
+final readonly class TagRelation
 {
     /**
      * @param string $id
@@ -22,10 +22,10 @@ final class TagRelation
      * @param string $type
      */
     public function __construct(
-        private readonly string $id,
-        private readonly string $fromTagId,
-        private readonly string $toTagId,
-        private readonly string $type // 'broader' | 'related'
+        private string $id,
+        private string $fromTagId,
+        private string $toTagId,
+        private string $type // 'broader' | 'related'
     )
     {
     }

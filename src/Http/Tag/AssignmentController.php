@@ -79,7 +79,7 @@ final class AssignmentController
         if ($entityType === '' || $entityId === '') {
             return [400, ['Content-Type' => 'application/json'], json_encode(['code' => 'bad_request'])];
         }
-        $res = $this->svc->listByEntity($entityType, $entityId, $limit, $offset);
+        $res = $this->svc->listByEntity($entityType, $entityId, (string)$limit, $offset);
         return [200, ['Content-Type' => 'application/json'], json_encode($res)];
     }
 

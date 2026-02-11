@@ -24,7 +24,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS tag_assignment_unique ON tag_assignment (tag_i
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias
                        FROM pg_constraint
                        WHERE conname = 'fk_tag_assignment_tag') THEN
             ALTER TABLE tag_assignment
@@ -45,11 +45,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS tag_relation_unique ON tag_relation (from_tag_
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tag_relation_from') THEN
+        IF NOT EXISTS (SELECT 1 as alias2 FROM pg_constraint WHERE conname = 'fk_tag_relation_from') THEN
             ALTER TABLE tag_relation
                 ADD CONSTRAINT fk_tag_relation_from FOREIGN KEY (from_tag_id) REFERENCES tag (id) ON DELETE RESTRICT;
         END IF;
-        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tag_relation_to') THEN
+        IF NOT EXISTS (SELECT 1 as alias FROM pg_constraint WHERE conname = 'fk_tag_relation_to') THEN
             ALTER TABLE tag_relation
                 ADD CONSTRAINT fk_tag_relation_to FOREIGN KEY (to_tag_id) REFERENCES tag (id) ON DELETE RESTRICT;
         END IF;
@@ -63,11 +63,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS tag_redirect_from_unique ON tag_redirect (from
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tag_redirect_from') THEN
+        IF NOT EXISTS (SELECT 1 as alias2 FROM pg_constraint WHERE conname = 'fk_tag_redirect_from') THEN
             ALTER TABLE tag_redirect
                 ADD CONSTRAINT fk_tag_redirect_from FOREIGN KEY (from_tag_id) REFERENCES tag (id) ON DELETE RESTRICT;
         END IF;
-        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tag_redirect_to') THEN
+        IF NOT EXISTS (SELECT 1 as alias FROM pg_constraint WHERE conname = 'fk_tag_redirect_to') THEN
             ALTER TABLE tag_redirect
                 ADD CONSTRAINT fk_tag_redirect_to FOREIGN KEY (to_tag_id) REFERENCES tag (id) ON DELETE RESTRICT;
         END IF;

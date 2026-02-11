@@ -13,7 +13,7 @@ use DateTimeImmutable;
 /**
  *
  */
-final class TagLink
+final readonly class TagLink
 {
     /**
      * @param string $tenant
@@ -23,11 +23,11 @@ final class TagLink
      * @param \DateTimeImmutable|null $createdAt
      */
     public function __construct(
-        private readonly string             $tenant,
-        private readonly string             $entityType,   // category|product|project|text
-        private readonly string             $entityId,
-        private readonly string             $tagId,        // ULID (26)
-        private readonly ?DateTimeImmutable $createdAt = null,
+        private string             $tenant,
+        private string             $entityType,   // category|product|project|text
+        private string             $entityId,
+        private string             $tagId,        // ULID (26)
+        private ?DateTimeImmutable $createdAt = null,
     )
     {
     }

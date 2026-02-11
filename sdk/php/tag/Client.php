@@ -9,13 +9,13 @@ use RuntimeException;
 /**
  * Smartresponsor Tag SDK (PHP, E11)
  */
-final class Client
+final readonly class Client
 {
     /**
      * @param string $baseUrl
      * @param array $headers
      */
-    public function __construct(private readonly string $baseUrl, private readonly array $headers = [])
+    public function __construct(private string $baseUrl, private array $headers = [])
     {
     }
 

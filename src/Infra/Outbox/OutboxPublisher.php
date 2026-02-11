@@ -13,12 +13,12 @@ use PDO;
 /**
  *
  */
-final class OutboxPublisher
+final readonly class OutboxPublisher
 {
     /**
      * @param \PDO $pdo
      */
-    public function __construct(private readonly PDO $pdo)
+    public function __construct(private PDO $pdo)
     {
     }
 

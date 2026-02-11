@@ -13,12 +13,12 @@ use App\ServiceInterface\Tag\TagRepositoryInterface as TagRepositoryContract;
 /**
  *
  */
-final class TagFacetService
+final readonly class TagFacetService
 {
     /**
      * @param \App\ServiceInterface\Tag\TagRepositoryInterface $repo
      */
-    public function __construct(private readonly TagRepositoryContract $repo)
+    public function __construct(private TagRepositoryContract $repo)
     {
     }
 

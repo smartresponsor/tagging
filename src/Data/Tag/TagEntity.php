@@ -13,7 +13,7 @@ use DateTimeImmutable;
 /**
  *
  */
-final class TagEntity
+final readonly class TagEntity
 {
     /**
      * @param string $tenant
@@ -26,14 +26,14 @@ final class TagEntity
      * @param \DateTimeImmutable|null $updatedAt
      */
     public function __construct(
-        private readonly string             $tenant,
-        private readonly string             $id,        // ULID (26)
-        private readonly string             $slug,
-        private readonly string             $name,
-        private readonly ?string            $locale = null,
-        private readonly int                $weight = 0,
-        private readonly ?DateTimeImmutable $createdAt = null,
-        private readonly ?DateTimeImmutable $updatedAt = null,
+        private string             $tenant,
+        private string             $id,        // ULID (26)
+        private string             $slug,
+        private string             $name,
+        private ?string            $locale = null,
+        private int                $weight = 0,
+        private ?DateTimeImmutable $createdAt = null,
+        private ?DateTimeImmutable $updatedAt = null,
     )
     {
     }

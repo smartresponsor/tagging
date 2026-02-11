@@ -13,15 +13,15 @@ use function dirname;
 /**
  *
  */
-final class FileTagRedirectRepository
+final readonly class FileTagRedirectRepository
 {
     /**
      * @param string $path
      */
-    public function __construct(private readonly string $path = 'report/tag/redirect.ndjson')
+    public function __construct(private string $path = 'report/tag/redirect.ndjson')
     {
         $dir = dirname($this->path);
-        if (!is_dir($dir)) @mkdir($dir, 0777, true);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
         if (!file_exists($this->path)) file_put_contents($this->path, '');
     }
 

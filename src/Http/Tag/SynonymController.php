@@ -13,12 +13,12 @@ use App\Service\Tag\SynonymService;
 /**
  *
  */
-final class SynonymController
+final readonly class SynonymController
 {
     /**
      * @param \App\Service\Tag\SynonymService $svc
      */
-    public function __construct(private readonly SynonymService $svc = new SynonymService())
+    public function __construct(private SynonymService $svc = new SynonymService())
     {
     }
 

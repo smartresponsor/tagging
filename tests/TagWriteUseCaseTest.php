@@ -39,7 +39,7 @@ final class TagWriteUseCaseTest extends TestCase
         // Unit suite MUST NOT hard-fail if PDO driver is missing on the host.
         // DB-backed coverage belongs to the integration suite.
         if (!extension_loaded('pdo_pgsql')) {
-            static::markTestSkipped('pdo_pgsql extension is not available on this PHP runtime.');
+            TagWriteUseCaseTest::markTestSkipped('pdo_pgsql extension is not available on this PHP runtime.');
         }
         public
         /**
@@ -69,7 +69,7 @@ final class TagWriteUseCaseTest extends TestCase
                  */
                 public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
                 {
-                    throw new PDOException('duplicate', '23505');
+                    throw new PDOException('duplicate', (int)'23505');
                 }
 
                 /**
@@ -109,8 +109,8 @@ final class TagWriteUseCaseTest extends TestCase
             $result = $useCase->execute(new CreateTagCommand('tenant-a', ['name' => 'Alpha', 'slug' => 'alpha']));
             $response = (new TagWriteResponder())->respond($result);
 
-            static::assertSame(409, $response[0]);
-            static::assertStringContainsString('conflict', $response[2]);
+            TagWriteUseCaseTest::assertSame(409, $response[0]);
+            TagWriteUseCaseTest::assertStringContainsString('conflict', $response[2]);
         }
 
         public
@@ -179,8 +179,8 @@ final class TagWriteUseCaseTest extends TestCase
             $result = $useCase->execute(new PatchTagCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV', ['name' => 'Beta']));
             $response = (new TagWriteResponder())->respond($result);
 
-            static::assertSame(404, $response[0]);
-            static::assertStringContainsString('not_found', $response[2]);
+            TagWriteUseCaseTest::assertSame(404, $response[0]);
+            TagWriteUseCaseTest::assertStringContainsString('not_found', $response[2]);
         }
 
         public
@@ -252,8 +252,8 @@ final class TagWriteUseCaseTest extends TestCase
             $result = $useCase->execute(new DeleteTagCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV'));
             $response = (new TagWriteResponder())->respond($result);
 
-            static::assertSame(204, $response[0]);
-            static::assertSame('', $response[2]);
-            static::assertTrue($repo->deleted);
+            TagWriteUseCaseTest::assertSame(204, $response[0]);
+            TagWriteUseCaseTest::assertSame('', $response[2]);
+            TagWriteUseCaseTest::assertTrue($repo->deleted);
         }
     }

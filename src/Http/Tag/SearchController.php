@@ -13,12 +13,12 @@ use App\Service\Tag\SearchService;
 /**
  *
  */
-final class SearchController
+final readonly class SearchController
 {
     /**
      * @param \App\Service\Tag\SearchService $svc
      */
-    public function __construct(private readonly SearchService $svc)
+    public function __construct(private SearchService $svc)
     {
     }
 

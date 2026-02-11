@@ -13,13 +13,13 @@ use App\Service\Security\HmacV2Verifier;
 /**
  *
  */
-final class VerifySignature
+final readonly class VerifySignature
 {
     /**
      * @param \App\Service\Security\HmacV2Verifier $verifier
      * @param array $cfg
      */
-    public function __construct(private readonly HmacV2Verifier $verifier, private readonly array $cfg = [])
+    public function __construct(private HmacV2Verifier $verifier, private array $cfg = [])
     {
     }
 

@@ -13,12 +13,12 @@ use App\Service\Tag\Metric\TagMetrics;
 /**
  *
  */
-final class Observe
+final readonly class Observe
 {
     /**
      * @param array $cfg
      */
-    public function __construct(private readonly array $cfg)
+    public function __construct(private array $cfg)
     {
     }
 

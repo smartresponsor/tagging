@@ -13,12 +13,12 @@ use App\Service\Tag\SuggestService;
 /**
  *
  */
-final class SuggestController
+final readonly class SuggestController
 {
     /**
      * @param \App\Service\Tag\SuggestService $svc
      */
-    public function __construct(private readonly SuggestService $svc)
+    public function __construct(private SuggestService $svc)
     {
     }
 

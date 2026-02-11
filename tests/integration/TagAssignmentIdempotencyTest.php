@@ -36,10 +36,10 @@ final class TagAssignmentIdempotencyTest extends IntegrationDbTestCase
         $outboxCount = (int)$pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-idem' AND topic='tag.assigned'")->fetchColumn();
         $status = $pdo->query("SELECT status FROM idempotency_store WHERE tenant='tenant-idem' AND key='idem-key-1'")->fetchColumn();
 
-        static::assertSame(['ok' => true], $first);
-        static::assertSame(['ok' => true, 'duplicated' => true], $second);
-        static::assertSame(1, $linkCount);
-        static::assertSame(1, $outboxCount);
-        static::assertSame('done', $status);
+        TagAssignmentIdempotencyTest::assertSame(['ok' => true], $first);
+        TagAssignmentIdempotencyTest::assertSame(['ok' => true, 'duplicated' => true], $second);
+        TagAssignmentIdempotencyTest::assertSame(1, $linkCount);
+        TagAssignmentIdempotencyTest::assertSame(1, $outboxCount);
+        TagAssignmentIdempotencyTest::assertSame('done', $status);
     }
 }

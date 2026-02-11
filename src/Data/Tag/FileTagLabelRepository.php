@@ -13,15 +13,15 @@ use function dirname;
 /**
  *
  */
-final class FileTagLabelRepository
+final readonly class FileTagLabelRepository
 {
     /**
      * @param string $path
      */
-    public function __construct(private readonly string $path = 'report/tag/label.ndjson')
+    public function __construct(private string $path = 'report/tag/label.ndjson')
     {
         $dir = dirname($this->path);
-        if (!is_dir($dir)) @mkdir($dir, 0777, true);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
         if (!file_exists($this->path)) file_put_contents($this->path, '');
     }
 

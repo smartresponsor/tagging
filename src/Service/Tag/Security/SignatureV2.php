@@ -55,12 +55,12 @@ final class NonceCache
 /**
  *
  */
-final class SignatureV2
+final readonly class SignatureV2
 {
     /**
      * @param array $cfg
      */
-    public function __construct(private readonly array $cfg)
+    public function __construct(private array $cfg)
     {
     }
 

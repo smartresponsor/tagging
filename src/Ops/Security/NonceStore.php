@@ -27,6 +27,7 @@ final class NonceStore
         $this->dir = rtrim($dir, '/');
         $this->ttl = max(1, $ttlSec);
         $this->max = max(1, $max);
+
         if (!is_dir($this->dir)) {
             mkdir($this->dir, 0777, true);
         }
@@ -40,13 +41,19 @@ final class NonceStore
         $now = time();
 
         // GC occasionally
-        if (mt_rand(0, 99) === 0) $this->gc($now);
+        if (mt_rand(0, 99) === 0) {
+            $this->gc($now);
+        }
 
         if (is_file($path)) {
             // if entry exists and not yet expired -> replay
-            $exp = (int)trim(@file_get_contents($path)) ?: 0;
-            if ($exp > $now) return false;
+            $raw = file_get_contents($path);
+            $exp = is_string($raw) ? (int)trim($raw) : 0;
+            if ($exp > $now) {
+                return false;
+            }
         }
+
         // write new expiry
         file_put_contents($path, (string)($ts + $this->ttl), LOCK_EX);
         return true;
@@ -68,31 +75,72 @@ final class NonceStore
      */
     private function gc(int $now): void
     {
-        $files = @scandir($this->dir) ?: [];
+        if (!is_dir($this->dir)) {
+            return;
+        }
+
+        $files = scandir($this->dir);
+        if (!is_array($files)) {
+            return;
+        }
+
         $n = 0;
         foreach ($files as $f) {
-            if ($f === '.' || $f === '..') continue;
+            if ($f === '.' || $f === '..') {
+                continue;
+            }
+
             $p = $this->dir . '/' . $f;
-            if (!is_file($p)) continue;
+            if (!is_file($p)) {
+                continue;
+            }
+
             $n++;
-            $exp = (int)trim(@file_get_contents($p)) ?: 0;
-            if ($exp <= $now) @unlink($p);
+            $raw = file_get_contents($p);
+            $exp = is_string($raw) ? (int)trim($raw) : 0;
+            if ($exp <= $now) {
+                unlink($p);
+            }
         }
+
         // soft cap: trim oldest files if above max
-        if ($n > $this->max) {
-            $pairs = [];
-            foreach (@scandir($this->dir) ?: [] as $f) {
-                $p = $this->dir . '/' . $f;
-                if (is_file($p)) $pairs[$p] = @filemtime($p) ?: 0;
+        if ($n <= $this->max) {
+            return;
+        }
+
+        $pairs = [];
+        $files2 = scandir($this->dir);
+        if (!is_array($files2)) {
+            return;
+        }
+
+        foreach ($files2 as $f) {
+            if ($f === '.' || $f === '..') {
+                continue;
             }
-            asort($pairs);
-            $toDel = $n - $this->max;
-            for ($i = 0; $i < $toDel; $i++) {
-                $p = array_key_first($pairs);
-                if (!$p) break;
-                @unlink($p);
-                unset($pairs[$p]);
+
+            $p = $this->dir . '/' . $f;
+            if (!is_file($p)) {
+                continue;
             }
+
+            $mt = filemtime($p);
+            $pairs[$p] = is_int($mt) ? $mt : 0;
+        }
+
+        asort($pairs);
+        $toDel = $n - $this->max;
+        for ($i = 0; $i < $toDel; $i++) {
+            $p = array_key_first($pairs);
+            if (!$p) {
+                break;
+            }
+
+            if (is_file($p)) {
+                unlink($p);
+            }
+
+            unset($pairs[$p]);
         }
     }
 }

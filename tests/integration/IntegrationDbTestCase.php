@@ -56,6 +56,9 @@ abstract class IntegrationDbTestCase extends TestCase
         ]);
     }
 
+    /**
+     * @return \PDO
+     */
     protected function pdo(): PDO
     {
         return $this->createPdo();

@@ -19,6 +19,7 @@ final class TagCoreTest extends TestCase
 {
     /**
      * @return void
+     * @throws \Random\RandomException
      */
     public function testCreateAndList(): void
     {
@@ -26,8 +27,8 @@ final class TagCoreTest extends TestCase
         $svc = new TagService($repo);
         $tenantId = 'tenant-a';
         $t = $svc->create($tenantId, 'alpha', 'Alpha');
-        static::assertNotEmpty($t->id());
+        TagCoreTest::assertNotEmpty($t->id());
         $items = $svc->list($tenantId, 'alp', 10);
-        static::assertCount(1, $items);
+        TagCoreTest::assertCount(1, $items);
     }
 }

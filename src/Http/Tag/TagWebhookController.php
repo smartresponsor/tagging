@@ -14,13 +14,13 @@ use App\Service\Tag\Webhook\TagWebhookRegistry;
 /**
  *
  */
-final class TagWebhookController
+final readonly class TagWebhookController
 {
     /**
      * @param \App\Service\Tag\Webhook\TagWebhookRegistry $reg
      * @param \App\Service\Tag\Audit\TagAuditEmitter $audit
      */
-    public function __construct(private readonly TagWebhookRegistry $reg, private readonly TagAuditEmitter $audit)
+    public function __construct(private TagWebhookRegistry $reg, private TagAuditEmitter $audit)
     {
     }
 

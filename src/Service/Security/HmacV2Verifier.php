@@ -13,7 +13,7 @@ use App\Ops\Security\NonceStore;
 /**
  *
  */
-final class HmacV2Verifier
+final readonly class HmacV2Verifier
 {
     /**
      * @param string $secret
@@ -21,9 +21,9 @@ final class HmacV2Verifier
      * @param \App\Ops\Security\NonceStore $nonce
      */
     public function __construct(
-        private readonly string     $secret,
-        private readonly int        $skewSec = 120,
-        private readonly NonceStore $nonce = new NonceStore(),
+        private string     $secret,
+        private int        $skewSec = 120,
+        private NonceStore $nonce = new NonceStore(),
     )
     {
     }

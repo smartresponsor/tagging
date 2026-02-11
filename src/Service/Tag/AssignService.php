@@ -16,7 +16,7 @@ use Throwable;
 /**
  *
  */
-final class AssignService
+final readonly class AssignService
 {
     /**
      * @param \PDO $pdo
@@ -24,9 +24,9 @@ final class AssignService
      * @param \App\Service\Tag\IdempotencyStore|null $idem
      */
     public function __construct(
-        private readonly PDO               $pdo,
-        private readonly OutboxPublisher   $outbox,
-        private readonly ?IdempotencyStore $idem = null,
+        private PDO               $pdo,
+        private OutboxPublisher   $outbox,
+        private ?IdempotencyStore $idem = null,
     )
     {
     }

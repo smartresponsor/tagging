@@ -15,17 +15,22 @@ use InvalidArgumentException;
 /**
  *
  */
-final class TagEntityService
+final readonly class TagEntityService
 {
     /**
      * @param \App\ServiceInterface\Tag\TagEntityRepositoryInterface $repo
      * @param \App\Service\Tag\Slug\SlugPolicy $slugPolicy
      */
-    public function __construct(private readonly TagEntityRepositoryInterface $repo, private readonly SlugPolicy $slugPolicy)
+    public function __construct(private TagEntityRepositoryInterface $repo, private SlugPolicy $slugPolicy)
     {
     }
 
-    /** @param array<string,mixed> $payload */
+    /**
+     * @param string $tenant
+     * @param array<string,mixed> $payload
+     * @return array
+     * @throws \Random\RandomException
+     */
     public function create(string $tenant, array $payload): array
     {
         if ($tenant === '') {

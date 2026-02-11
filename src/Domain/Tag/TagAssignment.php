@@ -13,7 +13,7 @@ use DateTimeImmutable;
 /**
  *
  */
-final class TagAssignment
+final readonly class TagAssignment
 {
     /**
      * @param string $id
@@ -23,11 +23,11 @@ final class TagAssignment
      * @param \DateTimeImmutable $createdAt
      */
     public function __construct(
-        private readonly string            $id,
-        private readonly string            $tagId,
-        private readonly string            $assignedType,
-        private readonly string            $assignedId,
-        private readonly DateTimeImmutable $createdAt
+        private string            $id,
+        private string            $tagId,
+        private string            $assignedType,
+        private string            $assignedId,
+        private DateTimeImmutable $createdAt
     )
     {
     }

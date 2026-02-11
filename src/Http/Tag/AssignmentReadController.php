@@ -13,12 +13,12 @@ use App\Infra\Tag\TagReadModel;
 /**
  *
  */
-final class AssignmentReadController
+final readonly class AssignmentReadController
 {
     /**
      * @param \App\Infra\Tag\TagReadModel $read
      */
-    public function __construct(private readonly TagReadModel $read)
+    public function __construct(private TagReadModel $read)
     {
     }
 

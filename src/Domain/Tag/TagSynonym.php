@@ -11,7 +11,7 @@ namespace App\Domain\Tag;
 /**
  *
  */
-final class TagSynonym
+final readonly class TagSynonym
 {
     /**
      * @param string $id
@@ -19,9 +19,9 @@ final class TagSynonym
      * @param string $label
      */
     public function __construct(
-        private readonly string $id,
-        private readonly string $tagId,
-        private readonly string $label
+        private string $id,
+        private string $tagId,
+        private string $label
     )
     {
     }

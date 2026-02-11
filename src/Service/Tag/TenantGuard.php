@@ -11,12 +11,12 @@ namespace App\Service\Tag;
 /**
  *
  */
-final class TenantGuard
+final readonly class TenantGuard
 {
     /**
      * @param array $cfg
      */
-    public function __construct(private readonly array $cfg = [])
+    public function __construct(private array $cfg = [])
     {
     }
 

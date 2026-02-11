@@ -14,13 +14,13 @@ use App\Service\Tag\RateLimiter;
 /**
  *
  */
-final class QuotaGate
+final readonly class QuotaGate
 {
     /**
      * @param \App\Service\Tag\RateLimiter $limiter
      * @param array $cfg
      */
-    public function __construct(private readonly RateLimiter $limiter, private readonly array $cfg = [])
+    public function __construct(private RateLimiter $limiter, private array $cfg = [])
     {
     }
 

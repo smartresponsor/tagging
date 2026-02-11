@@ -20,12 +20,12 @@ use PDO;
 /**
  *
  */
-final class PdoTagRepository implements TagRepositoryInterface
+final readonly class PdoTagRepository implements TagRepositoryInterface
 {
     /**
      * @param \PDO $pdo
      */
-    public function __construct(private readonly PDO $pdo)
+    public function __construct(private PDO $pdo)
     {
     }
 

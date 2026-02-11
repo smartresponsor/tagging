@@ -13,12 +13,12 @@ use App\Service\Tag\TenantGuard;
 /**
  *
  */
-final class TenantContext
+final readonly class TenantContext
 {
     /**
      * @param \App\Service\Tag\TenantGuard $guard
      */
-    public function __construct(private readonly TenantGuard $guard)
+    public function __construct(private TenantGuard $guard)
     {
     }
 

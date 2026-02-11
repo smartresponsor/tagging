@@ -17,15 +17,15 @@ use App\ServiceInterface\Tag\TransactionRunnerInterface;
 /**
  *
  */
-final class PatchTag
+final readonly class PatchTag
 {
     /**
      * @param \App\ServiceInterface\Tag\TagEntityRepositoryInterface $repo
      * @param \App\ServiceInterface\Tag\TransactionRunnerInterface $transaction
      */
     public function __construct(
-        private readonly TagEntityRepositoryInterface $repo,
-        private readonly TransactionRunnerInterface   $transaction,
+        private TagEntityRepositoryInterface $repo,
+        private TransactionRunnerInterface   $transaction,
     )
     {
     }

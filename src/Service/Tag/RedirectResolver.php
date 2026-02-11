@@ -13,12 +13,12 @@ use App\Data\Tag\FileTagRedirectRepository;
 /**
  *
  */
-final class RedirectResolver
+final readonly class RedirectResolver
 {
     /**
      * @param \App\Data\Tag\FileTagRedirectRepository $repo
      */
-    public function __construct(private readonly FileTagRedirectRepository $repo = new FileTagRedirectRepository())
+    public function __construct(private FileTagRedirectRepository $repo = new FileTagRedirectRepository())
     {
     }
 

@@ -31,14 +31,14 @@ CREATE TABLE IF NOT EXISTS tag_entity
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias2
                        FROM information_schema.columns
                        WHERE table_name = 'tag_entity'
                          AND column_name = 'required_flag') THEN
             ALTER TABLE tag_entity
                 ADD COLUMN required_flag BOOLEAN NOT NULL DEFAULT FALSE;
         END IF;
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias
                        FROM information_schema.columns
                        WHERE table_name = 'tag_entity'
                          AND column_name = 'mod_only_flag') THEN
@@ -61,7 +61,7 @@ $$ LANGUAGE plpgsql;
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias
                        FROM pg_trigger
                        WHERE tgname = 'tag_entity_set_updated_at') THEN
             CREATE TRIGGER tag_entity_set_updated_at
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS tag_synonym
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias
                        FROM pg_constraint
                        WHERE conname = 'tag_synonym_tag_fk') THEN
             ALTER TABLE tag_synonym
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS tag_relation
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias2
                        FROM pg_constraint
                        WHERE conname = 'tag_relation_from_fk') THEN
             ALTER TABLE tag_relation
@@ -163,7 +163,7 @@ $$
                     FOREIGN KEY (tenant, from_tag_id) REFERENCES tag_entity (tenant, id)
                         ON DELETE CASCADE;
         END IF;
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias
                        FROM pg_constraint
                        WHERE conname = 'tag_relation_to_fk') THEN
             ALTER TABLE tag_relation
@@ -306,7 +306,7 @@ CREATE TABLE IF NOT EXISTS tag_redirect
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias
                        FROM pg_constraint
                        WHERE conname = 'tag_redirect_to_fk') THEN
             ALTER TABLE tag_redirect

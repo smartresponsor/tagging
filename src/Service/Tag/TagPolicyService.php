@@ -14,15 +14,15 @@ use InvalidArgumentException;
 /**
  *
  */
-final class TagPolicyService
+final readonly class TagPolicyService
 {
     /**
      * @param \App\Service\Tag\TagValidator $validator
      * @param array $cfg
      */
     public function __construct(
-        private readonly TagValidator $validator,
-        private readonly array        $cfg // from config/tag_policy.yaml
+        private TagValidator $validator,
+        private array        $cfg // from config/tag_policy.yaml
     )
     {
     }

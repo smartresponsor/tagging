@@ -11,12 +11,12 @@ namespace App\Service\Tag;
 /**
  *
  */
-final class QuotaService
+final readonly class QuotaService
 {
     /**
      * @param array $cfg
      */
-    public function __construct(private readonly array $cfg = [])
+    public function __construct(private array $cfg = [])
     {
     }
 

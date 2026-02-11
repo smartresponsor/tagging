@@ -19,15 +19,15 @@ use InvalidArgumentException;
 /**
  *
  */
-final class TagService
+final readonly class TagService
 {
     /**
      * @param \App\ServiceInterface\Tag\TagRepositoryInterface $repo
      * @param \App\Service\Tag\TagConfig $cfg
      */
     public function __construct(
-        private readonly TagRepositoryContract $repo,
-        private readonly TagConfig             $cfg = new TagConfig()
+        private TagRepositoryContract $repo,
+        private TagConfig             $cfg = new TagConfig()
     )
     {
     }
@@ -159,14 +159,5 @@ final class TagService
         }
     }
 
-    /**
-     * @param string $tenantId
-     * @return \App\Service\Tag\TagPolicyEngine
-     */
-    private function loadPolicyEngine(string $tenantId): TagPolicyEngine
-    {
-        $policy = $this->repo->getPolicy($tenantId);
-        return new TagPolicyEngine($policy);
-    }
 
 }

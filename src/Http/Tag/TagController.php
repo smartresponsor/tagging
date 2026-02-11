@@ -21,7 +21,7 @@ use InvalidArgumentException;
 /**
  *
  */
-final class TagController
+final readonly class TagController
 {
     /**
      * @param \App\Service\Tag\TagEntityService $queryService
@@ -31,11 +31,11 @@ final class TagController
      * @param \App\Http\Tag\Responder\TagWriteResponder $responder
      */
     public function __construct(
-        private readonly TagEntityService  $queryService,
-        private readonly CreateTag         $createTag,
-        private readonly PatchTag          $patchTag,
-        private readonly DeleteTag         $deleteTag,
-        private readonly TagWriteResponder $responder,
+        private TagEntityService  $queryService,
+        private CreateTag         $createTag,
+        private PatchTag          $patchTag,
+        private DeleteTag         $deleteTag,
+        private TagWriteResponder $responder,
     )
     {
     }

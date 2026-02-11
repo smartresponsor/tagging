@@ -28,6 +28,6 @@ final class TagGraphTest extends TestCase
         $adj = [
             $b => [TagRelation::create('1', $b, $c, 'broader')],
         ];
-        static::assertFalse(TagGraph::wouldCreateCycle($a, $b, $adj));
+        TagGraphTest::assertFalse(TagGraph::wouldCreateCycle($a, $b, $adj));
     }
 }

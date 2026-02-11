@@ -11,15 +11,15 @@ namespace App\Data\Tag;
 /**
  *
  */
-final class FileTagAssignmentRepository implements TagAssignmentRepositoryInterface
+final readonly class FileTagAssignmentRepository implements TagAssignmentRepositoryInterface
 {
     /**
      * @param string $path
      */
-    public function __construct(private readonly string $path)
+    public function __construct(private string $path)
     {
         $dir = dirname($path);
-        if (!is_dir($dir)) @mkdir($dir, 0777, true);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
         if (!file_exists($path)) file_put_contents($path, '');
     }
 

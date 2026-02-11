@@ -7,7 +7,7 @@ ALTER TABLE tag_entity
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias
                        FROM pg_constraint
                        WHERE conname = 'tag_entity_slug_lower_ck') THEN
             ALTER TABLE tag_entity
@@ -19,7 +19,7 @@ $$;
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1
+        IF NOT EXISTS (SELECT 1 as alias
                        FROM pg_constraint
                        WHERE conname = 'tag_entity_slug_len_ck') THEN
             ALTER TABLE tag_entity

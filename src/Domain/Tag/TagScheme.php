@@ -13,7 +13,7 @@ use DateTimeImmutable;
 /**
  *
  */
-final class TagScheme
+final readonly class TagScheme
 {
     /**
      * @param string $id
@@ -22,10 +22,10 @@ final class TagScheme
      * @param \DateTimeImmutable $createdAt
      */
     public function __construct(
-        private readonly string            $id,
-        private readonly string            $name,
-        private readonly ?string           $locale,
-        private readonly DateTimeImmutable $createdAt
+        private string            $id,
+        private string            $name,
+        private ?string           $locale,
+        private DateTimeImmutable $createdAt
     )
     {
     }

@@ -19,7 +19,7 @@ use PDOException;
 /**
  *
  */
-final class CreateTag
+final readonly class CreateTag
 {
     /**
      * @param \App\ServiceInterface\Tag\TagEntityRepositoryInterface $repo
@@ -27,9 +27,9 @@ final class CreateTag
      * @param \App\ServiceInterface\Tag\TransactionRunnerInterface $transaction
      */
     public function __construct(
-        private readonly TagEntityRepositoryInterface $repo,
-        private readonly SlugPolicy                   $slugPolicy,
-        private readonly TransactionRunnerInterface   $transaction,
+        private TagEntityRepositoryInterface $repo,
+        private SlugPolicy                   $slugPolicy,
+        private TransactionRunnerInterface   $transaction,
     )
     {
     }

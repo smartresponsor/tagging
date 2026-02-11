@@ -10,9 +10,9 @@ headers:
   timestamp: "X-SR-Timestamp"
   nonce: "X-SR-Nonce"
 canonical:
-# method + '
-  ' + path + '
-  ' + timestamp + '
-  ' + nonce + '
-  ' + sha256(body)
+  # method + '
+    ' + path + '
+    ' + timestamp + '
+    ' + nonce + '
+    ' + sha256(body)
 include_body_sha256: true

@@ -13,12 +13,12 @@ use App\ServiceInterface\Tag\TagRepositoryInterface as TagRepositoryContract;
 /**
  *
  */
-final class TagPropagationService
+final readonly class TagPropagationService
 {
     /**
      * @param \App\ServiceInterface\Tag\TagRepositoryInterface $repo
      */
-    public function __construct(private readonly TagRepositoryContract $repo)
+    public function __construct(private TagRepositoryContract $repo)
     {
     }
 
@@ -28,6 +28,7 @@ final class TagPropagationService
      * @param string $key
      * @param string $value
      * @return void
+     * @throws \Random\RandomException
      */
     public function putClassificationForTag(string $tenantId, string $tagId, string $key, string $value): void
     {
@@ -40,6 +41,7 @@ final class TagPropagationService
      * @param string $key
      * @param string $value
      * @return void
+     * @throws \Random\RandomException
      */
     public function putClassificationForScheme(string $tenantId, string $schemeName, string $key, string $value): void
     {
@@ -50,6 +52,7 @@ final class TagPropagationService
      * @param string $tenantId
      * @param string $tagId
      * @return int
+     * @throws \Random\RandomException
      */
     public function replayForTag(string $tenantId, string $tagId): int
     {
@@ -71,6 +74,7 @@ final class TagPropagationService
      * @param string $tenantId
      * @param string $schemeName
      * @return int
+     * @throws \Random\RandomException
      */
     public function replayForScheme(string $tenantId, string $schemeName): int
     {

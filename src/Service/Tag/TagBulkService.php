@@ -13,12 +13,12 @@ use App\ServiceInterface\Tag\TagBulkRepositoryInterface;
 /**
  *
  */
-final class TagBulkService
+final readonly class TagBulkService
 {
     /**
      * @param \App\ServiceInterface\Tag\TagBulkRepositoryInterface $repo
      */
-    public function __construct(private readonly TagBulkRepositoryInterface $repo)
+    public function __construct(private TagBulkRepositoryInterface $repo)
     {
     }
 

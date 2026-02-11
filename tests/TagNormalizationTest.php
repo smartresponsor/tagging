@@ -21,6 +21,6 @@ final class TagNormalizationTest extends TestCase
      */
     public function testSlugify(): void
     {
-        static::assertSame('hello-world', TagNormalizer::slugify(' Hello  World '));
+        TagNormalizationTest::assertSame('hello-world', TagNormalizer::slugify(' Hello  World '));
     }
 }

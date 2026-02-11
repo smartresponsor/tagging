@@ -23,10 +23,10 @@ final readonly class TagUnassigned
      * @param \DateTimeImmutable $at
      */
     public function __construct(
-        public string             $tenant,
-        public string             $tagId,
-        public string             $entityType,
-        public string             $entityId,
+        public string            $tenant,
+        public string            $tagId,
+        public string            $entityType,
+        public string            $entityId,
         public DateTimeImmutable $at
     )
     {

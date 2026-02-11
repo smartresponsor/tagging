@@ -13,14 +13,14 @@ use PDO;
 /**
  *
  */
-final class SlugPolicy
+final readonly class SlugPolicy
 {
     /** @param list<string> $reserved */
     public function __construct(
-        private readonly PDO       $pdo,
-        private readonly Slugifier $slugifier,
-        private readonly array     $reserved = [],
-        private readonly int       $maxLen = 64,
+        private PDO       $pdo,
+        private Slugifier $slugifier,
+        private array     $reserved = [],
+        private int       $maxLen = 64,
     )
     {
     }

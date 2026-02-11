@@ -11,15 +11,17 @@ namespace App\Cache\Tag;
 /**
  *
  */
-final class SuggestCache
+final readonly class SuggestCache
 {
     /**
      * @param string $dir
      * @param int $ttl
      */
-    public function __construct(private readonly string $dir = 'var/cache/tag-suggest', private readonly int $ttl = 60)
+    public function __construct(private string $dir = 'var/cache/tag-suggest', private int $ttl = 60)
     {
-        if (!is_dir($this->dir)) @mkdir($this->dir, 0777, true);
+        if (!is_dir($this->dir)) {
+            mkdir($this->dir, 0777, true);
+        }
     }
 
     /**
@@ -54,7 +56,9 @@ final class SuggestCache
         $file = $this->key($tenant, $q, $limit);
         if (!is_file($file)) return ['hit' => false];
         if (filemtime($file) + $this->ttl < time()) {
-            @unlink($file);
+            if (is_file($file)) {
+                unlink($file);
+            }
             return ['hit' => false];
         }
         $raw = file_get_contents($file);

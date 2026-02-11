@@ -13,13 +13,13 @@ use App\Service\Tag\Webhook\TagWebhookSender;
 /**
  *
  */
-final class TagAuditEmitter
+final readonly class TagAuditEmitter
 {
     /**
      * @param array $cfg
      * @param \App\Service\Tag\Webhook\TagWebhookSender|null $sender
      */
-    public function __construct(private readonly array $cfg, private readonly ?TagWebhookSender $sender = null)
+    public function __construct(private array $cfg, private ?TagWebhookSender $sender = null)
     {
     }
 
@@ -51,6 +51,7 @@ final class TagAuditEmitter
      * @param string $type
      * @param array $payload
      * @return void
+     * @throws \Random\RandomException
      */
     private function fanout(string $type, array $payload): void
     {

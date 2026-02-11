@@ -24,7 +24,7 @@ final class SearchService
     {
     }
 
-    /** @return array{items:array<int,array<string,mixed>>, total:int, nextPageToken:?string, cacheHit:bool} */
+    /** @return array{items:array<int,array<string,mixed>>, total:int, nextPageToken: ?string, cacheHit:bool} */
     public function search(string $tenant, string $q, int $pageSize = 20, ?string $pageToken = null): array
     {
         $offset = 0;

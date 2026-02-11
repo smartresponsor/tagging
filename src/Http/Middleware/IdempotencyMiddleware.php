@@ -13,7 +13,7 @@ namespace App\Http\Middleware;
  */
 final class IdempotencyMiddleware
 {
-    /** @return array{headers:array<string,string>,query:array<string,mixed>,body:mixed,idemKey:?string} */
+    /** @return array{headers:array<string,string>,query:array<string,mixed>,body:mixed,idemKey: ?string} */
     public function normalize(array $server, array $get, ?string $rawBody): array
     {
         $headers = [];

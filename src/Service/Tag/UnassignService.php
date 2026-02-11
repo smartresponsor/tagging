@@ -60,7 +60,7 @@ final class UnassignService
             $this->pdo->commit();
             if ($idemKey && $this->idem) $this->idem->complete($tenant, $idemKey, ['ok' => true]);
             return ['ok' => true, 'not_found' => !$deleted];
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             if ($this->pdo->inTransaction()) $this->pdo->rollBack();
             return ['ok' => false];
         }

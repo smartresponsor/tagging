@@ -3,258 +3,173 @@ param(
   [string]$BaseRef = "origin/master",
   [string]$HeadRef = "HEAD",
   [switch]$IncludeUntracked,
-
   [string]$OutDir = "report/slice",
-  [string]$ZipFile = "",
-  [switch]$WriteMap,
-
-  [string[]]$ExcludeDir = @(),
-  [string[]]$ExcludeExt = @()
+  [switch]$WriteMap
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Find-RepoRoot([string]$startPath) {
-  $p = (Resolve-Path -LiteralPath $startPath).Path
-  while ($true) {
-    $gitDir = Join-Path $p ".git"
-    $ghDir  = Join-Path $p ".github"
-
-    if (Test-Path -LiteralPath $gitDir -PathType Container) { return $p }
-    if (Test-Path -LiteralPath $ghDir  -PathType Container) { return $p }
-
-    $parent = Split-Path -Parent $p
-    if ($parent -eq $p -or [string]::IsNullOrWhiteSpace($parent)) { break }
-    $p = $parent
-  }
-  return $null
-}
-
-function Load-SliceExcludePolicy([string]$repoRoot) {
-  $p = Join-Path $repoRoot ".commanding/policy/slice-exclude.json"
-  if (!(Test-Path -LiteralPath $p)) { return $null }
+function RepoRoot([string]$RootArg) {
+  if ($RootArg -and (Test-Path $RootArg)) { return (Resolve-Path $RootArg).Path }
   try {
-    $raw = Get-Content -LiteralPath $p -Raw -Encoding UTF8
-    return ($raw | ConvertFrom-Json)
-  } catch {
-    throw "Failed to read slice exclude policy at: $p"
-  }
+    $r = git rev-parse --show-toplevel 2>$null
+    if ($LASTEXITCODE -eq 0 -and $r) { return $r.Trim() }
+  } catch {}
+  throw "Not a git repository (or git not available)."
 }
 
-function Merge-Unique([string[]]$base, [object]$extra) {
-  $set = New-Object 'System.Collections.Generic.HashSet[string]'
-  foreach ($x in $base) { if (![string]::IsNullOrWhiteSpace($x)) { [void]$set.Add($x) } }
-  if ($null -ne $extra) {
-    foreach ($x in $extra) { if (![string]::IsNullOrWhiteSpace($x)) { [void]$set.Add([string]$x) } }
-  }
-  return @($set)
+function LoadExcludeDir([string]$CommandingDir) {
+  $p = Join-Path $CommandingDir "policy/slice-exclude.json"
+  if (-not (Test-Path $p)) { return @() }
+  try {
+    $policy = Get-Content -Raw -Path $p | ConvertFrom-Json
+    if ($policy.excludeDir) { return @($policy.excludeDir) }
+  } catch {}
+  return @()
 }
 
-function Normalize-RelPath([string]$p) {
-  return ($p -replace '\\','/').TrimStart('/')
-}
-
-function Should-ExcludeRelPath([string]$rel) {
-  $r = Normalize-RelPath $rel
-  $parts = $r.Split('/')
-  foreach ($seg in $parts) {
-    foreach ($d in $ExcludeDir) {
-      if ($seg -ieq $d) { return $true }
-    }
-  }
-  $ext = [System.IO.Path]::GetExtension($r)
-  if (![string]::IsNullOrWhiteSpace($ext)) {
-    foreach ($e in $ExcludeExt) {
-      if ($ext -ieq $e) { return $true }
-    }
+function IsExcluded([string]$RelPath, [string[]]$ExcludeDir) {
+  $norm = $RelPath -replace "\\","/"
+  foreach ($d in $ExcludeDir) {
+    $dn = $d -replace "\\","/"
+    if ($norm -eq $dn) { return $true }
+    if ($norm.StartsWith($dn.TrimEnd("/") + "/")) { return $true }
   }
   return $false
 }
 
-function Assert-GitAvailable() {
-  $git = Get-Command git -ErrorAction SilentlyContinue
-  if ($null -eq $git) { throw "git not found in PATH" }
+function Sha256File([string]$Path) {
+  $h = Get-FileHash -Algorithm SHA256 -Path $Path
+  return $h.Hash.ToLowerInvariant()
 }
 
-function Get-GitDelta([string]$repoRoot, [string]$baseRef, [string]$headRef) {
-  Push-Location $repoRoot
+function EnsureDir([string]$p) {
+  if (-not (Test-Path $p)) { New-Item -ItemType Directory -Path $p | Out-Null }
+}
+
+function WriteNdjson([string]$Path, [object[]]$Items) {
+  $sb = New-Object System.Text.StringBuilder
+  foreach ($it in $Items) {
+    $line = ($it | ConvertTo-Json -Compress)
+    [void]$sb.AppendLine($line)
+  }
+  [IO.File]::WriteAllText($Path, $sb.ToString(), (New-Object System.Text.UTF8Encoding($false)))
+}
+
+function ZipFiles([string]$ZipPath, [string]$RootAbs, [object[]]$Files) {
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  if (Test-Path $ZipPath) { Remove-Item -Force $ZipPath }
+  $zip = [System.IO.Compression.ZipFile]::Open($ZipPath, [System.IO.Compression.ZipArchiveMode]::Create)
+
   try {
-    $lines = git diff --name-status "$baseRef..$headRef"
-    $items = @()
-    foreach ($l in $lines) {
-      if ([string]::IsNullOrWhiteSpace($l)) { continue }
-      $cols = $l -split "`t"
-      $statusRaw = $cols[0]
-      if ($statusRaw -match '^R\d+$') {
-        # Rename: R100 old new
-        if ($cols.Length -ge 3) {
-          $items += [pscustomobject]@{ status = "R"; path = $cols[2]; oldPath = $cols[1] }
-        }
-        continue
-      }
-
-      $status = $statusRaw.Trim()
-      if ($cols.Length -ge 2) {
-        $items += [pscustomobject]@{ status = $status; path = $cols[1]; oldPath = $null }
-      }
+    foreach ($f in $Files) {
+      if ($f.status -eq "D") { continue } # deletes are only in manifest
+      $rel = $f.path -replace "\\","/"
+      $abs = Join-Path $RootAbs $rel
+      if (-not (Test-Path $abs)) { continue }
+      # ensure directory entries not needed; zip stores full path within entry
+      [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $abs, $rel, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
     }
+  } finally {
+    $zip.Dispose()
+  }
+}
 
-    if ($IncludeUntracked) {
-      $u = git ls-files --others --exclude-standard
-      foreach ($p in $u) {
-        if ([string]::IsNullOrWhiteSpace($p)) { continue }
-        $items += [pscustomobject]@{ status = "U"; path = $p; oldPath = $null }
-      }
+function MiniMap([string]$MapPath, [object[]]$Files) {
+  $paths = @($Files | Where-Object { $_.status -ne "D" } | ForEach-Object { $_.path }) | Sort-Object -Unique
+  $lines = @()
+  $lines += "# slice-map (delta)"
+  $lines += ""
+  foreach ($p in $paths) { $lines += $p }
+  [IO.File]::WriteAllLines($MapPath, $lines, (New-Object System.Text.UTF8Encoding($false)))
+}
+
+$rootAbs = RepoRoot $Root
+$commandingDir = Join-Path $rootAbs ".commanding"
+$excludeDir = LoadExcludeDir $commandingDir
+
+$outAbs = Join-Path $rootAbs $OutDir
+EnsureDir $outAbs
+
+# Collect changes from git
+$diff = git diff --name-status "$BaseRef..$HeadRef"
+if ($LASTEXITCODE -ne 0) { throw "git diff failed for range $BaseRef..$HeadRef" }
+
+$items = @()
+foreach ($line in $diff) {
+  if (-not $line) { continue }
+  $parts = $line -split "`t"
+  $statusRaw = $parts[0].Trim()
+  $path = $parts[-1].Trim()
+  if (-not $path) { continue }
+
+  # normalize rename status (Rxxx)
+  $status = $statusRaw
+  if ($statusRaw.StartsWith("R")) { $status = "R" }
+
+  if (IsExcluded $path $excludeDir) { continue }
+
+  $abs = Join-Path $rootAbs $path
+  $size = 0
+  $sha = ""
+  if ($status -ne "D" -and (Test-Path $abs)) {
+    $fi = Get-Item -LiteralPath $abs
+    $size = [int64]$fi.Length
+    $sha = Sha256File $abs
+  }
+
+  $items += [pscustomobject]@{
+    path = ($path -replace "\\","/")
+    status = $status
+    sha256 = $sha
+    size = $size
+  }
+}
+
+if ($IncludeUntracked) {
+  $untracked = git ls-files --others --exclude-standard
+  foreach ($p in $untracked) {
+    if (-not $p) { continue }
+    if (IsExcluded $p $excludeDir) { continue }
+    $abs = Join-Path $rootAbs $p
+    if (-not (Test-Path $abs)) { continue }
+    $fi = Get-Item -LiteralPath $abs
+    $items += [pscustomobject]@{
+      path = ($p -replace "\\","/")
+      status = "A"
+      sha256 = (Sha256File $abs)
+      size = [int64]$fi.Length
     }
-
-    return $items
-  } finally {
-    Pop-Location
   }
 }
 
-function Ensure-Dir([string]$p) {
-  if (!(Test-Path -LiteralPath $p)) {
-    New-Item -ItemType Directory -Force -Path $p | Out-Null
-  }
-}
+# Deduplicate by path, keep last
+$byPath = @{}
+foreach ($it in $items) { $byPath[$it.path] = $it }
+$items = @($byPath.Values | Sort-Object path)
 
-function Write-NdjsonLine([string]$file, [object]$obj) {
-  ($obj | ConvertTo-Json -Compress) | Add-Content -LiteralPath $file -Encoding UTF8
-}
-
-function Add-FileToZip($zipArchive, [string]$repoRoot, [string]$relPath) {
-  $r = Normalize-RelPath $relPath
-  $abs = Join-Path $repoRoot $r
-  if (!(Test-Path -LiteralPath $abs -PathType Leaf)) { return $false }
-
-  $entryName = $r
-  $entry = $zipArchive.CreateEntry($entryName, [System.IO.Compression.CompressionLevel]::Optimal)
-  $src = [System.IO.File]::OpenRead($abs)
-  try {
-    $dst = $entry.Open()
-    try { $src.CopyTo($dst) } finally { $dst.Dispose() }
-  } finally {
-    $src.Dispose()
-  }
-  return $true
-}
-
-# --- Resolve repo root ---
-$repoRoot = $null
-if (![string]::IsNullOrWhiteSpace($Root)) {
-  $repoRoot = Find-RepoRoot $Root
-} else {
-  $repoRoot = Find-RepoRoot (Get-Location).Path
-}
-if (-not $repoRoot) { throw "Repository root not found: no .git or .github in parent chain." }
-
-# --- Load exclude policy and merge with args ---
-$policy = Load-SliceExcludePolicy $repoRoot
-if ($null -ne $policy) {
-  if ($null -ne $policy.excludeDir) { $ExcludeDir = Merge-Unique $ExcludeDir $policy.excludeDir }
-  if ($null -ne $policy.excludeExt) { $ExcludeExt = Merge-Unique $ExcludeExt $policy.excludeExt }
-}
-
-Assert-GitAvailable
-
-# --- Collect delta ---
-$delta = Get-GitDelta -repoRoot $repoRoot -baseRef $BaseRef -headRef $HeadRef
-
-# Filter exclusions
-$filtered = @()
-foreach ($i in $delta) {
-  if ($i.status -eq "D") {
-    # Keep deletes even if excluded; deletion still matters for the model.
-    $filtered += $i
-    continue
-  }
-  if (Should-ExcludeRelPath $i.path) { continue }
-  $filtered += $i
-}
-
-# --- Prepare output paths ---
-$outAbs = Join-Path $repoRoot $OutDir
-Ensure-Dir $outAbs
-
-$stamp = (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ")
-if ([string]::IsNullOrWhiteSpace($ZipFile)) {
-  $ZipFile = Join-Path $outAbs ("delta-slice-" + $stamp + ".zip")
-} elseif (![System.IO.Path]::IsPathRooted($ZipFile)) {
-  $ZipFile = Join-Path $repoRoot $ZipFile
-}
-
-$metaFile = Join-Path $outAbs ("slice-meta-" + $stamp + ".json")
-$manifestFile = Join-Path $outAbs ("slice-manifest-" + $stamp + ".ndjson")
-$mapFile = Join-Path $outAbs ("slice-map-" + $stamp + ".md")
-
-# --- Write meta ---
 $meta = [pscustomobject]@{
   mode = "delta"
-  generatedAtUtc = $stamp
   baseRef = $BaseRef
   headRef = $HeadRef
   includeUntracked = [bool]$IncludeUntracked
-  outDir = (Normalize-RelPath $OutDir)
-}
-($meta | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $metaFile -Encoding UTF8
-
-# --- Create zip & manifest ---
-Add-Type -AssemblyName System.IO.Compression
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-
-if (Test-Path -LiteralPath $ZipFile) { Remove-Item -LiteralPath $ZipFile -Force }
-
-$zip = [System.IO.Compression.ZipFile]::Open($ZipFile, [System.IO.Compression.ZipArchiveMode]::Create)
-try {
-  foreach ($i in $filtered) {
-    $p = Normalize-RelPath $i.path
-    if ($i.status -eq "D") {
-      Write-NdjsonLine $manifestFile ([pscustomobject]@{ path=$p; status="D"; sha256=$null; size=$null; oldPath=$i.oldPath })
-      continue
-    }
-
-    $abs = Join-Path $repoRoot $p
-    if (!(Test-Path -LiteralPath $abs -PathType Leaf)) {
-      Write-NdjsonLine $manifestFile ([pscustomobject]@{ path=$p; status=$i.status; sha256=$null; size=$null; oldPath=$i.oldPath; note="missing-on-disk" })
-      continue
-    }
-
-    $h = (Get-FileHash -LiteralPath $abs -Algorithm SHA256).Hash.ToLowerInvariant()
-    $size = (Get-Item -LiteralPath $abs).Length
-
-    $added = Add-FileToZip -zipArchive $zip -repoRoot $repoRoot -relPath $p
-    $note = $null
-    if (-not $added) { $note = "zip-skip" }
-
-    Write-NdjsonLine $manifestFile ([pscustomobject]@{ path=$p; status=$i.status; sha256=$h; size=$size; oldPath=$i.oldPath; note=$note })
-  }
-} finally {
-  $zip.Dispose()
+  generatedAt = (Get-Date).ToUniversalTime().ToString("o")
 }
 
-# --- Optional: write mini-map ---
-if ($WriteMap) {
-  $paths = @()
-  foreach ($i in $filtered) {
-    if ($i.status -eq "D") { continue }
-    $paths += (Normalize-RelPath $i.path)
-  }
-  $paths = $paths | Sort-Object -Unique
+$metaPath = Join-Path $outAbs "slice-meta.json"
+$manifestPath = Join-Path $outAbs "slice-manifest.ndjson"
+$mapPath = Join-Path $outAbs "slice-map.md"
+$zipPath = Join-Path $outAbs "delta-slice.zip"
 
-  $lines = @()
-  $lines += "# Slice map (delta)"
-  $lines += ""
-  $lines += ("baseRef: " + $BaseRef)
-  $lines += ("headRef: " + $HeadRef)
-  $lines += ("items: " + $paths.Count)
-  $lines += ""
-  foreach ($p in $paths) { $lines += ("- " + $p) }
-  ($lines -join "`n") | Set-Content -LiteralPath $mapFile -Encoding UTF8
-}
+$meta | ConvertTo-Json -Depth 5 | Out-File -FilePath $metaPath -Encoding utf8
+WriteNdjson $manifestPath $items
+if ($WriteMap) { MiniMap $mapPath $items }
 
-Write-Host ("OK: " + $ZipFile)
-Write-Host ("meta: " + $metaFile)
-Write-Host ("manifest: " + $manifestFile)
-if ($WriteMap) { Write-Host ("map: " + $mapFile) }
+ZipFiles $zipPath $rootAbs $items
+
+Write-Host "OK delta slice:"
+Write-Host " - $zipPath"
+Write-Host " - $metaPath"
+Write-Host " - $manifestPath"
+if ($WriteMap) { Write-Host " - $mapPath" }

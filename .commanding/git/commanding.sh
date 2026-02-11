@@ -1,71 +1,133 @@
 #!/usr/bin/env bash
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
-set -uo pipefail
+set -euo pipefail
 
-MENU_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+COMMANDING_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+MENU_DIR="$COMMANDING_DIR/git"
+
+repo_root() {
+  git rev-parse --show-toplevel 2>/dev/null || true
+}
+
+pause_key() {
+  read -rsn1 _ 2>/dev/null || true
+}
 
 print_menu() {
-  printf '%s\n' 'Git'
-  printf '\n'
-  printf '%s\n' ' 1) Diff'
-  printf '%s\n' ' 2) Status'
-  printf '%s\n' ' 3) Sync'
-  printf '\n'
-  printf '%s\n' ' 0) Back'
-  printf '%s\n' ' r) Repeat'
-  printf '%s\n' ' ------------------'
-  printf '%s\n' ' Empty/space = back'
+  printf '%s\n' ''
+  printf '%s\n' ' Git'
+  printf '%s\n' ' ------------------------'
+  printf '%s\n' ' 1 Status'
+  printf '%s\n' ' 2 Diff'
+  printf '%s\n' ' 3 Sync'
+  printf '%s\n' ' 4 Slice FULL (map+zip)'
+  printf '%s\n' ' 5 Slice DELTA (origin/master..HEAD)'
+  printf '%s\n' ' 6 Chain: Sync + Delta'
+  printf '%s\n' ''
+  printf '%s\n' ' 0 Back'
+  printf '%s\n' ' ------------------------'
+  printf '%s\n' ' Press digit (no Enter)'
 }
 
 run_file() {
   local f="$1"
   if [ ! -f "$MENU_DIR/$f" ]; then
     printf '%s\n' "Missing: $f"
-    read -r -p 'Press Enter... ' _ || true
+    pause_key
+    return 1
+  fi
+  bash "$MENU_DIR/$f"
+}
+
+pwsh_bin() {
+  if command -v pwsh >/dev/null 2>&1; then
+    printf '%s' 'pwsh'
     return 0
   fi
-
-  bash "$MENU_DIR/$f"
-  local rc=$?
-  if [ $rc -ne 0 ]; then
-    printf '\n%s\n' "Exit code: $rc"
-    read -r -p 'Press Enter... ' _ || true
+  if command -v powershell >/dev/null 2>&1; then
+    printf '%s' 'powershell'
+    return 0
   fi
-
-  return 0
+  return 1
 }
 
-dispatch() {
-  local line="${1:-}"
-
-  if [[ "$line" =~ ^[[:space:]]*$ ]]; then
-    exit 0
-  fi
-
-  case "$line" in
-    0) exit 0 ;;
-    r|R) return 0 ;;
-    1) run_file 'git_diff.sh' ;;
-    2) run_file 'git_status.sh' ;;
-    3) run_file 'git_sync.sh' ;;
-    *) printf '%s\n' 'Invalid choice'; sleep 1 ;;
-  esac
+ensure_dir() {
+  local d="$1"
+  mkdir -p "$d"
 }
 
-main() {
-  if [ $# -ge 1 ]; then
-    dispatch "$1"
-    exit 0
+slice_full() {
+  local root
+  root="$(repo_root)"
+  if [ -z "${root:-}" ]; then
+    printf '%s\n' "Not a git repository."
+    pause_key
+    return 1
   fi
 
+  ensure_dir "$root/report/slice"
+
+  local ps
+  ps="$(pwsh_bin)" || { printf '%s\n' "pwsh/powershell not found."; pause_key; return 1; }
+
+  "$ps" "$COMMANDING_DIR/ps1/repo-map-builder.ps1" -MakeZip -IncludeFiles \
+    -OutFile "$root/report/slice/repo-map.md" \
+    -ZipFile "$root/report/slice/full-slice.zip" | cat
+
+  printf '%s\n' ''
+  printf '%s\n' 'Send to ChatGPT:'
+  printf '%s\n' " - report/slice/full-slice.zip"
+  printf '%s\n' " - report/slice/repo-map.md"
+  pause_key
+}
+
+slice_delta() {
+  local root
+  root="$(repo_root)"
+  if [ -z "${root:-}" ]; then
+    printf '%s\n' "Not a git repository."
+    pause_key
+    return 1
+  fi
+
+  ensure_dir "$root/report/slice"
+
+  local ps
+  ps="$(pwsh_bin)" || { printf '%s\n' "pwsh/powershell not found."; pause_key; return 1; }
+
+  "$ps" "$COMMANDING_DIR/ps1/delta-slice-builder.ps1" \
+    -BaseRef "origin/master" \
+    -HeadRef "HEAD" \
+    -IncludeUntracked \
+    -OutDir "$root/report/slice" \
+    -WriteMap | cat
+
+  printf '%s\n' ''
+  printf '%s\n' 'Send to ChatGPT:'
+  printf '%s\n' " - report/slice/delta-slice.zip"
+  printf '%s\n' " - report/slice/slice-meta.json"
+  printf '%s\n' " - report/slice/slice-manifest.ndjson"
+  printf '%s\n' " - report/slice/slice-map.md"
+  pause_key
+}
+
+main_loop() {
   while true; do
-    clear
     print_menu
-    printf '%s' 'Select: '
-    read -r line || true
-    printf '\n'
-    dispatch "${line:-}"
+    local ch=""
+    read -rsn1 ch 2>/dev/null || return 0
+
+    case "$ch" in
+      0) return 0 ;;
+      1) run_file "git_status.sh"; pause_key ;;
+      2) run_file "git_diff.sh"; pause_key ;;
+      3) run_file "git_sync.sh"; pause_key ;;
+      4) slice_full ;;
+      5) slice_delta ;;
+      6) run_file "git_sync.sh" || true; slice_delta ;;
+      *) ;;
+    esac
   done
 }
 
-main "$@"
+main_loop

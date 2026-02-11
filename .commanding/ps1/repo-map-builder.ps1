@@ -22,29 +22,24 @@ param(
   # include files in map (default: folders only)
   [switch]$IncludeFiles
 )
-
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-
-function Load-SliceExcludePolicy([string]$repoRoot) {
-  $p = Join-Path $repoRoot ".commanding/policy/slice-exclude.json"
-  if (!(Test-Path -LiteralPath $p)) { return $null }
+# Load shared slice exclude policy if present
+$PolicyPath = Join-Path $PSScriptRoot "..\policy\slice-exclude.json"
+if (Test-Path $PolicyPath) {
   try {
-    $raw = Get-Content -LiteralPath $p -Raw -Encoding UTF8
-    return ($raw | ConvertFrom-Json)
+    $policy = Get-Content -Raw -Path $PolicyPath | ConvertFrom-Json
+    if ($policy.excludeDir) {
+      $ExcludeDir = @($ExcludeDir + @($policy.excludeDir)) | Select-Object -Unique
+    }
+    if ($policy.excludeExt) {
+      }
+    }
   } catch {
-    throw "Failed to read slice exclude policy at: $p"
+    Write-Host "WARN: failed to load slice-exclude.json: $($_.Exception.Message)"
   }
 }
 
-function Merge-Unique([string[]]$base, [object]$extra) {
-  if ($null -eq $extra) { return $base }
-  $set = New-Object 'System.Collections.Generic.HashSet[string]'
-  foreach ($x in $base) { if (![string]::IsNullOrWhiteSpace($x)) { [void]$set.Add($x) } }
-  foreach ($x in $extra) { if (![string]::IsNullOrWhiteSpace($x)) { [void]$set.Add([string]$x) } }
-  return @($set)
-}
-
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
 function Find-RepoRoot([string]$startPath) {
   $p = (Resolve-Path -LiteralPath $startPath).Path
@@ -95,12 +90,6 @@ if (-not $repoRoot) {
 }
 
 $RootPath = $repoRoot
-
-$policy = Load-SliceExcludePolicy $RootPath
-if ($null -ne $policy) {
-  if ($null -ne $policy.excludeDir) { $ExcludeDir = Merge-Unique $ExcludeDir $policy.excludeDir }
-  if ($null -ne $policy.excludeExt) { $ExcludeExt = Merge-Unique $ExcludeExt $policy.excludeExt }
-}
 
 # Component name = repo root folder name
 $Component = Split-Path -Leaf $RootPath

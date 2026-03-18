@@ -1,56 +1,47 @@
 <?php
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
+
+$root = require __DIR__ . '/../_bootstrap.php';
+$data = json_decode((string)file_get_contents($root . '/fixtures/tag-demo.json'), true);
+if (!is_array($data)) {
+    fwrite(STDERR, "invalid fixture json\n");
+    exit(1);
+}
+$tenant = getenv('TENANT') ?: (string)($data['tenant'] ?? 'demo');
 $dsn = getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app';
 $user = getenv('DB_USER') ?: 'app';
 $pass = getenv('DB_PASS') ?: 'app';
-$tenant = getenv('TENANT') ?: 'demo';
-$tagFile = __DIR__ . '/../../seed/tag/tag-demo.ndjson';
-$linkFile = __DIR__ . '/../../seed/tag/tag-links-demo.ndjson';
-
-$pdo = new PDO($dsn, $user, $pass, [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-]);
-
-$pdo->exec('BEGIN');
-$insTag = $pdo->prepare('INSERT INTO tag_entity (id, tenant, slug, name, locale, weight)
- VALUES (:id,:tenant,:slug,:name,:locale,:weight)
- ON CONFLICT (tenant, slug) DO UPDATE SET name=EXCLUDED.name, locale=EXCLUDED.locale, weight=EXCLUDED.weight');
-$insLink = $pdo->prepare('INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id)
- VALUES (:tenant,:entity_type,:entity_id,:tag_id)
- ON CONFLICT (tenant, entity_type, entity_id, tag_id) DO NOTHING');
-
-$tags = 0;
-$links = 0;
-$fh = fopen($tagFile, 'r');
-if (!$fh) {
-    throw new RuntimeException('Cannot open tag-demo.ndjson');
-}
-while (($line = fgets($fh)) !== false) {
-    $o = json_decode($line, true);
-    if (!$o) continue;
-    $insTag->execute([
-        ':id' => $o['id'], ':tenant' => $tenant, ':slug' => $o['slug'], ':name' => $o['name'],
-        ':locale' => $o['locale'], ':weight' => (int)$o['weight'],
+$pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+$makeId = static function (string $slug): string {
+    $raw = strtoupper(preg_replace('/[^A-Z0-9]/', '', substr($slug, 0, 16)) ?: 'TAG');
+    return str_pad(substr($raw, 0, 26), 26, '0');
+};
+$insertTag = $pdo->prepare('INSERT INTO tag_entity (id, tenant, slug, name, locale, weight) VALUES (:id,:tenant,:slug,:name,:locale,:weight) ON CONFLICT (tenant, slug) DO UPDATE SET name = EXCLUDED.name, locale = EXCLUDED.locale, weight = EXCLUDED.weight');
+$findId = $pdo->prepare('SELECT id FROM tag_entity WHERE tenant = :tenant AND slug = :slug');
+$insertLink = $pdo->prepare('INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) VALUES (:tenant,:entity_type,:entity_id,:tag_id) ON CONFLICT DO NOTHING');
+foreach (($data['tags'] ?? []) as $tag) {
+    $slug = (string)($tag['slug'] ?? '');
+    $insertTag->execute([
+        'id' => $makeId($slug),
+        'tenant' => $tenant,
+        'slug' => $slug,
+        'name' => (string)($tag['name'] ?? $slug),
+        'locale' => (string)($tag['locale'] ?? 'en'),
+        'weight' => (int)($tag['weight'] ?? 0),
     ]);
-    $tags++;
 }
-fclose($fh);
-
-$fh = fopen($linkFile, 'r');
-if (!$fh) {
-    throw new RuntimeException('Cannot open tag-links-demo.ndjson');
-}
-while (($line = fgets($fh)) !== false) {
-    $o = json_decode($line, true);
-    if (!$o) continue;
-    $insLink->execute([
-        ':tenant' => $tenant, ':entity_type' => $o['entity_type'], ':entity_id' => $o['entity_id'], ':tag_id' => $o['tag_id'],
+foreach (($data['links'] ?? []) as $link) {
+    $findId->execute(['tenant' => $tenant, 'slug' => (string)($link['slug'] ?? '')]);
+    $tagId = $findId->fetchColumn();
+    if (!is_string($tagId) || $tagId === '') {
+        continue;
+    }
+    $insertLink->execute([
+        'tenant' => $tenant,
+        'entity_type' => (string)($link['entity_type'] ?? ''),
+        'entity_id' => (string)($link['entity_id'] ?? ''),
+        'tag_id' => $tagId,
     ]);
-    $links++;
 }
-fclose($fh);
-$pdo->exec('COMMIT');
-
-echo json_encode(['ok' => true, 'tags' => $tags, 'links' => $links, 'tenant' => $tenant]) . PHP_EOL;
+echo "tag-seed: ok\n";

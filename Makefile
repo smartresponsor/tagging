@@ -1,25 +1,48 @@
 .SILENT:
 
 help:
-	@echo "Targets: up, migrate, seed, smoke, slo, logs, down, ps"
-	@echo "Set SRC_ROOT in .env (see .env.example)."
+	@echo "Targets: up, migrate, migration-smoke, seed, clear, smoke, audit, preflight, serve, logs, down, ps"
+	@echo "Set DB_DSN/DB_USER/DB_PASS and optional TENANT=demo."
 
-up:
-	docker compose up -d --build
+lint:
+	composer run -n lint
+
+serve:
+	bash tools/local/tag-serve.sh
 
 migrate:
-	# apply all *.sql under ${SRC_ROOT}/db/postgres/migrations in filename order
-	bash tools/db/migrate.sh
+	php tools/db/tag-migrate.php
+
+migration-smoke:
+	bash tools/db/tag-migration-smoke.sh
 
 seed:
-	# run PHP seeder from E8
-	docker compose exec -T tag bash -lc 'TENANT=$${TENANT:-demo} php /app/tools/seed/tag-seed.php || true || true'
+	php tools/seed/tag-seed.php
+
+clear:
+	php tools/seed/tag-clear.php
 
 smoke:
-	bash tools/smoke/smoke.sh
+	php tools/smoke/tag-smoke.php
 
-slo:
-	bash tools/synthetic/slo.sh
+audit:
+	php tools/audit/tag-surface-audit.php
+	php tools/audit/tag-contract-audit.php
+	php tools/audit/tag-route-controller-audit.php
+	php tools/audit/tag-bootstrap-audit.php
+	php tools/audit/tag-version-audit.php
+	php tools/audit/tag-config-audit.php
+	php tools/audit/tag-sdk-audit.php
+
+preflight:
+	php tools/audit/tag-bootstrap-audit.php
+	php tools/audit/tag-version-audit.php
+	php tools/audit/tag-config-audit.php
+	php tools/audit/tag-sdk-audit.php
+	php tools/release/tag-preflight.php
+
+preflight:
+	php tools/release/tag-preflight.php
 
 logs:
 	docker compose logs -f --tail=200

@@ -1,17 +1,18 @@
 {
-  "envelope": "E31",
+  "envelope": "P90",
   "slice": "ATOM",
-  "goal": "Admin UI v4: Search, Assignments, Synonyms; bulk ops; keyboard shortcuts; HMAC V2 signing; tenant header.",
+  "goal": "Public-ready reconcile: status/runtime repair, semantic config gates, SDK audits, and honest docs.",
   "limits": {
-    "files_max": 16,
-    "loc_max": 1100
+    "files_max": 20,
+    "loc_max": 1500
   },
-  "created_at": "2025-10-27T19:35:45.642122",
+  "created_at": "2026-02-28T13:20:00-06:00",
   "canon": [
     "single-hyphen",
     "singular naming",
     "mirror interfaces",
     "EN-only comments",
     "copyright header"
-  ]
+  ],
+  "version": "p90-public-ready-reconcile"
 }

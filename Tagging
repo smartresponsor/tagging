@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+BASE="${BASE_URL:-http://127.0.0.1:8080}"
+START=$(date +%s%3N)
+curl -fsS "$BASE/tag/_status" >/dev/null
+END=$(date +%s%3N)
+LATENCY=$((END-START))
+echo "tag-slo: status_ms=$LATENCY"

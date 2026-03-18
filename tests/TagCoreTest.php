@@ -1,24 +1,17 @@
 <?php
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace Tests;
 
-use App\Infra\Tag\InMemoryTagRepository;
-use App\Service\Tag\TagService;
+use App\Infrastructure\Persistence\Tag\InMemoryTagRepository;
+use App\Service\Core\Tag\TagService;
 use PHPUnit\Framework\TestCase;
 
-/**
- *
- */
-
-/**
- *
- */
 final class TagCoreTest extends TestCase
 {
     /**
-     * @return void
      * @throws \Random\RandomException
      */
     public function testCreateAndList(): void
@@ -27,8 +20,8 @@ final class TagCoreTest extends TestCase
         $svc = new TagService($repo);
         $tenantId = 'tenant-a';
         $t = $svc->create($tenantId, 'alpha', 'Alpha');
-        TagCoreTest::assertNotEmpty($t->id());
+        self::assertNotEmpty($t->id());
         $items = $svc->list($tenantId, 'alp', 10);
-        TagCoreTest::assertCount(1, $items);
+        self::assertCount(1, $items);
     }
 }

@@ -1,24 +1,74 @@
+@baseUrl = http://127.0.0.1:8080
+@tenant = demo
+@tagId = 01HTESTASSIGN00000000000000
+
+### status
+GET {{baseUrl}}/tag/_status
+X-Tenant-Id: {{tenant}}
+
+### discovery
+GET {{baseUrl}}/tag/_surface
+X-Tenant-Id: {{tenant}}
+
 ### create
-POST http://localhost:8080/tag
-X-Tenant-Id: demo
+POST {{baseUrl}}/tag
+X-Tenant-Id: {{tenant}}
 Content-Type: application/json
 
 {
   "name": "Summer Sale 2026",
+  "slug": "summer-sale-2026",
+  "locale": "en",
   "weight": 10
 }
 
 ### get
-GET http://localhost:8080/tag/01HTESTASSIGN00000000000000
-X-Tenant-Id: demo
+GET {{baseUrl}}/tag/{{tagId}}
+X-Tenant-Id: {{tenant}}
+
+### patch
+PATCH {{baseUrl}}/tag/{{tagId}}
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "weight": 11
+}
 
 ### assign
-POST http://localhost:8080/tag/01HTESTASSIGN00000000000000/assign
-X-Tenant-Id: demo
+POST {{baseUrl}}/tag/{{tagId}}/assign
+X-Tenant-Id: {{tenant}}
 X-Idempotency-Key: op-1
 Content-Type: application/json
 
 {
-  "entity_type": "product",
-  "entity_id": "p-1001"
+  "entityType": "product",
+  "entityId": "p-1001"
 }
+
+### unassign
+POST {{baseUrl}}/tag/{{tagId}}/unassign
+X-Tenant-Id: {{tenant}}
+X-Idempotency-Key: op-2
+Content-Type: application/json
+
+{
+  "entityType": "product",
+  "entityId": "p-1001"
+}
+
+### list assignments
+GET {{baseUrl}}/tag/assignments?entityType=product&entityId=p-1001
+X-Tenant-Id: {{tenant}}
+
+### search
+GET {{baseUrl}}/tag/search?q=summer&pageSize=5
+X-Tenant-Id: {{tenant}}
+
+### suggest
+GET {{baseUrl}}/tag/suggest?q=sum&limit=5
+X-Tenant-Id: {{tenant}}
+
+### delete
+DELETE {{baseUrl}}/tag/{{tagId}}
+X-Tenant-Id: {{tenant}}

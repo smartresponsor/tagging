@@ -1,26 +1,17 @@
 <?php
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace Tests;
 
-use App\Service\Tag\TagNormalizer;
+use App\Service\Core\Tag\TagNormalizer;
 use PHPUnit\Framework\TestCase;
 
-/**
- *
- */
-
-/**
- *
- */
 final class TagNormalizationTest extends TestCase
 {
-    /**
-     * @return void
-     */
     public function testSlugify(): void
     {
-        TagNormalizationTest::assertSame('hello-world', TagNormalizer::slugify(' Hello  World '));
+        self::assertSame('hello-world', TagNormalizer::slugify(' Hello  World '));
     }
 }

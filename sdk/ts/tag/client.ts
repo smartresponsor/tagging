@@ -1,115 +1,86 @@
-/* version: 1.2.0 (was 1.1.0 */
-/**
- * SmartResponsor Tag SDK (TypeScript, E11)
- */
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+
+export type TagBody = {
+  name?: string;
+  slug?: string;
+  locale?: string;
+  weight?: number;
+};
+
+export type AssignBody = {
+  entityType?: string;
+  entityId?: string;
+  entity_type?: string;
+  entity_id?: string;
+};
+
 export class TagClient {
-  constructor(private baseUrl: string, private headers: Record<string, string> = {}) {
-  }
+  constructor(private readonly baseUrl: string, private readonly headers: Record<string, string> = {}) {}
 
-  private async req(path: string, init?: RequestInit) {
-    const r = await fetch(this.baseUrl.replace(/\/$/, '') + path, {
-      headers: {'Content-Type': 'application/json', ...this.headers},
-      ...init
+  private async req(path: string, init?: RequestInit): Promise<unknown> {
+    const response = await fetch(this.baseUrl.replace(/\/$/, '') + path, {
+      headers: { 'Content-Type': 'application/json', ...this.headers },
+      ...init,
     });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.headers.get('content-type')?.includes('application/json') ? r.json() : r.text();
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type') ?? '';
+    if (!contentType.includes('application/json')) {
+      return response.text();
+    }
+
+    return response.json();
   }
 
-  list(q = '', limit = 20, offset = 0) {
-    return this.req(`/tag?query=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`);
+  status(): Promise<unknown> {
+    return this.req('/tag/_status');
   }
 
-  create(label: string, slug?: string) {
-    return this.req('/tag', {method: 'POST', body: JSON.stringify({label, slug})});
+  surface(): Promise<unknown> {
+    return this.req('/tag/_surface');
   }
 
-  remove(id: string) {
-    return this.req(`/tag/${id}`, {method: 'DELETE'});
+  create(body: TagBody): Promise<unknown> {
+    return this.req('/tag', { method: 'POST', body: JSON.stringify(body) });
   }
 
-  assign(tagId: string, type: string, id: string) {
-    return this.req('/tag/assign', {method: 'POST', body: JSON.stringify({tagId, assignedType: type, assignedId: id})});
+  get(id: string): Promise<unknown> {
+    return this.req(`/tag/${encodeURIComponent(id)}`);
   }
 
-  facet(type: string, limit = 50) {
-    return this.req(`/tag/facet?type=${encodeURIComponent(type)}&limit=${limit}`);
+  patch(id: string, body: TagBody): Promise<unknown> {
+    return this.req(`/tag/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(body) });
   }
 
-  cloud(limit = 100) {
-    return this.req(`/tag/cloud?limit=${limit}`);
+  delete(id: string): Promise<unknown> {
+    return this.req(`/tag/${encodeURIComponent(id)}`, { method: 'DELETE' });
   }
 
-  putLabel(tagId: string, locale: string, label: string) {
-    return this.req(`/tag/${tagId}/label`, {method: 'POST', body: JSON.stringify({locale, label})});
+  assign(id: string, body: AssignBody): Promise<unknown> {
+    return this.req(`/tag/${encodeURIComponent(id)}/assign`, { method: 'POST', body: JSON.stringify(body) });
   }
 
-  listLabels(tagId: string) {
-    return this.req(`/tag/${tagId}/labels`);
+  unassign(id: string, body: AssignBody): Promise<unknown> {
+    return this.req(`/tag/${encodeURIComponent(id)}/unassign`, { method: 'POST', body: JSON.stringify(body) });
   }
 
-  classify(tagId: string, key: string, value: string) {
-    return this.req(`/tag/${tagId}/classify`, {method: 'POST', body: JSON.stringify({key, value})});
+  assignments(entityType: string, entityId: string): Promise<unknown> {
+    return this.req(`/tag/assignments?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`);
   }
 
-  replay(tagId: string) {
-    return this.req(`/tag/${tagId}/replay`, {method: 'POST'});
+  search(q: string, pageSize = 20, pageToken?: string): Promise<unknown> {
+    const params = new URLSearchParams({ q, pageSize: String(Math.max(1, Math.min(100, pageSize))) });
+    if (pageToken) {
+      params.set('pageToken', pageToken);
+    }
+    return this.req(`/tag/search?${params.toString()}`);
   }
 
-  putPolicy(body: Record<string, unknown>) {
-    return this.req('/tag/policy', {method: 'PUT', body: JSON.stringify(body)});
+  suggest(q: string, limit = 10): Promise<unknown> {
+    const params = new URLSearchParams({ q, limit: String(Math.max(1, Math.min(50, limit))) });
+    return this.req(`/tag/suggest?${params.toString()}`);
   }
-
-  auditPolicy() {
-    return this.req('/tag/policy/report', {method: 'GET'});
-  }
-
-  putQuota(per_minute: number, max_tags_per_entity: number) {
-    return this.req('/tag/quota', {method: 'PUT', body: JSON.stringify({per_minute, max_tags_per_entity})});
-  }
-}
-
-merge(fromId
-:
-string, toTagId
-:
-string, moveAssignments = true, copySynonyms = true
-)
-{
-  return this.req(`/tag/${fromId}/merge`, {
-    method: 'POST',
-    body: JSON.stringify({toTagId, moveAssignments, copySynonyms})
-  });
-}
-split(id
-:
-string, newTags
-:
-{
-  string, slug ? : string
-}
-[]
-)
-{
-  return this.req(`/tag/${id}/split`, {method: 'POST', body: JSON.stringify({newTags})});
-}
-bulkImport(items
-:
-any[]
-)
-{
-  return this.req(`/tag/bulk/import`, {method: 'POST', body: JSON.stringify({items})});
-}
-bulkJobStatus(jobId
-:
-string
-)
-{
-  return this.req(`/tag/bulk/${jobId}`);
-}
-resolveRedirect(fromId
-:
-string
-)
-{
-  return this.req(`/tag/redirect/${fromId}`);
 }

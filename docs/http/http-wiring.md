@@ -1,18 +1,29 @@
-# HTTP Wiring v1 (RC5-E7)
+# HTTP Wiring v1
 
-Implements REST controllers for Tag CRUD and Assign/Unassign, plus Idempotency & minimal HMAC middleware stubs.
+Public-ready `host-minimal` wiring for the shipped Tag runtime surface.
 
-## Endpoints
+## Routed endpoints
 
-- POST /tag
-- GET /tag/{id}
-- PATCH /tag/{id}
-- DELETE /tag/{id}
-- POST /tag/{id}/assign
-- POST /tag/{id}/unassign
-- POST /tag/assign-bulk
+- `POST /tag`
+- `GET /tag/{id}`
+- `PATCH /tag/{id}`
+- `DELETE /tag/{id}`
+- `POST /tag/{id}/assign`
+- `POST /tag/{id}/unassign`
+- `GET /tag/assignments`
+- `GET /tag/search`
+- `GET /tag/suggest`
+- `GET /tag/_status`
+- `GET /tag/_surface`
 
-Headers: X-Tenant-Id (required), X-Idempotency-Key (optional), X-SR-Signature/X-SR-Nonce (optional if SR_HMAC_SECRET
-set).
+## Request headers
 
-Generated: 2025-10-27T20:56:13.260638
+- `X-Tenant-Id` required for routed business calls
+- `X-Idempotency-Key` optional on write requests
+
+## Out of scope for the shipped public shell
+
+- bulk assignment routes
+- synonym or redirect routes
+- metrics endpoint
+- HMAC / RBAC / quota middleware chain in `host-minimal`

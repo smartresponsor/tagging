@@ -5,7 +5,7 @@ declare(strict_types=1);
 // Tag webhook spool worker (E24)
 require_once __DIR__ . '/../bootstrap.php'; // optional if you have autoload
 
-use App\Service\Tag\Webhook\TagWebhookSender;
+use App\Service\Webhook\Tag\TagWebhookSender;
 
 // Minimal DI bootstrap (replace with real config loader)
 $cfgFile = __DIR__ . '/../config/tag_webhooks.yaml';

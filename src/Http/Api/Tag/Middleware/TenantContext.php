@@ -1,0 +1,25 @@
+<?php
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
+
+namespace App\Http\Api\Tag\Middleware;
+
+use App\Service\Core\Tag\TenantGuard;
+
+final readonly class TenantContext
+{
+    public function __construct(private TenantGuard $guard)
+    {
+    }
+
+    /** @param array{headers:array} $req */
+    public function handle(array $req, callable $next): array
+    {
+        $tenant = $this->guard->requireTenant($req['headers'] ?? []);
+        // Inject tenant in request for downstream handlers
+        $req['tenantId'] = $tenant;
+
+        return $next($req);
+    }
+}

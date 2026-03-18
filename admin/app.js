@@ -2,174 +2,156 @@
 (function () {
   'use strict';
 
-  // State
   const $ = (q) => document.querySelector(q);
   const cfg = {
-    apiBase: localStorage.getItem('tag.apiBase') || '/',
-    tenant: localStorage.getItem('tag.tenant') || '',
-    secret: localStorage.getItem('tag.secret') || '',
+    apiBase: localStorage.getItem('tag.apiBase') || 'http://127.0.0.1:8080',
+    tenant: localStorage.getItem('tag.tenant') || 'demo',
   };
 
-  // UI init
   $('#apiBase').value = cfg.apiBase;
   $('#tenant').value = cfg.tenant;
-  $('#secret').value = cfg.secret;
 
-  // Tabs
-  const tabs = ['search', 'assign', 'synonym'];
-
+  const tabs = ['tour', 'search', 'create', 'assign'];
   function activate(name) {
-    tabs.forEach(t => $('#tab-' + t).classList.remove('active'));
-    $('#tab-' + name).classList.add('active');
+    tabs.forEach((tab) => {
+      $('#tab-' + tab).style.display = tab === name ? 'block' : 'none';
+    });
   }
+  activate('tour');
 
-  activate('search');
-  document.querySelectorAll('nav button').forEach(btn => {
+  document.querySelectorAll('nav button').forEach((btn) => {
     btn.addEventListener('click', () => activate(btn.dataset.tab));
   });
 
-  // Save cfg
+  function show(targetId, result) {
+    $(targetId).textContent = 'HTTP ' + result.status + '\n' + result.text;
+    return result;
+  }
+
+  function currentBase() {
+    return (cfg.apiBase || '').trim().replace(/\/$/, '');
+  }
+
   $('#saveCfg').addEventListener('click', () => {
-    cfg.apiBase = $('#apiBase').value.trim() || '/';
-    cfg.tenant = $('#tenant').value.trim();
-    cfg.secret = $('#secret').value;
+    cfg.apiBase = $('#apiBase').value.trim() || 'http://127.0.0.1:8080';
+    cfg.tenant = $('#tenant').value.trim() || 'demo';
     localStorage.setItem('tag.apiBase', cfg.apiBase);
     localStorage.setItem('tag.tenant', cfg.tenant);
-    localStorage.setItem('tag.secret', cfg.secret);
+    $('#pingOut').textContent = 'saved';
+    setTimeout(() => $('#pingOut').textContent = '', 1200);
   });
-
-  // Shortcuts
-  window.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      $('#q').focus();
-    }
-    if (e.ctrlKey && e.key === '1') {
-      e.preventDefault();
-      activate('search');
-    }
-    if (e.ctrlKey && e.key === '2') {
-      e.preventDefault();
-      activate('assign');
-    }
-    if (e.ctrlKey && e.key === '3') {
-      e.preventDefault();
-      activate('synonym');
-    }
-  });
-
-  // Helpers
-  function baseUrl(path) {
-    const b = cfg.apiBase.endsWith('/') ? cfg.apiBase.slice(0, -1) : cfg.apiBase;
-    return b + path;
-  }
-
-  async function hmacSign(method, path, body) {
-    // SignatureV2 (assumed): ts \n nonce \n method \n path \n sha256(body)
-    const enc = new TextEncoder();
-    const ts = Math.floor(Date.now() / 1000).toString();
-    const nonce = Math.random().toString(36).slice(2, 14);
-    const bodyStr = body ? JSON.stringify(body) : '';
-    const bodyHash = await crypto.subtle.digest('SHA-256', enc.encode(bodyStr));
-    const bodyHex = [...new Uint8Array(bodyHash)].map(b => b.toString(16).padStart(2, '0')).join('');
-    const payload = [ts, nonce, method.toUpperCase(), path, bodyHex].join('\n');
-    const key = await crypto.subtle.importKey('raw', enc.encode(cfg.secret), {
-      name: 'HMAC',
-      hash: 'SHA-256'
-    }, false, ['sign']);
-    const sigBuf = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
-    const sigHex = [...new Uint8Array(sigBuf)].map(b => b.toString(16).padStart(2, '0')).join('');
-    return {ts, nonce, sig: sigHex, bodyStr};
-  }
 
   async function call(method, path, body) {
-    const url = baseUrl(path);
-    const {ts, nonce, sig, bodyStr} = await hmacSign(method, path, body);
+    const url = currentBase() + path;
     const headers = {
-      'Content-Type': 'application/json',
       'X-Tenant-Id': cfg.tenant,
-      'X-SR-Timestamp': ts,
-      'X-SR-Nonce': nonce,
-      'X-SR-Signature': sig,
     };
-    const resp = await fetch(url, {
-      method,
-      headers,
-      body: (method === 'GET' || method === 'DELETE') ? undefined : bodyStr
-    });
-    const text = await resp.text();
-    let out = text;
-    try {
-      out = JSON.stringify(JSON.parse(text), null, 2);
-    } catch {
+    if (body !== undefined) {
+      headers['Content-Type'] = 'application/json';
+      headers['X-Idempotency-Key'] = 'ui-' + Date.now();
     }
-    return {status: resp.status, headers: resp.headers, text: out};
+    try {
+      const response = await fetch(url, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      });
+      const text = await response.text();
+      try {
+        return { status: response.status, text: JSON.stringify(JSON.parse(text), null, 2) };
+      } catch (_) {
+        return { status: response.status, text };
+      }
+    } catch (error) {
+      return { status: 0, text: String(error && error.message ? error.message : error) };
+    }
   }
 
-  // Ping
   $('#ping').addEventListener('click', async () => {
+    const result = await call('GET', '/tag/_status');
+    $('#pingOut').textContent = result.status === 200 ? 'ok' : ('HTTP ' + result.status);
+    setTimeout(() => $('#pingOut').textContent = '', 2000);
+  });
+
+  $('#btnLoadStatus').addEventListener('click', async () => {
+    show('#tourOut', await call('GET', '/tag/_status'));
+  });
+
+  $('#btnLoadSurface').addEventListener('click', async () => {
+    show('#tourOut', await call('GET', '/tag/_surface'));
+  });
+
+  $('#btnUseDemo').addEventListener('click', () => {
+    $('#tagId').value = '01K3TAGDEMO00000000000001';
+    $('#entityType').value = 'product';
+    $('#entityId').value = 'demo-product-1';
+    $('#q').value = 'elect';
+    show('#tourOut', { status: 200, text: JSON.stringify({ ok: true, primaryTagId: '01K3TAGDEMO00000000000001', entityType: 'product', entityId: 'demo-product-1', query: 'elect' }, null, 2) });
+    activate('assign');
+  });
+
+  $('#btnSearch').addEventListener('click', async () => {
+    const q = $('#q').value.trim();
+    show('#searchOut', await call('GET', '/tag/search?q=' + encodeURIComponent(q) + '&pageSize=10'));
+  });
+
+  $('#btnSuggest').addEventListener('click', async () => {
+    const q = $('#q').value.trim();
+    show('#searchOut', await call('GET', '/tag/suggest?q=' + encodeURIComponent(q) + '&limit=10'));
+  });
+
+  $('#btnCreate').addEventListener('click', async () => {
+    const name = $('#createName').value.trim();
+    if (!name) {
+      show('#createOut', { status: 0, text: 'name is required' });
+      return;
+    }
+    const payload = {
+      name,
+      locale: $('#createLocale').value.trim() || 'en',
+      weight: Number($('#createWeight').value || '0'),
+    };
+    const result = show('#createOut', await call('POST', '/tag', payload));
     try {
-      const r = await call('GET', '/tag/_status');
-      $('#pingOut').textContent = 'HTTP ' + r.status;
-      setTimeout(() => $('#pingOut').textContent = '', 3000);
-    } catch (e) {
-      $('#pingOut').textContent = 'ERR';
+      const parsed = JSON.parse(result.text);
+      const id = parsed && parsed.result && parsed.result.id ? String(parsed.result.id) : '';
+      if (id) {
+        $('#tagId').value = id;
+        activate('assign');
+      }
+    } catch (_) {
+      // ignore non-json responses in the static shell
     }
   });
 
-  // Search
-  $('#btnSearch').addEventListener('click', async () => {
-    const q = $('#q').value.trim();
-    const r = await call('GET', '/tag/search?q=' + encodeURIComponent(q));
-    $('#searchOut').textContent = 'HTTP ' + r.status + '\n' + r.text;
-  });
+  function assignmentPayload() {
+    return {
+      entity_type: $('#entityType').value.trim(),
+      entity_id: $('#entityId').value.trim(),
+    };
+  }
 
-  // Assignments
   $('#btnAssign').addEventListener('click', async () => {
-    const eType = $('#entityType').value.trim();
-    const eId = $('#entityId').value.trim();
-    const tId = $('#tagId').value.trim();
-    const r = await call('POST', `/tag/${encodeURIComponent(tId)}/assign`, {entityType: eType, entityId: eId});
-    $('#assignOut').textContent = 'HTTP ' + r.status + '\n' + r.text;
+    const tagId = $('#tagId').value.trim();
+    if (!tagId) {
+      show('#assignOut', { status: 0, text: 'tagId is required' });
+      return;
+    }
+    show('#assignOut', await call('POST', '/tag/' + encodeURIComponent(tagId) + '/assign', assignmentPayload()));
   });
+
   $('#btnUnassign').addEventListener('click', async () => {
-    const eType = $('#entityType').value.trim();
-    const eId = $('#entityId').value.trim();
-    const tId = $('#tagId').value.trim();
-    const r = await call('POST', `/tag/${encodeURIComponent(tId)}/unassign`, {entityType: eType, entityId: eId});
-    $('#assignOut').textContent = 'HTTP ' + r.status + '\n' + r.text;
+    const tagId = $('#tagId').value.trim();
+    if (!tagId) {
+      show('#assignOut', { status: 0, text: 'tagId is required' });
+      return;
+    }
+    show('#assignOut', await call('POST', '/tag/' + encodeURIComponent(tagId) + '/unassign', assignmentPayload()));
   });
-  $('#btnAssignBulk').addEventListener('click', async () => {
-    const eType = $('#entityType').value.trim();
-    const eId = $('#entityId').value.trim();
-    const list = $('#tagIds').value.split(',').map(s => s.trim()).filter(Boolean);
-    const r = await call('POST', `/tag/assign-bulk`, {entityType: eType, entityId: eId, tagIds: list});
-    $('#assignOut').textContent = 'HTTP ' + r.status + '\n' + r.text;
-  });
+
   $('#btnListAssignments').addEventListener('click', async () => {
-    const eType = $('#entityType').value.trim();
-    const eId = $('#entityId').value.trim();
-    const r = await call('GET', `/tag/assignments?entityType=${encodeURIComponent(eType)}&entityId=${encodeURIComponent(eId)}`);
-    $('#assignOut').textContent = 'HTTP ' + r.status + '\n' + r.text;
+    const entityType = $('#entityType').value.trim();
+    const entityId = $('#entityId').value.trim();
+    show('#assignOut', await call('GET', '/tag/assignments?entityType=' + encodeURIComponent(entityType) + '&entityId=' + encodeURIComponent(entityId) + '&limit=10'));
   });
-
-  // Synonyms
-  $('#btnSynList').addEventListener('click', async () => {
-    const tId = $('#synTagId').value.trim();
-    const r = await call('GET', `/tag/${encodeURIComponent(tId)}/synonym`);
-    $('#synOut').textContent = 'HTTP ' + r.status + '\n' + r.text;
-  });
-  $('#btnSynAdd').addEventListener('click', async () => {
-    const tId = $('#synTagId').value.trim();
-    const lab = $('#synLabel').value.trim();
-    const r = await call('POST', `/tag/${encodeURIComponent(tId)}/synonym`, {label: lab});
-    $('#synOut').textContent = 'HTTP ' + r.status + '\n' + r.text;
-  });
-  $('#btnSynDel').addEventListener('click', async () => {
-    const tId = $('#synTagId').value.trim();
-    const lab = $('#synLabelDel').value.trim();
-    const r = await call('DELETE', `/tag/${encodeURIComponent(tId)}/synonym`, {label: lab});
-    $('#synOut').textContent = 'HTTP ' + r.status + '\n' + r.text;
-  });
-
 })();

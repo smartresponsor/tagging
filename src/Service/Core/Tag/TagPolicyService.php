@@ -1,0 +1,66 @@
+<?php
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
+
+namespace App\Service\Core\Tag;
+
+use App\ServiceInterface\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
+
+final readonly class TagPolicyService
+{
+    public function __construct(
+        private TagValidator $validator,
+        private array $cfg, // from config/tag_policy.yaml
+    ) {
+    }
+
+    public function normalizeSlug(string $input): string
+    {
+        $s = $this->validator->normalizeSlug($input);
+        if (!empty($this->cfg['normalize']['lowercase'])) {
+            $s = strtolower($s);
+        }
+
+        return $s;
+    }
+
+    public function validateBeforeCreate(string $tenantId, TagRepositoryContract $repo, string $label, ?string $slug = null): void
+    {
+        $this->validator->validateLabel($label);
+        $slug = $slug ?? $this->normalizeSlug($label);
+        $this->applyRules($slug);
+        $this->validator->validateSlug($slug);
+        $this->validator->ensureUniqueness($tenantId, $repo, $slug);
+    }
+
+    public function validateBeforeUpdate(string $tenantId, TagRepositoryContract $repo, string $tagId, string $label, ?string $slug = null): void
+    {
+        $this->validator->validateLabel($label);
+        if (null !== $slug) {
+            $slug = $this->normalizeSlug($slug);
+            $this->applyRules($slug);
+            $this->validator->validateSlug($slug);
+            $this->validator->ensureUniqueness($tenantId, $repo, $slug, $tagId);
+        }
+    }
+
+    private function applyRules(string $slug): void
+    {
+        if (in_array($slug, $this->cfg['reserved_slugs'] ?? [], true)) {
+            throw new \InvalidArgumentException('slug_reserved');
+        }
+        foreach (($this->cfg['denied_prefixes'] ?? []) as $p) {
+            if ('' !== $p && str_starts_with($slug, $p)) {
+                throw new \InvalidArgumentException('slug_denied_prefix');
+            }
+        }
+        foreach (($this->cfg['denied_regex'] ?? []) as $rx) {
+            if ('' !== $rx && @preg_match('/'.$rx.'/', $slug)) {
+                if (preg_match('/'.$rx.'/', $slug)) {
+                    throw new \InvalidArgumentException('slug_denied_regex');
+                }
+            }
+        }
+    }
+}

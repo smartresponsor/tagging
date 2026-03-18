@@ -1,11 +1,18 @@
-# Tag Backend Admin UI (minimal)
+# Tag Admin Shell
 
-- Routes: /admin/tag, /admin/tag/show/{id}, /admin/tag/assign/{id}
-- Uses API base URL from env: TAG_BASE_URL (default http://localhost:8080)
-- Expects A1 HMAC in front if exposed publicly; for local smoke can be used without.
+Files:
+- `admin/index.html`
+- `admin/app.js`
+- `admin/style.css`
 
-## Mount in host-minimal
+Expected backend surface:
+- `GET /tag/_status`
+- `GET /tag/_surface`
+- `POST /tag`
+- `POST /tag/{id}/assign`
+- `POST /tag/{id}/unassign`
+- `GET /tag/assignments`
+- `GET /tag/search`
+- `GET /tag/suggest`
 
-Serve `public/` statics at `/admin/tag/*` and route `admin-router.php` via web server.
-
-Generated: 2025-10-27T20:19:32.653655
+The shell is intentionally static. It is a demo/discovery helper, not an authoritative admin console.

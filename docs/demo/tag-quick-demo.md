@@ -1,57 +1,61 @@
-# Tag quick demo (curl)
+# Tag quick demo
 
 Assumptions:
 
-- server is running on `http://127.0.0.1:8080`
-- tenant id header is required (example: `demo`)
-- request bodies follow `contracts/http/tag-openapi.yaml`
+- server runs on `http://127.0.0.1:8080`
+- tenant header is `X-Tenant-Id: demo`
+- migrations are already applied
+- optional deterministic reset uses `SEED_RESET=1`
 
-Set:
-
-- `BASE=http://127.0.0.1:8080`
-- `TENANT=demo`
-
-Create a tag:
+Discovery:
 
 ```bash
-curl -sS -X POST "$BASE/tag" \
-  -H "Content-Type: application/json" \
-  -H "X-Tenant-Id: $TENANT" \
-  -d '{"name":"Samsung","locale":"en"}'
+curl -sS 'http://127.0.0.1:8080/tag/_surface'
 ```
 
-Assign tag to an entity:
+Create:
 
 ```bash
-curl -sS -X POST "$BASE/tag/{tagId}/assign" \
-  -H "Content-Type: application/json" \
-  -H "X-Tenant-Id: $TENANT" \
-  -d '{"entityType":"product","entityId":"p_123"}'
+curl -sS http://127.0.0.1:8080/tag/_surface -H 'X-Tenant-Id: demo'
+```
+
+Create:
+
+```bash
+curl -sS 'http://127.0.0.1:8080/tag/_surface' \
+  -H 'X-Tenant-Id: demo'
+```
+
+Create:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8080/tag \
+  -H 'Content-Type: application/json' \
+  -H 'X-Tenant-Id: demo' \
+  -H 'X-Idempotency-Key: demo-create-1' \
+  -d '{"name":"Samsung","locale":"en","slug":"samsung"}'
 ```
 
 Search:
 
 ```bash
-curl -sS "$BASE/tag/search?q=sam&limit=10" -H "X-Tenant-Id: $TENANT"
+curl -sS 'http://127.0.0.1:8080/tag/search?q=elect&pageSize=10' -H 'X-Tenant-Id: demo'
+```
+
+Suggest:
+
+```bash
+curl -sS 'http://127.0.0.1:8080/tag/suggest?q=pre&limit=5' -H 'X-Tenant-Id: demo'
 ```
 
 List entity assignments:
 
 ```bash
-curl -sS "$BASE/tag/entity/product/p_123" -H "X-Tenant-Id: $TENANT"
+curl -sS 'http://127.0.0.1:8080/tag/assignments?entityType=product&entityId=demo-product-1' -H 'X-Tenant-Id: demo'
 ```
 
-Merge (redirect):
+Status:
 
 ```bash
-curl -sS -X POST "$BASE/tag/{tagId}/merge" \
-  -H "Content-Type: application/json" \
-  -H "X-Tenant-Id: $TENANT" \
-  -d '{"intoId":"{targetTagId}"}'
-```
-
-Resolve redirect:
-
-```bash
-curl -sS "$BASE/tag/redirect/{fromId}" -H "X-Tenant-Id: $TENANT"
+curl -sS 'http://127.0.0.1:8080/tag/_status'
 ```

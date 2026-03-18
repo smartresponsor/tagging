@@ -2,40 +2,37 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-use App\Application\Tag\UseCase\{CreateTag, DeleteTag, PatchTag};
-use App\Cache\Tag\{SearchCache, SuggestCache};
+use App\Application\Write\Tag\UseCase\{CreateTag, DeleteTag, PatchTag};
+use App\Cache\Search\Tag\{SearchCache, SuggestCache};
 use App\Http\Middleware\IdempotencyMiddleware;
-use App\Http\Tag\{AssignController,
+use App\Http\Api\Tag\{AssignController,
     AssignmentReadController,
-    RedirectController,
     SearchController,
     StatusController,
     SuggestController,
-    SynonymController,
+    SurfaceController,
     TagController};
-use App\Http\Tag\Responder\TagWriteResponder;
-use App\Infra\Outbox\OutboxPublisher;
-use App\Infra\Tag\{PdoTagEntityRepository, TagReadModel};
-use App\Service\Tag\{AssignService,
+use App\Http\Api\Tag\Responder\TagWriteResponder;
+use App\Infrastructure\Outbox\Tag\OutboxPublisher;
+use App\Infrastructure\Persistence\Tag\{PdoTagEntityRepository, TagReadModel};
+use App\Service\Core\Tag\{AssignService,
     IdempotencyStore,
     PdoTransactionRunner,
     SearchService,
     SuggestService,
     TagEntityService,
     UnassignService};
-use App\Service\Tag\Slug\{Slugifier, SlugPolicy};
+use App\Service\Slug\Tag\{Slugifier, SlugPolicy};
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/autoload.php';
+
+$runtime = require dirname(__DIR__) . '/config/tag_runtime.php';
+$runtimeVersion = is_array($runtime) ? (string) ($runtime['version'] ?? 'dev') : 'dev';
 
 /**
  * @return array<string, callable(): mixed>
  */
-return (static function (): array {
-    /**
-     * @template T
-     * @param callable():T $factory
-     * @return callable():T
-     */
+return (static function () use ($runtime, $runtimeVersion): array {
     $shared = static function (callable $factory): callable {
         $resolved = false;
         $instance = null;
@@ -51,25 +48,32 @@ return (static function (): array {
         };
     };
 
-    $pdo = $shared(static fn(): PDO => new PDO(
+    $pdoOptions = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC];
+    $pdo = $shared(static fn(): \PDO => new \PDO(
         getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app',
         getenv('DB_USER') ?: 'app',
         getenv('DB_PASS') ?: 'app',
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+        $pdoOptions
     ));
 
+    $searchCache = $shared(static fn(): SearchCache => new SearchCache());
+    $suggestCache = $shared(static fn(): SuggestCache => new SuggestCache());
     $idempotencyMiddleware = $shared(static fn(): IdempotencyMiddleware => new IdempotencyMiddleware());
-    $statusController = $shared(static fn(): StatusController => new StatusController());
+    $statusController = $shared(static fn(): StatusController => new StatusController(
+        static fn(): bool => (bool) $pdo()->query('SELECT 1')->fetchColumn(),
+        $runtimeVersion,
+    ));
+    $surfaceController = $shared(static fn(): SurfaceController => new SurfaceController(is_array($runtime) ? $runtime : []));
 
-    $tagController = $shared(static function () use ($pdo): TagController {
+    $tagController = $shared(static function () use ($pdo, $searchCache, $suggestCache): TagController {
         $slugifier = new Slugifier();
         $slugPolicy = new SlugPolicy($pdo(), $slugifier);
         $tagRepo = new PdoTagEntityRepository($pdo());
         $tx = new PdoTransactionRunner($pdo());
         $tagSvc = new TagEntityService($tagRepo, $slugPolicy);
-        $createTag = new CreateTag($tagRepo, $slugPolicy, $tx);
-        $patchTag = new PatchTag($tagRepo, $tx);
-        $deleteTag = new DeleteTag($tagRepo, $tx);
+        $createTag = new CreateTag($tagRepo, $slugPolicy, $tx, $searchCache(), $suggestCache());
+        $patchTag = new PatchTag($tagRepo, $tx, $searchCache(), $suggestCache());
+        $deleteTag = new DeleteTag($tagRepo, $tx, $searchCache(), $suggestCache());
 
         return new TagController($tagSvc, $createTag, $patchTag, $deleteTag, new TagWriteResponder());
     });
@@ -91,29 +95,30 @@ return (static function (): array {
         return new AssignController($assignSvc, $unassignSvc, ['entity_types' => $types]);
     });
 
-    $searchController = $shared(static function () use ($tagReadModel): SearchController {
-        $searchSvc = new SearchService($tagReadModel(), new SearchCache());
+    $searchController = $shared(static function () use ($tagReadModel, $searchCache): SearchController {
+        $searchSvc = new SearchService($tagReadModel(), $searchCache());
         return new SearchController($searchSvc);
     });
 
-    $suggestController = $shared(static function () use ($pdo): SuggestController {
-        $suggestSvc = new SuggestService($pdo(), new SuggestCache());
+    $suggestController = $shared(static function () use ($pdo, $suggestCache): SuggestController {
+        $suggestSvc = new SuggestService($pdo(), $suggestCache());
         return new SuggestController($suggestSvc);
     });
 
     $assignmentReadController = $shared(static fn(): AssignmentReadController => new AssignmentReadController($tagReadModel()));
-    $synonymController = $shared(static fn(): SynonymController => new SynonymController());
-    $redirectController = $shared(static fn(): RedirectController => new RedirectController());
+
+    $defaultTenant = getenv('TENANT') ?: 'demo';
 
     return [
+        'runtime' => static fn(): array => is_array($runtime) ? $runtime : [],
         'idempotencyMiddleware' => $idempotencyMiddleware,
         'statusController' => $statusController,
+        'surfaceController' => $surfaceController,
         'tagController' => $tagController,
         'assignController' => $assignController,
         'searchController' => $searchController,
         'suggestController' => $suggestController,
         'assignmentReadController' => $assignmentReadController,
-        'synonymController' => $synonymController,
-        'redirectController' => $redirectController,
+        'defaultTenant' => static fn(): string => $defaultTenant,
     ];
 })();

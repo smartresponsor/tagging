@@ -1,10 +1,19 @@
-### Seed (CLI)
-# TENANT=demo php tools/seed/tag-seed.php
+@baseUrl = http://127.0.0.1:8080
+@tenant = demo
+@tagId = 01K3TAGDEMO00000000000001
 
-### Quick search smoke (after seed)
-GET http://localhost:8080/tag/search?q=s
-X-Tenant-Id: demo
+### discovery
+GET {{baseUrl}}/tag/_surface
+X-Tenant-Id: {{tenant}}
 
-### Suggest smoke
-GET http://localhost:8080/tag/suggest?q=s
-X-Tenant-Id: demo
+### seeded read
+GET {{baseUrl}}/tag/{{tagId}}
+X-Tenant-Id: {{tenant}}
+
+### seeded search
+GET {{baseUrl}}/tag/search?q=elect&pageSize=5
+X-Tenant-Id: {{tenant}}
+
+### seeded assignments
+GET {{baseUrl}}/tag/assignments?entityType=product&entityId=demo-product-1&limit=10
+X-Tenant-Id: {{tenant}}

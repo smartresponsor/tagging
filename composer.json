@@ -1,9 +1,9 @@
 {
-  "name": "smartresponsor/tag",
+  "name": "taging/tag",
   "type": "library",
   "license": "proprietary",
   "require": {
-    "php": "^8.2",
+    "php": "^8.4",
     "ext-pdo": "*",
     "ext-curl": "*",
     "ext-mbstring": "*",
@@ -16,15 +16,49 @@
     }
   },
   "scripts": {
-    "lint": "find src tests host-minimal -name \"*.php\" -print0 | xargs -0 -n1 php -l"
+    "lint": "find src tests host-minimal tools -name \"*.php\" -print0 | xargs -0 -n1 php -l",
+    "lint:admin": "node --check admin/app.js",
+    "fixture:validate": "php tools/seed/tag-fixture-validate.php",
+    "audit:surface": "php tools/audit/tag-surface-audit.php",
+    "audit:contract": "php tools/audit/tag-contract-audit.php",
+    "audit:route": "php tools/audit/tag-route-controller-audit.php",
+    "audit:bootstrap": "php tools/audit/tag-bootstrap-audit.php",
+    "audit:config": "php tools/audit/tag-config-audit.php",
+    "audit:sdk": "php tools/audit/tag-sdk-audit.php",
+    "audit:version": "php tools/audit/tag-version-audit.php",
+    "audit:config": "php tools/audit/tag-config-audit.php",
+    "audit:sdk": "php tools/audit/tag-sdk-audit.php",
+    "release:preflight": "php tools/release/tag-preflight.php",
+    "db:migrate": "php tools/db/tag-migrate.php",
+    "db:smoke": "bash tools/db/tag-migration-smoke.sh",
+    "demo:seed": "php tools/seed/tag-seed.php",
+    "demo:clear": "php tools/seed/tag-clear.php",
+    "smoke:runtime": "php tools/smoke/tag-smoke.php"
   },
   "description": "Smartresponsor canonical tagging component library.",
-  "require-dev": {
-    "phpunit/phpunit": "^10"
-  },
+    "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
+        "doctrine/doctrine-migrations-bundle": "^3.4",
+        "friendsofphp/php-cs-fixer": "^3.94",
+        "phpmd/phpmd": "^2.15",
+        "phpstan/phpstan": "^1.12",
+        "phpunit/phpunit": "^10.5"
+    },
   "autoload-dev": {
     "psr-4": {
       "Tests\\": "tests/"
     }
+  },
+  "scripts": {
+    "lint": "find src tests host-minimal tools -name \"*.php\" -print0 | xargs -0 -n1 php -l",
+    "audit:surface": "php tools/audit/tag-surface-audit.php",
+    "audit:contract": "php tools/audit/tag-contract-audit.php",
+    "audit:route": "php tools/audit/tag-route-controller-audit.php",
+    "audit:bootstrap": "php tools/audit/tag-bootstrap-audit.php",
+    "audit:config": "php tools/audit/tag-config-audit.php",
+    "audit:sdk": "php tools/audit/tag-sdk-audit.php",
+    "audit:version": "php tools/audit/tag-version-audit.php",
+    "fixture:validate": "php tools/seed/tag-fixture-validate.php",
+    "release:preflight": "php tools/release/tag-preflight.php"
   }
 }

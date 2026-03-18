@@ -1,0 +1,6 @@
+store:
+  driver: pdo
+  table: tag_link
+
+entity_types:
+  - "*"

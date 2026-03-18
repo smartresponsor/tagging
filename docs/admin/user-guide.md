@@ -1,27 +1,21 @@
-# Tag Admin v4 — User Guide
-
-## Prerequisites
-
-- Running Tag service (RC3+): endpoints /tag/_status, /tag/search, /tag/{id}/assign, /tag/{id}/synonym, etc.
-- HMAC V2 shared secret and Tenant id.
+# Tag Admin User Guide
 
 ## Configure
 
-- API Base: e.g. `http://localhost:8080` (host-minimal) or your gateway prefix.
-- Tenant: value for `X-Tenant-Id` header.
-- Secret: shared secret for HMAC (X-SR-Signature).
+- API Base: for example `http://127.0.0.1:8080`
+- Tenant: for example `demo`
 
-## Features
+## Suggested flow
 
-- Search: label/slug/synonyms; supports ETag on server, shows HTTP code & JSON.
-- Assignments: assign/unassign tag to entity; bulk assign multiple tags.
-- Synonyms: list/add/delete synonyms for a tag.
-- Shortcuts: Ctrl+1/2/3 to switch tabs; Ctrl+K to focus search.
+1. Click **Ping** and confirm the service is reachable.
+2. Open the **Discovery** tab and load `/tag/_surface`.
+3. If search is empty, run the fixture seed scripts.
+4. Use **Create** to add one tag. The static shell auto-fills the `tagId` field after a successful create.
+5. Use **Assignments** to attach or detach a tag.
+6. Use **Search** to confirm the write is visible.
 
 ## Notes
 
-- SignatureV2: payload is `ts\nnonce\nMETHOD\nPATH\nsha256(body)`, headers:
-    - X-SR-Timestamp (unix seconds)
-    - X-SR-Nonce (random 12 chars)
-    - X-SR-Signature (hex HMAC-SHA256)
-- If your backend uses different signature rules, adjust `hmacSign()` in `admin/app.js`.
+- The shell sends `X-Tenant-Id` on every request.
+- Write requests also send `X-Idempotency-Key`.
+- The shell does not perform HMAC signing.

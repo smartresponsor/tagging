@@ -1,44 +1,49 @@
 # Runbook (Tag component)
 
-This runbook covers the operational basics for the Tag component host(s).
+This runbook covers the shipped public-ready shell for the Tag component.
 
 ## Startup checklist
 
 1) Configuration
 
 - `DB_DSN`, `DB_USER`, `DB_PASS`
-- `TENANT` (demo default only; production must pass tenant per request)
+- `TENANT` (demo default only; production should pass tenant per request)
 
-1) Database
+2) Database
 
 - Ensure Postgres is reachable
 - Run migrations:
-    - `make migrate` (Docker Compose)
-    - or `bash tools/migration-smoke.sh --no-start` (external DB)
+  - `make migrate`
+  - or `php tools/db/tag-migrate.php`
+  - or `bash tools/db/tag-migration-smoke.sh`
 
-1) Service health
+3) Service health
 
 - Confirm the host is reachable:
-    - `GET /status`
-    - `GET /metrics` (if enabled)
+  - `GET /tag/_status`
+  - `GET /tag/_surface`
 - Run smoke:
-    - `make smoke`
+  - `make smoke`
+- Run preflight before publishing:
+  - `make audit`
+  - `make preflight`
 
 ## Degraded modes
 
-- DB unavailable: fail fast with deterministic error codes.
-- Read-only: allow search/suggest if write paths are degraded (if configured).
+- DB unavailable: `_status` stays reachable and reports `db.ok=false`.
+- Public shell scope remains CRUD, assign/unassign, assignment read, search, suggest, status, and discovery.
 
 ## Incident response
 
 - Check DB health and locks.
 - Check migration drift.
-- Check outbox/idempotency tables for backlog.
+- Check outbox and idempotency tables for backlog.
+- Re-run `php tools/audit/tag-route-controller-audit.php` if route wiring changed.
 
 ## Backup and restore (Postgres)
 
 - Backups must include core tag tables, outbox, and idempotency.
-- After restore: run migration smoke and smoke tests.
+- After restore: re-run migration smoke and runtime smoke.
 
 ## Rollback
 
@@ -46,3 +51,8 @@ This runbook covers the operational basics for the Tag component host(s).
 - Otherwise restore from backup.
 
 ## Release validation
+
+- `php tools/audit/tag-surface-audit.php`
+- `php tools/audit/tag-contract-audit.php`
+- `php tools/audit/tag-route-controller-audit.php`
+- `php tools/release/tag-preflight.php`

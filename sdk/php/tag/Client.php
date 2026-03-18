@@ -6,24 +6,15 @@ namespace SR\SDK\Tag;
 
 use RuntimeException;
 
-/**
- * Smartresponsor Tag SDK (PHP, E11)
- */
 final readonly class Client
 {
-    /**
-     * @param string $baseUrl
-     * @param array $headers
-     */
+    /** @param array<string,string> $headers */
     public function __construct(private string $baseUrl, private array $headers = [])
     {
     }
 
-    /**
-     * @param string $path
-     * @param string $method
-     * @param array|null $body
-     * @return array
+    /** @param array<string,mixed>|null $body
+     *  @return array<string,mixed>
      */
     private function req(string $path, string $method = 'GET', ?array $body = null): array
     {
@@ -31,20 +22,18 @@ final readonly class Client
         if ($ch === false) {
             throw new RuntimeException('Unable to initialize curl.');
         }
+
         $hdrs = array_merge(
             ['Content-Type: application/json'],
             array_map(
                 static fn(string $k, string $v): string => $k . ': ' . $v,
                 array_keys($this->headers),
-                $this->headers
-            )
+                $this->headers,
+            ),
         );
-        $payload = null;
-        if ($body !== null) {
-            $payload = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            if ($payload === false) {
-                throw new RuntimeException('Unable to encode request body.');
-            }
+        $payload = $body !== null ? json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : null;
+        if ($body !== null && $payload === false) {
+            throw new RuntimeException('Unable to encode request body.');
         }
 
         curl_setopt_array($ch, [
@@ -61,7 +50,7 @@ final readonly class Client
             if ($res === false) {
                 throw new RuntimeException('HTTP request failed: ' . curl_error($ch));
             }
-            $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         } finally {
             curl_close($ch);
         }
@@ -73,191 +62,87 @@ final readonly class Client
             return [];
         }
         $decoded = json_decode($res, true);
-        if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+        if (!is_array($decoded) && $res !== 'null') {
             throw new RuntimeException('Invalid JSON response.');
         }
-        return $decoded ?? [];
+        return is_array($decoded) ? $decoded : [];
     }
 
-    public function list(string $q = '', int $limit = 20, int $offset = 0): array
+    /** @return array<string,mixed> */
+    public function status(): array
     {
-        return $this->req('/tag?query=' . urlencode($q) . '&limit=' . $limit . '&offset=' . $offset);
+        return $this->req('/tag/_status');
     }
 
-    /**
-     * @param string $label
-     * @param string|null $slug
-     * @return array
+    /** @return array<string,mixed> */
+    public function surface(): array
+    {
+        return $this->req('/tag/_surface');
+    }
+
+    /** @param array<string,mixed> $body
+     *  @return array<string,mixed>
      */
-    public function create(string $label, ?string $slug = null): array
+    public function create(array $body): array
     {
-        return $this->req('/tag', 'POST', ['label' => $label, 'slug' => $slug]);
+        return $this->req('/tag', 'POST', $body);
     }
 
-    /**
-     * @param string $id
-     * @return array
-     */
-    public function remove(string $id): array
+    /** @return array<string,mixed> */
+    public function get(string $id): array
     {
-        return $this->req('/tag/' . $id, 'DELETE');
+        return $this->req('/tag/' . rawurlencode($id));
     }
 
-    /**
-     * @param string $tagId
-     * @param string $type
-     * @param string $id
-     * @return array
+    /** @param array<string,mixed> $body
+     *  @return array<string,mixed>
      */
-    public function assign(string $tagId, string $type, string $id): array
+    public function patch(string $id, array $body): array
     {
-        return $this->req('/tag/assign', 'POST', ['tagId' => $tagId, 'assignedType' => $type, 'assignedId' => $id]);
+        return $this->req('/tag/' . rawurlencode($id), 'PATCH', $body);
     }
 
-    /**
-     * @param string $type
-     * @param int $limit
-     * @return array
-     */
-    public function facet(string $type, int $limit = 50): array
+    /** @return array<string,mixed> */
+    public function delete(string $id): array
     {
-        return $this->req('/tag/facet?type=' . urlencode($type) . '&limit=' . $limit);
+        return $this->req('/tag/' . rawurlencode($id), 'DELETE');
     }
 
-    /**
-     * @param int $limit
-     * @return array
+    /** @param array<string,mixed> $body
+     *  @return array<string,mixed>
      */
-    public function cloud(int $limit = 100): array
+    public function assign(string $id, array $body): array
     {
-        return $this->req('/tag/cloud?limit=' . $limit);
+        return $this->req('/tag/' . rawurlencode($id) . '/assign', 'POST', $body);
     }
 
-    /**
-     * @param string $tagId
-     * @param string $locale
-     * @param string $label
-     * @return array
+    /** @param array<string,mixed> $body
+     *  @return array<string,mixed>
      */
-    public function putLabel(string $tagId, string $locale, string $label): array
+    public function unassign(string $id, array $body): array
     {
-        return $this->req('/tag/' . $tagId . '/label', 'POST', ['locale' => $locale, 'label' => $label]);
+        return $this->req('/tag/' . rawurlencode($id) . '/unassign', 'POST', $body);
     }
 
-    /**
-     * @param string $tagId
-     * @return array
-     */
-    public function listLabels(string $tagId): array
+    /** @return array<string,mixed> */
+    public function assignments(string $entityType, string $entityId): array
     {
-        return $this->req('/tag/' . $tagId . '/labels');
+        return $this->req('/tag/assignments?entityType=' . rawurlencode($entityType) . '&entityId=' . rawurlencode($entityId));
     }
 
-    /**
-     * @param string $tagId
-     * @param string $key
-     * @param string $value
-     * @return array
-     */
-    public function classify(string $tagId, string $key, string $value): array
+    /** @return array<string,mixed> */
+    public function search(string $q, int $pageSize = 20, ?string $pageToken = null): array
     {
-        return $this->req('/tag/' . $tagId . '/classify', 'POST', ['key' => $key, 'value' => $value]);
+        $path = '/tag/search?q=' . rawurlencode($q) . '&pageSize=' . max(1, min(100, $pageSize));
+        if ($pageToken !== null && $pageToken !== '') {
+            $path .= '&pageToken=' . rawurlencode($pageToken);
+        }
+        return $this->req($path);
     }
 
-    /**
-     * @param string $tagId
-     * @return array
-     */
-    public function replay(string $tagId): array
+    /** @return array<string,mixed> */
+    public function suggest(string $q, int $limit = 10): array
     {
-        return $this->req('/tag/' . $tagId . '/replay', 'POST');
-    }
-
-    /**
-     * @param array $body
-     * @return array
-     */
-    public function putPolicy(array $body): array
-    {
-        return $this->req('/tag/policy', 'PUT', $body);
-    }
-
-    /**
-     * @return array
-     */
-    public function auditPolicy(): array
-    {
-        return $this->req('/tag/policy/report');
-    }
-
-    /**
-     * @param int $perMinute
-     * @param int $maxTagsPerEntity
-     * @return array
-     */
-    public function putQuota(int $perMinute, int $maxTagsPerEntity): array
-    {
-        return $this->req('/tag/quota', 'PUT', [
-            'per_minute' => $perMinute,
-            'max_tags_per_entity' => $maxTagsPerEntity,
-        ]);
-    }
-
-    /**
-     * @param string $fromId
-     * @param string $toTagId
-     * @param bool $moveAssignments
-     * @param bool $copySynonyms
-     * @return array
-     */
-    public function merge(
-        string $fromId,
-        string $toTagId,
-        bool   $moveAssignments = true,
-        bool   $copySynonyms = true
-    ): array
-    {
-        return $this->req('/tag/' . $fromId . '/merge', 'POST', [
-            'toTagId' => $toTagId,
-            'moveAssignments' => $moveAssignments,
-            'copySynonyms' => $copySynonyms,
-        ]);
-    }
-
-    /**
-     * @param string $id
-     * @param array $newTags
-     * @return array
-     */
-    public function split(string $id, array $newTags): array
-    {
-        return $this->req('/tag/' . $id . '/split', 'POST', ['newTags' => $newTags]);
-    }
-
-    /**
-     * @param array $items
-     * @return array
-     */
-    public function bulkImport(array $items): array
-    {
-        return $this->req('/tag/bulk/import', 'POST', ['items' => $items]);
-    }
-
-    /**
-     * @param string $jobId
-     * @return array
-     */
-    public function bulkJobStatus(string $jobId): array
-    {
-        return $this->req('/tag/bulk/' . $jobId);
-    }
-
-    /**
-     * @param string $fromId
-     * @return array
-     */
-    public function resolveRedirect(string $fromId): array
-    {
-        return $this->req('/tag/redirect/' . $fromId);
+        return $this->req('/tag/suggest?q=' . rawurlencode($q) . '&limit=' . max(1, min(50, $limit)));
     }
 }

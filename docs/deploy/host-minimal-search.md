@@ -2,13 +2,13 @@
 
 ```php
 $cfg = yaml_parse_file(__DIR__.'/../config/tag_cache.yaml') ?: [];
-$searchCache = new App\Cache\Tag\SearchCache($cfg['search']['dir'] ?? 'var/cache/tag-search', (int)($cfg['search']['ttl_seconds'] ?? 60));
-$suggestCache = new App\Cache\Tag\SuggestCache($cfg['suggest']['dir'] ?? 'var/cache/tag-suggest', (int)($cfg['suggest']['ttl_seconds'] ?? 60));
+$searchCache = new App\Cache\Search\Tag\SearchCache($cfg['search']['dir'] ?? 'var/cache/tag-search', (int)($cfg['search']['ttl_seconds'] ?? 60));
+$suggestCache = new App\Cache\Search\Tag\SuggestCache($cfg['suggest']['dir'] ?? 'var/cache/tag-suggest', (int)($cfg['suggest']['ttl_seconds'] ?? 60));
 
 $pdo = new PDO(getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app', getenv('DB_USER') ?: 'app', getenv('DB_PASS') ?: 'app');
-$read = new App\Infra\Tag\TagReadModel($pdo);
-$searchCtl = new App\Http\Tag\SearchController(new App\Service\Tag\SearchService($read, $searchCache));
-$suggestCtl = new App\Http\Tag\SuggestController(new App\Service\Tag\SuggestService($pdo, $suggestCache));
+$read = new App\Infrastructure\ReadModel\Tag\TagReadModel($pdo);
+$searchCtl = new App\Http\Api\Tag\SearchController(new App\Service\Core\Tag\SearchService($read, $searchCache));
+$suggestCtl = new App\Http\Api\Tag\SuggestController(new App\Service\Core\Tag\SuggestService($pdo, $suggestCache));
 
 if ($method === 'GET' && $path === '/tag/search') {
   $req = ['headers'=>getallheaders(),'query'=>$_GET];

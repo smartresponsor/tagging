@@ -20,15 +20,18 @@ services:
       TENANT: ${TENANT:-demo}
     ports: [ "${PORT:-8080}:8080" ]
     volumes:
-      - ${SRC_ROOT:-./bundle}/host-minimal:/app/host-minimal:ro
-      - ${SRC_ROOT:-./bundle}/config:/app/config:ro
-      - ${SRC_ROOT:-./bundle}/db:/app/db:ro
-      - ${SRC_ROOT:-./bundle}/docs:/app/docs:ro
+      - ${SRC_ROOT:-.}/host-minimal:/app/host-minimal:ro
+      - ${SRC_ROOT:-.}/src:/app/src:ro
+      - ${SRC_ROOT:-.}/config:/app/config:ro
+      - ${SRC_ROOT:-.}/db:/app/db:ro
+      - ${SRC_ROOT:-.}/tools:/app/tools:ro
+      - ${SRC_ROOT:-.}/fixtures:/app/fixtures:ro
+      - ${SRC_ROOT:-.}/sdk:/app/sdk:ro
       - cache:/app/var/cache
     depends_on:
       - db
     healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/tag/search?q=s || exit 1" ]
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/tag/_status | grep -q '"ok":true' || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 15

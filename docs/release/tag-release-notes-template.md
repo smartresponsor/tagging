@@ -6,43 +6,42 @@ Audience: Platform / Integrators / Ops
 
 ## Summary
 
-- What changed, in one paragraph.
+- What changed in the minimal public-ready shell.
 
 ## Customer impact
 
 - New capabilities:
 - Behavior changes:
-- Deprecations (if any):
+- Removed or quarantined legacy surface:
 
 ## Compatibility
 
-- API: OpenAPI `contracts/http/tag-openapi.yaml` version:
+- API contract: `contracts/http/tag-openapi.yaml`
+- Runtime host: `host-minimal/`
+- Demo/admin assets: `admin/`, `public/tag/examples/`
 - Database migrations: list new migration files:
-- SDK changes (if any):
 
 ## Upgrade steps
 
-1) Apply migrations:
-2) Deploy service:
-3) Run smoke:
-4) Validate metrics vs SLO:
+1) Apply migrations.
+2) Validate fixture pack.
+3) Seed demo tenant if needed.
+4) Run runtime smoke.
+5) Run surface audit.
 
 ## Risks and rollback
 
 - Risks:
 - Rollback plan:
     - revert deploy to previous image
-    - DB rollback strategy (if applicable)
+    - restore previous contract/examples/docs if surface changed
 
-## Observability
+## Public-ready checks
 
-- Dashboards:
-- Alerts:
-- Key SLOs:
-    - read p95:
-    - write p95:
-    - error-rate:
-    - redirect resolution latency:
+- `/tag/_status` returns 200
+- `/tag/_surface` matches the shipped contract
+- `admin/index.html` opens and loads discovery
+- `public/tag/examples/*.http` stay in sync with runtime
 
 ## Changelog
 

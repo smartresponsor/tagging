@@ -1,184 +1,181 @@
 openapi: 3.1.0
 info:
-  title: SmartResponsor Tag API
-  version: "1.0.0-rc5-e1 (frozen)"
+  title: SmartResponsor Tag Public API
+  version: "p73-public-surface"
   description: |
-    Tag component public API v1.0 (frozen). Headers:
-      - X-Tenant-Id (required)
-      - X-Idempotency-Key (optional on mutating)
-      - X-SR-Signature + X-SR-Nonce (if HMAC A1 enabled)
+    Runnable host-minimal public surface for the Tag component.
+    Required header on tenant-bound routes: X-Tenant-Id.
 servers:
-  - url: https://api.example.com
-    description: Production
-  - url: http://localhost:8080
-    description: Local
+  - url: http://127.0.0.1:8080
+    description: Local host-minimal
 components:
-  securitySchemes:
-    HmacSignature:
-      type: apiKey
-      in: header
-      name: X-SR-Signature
   parameters:
     TenantId:
       name: X-Tenant-Id
       in: header
-      required: true
-      schema: { type: string }
-    IdempotencyKey:
-      name: X-Idempotency-Key
-      in: header
       required: false
-      schema: { type: string }
+      schema:
+        type: string
     TagId:
       name: id
       in: path
       required: true
-      schema: { type: string }
+      schema:
+        type: string
+    EntityType:
+      name: entityType
+      in: query
+      required: false
+      schema:
+        type: string
+    EntityId:
+      name: entityId
+      in: query
+      required: false
+      schema:
+        type: string
   schemas:
-    Tag:
+    Status:
       type: object
-      required: [ id, slug, name, locale, weight ]
       properties:
-        id: { type: string, description: ULID }
+        ok: { type: boolean }
+        ts: { type: string, format: date-time }
+        service: { type: string }
+        version: { type: string }
+        db:
+          type: object
+          additionalProperties: true
+    Surface:
+      type: object
+      properties:
+        ok: { type: boolean }
+        service: { type: string }
+        runtime: { type: string }
+        version: { type: string }
+        surface:
+          type: object
+          additionalProperties: { type: string }
+    TagWrite:
+      type: object
+      properties:
+        name: { type: string }
         slug: { type: string }
-        name: { type: string }
-        locale: { type: string }
-        weight: { type: integer, minimum: 0 }
-        createdAt: { type: string, format: date-time }
-        updatedAt: { type: string, format: date-time }
-    TagCreate:
-      type: object
-      required: [ slug, name ]
-      properties:
-        slug: { type: string }
-        name: { type: string }
-        locale: { type: string, default: "en" }
-        weight: { type: integer, default: 0 }
-    TagUpdate:
-      type: object
-      properties:
-        name: { type: string }
         locale: { type: string }
         weight: { type: integer }
-    AssignRequest:
+    AssignBody:
       type: object
-      required: [ entity_type, entity_id ]
       properties:
-        entity_type:
-          type: string
-          enum: [ category, product, project, text ]
+        entityType: { type: string }
+        entityId: { type: string }
+        entity_type: { type: string }
         entity_id: { type: string }
-    SearchResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items: { $ref: '#/components/schemas/Tag' }
-        total: { type: integer }
-        nextPageToken: { type: string, nullable: true }
-    Error:
-      type: object
-      required: [ code, message ]
-      properties:
-        code: { type: string }
-        message: { type: string }
-        details: { type: object, additionalProperties: true }
 paths:
+  /tag/_status:
+    get:
+      summary: Runtime status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /tag/_surface:
+    get:
+      summary: Runtime discovery surface
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Surface'
   /tag:
     post:
       summary: Create tag
-      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' } ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/TagCreate' }
-      responses:
-        '201':
-          description: Created
-          content: { application/json: { schema: { $ref: '#/components/schemas/Tag' } } }
-        '400': { description: Bad Request, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-        '409': { description: Conflict, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-        '429': { description: Too Many Requests, headers: { Retry-After: { schema: { type: string } } }, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-        '500': { description: Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-  /tag/{id}:
-    get:
-      summary: Get tag by id
-      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/TagId' } ]
-      responses:
-        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tag' } } } }
-        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-    patch:
-      summary: Update tag
-      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' }, { $ref: '#/components/parameters/TagId' } ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/TagUpdate' }
-      responses:
-        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tag' } } } }
-        '409': { description: Conflict, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-    delete:
-      summary: Delete tag
-      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' }, { $ref: '#/components/parameters/TagId' } ]
-      responses:
-        '204': { description: No Content }
-  /tag/{id}/assign:
-    post:
-      summary: Assign tag to entity
-      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' }, { $ref: '#/components/parameters/TagId' } ]
-      requestBody:
-        required: true
-        content: { application/json: { schema: { $ref: '#/components/schemas/AssignRequest' } } }
-      responses:
-        '200': { description: OK }
-        '404': { description: Not Found }
-        '409': { description: Conflict }
-        '429': { description: Too Many Requests }
-  /tag/{id}/unassign:
-    post:
-      summary: Unassign tag from entity
-      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' }, { $ref: '#/components/parameters/TagId' } ]
-      requestBody:
-        required: true
-        content: { application/json: { schema: { $ref: '#/components/schemas/AssignRequest' } } }
-      responses:
-        '200': { description: OK }
-        '404': { description: Not Found }
-        '429': { description: Too Many Requests }
-  /tag/assign-bulk:
-    post:
-      summary: Bulk assign tags
-      parameters: [ { $ref: '#/components/parameters/TenantId' }, { $ref: '#/components/parameters/IdempotencyKey' } ]
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [ operations ]
-              properties:
-                operations:
-                  type: array
-                  items:
-                    type: object
-                    required: [ op, tag_id, entity_type, entity_id ]
-                    properties:
-                      op: { type: string, enum: [ assign, unassign ] }
-                      tag_id: { type: string }
-                      entity_type: { type: string, enum: [ category, product, project, text ] }
-                      entity_id: { type: string }
+              $ref: '#/components/schemas/TagWrite'
       responses:
         '200': { description: OK }
-        '429': { description: Too Many Requests }
+        '201': { description: Created }
+  /tag/{id}:
+    get:
+      summary: Get tag
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      responses:
+        '200': { description: OK }
+        '404': { description: Not found }
+    patch:
+      summary: Patch tag
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagWrite'
+      responses:
+        '200': { description: OK }
+    delete:
+      summary: Delete tag
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      responses:
+        '200': { description: OK }
+        '204': { description: No content }
+  /tag/{id}/assign:
+    post:
+      summary: Assign tag to entity
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignBody'
+      responses:
+        '200': { description: OK }
+  /tag/{id}/unassign:
+    post:
+      summary: Unassign tag from entity
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignBody'
+      responses:
+        '200': { description: OK }
+  /tag/assignments:
+    get:
+      summary: List assignments by entity
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/EntityType'
+        - $ref: '#/components/parameters/EntityId'
+      responses:
+        '200': { description: OK }
   /tag/search:
     get:
       summary: Search tags
       parameters:
-        - { $ref: '#/components/parameters/TenantId' }
+        - $ref: '#/components/parameters/TenantId'
         - name: q
           in: query
           required: true
@@ -186,24 +183,25 @@ paths:
         - name: pageSize
           in: query
           required: false
-          schema: { type: integer, default: 20, maximum: 100 }
+          schema: { type: integer, minimum: 1, maximum: 100 }
         - name: pageToken
           in: query
           required: false
           schema: { type: string }
       responses:
-        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SearchResponse' } } } }
+        '200': { description: OK }
   /tag/suggest:
     get:
-      summary: Suggest tags by prefix
+      summary: Suggest tags
       parameters:
-        - { $ref: '#/components/parameters/TenantId' }
+        - $ref: '#/components/parameters/TenantId'
         - name: q
           in: query
           required: true
           schema: { type: string }
         - name: limit
           in: query
-          schema: { type: integer, default: 10, maximum: 50 }
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 50 }
       responses:
-        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SearchResponse' } } } }
+        '200': { description: OK }

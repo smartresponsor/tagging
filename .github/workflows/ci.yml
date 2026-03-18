@@ -14,9 +14,19 @@ jobs:
         with:
           php-version: '8.2'
           coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - run: composer validate --no-interaction --strict
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: composer run -n lint
+      - run: composer run -n lint:admin
+      - run: composer run -n fixture:validate
+      - run: composer run -n audit:surface
+      - run: composer run -n audit:contract
+      - run: composer run -n audit:route
+      - run: composer run -n audit:bootstrap
+      - run: composer run -n audit:version
 
   unit:
     runs-on: ubuntu-latest
@@ -28,10 +38,7 @@ jobs:
           coverage: none
       - run: composer install --no-interaction --no-progress --prefer-dist
       - name: Run phpunit (unit)
-        run: |
-          curl -fsSL -o phpunit.phar https://phar.phpunit.de/phpunit-10.phar
-          php phpunit.phar --version
-          php phpunit.phar --testsuite unit
+        run: vendor/bin/phpunit --testsuite unit
 
   integration:
     runs-on: ubuntu-latest
@@ -66,11 +73,12 @@ jobs:
       - name: Migrate schema
         run: |
           sudo apt-get update && sudo apt-get install -y --no-install-recommends postgresql-client
-          bash tools/migration-smoke.sh --no-start
+          export PSQL_URL="postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$DB_HOST:$DB_PORT/$POSTGRES_DB"
+          for f in db/postgres/migrations/*.sql; do
+            psql "$PSQL_URL" -v ON_ERROR_STOP=1 -f "$f"
+          done
       - name: Run phpunit (integration)
-        run: |
-          curl -fsSL -o phpunit.phar https://phar.phpunit.de/phpunit-10.phar
-          php phpunit.phar --testsuite integration
+        run: vendor/bin/phpunit --testsuite integration
 
   static:
     runs-on: ubuntu-latest
@@ -86,3 +94,52 @@ jobs:
           curl -fsSL -o phpstan.phar https://github.com/phpstan/phpstan/releases/latest/download/phpstan.phar
           php phpstan.phar --version
           php phpstan.phar analyse -c phpstan.neon.dist
+
+
+  runtime-smoke:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: app
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U app -d app"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      DB_DSN: pgsql:host=127.0.0.1;port=5432;dbname=app
+      DB_USER: app
+      DB_PASS: app
+      TENANT: demo
+      BASE_URL: http://127.0.0.1:8080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          extensions: curl, pdo, pdo_pgsql
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n db:migrate
+      - run: composer run -n demo:seed
+      - run: composer run -n audit:bootstrap
+      - run: composer run -n audit:version
+      - name: Start host-minimal
+        run: php -S 127.0.0.1:8080 host-minimal/index.php > /tmp/tag-host.log 2>&1 &
+      - name: Wait for status
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/tag/_status > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/tag-host.log || true
+          exit 1
+      - run: composer run -n smoke:runtime

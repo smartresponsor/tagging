@@ -2,17 +2,13 @@
 hmac:
   current: "CHANGE_ME_CURRENT"
   previous: "CHANGE_ME_PREV"
-  skew_seconds: 300     # 5 minutes
+  skew_seconds: 300
 nonce_cache:
-  ttl_seconds: 600      # keep nonce for 10 minutes
+  ttl_seconds: 600
 headers:
   signature: "X-SR-Signature"
   timestamp: "X-SR-Timestamp"
   nonce: "X-SR-Nonce"
 canonical:
-  # method + '
-    ' + path + '
-    ' + timestamp + '
-    ' + nonce + '
-    ' + sha256(body)
+  format: "METHOD\nPATH\nTIMESTAMP\nNONCE\nSHA256(BODY)"
 include_body_sha256: true

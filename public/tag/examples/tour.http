@@ -1,0 +1,49 @@
+@baseUrl = http://127.0.0.1:8080
+@tenant = demo
+@tagId = 01K3TAGDEMO00000000000001
+
+### 1. service status
+GET {{baseUrl}}/tag/_status
+X-Tenant-Id: {{tenant}}
+
+### 2. discovery surface
+GET {{baseUrl}}/tag/_surface
+X-Tenant-Id: {{tenant}}
+
+### 3. seeded read
+GET {{baseUrl}}/tag/{{tagId}}
+X-Tenant-Id: {{tenant}}
+
+### 4. seeded search
+GET {{baseUrl}}/tag/search?q=elect&pageSize=10
+X-Tenant-Id: {{tenant}}
+
+### 5. seeded suggest
+GET {{baseUrl}}/tag/suggest?q=pre&limit=10
+X-Tenant-Id: {{tenant}}
+
+### 6. seeded assignments
+GET {{baseUrl}}/tag/assignments?entityType=product&entityId=demo-product-1&limit=10
+X-Tenant-Id: {{tenant}}
+
+### 7. assign one more seeded relation
+POST {{baseUrl}}/tag/{{tagId}}/assign
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+X-Idempotency-Key: tour-assign-1
+
+{
+  "entity_type": "collection",
+  "entity_id": "demo-collection-2"
+}
+
+### 8. unassign seeded relation
+POST {{baseUrl}}/tag/{{tagId}}/unassign
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+X-Idempotency-Key: tour-unassign-1
+
+{
+  "entity_type": "collection",
+  "entity_id": "demo-collection-2"
+}

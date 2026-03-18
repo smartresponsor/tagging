@@ -1,13 +1,20 @@
-# Tag Demo Seed
+# Tag demo seed
 
-## Run
+## Validate fixture
+
+```bash
+php tools/seed/tag-fixture-validate.php
+```
+
+## Run deterministic seed
 
 ```bash
 export DB_DSN="pgsql:host=localhost;port=5432;dbname=app"
 export DB_USER="app"
 export DB_PASS="app"
 export TENANT="demo"
-php tools/seed/tag-seed.php
+php tools/db/tag-migrate.php
+SEED_RESET=1 php tools/seed/tag-seed.php
 ```
 
 ## Clear
@@ -16,4 +23,8 @@ php tools/seed/tag-seed.php
 php tools/seed/tag-clear.php
 ```
 
-Generated: 2025-10-27T20:19:32.645120
+## Verify
+
+```bash
+BASE_URL=http://127.0.0.1:8080 TENANT=demo php tools/smoke/tag-smoke.php
+```

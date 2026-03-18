@@ -1,10 +1,18 @@
-# SmartResponsor — Tag Admin (E10)
+# SmartResponsor Tag Admin
 
-Minimal, no-build HTML/JS UI. Open `admin/index.html` in a browser.
-Configure the API base URL at the top of the page. Uses fetch() to call the HTTP endpoints.
+Static no-build shell for the minimal public-ready Tag surface.
 
-## E16 Admin UI v2
+What it does:
+- load `GET /tag/_surface`
+- search and suggest tags
+- create one tag
+- assign and unassign one tag to one entity
+- list assignments for one entity
 
-- Bulk import: paste NDJSON and click Import — shows job id.
-- Merge/Split/Resolve: simple forms under the table.
-- Works with API base set in header controls; actor id via X-Actor-Id.
+What it does not do:
+- bulk operations
+- public runtime surface management
+- purge or metrics panels
+- HMAC signing
+
+Open `admin/index.html` in a browser and point API Base to a running `host-minimal` instance.

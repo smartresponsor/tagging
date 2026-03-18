@@ -18,7 +18,7 @@
 ### Structural risks and growth points
 
 1. **Boundary mismatch and dual contracts**
-    - `App\Service\Tag\TagRepositoryInterface` is a thin alias over `App\ServiceInterface\Tag\TagRepositoryInterface`,
+    - `App\Service\Core\Tag\TagRepositoryInterface` is a thin alias over `App\ServiceInterface\Core\Tag\TagRepositoryInterface`,
       creating duplication without clear ownership.
     - Repository contract is very broad (CRUD + policy + moderation + analytics + effects), violating Interface
       Segregation and creating a god-interface.

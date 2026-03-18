@@ -1,9 +1,13 @@
-# Search v1 (file driver & Postgres)
+# Search v1 (DB-backed runtime)
 
-- File driver: search по label.ndjson и synonym.ndjson (contains/prefix); сортировка по score+usageCount.
-- Entities by tags: assignment.ndjson агрегируется в памяти.
-- DB mode: включите prefer_db=true и примените V29__tag_search.sql (pg_trgm).
+The shipped runtime is Postgres-backed.
+
+- Search reads tag entities from the database.
+- Suggest reads tag entities from the database.
+- Assignment reads use the database-backed relation tables.
+- The shipped public runtime shell is DB-backed; file-based assignment and synonym stores are historical notes only and are not part of the runnable host.
 
 ## ETag
 
-- GET /tag/search отвечает заголовком ETag (weak). Если клиент присылает If-None-Match и он совпадает → 304.
+- `GET /tag/search` responds with an ETag (weak).
+- If the client sends `If-None-Match` and it matches, the runtime may return `304`.

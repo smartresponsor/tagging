@@ -1,15 +1,18 @@
-### Demo seed smoke
-# @baseUrl = http://localhost:8080
+@baseUrl = http://127.0.0.1:8080
+@tenant = demo
 
-### optional: purge before
-POST {{baseUrl}}/tag/_purge
-Content-Type: application/json
-X-Tenant-Id: demo
+### status
+GET {{baseUrl}}/tag/_status
+X-Tenant-Id: {{tenant}}
 
-{
-  "action": "all"
-}
+### discovery
+GET {{baseUrl}}/tag/_surface
+X-Tenant-Id: {{tenant}}
 
-### search demo
-GET {{baseUrl}}/tag/search?q=demo
-X-Tenant-Id: demo
+### search seeded electronics
+GET {{baseUrl}}/tag/search?q=elect&pageSize=5
+X-Tenant-Id: {{tenant}}
+
+### suggest seeded premium
+GET {{baseUrl}}/tag/suggest?q=pre&limit=5
+X-Tenant-Id: {{tenant}}

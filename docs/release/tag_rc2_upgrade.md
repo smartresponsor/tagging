@@ -1,18 +1,11 @@
 # Tag RC2 Upgrade Guide
 
-## What changed
+Historical note: this document describes an earlier, broader RC track.
+It is not the authoritative guide for the current minimal public-ready shell.
 
-- OpenAPI bumped to v1.1.0 and includes endpoints for merge/split, bulk import, redirect resolve, metrics, webhooks.
-- E14..E19 hardening, policy gate, UI v2, metrics/SLO, cache/quota, audit/webhooks.
-
-## Compatibility
-
-- No breaking changes vs RC1 contracts; new endpoints are additive.
-- SDK TS/PHP minor marker updated to 1.1.0.
-
-## Steps
-
-1) Apply DB hardening SQLs from E14 (engine-specific).
-2) Deploy updated service and static Admin UI (E16).
-3) Verify /tag/_metrics and run tools/smoke/tag_smoke.sh.
-4) (Optional) configure cache/quota/webhooks via config/*.yaml.
+Use the current flow instead:
+1) `php tools/db/tag-migrate.php`
+2) `php tools/seed/tag-fixture-validate.php`
+3) `php tools/seed/tag-seed.php`
+4) `php tools/smoke/tag-smoke.php`
+5) `php tools/audit/tag-surface-audit.php`

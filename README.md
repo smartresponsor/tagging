@@ -1,25 +1,50 @@
+## Shipped audit and tooling
+
+The shipped archive now includes runnable `tools/` scripts for audit, preflight, migrate, seed, clear and smoke.
+
+Recommended publish gate:
+
+- `composer run -n audit:surface`
+- `composer run -n audit:contract`
+- `composer run -n audit:route`
+- `composer run -n audit:bootstrap`
+- `composer run -n audit:config`
+- `composer run -n audit:sdk`
+- `composer run -n audit:version`
+- `composer run -n release:preflight`
+
 # Smartresponsor Tag (Tagging)
 
 Canonical tagging for any object type (user/product/project/category/…): create and manage tags, attach/detach them to
-entities, keep redirects after merges, and expose a stable API for search/suggest.
+entities, and expose a stable API for CRUD, assignment, search, and suggest.
 
 This repository contains:
 
-- a PHP library (PSR-4 `App\\*`)
+- a PHP library (PSR-4 `App\*`)
 - a minimal runnable host (`host-minimal/`)
 - database migrations (`db/postgres/migrations/`)
 - HTTP contract (OpenAPI): `contracts/http/tag-openapi.yaml`
 - ops assets (Grafana/alerts) under `ops/`
 
-## What “prod-ready” means here
+## What is actually runnable in the shipped archive
 
-- Idempotency-ready writes (request id / replay safety)
-- HMAC signature support (request authenticity)
-- Multi-tenant isolation (tenant id in every boundary)
-- Redirects after tag merge (stable links)
-- Bulk import jobs and status endpoints
-- Webhooks for downstream sync
-- Metrics endpoint for SLO gates
+The current `host-minimal/` path exposes:
+
+- tag CRUD
+- assign / unassign
+- assignment list by entity
+- search / suggest
+- `_status`
+- `_surface`
+
+The shipped archive does **not** currently provide a runnable public path for:
+
+- webhook worker
+- metrics endpoint
+- runtime public surface catalog via `/tag/_surface`
+- quota / RBAC / HMAC middleware chain in `host-minimal/`
+
+Those capabilities should be treated as internal or future work until they are wired into the runnable host.
 
 ## Quickstart (host-minimal)
 
@@ -33,11 +58,11 @@ Prereqs:
 
 - `composer install`
 
-1) Apply migrations (example using psql):
+2) Apply migrations:
 
-- `psql "$DB_DSN" -U "$DB_USER" -f db/postgres/migrations/2025_10_27_tag.sql`
+- `php tools/db/tag-migrate.php`
 
-1) Run:
+3) Run:
 
 - `php -S 127.0.0.1:8080 host-minimal/index.php`
 
@@ -45,35 +70,46 @@ Environment variables used by code:
 
 - `DB_DSN`, `DB_USER`, `DB_PASS`
 - `TENANT` (optional default tenant)
-- `SR_HMAC_SECRET` (optional; enable signature verification)
-- `TAG_BASE_URL` (optional; used for webhooks/redirect URLs)
+- `TAG_ALLOW_ORIGIN` (optional CORS origin pinning)
 
 ## Integration tests (Postgres harness)
 
-1) Start isolated Postgres test DB:
+1) Start Postgres (for example with the bundled compose file):
 
-- `tools/test-db-start.sh`
+- `docker compose up -d db`
 
-1) Export environment values from the script output and run integration suite:
+2) Export environment values and apply migrations:
+
+- `export POSTGRES_DB=app POSTGRES_USER=app POSTGRES_PASSWORD=app DB_HOST=127.0.0.1 DB_PORT=5432`
+- `for f in db/postgres/migrations/*.sql; do psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$DB_HOST:$DB_PORT/$POSTGRES_DB" -f "$f"; done`
+
+3) Run integration suite:
 
 - `vendor/bin/phpunit --testsuite integration`
 
-1) Stop and cleanup test DB:
-
-- `tools/test-db-stop.sh`
-
-The integration tests are deterministic: schema is bootstrapped in-test and tables are truncated before each test case.
+The integration tests are deterministic only after the schema has been applied to the target database.
 
 ## Demo scenario
 
 See: `docs/demo/tag-quick-demo.md`
 
-## Release notes and upgrades
+The first discovery call in the shipped shell is `GET /tag/_surface`. Use it to verify the public runtime catalog before create/search flows.
 
-- Release notes template: `docs/release/tag-release-notes-template.md`
-- Versioning policy: `docs/release/tag-versioning.md`
-- Upgrade guides: `docs/release/tag_rc*_upgrade.md`
+Recommended publish gate:
 
-## License
+- `composer run -n audit:surface`
+- `composer run -n audit:contract`
+- `composer run -n audit:route`
+- `composer run -n audit:bootstrap`
+- `composer run -n audit:version`
+- `composer run -n audit:config`
+- `composer run -n audit:sdk`
+- `composer run -n release:preflight`
 
-Proprietary. Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+Recommended publish gate:
+
+- `composer run -n audit:surface`
+- `composer run -n audit:contract`
+- `composer run -n audit:route`
+- `composer run -n audit:version`
+- `composer run -n release:preflight`

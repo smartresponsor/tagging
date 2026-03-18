@@ -1,19 +1,207 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: SmartResponsor Tag API
-  version: "1.3.0-draft"
+  title: SmartResponsor Tag Public API
+  version: "p73-public-surface"
+  description: |
+    Runnable host-minimal public surface for the Tag component.
+    Required header on tenant-bound routes: X-Tenant-Id.
+servers:
+  - url: http://127.0.0.1:8080
+    description: Local host-minimal
+components:
+  parameters:
+    TenantId:
+      name: X-Tenant-Id
+      in: header
+      required: false
+      schema:
+        type: string
+    TagId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    EntityType:
+      name: entityType
+      in: query
+      required: false
+      schema:
+        type: string
+    EntityId:
+      name: entityId
+      in: query
+      required: false
+      schema:
+        type: string
+  schemas:
+    Status:
+      type: object
+      properties:
+        ok: { type: boolean }
+        ts: { type: string, format: date-time }
+        service: { type: string }
+        version: { type: string }
+        db:
+          type: object
+          additionalProperties: true
+    Surface:
+      type: object
+      properties:
+        ok: { type: boolean }
+        service: { type: string }
+        runtime: { type: string }
+        version: { type: string }
+        surface:
+          type: object
+          additionalProperties: { type: string }
+    TagWrite:
+      type: object
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        locale: { type: string }
+        weight: { type: integer }
+    AssignBody:
+      type: object
+      properties:
+        entityType: { type: string }
+        entityId: { type: string }
+        entity_type: { type: string }
+        entity_id: { type: string }
 paths:
+  /tag/_status:
+    get:
+      summary: Runtime status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /tag/_surface:
+    get:
+      summary: Runtime discovery surface
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Surface'
+  /tag:
+    post:
+      summary: Create tag
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagWrite'
+      responses:
+        '200': { description: OK }
+        '201': { description: Created }
+  /tag/{id}:
+    get:
+      summary: Get tag
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      responses:
+        '200': { description: OK }
+        '404': { description: Not found }
+    patch:
+      summary: Patch tag
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagWrite'
+      responses:
+        '200': { description: OK }
+    delete:
+      summary: Delete tag
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      responses:
+        '200': { description: OK }
+        '204': { description: No content }
+  /tag/{id}/assign:
+    post:
+      summary: Assign tag to entity
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignBody'
+      responses:
+        '200': { description: OK }
+  /tag/{id}/unassign:
+    post:
+      summary: Unassign tag from entity
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TagId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignBody'
+      responses:
+        '200': { description: OK }
+  /tag/assignments:
+    get:
+      summary: List assignments by entity
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/EntityType'
+        - $ref: '#/components/parameters/EntityId'
+      responses:
+        '200': { description: OK }
   /tag/search:
     get:
-      summary: Search tags by label/slug/synonym
+      summary: Search tags
       parameters:
-        - { in: query, name: q, schema: { type: string }, required: true }
-      responses: { "200": { description: OK } }
-  /entity/search:
+        - $ref: '#/components/parameters/TenantId'
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: pageToken
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+  /tag/suggest:
     get:
-      summary: Search entities by tag ids
+      summary: Suggest tags
       parameters:
-        - { in: query, name: tagId, schema: { type: array, items: { type: string } } }
-        - { in: query, name: limit,  schema: { type: integer, default: 50 } }
-        - { in: query, name: offset, schema: { type: integer, default: 0 } }
-      responses: { "200": { description: OK } }
+        - $ref: '#/components/parameters/TenantId'
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 50 }
+      responses:
+        '200': { description: OK }

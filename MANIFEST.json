@@ -1,12 +1,12 @@
 {
-  "envelope": "P90",
-  "slice": "ATOM",
-  "goal": "Public-ready reconcile: status/runtime repair, semantic config gates, SDK audits, and honest docs.",
+  "envelope": "D01",
+  "slice": "CUMULATIVE",
+  "goal": "Protocol debt recovery on current Tagging slice: fix runtime config lookup, restore canonical config placement, add Symfony tag routes, repair surface contract, normalize unit unique-violation stub, and remove non-canonical root residues.",
   "limits": {
     "files_max": 20,
     "loc_max": 1500
   },
-  "created_at": "2026-02-28T13:20:00-06:00",
+  "created_at": "2026-03-17T01:50:00-05:00",
   "canon": [
     "single-hyphen",
     "singular naming",
@@ -14,5 +14,95 @@
     "EN-only comments",
     "copyright header"
   ],
-  "version": "p90-public-ready-reconcile"
+  "version": "tagging-debt-wave-09",
+  "notes": "Adds explicit root cleanup tooling and switches touched-files delivery away from root ZZ transport artifacts.",
+  "wave_12": {
+    "focus": "ci workflow validity hardening",
+    "changes": [
+      ".github/workflows/ci.yml",
+      "composer.json",
+      "tools/audit/tag-ci-workflow-audit.php",
+      "tests/CiWorkflowAuditTest.php",
+      "docs/ops/ci-gates.md"
+    ]
+  },
+  "wave_13": {
+    "focus": "snapshot purity cleanup",
+    "changes": [
+      "MANIFEST.json"
+    ],
+    "removed_root_artifacts": [
+      "MANIFEST.wave-11.json",
+      "ZZ_CHANGED_FILES.txt",
+      "ZZ_NEXT.txt",
+      "ZZ_WAVE.txt"
+    ]
+  },
+  "wave_14": {
+    "focus": "root workspace purity cleanup",
+    "changes": [
+      "MANIFEST.json",
+      "tools/audit/tag-repo-hygiene-audit.php",
+      "tests/RepoHygieneAuditTest.php",
+      "docs/ops/repo-hygiene.md"
+    ],
+    "removed_root_directories": [
+      "tag_cons_patched",
+      "tag_fix",
+      "tmp"
+    ]
+  },
+  "wave_15": {
+    "focus": "snapshot purity workspace alignment",
+    "changes": [
+      "MANIFEST.json",
+      "tools/audit/tag-snapshot-purity-audit.php",
+      "tests/SnapshotPurityAuditTest.php",
+      "docs/ops/snapshot-purity.md"
+    ],
+    "forbidden_root_directories": [
+      "tag_cons_patched",
+      "tag_fix",
+      "tmp"
+    ]
+  },
+  "debt_wave_01": {
+    "focus": "protocol debt recovery",
+    "changes": [
+      "src/Http/Api/Tag/RuntimeSurfaceCatalog.php",
+      "src/Http/Api/Tag/SurfaceController.php",
+      "config/tag_quota.yaml",
+      "config/tag_assignment.yaml",
+      "config/routes/tag.yaml",
+      "sdk/README.md",
+      "tests/TagWriteUseCaseTest.php",
+      "MANIFEST.json"
+    ],
+    "removed_root_items": [
+      "tag_quota.yaml",
+      "tag_assignment.yaml",
+      "tag.yaml",
+      "tag_cons_patched",
+      "tag_fix",
+      "tmp"
+    ]
+  },
+  "debt_wave_03": {
+    "focus": "historical release manifest purity",
+    "changes": [
+      "MANIFEST.json",
+      "docs/ops/repo-hygiene.md"
+    ],
+    "removed_release_items": [
+      "release/tag-rc5/RC5-E1-MANIFEST.json",
+      "release/tag-rc5/RC5-E2-MANIFEST.json",
+      "release/tag-rc5/RC5-E3-MANIFEST.json",
+      "release/tag-rc5/RC5-E4-MANIFEST.json",
+      "release/tag-rc5/RC5-E5-MANIFEST.json",
+      "release/tag-rc5/RC5-E6-MANIFEST.json",
+      "release/tag-rc5/RC5-E7-MANIFEST.json",
+      "release/tag-rc5/RC5-E8-MANIFEST.json",
+      "release/tag-rc5/RC5-E9-MANIFEST.json"
+    ]
+  }
 }

@@ -12,8 +12,8 @@ use App\Application\Write\Tag\UseCase\CreateTag;
 use App\Application\Write\Tag\UseCase\DeleteTag;
 use App\Application\Write\Tag\UseCase\PatchTag;
 use App\Http\Api\Tag\Responder\TagWriteResponder;
-use App\Service\Slug\Tag\Slugifier;
-use App\Service\Slug\Tag\SlugPolicy;
+use App\Service\Core\Tag\Slug\Slugifier;
+use App\Service\Core\Tag\Slug\SlugPolicy;
 use App\ServiceInterface\Core\Tag\TagEntityRepositoryInterface;
 use App\ServiceInterface\Core\Tag\TransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +30,7 @@ final class TagWriteUseCaseTest extends TestCase
 
             public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
             {
-                throw new \PDOException('duplicate', '23505');
+                throw new \PDOException('duplicate', 23505);
             }
 
             public function patch(string $tenant, string $id, array $patch): void

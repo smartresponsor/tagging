@@ -11,12 +11,21 @@ final class SurfaceController
     {
     }
 
+    /** @return array<string,mixed> */
     public function surface(): array
     {
+        $catalog = require dirname(__DIR__, 4).'/config/tag_public_surface.php';
+        $catalog = is_array($catalog) ? $catalog : [];
+        $runtime = [] !== $this->runtime ? $this->runtime : RuntimeSurfaceCatalog::read();
+
         return [
-            'service' => (string) ($this->runtime['service'] ?? 'tag'),
-            'version' => (string) ($this->runtime['version'] ?? 'dev'),
-            'public_surface' => $this->runtime['public_surface'] ?? [],
+            'ok' => true,
+            'service' => (string) ($catalog['service'] ?? $runtime['service'] ?? 'tag'),
+            'version' => RuntimeVersion::read(),
+            'surface' => $catalog['route'] ?? [],
+            'examples' => $catalog['example'] ?? [],
+            'docs' => $catalog['doc'] ?? [],
+            'public_surface' => $runtime['public_surface'] ?? [],
         ];
     }
 }

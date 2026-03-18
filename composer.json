@@ -1,18 +1,31 @@
 {
-  "name": "taging/tag",
+  "name": "smartresponsor/tag",
   "type": "library",
   "license": "proprietary",
+  "description": "Smartresponsor canonical tagging component library.",
   "require": {
-    "php": "^8.4",
+    "php": "^8.2",
     "ext-pdo": "*",
     "ext-curl": "*",
     "ext-mbstring": "*",
     "ext-ctype": "*",
     "ext-intl": "*"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^10",
+    "friendsofphp/php-cs-fixer": "^3.94",
+    "phpmd/phpmd": "^2.15",
+    "phpstan/phpstan": "^1.12",
+    "phpunit/phpunit": "^10.5"
+  },
   "autoload": {
     "psr-4": {
       "App\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
     }
   },
   "scripts": {
@@ -23,42 +36,30 @@
     "audit:contract": "php tools/audit/tag-contract-audit.php",
     "audit:route": "php tools/audit/tag-route-controller-audit.php",
     "audit:bootstrap": "php tools/audit/tag-bootstrap-audit.php",
+    "audit:bootstrap-runtime": "php tools/audit/tag-bootstrap-runtime-audit.php",
     "audit:config": "php tools/audit/tag-config-audit.php",
     "audit:sdk": "php tools/audit/tag-sdk-audit.php",
     "audit:version": "php tools/audit/tag-version-audit.php",
-    "audit:config": "php tools/audit/tag-config-audit.php",
-    "audit:sdk": "php tools/audit/tag-sdk-audit.php",
     "release:preflight": "php tools/release/tag-preflight.php",
     "db:migrate": "php tools/db/tag-migrate.php",
     "db:smoke": "bash tools/db/tag-migration-smoke.sh",
     "demo:seed": "php tools/seed/tag-seed.php",
     "demo:clear": "php tools/seed/tag-clear.php",
-    "smoke:runtime": "php tools/smoke/tag-smoke.php"
-  },
-  "description": "Smartresponsor canonical tagging component library.",
-    "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^3.6",
-        "doctrine/doctrine-migrations-bundle": "^3.4",
-        "friendsofphp/php-cs-fixer": "^3.94",
-        "phpmd/phpmd": "^2.15",
-        "phpstan/phpstan": "^1.12",
-        "phpunit/phpunit": "^10.5"
-    },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "scripts": {
-    "lint": "find src tests host-minimal tools -name \"*.php\" -print0 | xargs -0 -n1 php -l",
-    "audit:surface": "php tools/audit/tag-surface-audit.php",
-    "audit:contract": "php tools/audit/tag-contract-audit.php",
-    "audit:route": "php tools/audit/tag-route-controller-audit.php",
-    "audit:bootstrap": "php tools/audit/tag-bootstrap-audit.php",
-    "audit:config": "php tools/audit/tag-config-audit.php",
-    "audit:sdk": "php tools/audit/tag-sdk-audit.php",
-    "audit:version": "php tools/audit/tag-version-audit.php",
-    "fixture:validate": "php tools/seed/tag-fixture-validate.php",
-    "release:preflight": "php tools/release/tag-preflight.php"
+    "smoke:runtime": "php tools/smoke/tag-smoke.php",
+    "audit:canonical-stale": "php tools/audit/tag-canonical-stale-reference-audit.php",
+    "audit:canonical-structure": "php tools/audit/tag-canonical-structure-audit.php",
+    "audit:ci": "composer run -n audit:composer-integrity && composer run -n audit:surface && composer run -n audit:contract && composer run -n audit:route && composer run -n audit:bootstrap && composer run -n audit:bootstrap-runtime && composer run -n audit:config && composer run -n audit:sdk && composer run -n audit:version && composer run -n audit:canonical-stale && composer run -n audit:canonical-structure && composer run -n audit:repo-hygiene && composer run -n audit:snapshot-purity && composer run -n test:unit && composer run -n audit:repo-map-truth && composer run -n audit:ci-workflow && @php tools/audit/tag-protocol-audit.php",
+    "audit:composer-integrity": "php tools/audit/tag-composer-integrity-audit.php",
+    "test": "vendor/bin/phpunit --testsuite unit",
+    "test:unit": "vendor/bin/phpunit --testsuite unit",
+    "test:integration": "vendor/bin/phpunit --testsuite integration",
+    "gate:install-test": "composer validate --no-interaction --strict && composer run -n audit:composer-integrity && composer run -n test:unit",
+    "audit:repo-hygiene": "php tools/audit/tag-repo-hygiene-audit.php",
+    "audit:snapshot-purity": "php tools/audit/tag-snapshot-purity-audit.php",
+    "audit:repo-map-truth": "php tools/audit/tag-repo-map-truth-audit.php",
+    "audit:ci-workflow": "php tools/audit/tag-ci-workflow-audit.php",
+    "test:all": "vendor/bin/phpunit",
+    "audit:protocol": "php tools/audit/tag-protocol-audit.php",
+    "repo:cleanup-root": "@php tools/cleanup/tag-root-cleanup.php"
   }
 }

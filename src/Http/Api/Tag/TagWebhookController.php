@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag;
 
-use App\Service\Audit\Tag\TagAuditEmitter;
-use App\Service\Webhook\Tag\TagWebhookRegistry;
+use App\Service\Core\Tag\Audit\TagAuditEmitter;
+use App\Service\Core\Tag\Webhook\TagWebhookRegistry;
 
 final readonly class TagWebhookController
 {

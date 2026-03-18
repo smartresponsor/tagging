@@ -6,6 +6,10 @@ declare(strict_types=1);
 return [
     'service' => 'tag',
     'version' => 'p111-public-surface-reconcile',
+    'route' => [
+        'status' => '/tag/_status',
+        'discovery' => '/tag/_surface',
+    ],
     'public_surface' => [
         ['method' => 'POST', 'path' => '/tag', 'name' => 'create tag'],
         ['method' => 'GET', 'path' => '/tag/{id}', 'name' => 'get tag'],

@@ -113,3 +113,9 @@ Recommended publish gate:
 - `composer run -n audit:route`
 - `composer run -n audit:version`
 - `composer run -n release:preflight`
+
+
+## Repository hygiene
+
+Run `composer run -n audit:repo-hygiene` to verify that transport-only wave metadata is not kept in the repository root.
+Snapshot policy: cumulative snapshots must not contain root transport artifacts such as `MANIFEST.wave-*.json` or `ZZ_*`.

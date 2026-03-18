@@ -1,45 +1,28 @@
 <?php
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 
 declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use PDO;
 use PHPUnit\Framework\TestCase;
-use function extension_loaded;
-use function getenv;
-use function sprintf;
 
-/**
- *
- */
-
-/**
- *
- */
 abstract class IntegrationDbTestCase extends TestCase
 {
-    /**
-     * @param string $key
-     * @param string $default
-     * @return string
-     */
     protected function getEnv(string $key, string $default): string
     {
-        $v = getenv($key);
-        if ($v === false || $v === '') {
+        $v = \getenv($key);
+        if (false === $v || '' === $v) {
             return $default;
         }
+
         return $v;
     }
 
-    /**
-     * @return \PDO
-     */
-    protected function createPdo(): PDO
+    protected function createPdo(): \PDO
     {
-        if (!extension_loaded('pdo_pgsql')) {
+        if (!\extension_loaded('pdo_pgsql')) {
             static::markTestSkipped('pdo_pgsql extension is not available on this PHP runtime.');
         }
 
@@ -49,17 +32,19 @@ abstract class IntegrationDbTestCase extends TestCase
         $host = $this->getEnv('DB_HOST', '127.0.0.1');
         $port = $this->getEnv('DB_PORT', '5432');
 
-        $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s', $host, $port, $db);
-        return new PDO($dsn, $user, $pass, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
+        $dsn = \sprintf('pgsql:host=%s;port=%s;dbname=%s', $host, $port, $db);
+
+        try {
+            return new \PDO($dsn, $user, $pass, [
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            ]);
+        } catch (\PDOException $e) {
+            static::markTestSkipped(\sprintf('PostgreSQL integration database is not reachable: %s', $e->getMessage()));
+        }
     }
 
-    /**
-     * @return \PDO
-     */
-    protected function pdo(): PDO
+    protected function pdo(): \PDO
     {
         return $this->createPdo();
     }

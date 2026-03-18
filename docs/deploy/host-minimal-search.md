@@ -2,8 +2,8 @@
 
 ```php
 $cfg = yaml_parse_file(__DIR__.'/../config/tag_cache.yaml') ?: [];
-$searchCache = new App\Cache\Search\Tag\SearchCache($cfg['search']['dir'] ?? 'var/cache/tag-search', (int)($cfg['search']['ttl_seconds'] ?? 60));
-$suggestCache = new App\Cache\Search\Tag\SuggestCache($cfg['suggest']['dir'] ?? 'var/cache/tag-suggest', (int)($cfg['suggest']['ttl_seconds'] ?? 60));
+$searchCache = new App\Cache\Store\Tag\SearchCache($cfg['search']['dir'] ?? 'var/cache/tag-search', (int)($cfg['search']['ttl_seconds'] ?? 60));
+$suggestCache = new App\Cache\Store\Tag\SuggestCache($cfg['suggest']['dir'] ?? 'var/cache/tag-suggest', (int)($cfg['suggest']['ttl_seconds'] ?? 60));
 
 $pdo = new PDO(getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app', getenv('DB_USER') ?: 'app', getenv('DB_PASS') ?: 'app');
 $read = new App\Infrastructure\ReadModel\Tag\TagReadModel($pdo);

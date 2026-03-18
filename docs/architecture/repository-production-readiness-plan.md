@@ -58,7 +58,7 @@
 - **Legacy/demo artifacts in tests path**: `tests/tag/AssignFlowTest.php` is a script, not a PHPUnit test class.
 - **Potentially stale references** in README (mentions paths like `ops/`, `docs/release/...`) while repository has
   broader and partly different layout.
-- **Duplicated concepts** (`src/Service/Tag/TagQuotaService.php` and `src/Service/Tag/QuotaService.php`) need
+- **Duplicated concepts** (`src/Service/Core/Tag/TagQuotaService.php` and `src/Service/Core/Tag/QuotaService.php`) need
   consolidation review.
 
 ### Refactor blocks
@@ -205,8 +205,8 @@
 
 ## Suggested “ready next” implementation tasks
 
-- Create `src/Application/Tag/CreateTag.php`, `PatchTag.php`, `DeleteTag.php` with typed command/result DTOs.
-- Add `src/ServiceInterface/Tag/TagWriteRepositoryInterface.php` and `TagReadRepositoryInterface.php`.
+- Create `src/Application/Write/Tag/CreateTag.php`, `PatchTag.php`, `DeleteTag.php` with typed command/result DTOs.
+- Add `src/ServiceInterface/Core/Tag/TagWriteRepositoryInterface.php` and `TagReadRepositoryInterface.php`.
 - Add `tests/integration/TagAssignmentIdempotencyTest.php` and `tests/integration/TenantIsolationTest.php`.
 - Add `.github/workflows/ci.yml` with matrix for PHP 8.2/8.3 and Postgres service.
 - Add `docs/ops/runbook.md` + `docs/architecture/adr-0001-tenancy-boundary.md`.

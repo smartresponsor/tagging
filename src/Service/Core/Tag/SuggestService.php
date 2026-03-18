@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
-use App\Cache\Search\Tag\SuggestCache;
+use App\Cache\Store\Tag\SuggestCache;
 
 final readonly class SuggestService
 {

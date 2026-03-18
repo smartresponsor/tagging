@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag\Middleware;
 
-use App\Service\Authz\Tag\TagAuthorizer;
+use App\Service\Core\Tag\Authz\TagAuthorizer;
 
 final readonly class Authorize
 {

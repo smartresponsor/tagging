@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag\Middleware;
 
-use App\Service\Metric\Tag\TagMetrics;
+use App\Service\Core\Tag\Metric\TagMetrics;
 
 final readonly class Observe
 {

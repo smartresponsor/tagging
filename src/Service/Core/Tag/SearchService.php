@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
-use App\Cache\Search\Tag\SearchCache;
+use App\Cache\Store\Tag\SearchCache;
 use App\Infrastructure\ReadModel\Tag\TagReadModel;
 
 final readonly class SearchService

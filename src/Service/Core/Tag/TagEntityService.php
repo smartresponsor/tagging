@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
-use App\Service\Slug\Tag\SlugPolicy;
+use App\Service\Core\Tag\Slug\SlugPolicy;
 use App\ServiceInterface\Core\Tag\TagEntityRepositoryInterface;
 
 final readonly class TagEntityService

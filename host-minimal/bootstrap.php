@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\Write\Tag\UseCase\{CreateTag, DeleteTag, PatchTag};
-use App\Cache\Search\Tag\{SearchCache, SuggestCache};
+use App\Cache\Store\Tag\{SearchCache, SuggestCache};
 use App\Http\Middleware\IdempotencyMiddleware;
 use App\Http\Api\Tag\{AssignController,
     AssignmentReadController,
@@ -14,7 +14,8 @@ use App\Http\Api\Tag\{AssignController,
     TagController};
 use App\Http\Api\Tag\Responder\TagWriteResponder;
 use App\Infrastructure\Outbox\Tag\OutboxPublisher;
-use App\Infrastructure\Persistence\Tag\{PdoTagEntityRepository, TagReadModel};
+use App\Infrastructure\Persistence\Tag\PdoTagEntityRepository;
+use App\Infrastructure\ReadModel\Tag\TagReadModel;
 use App\Service\Core\Tag\{AssignService,
     IdempotencyStore,
     PdoTransactionRunner,
@@ -22,7 +23,7 @@ use App\Service\Core\Tag\{AssignService,
     SuggestService,
     TagEntityService,
     UnassignService};
-use App\Service\Slug\Tag\{Slugifier, SlugPolicy};
+use App\Service\Core\Tag\Slug\{Slugifier, SlugPolicy};
 
 require_once __DIR__ . '/autoload.php';
 

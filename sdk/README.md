@@ -1,12 +1,20 @@
 # SDK quick usage
 
-The shipped SDK surface matches the runnable `host-minimal` public API only:
+The shipped SDK surface matches the runnable `host-minimal` public API only.
 
-- `status()`
-- `surface()`
-- `create()` / `get()` / `patch()` / `delete()`
-- `assign()` / `unassign()` / `assignments()`
-- `search()` / `suggest()`
+## Public endpoints
+
+- `GET /tag/_status`
+- `GET /tag/_surface`
+- `POST /tag`
+- `GET /tag/{id}`
+- `PATCH /tag/{id}`
+- `DELETE /tag/{id}`
+- `POST /tag/{id}/assign`
+- `POST /tag/{id}/unassign`
+- `GET /tag/assignments`
+- `GET /tag/search`
+- `GET /tag/suggest`
 
 ## TypeScript
 
@@ -27,7 +35,6 @@ $client = new Client('http://127.0.0.1:8080', ['X-Tenant-Id' => 'demo']);
 $client->surface();
 $client->search('priority');
 ```
-
 
 Gate recommendation:
 

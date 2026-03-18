@@ -8,8 +8,8 @@ namespace App\Application\Write\Tag\UseCase;
 use App\Application\Write\Tag\Dto\DeleteTagCommand;
 use App\Application\Write\Tag\Dto\TagError;
 use App\Application\Write\Tag\Dto\TagResult;
-use App\Cache\Search\Tag\SearchCache;
-use App\Cache\Search\Tag\SuggestCache;
+use App\Cache\Store\Tag\SearchCache;
+use App\Cache\Store\Tag\SuggestCache;
 use App\ServiceInterface\Core\Tag\TagEntityRepositoryInterface;
 use App\ServiceInterface\Core\Tag\TransactionRunnerInterface;
 

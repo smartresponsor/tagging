@@ -12,11 +12,7 @@
     "ext-intl": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^10",
-    "friendsofphp/php-cs-fixer": "^3.94",
-    "phpmd/phpmd": "^2.15",
-    "phpstan/phpstan": "^1.12",
-    "phpunit/phpunit": "^10.5"
+    "phpunit/phpunit": "^10"
   },
   "autoload": {
     "psr-4": {
@@ -48,7 +44,7 @@
     "smoke:runtime": "php tools/smoke/tag-smoke.php",
     "audit:canonical-stale": "php tools/audit/tag-canonical-stale-reference-audit.php",
     "audit:canonical-structure": "php tools/audit/tag-canonical-structure-audit.php",
-    "audit:ci": "composer run -n audit:composer-integrity && composer run -n audit:surface && composer run -n audit:contract && composer run -n audit:route && composer run -n audit:bootstrap && composer run -n audit:bootstrap-runtime && composer run -n audit:config && composer run -n audit:sdk && composer run -n audit:version && composer run -n audit:canonical-stale && composer run -n audit:canonical-structure && composer run -n audit:repo-hygiene && composer run -n audit:snapshot-purity && composer run -n test:unit && composer run -n audit:repo-map-truth && composer run -n audit:ci-workflow && @php tools/audit/tag-protocol-audit.php",
+    "audit:ci": "composer run -n audit:composer-integrity && composer run -n audit:surface && composer run -n audit:contract && composer run -n audit:route && composer run -n audit:bootstrap && composer run -n audit:bootstrap-runtime && composer run -n audit:config && composer run -n audit:sdk && composer run -n audit:version && composer run -n audit:core-boundary && composer run -n audit:canonical-stale && composer run -n audit:canonical-structure && composer run -n audit:repo-hygiene && composer run -n audit:snapshot-purity && composer run -n audit:repo-map-truth && composer run -n audit:ci-workflow && composer run -n audit:demo-truth-pack && composer run -n audit:release-grade-portrait && composer run -n test:unit",
     "audit:composer-integrity": "php tools/audit/tag-composer-integrity-audit.php",
     "test": "vendor/bin/phpunit --testsuite unit",
     "test:unit": "vendor/bin/phpunit --testsuite unit",
@@ -59,7 +55,12 @@
     "audit:repo-map-truth": "php tools/audit/tag-repo-map-truth-audit.php",
     "audit:ci-workflow": "php tools/audit/tag-ci-workflow-audit.php",
     "test:all": "vendor/bin/phpunit",
-    "audit:protocol": "php tools/audit/tag-protocol-audit.php",
-    "repo:cleanup-root": "@php tools/cleanup/tag-root-cleanup.php"
+    "audit:core-boundary": "php tools/audit/tag-core-boundary-audit.php",
+    "audit:demo-truth-pack": "php tools/audit/tag-demo-truth-pack-audit.php",
+    "audit:release-grade-portrait": "php tools/audit/tag-release-grade-portrait-audit.php",
+    "cli:tag": "php tools/cli/tag.php help",
+    "cli:tag:status": "php tools/cli/tag.php status --pretty",
+    "cli:tag:surface": "php tools/cli/tag.php surface --pretty",
+    "test:cli": "vendor/bin/phpunit --filter CliCommandLayerTest"
   }
 }

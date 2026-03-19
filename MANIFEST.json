@@ -1,7 +1,7 @@
 {
-  "envelope": "D01",
+  "envelope": "W15",
   "slice": "CUMULATIVE",
-  "goal": "Protocol debt recovery on current Tagging slice: fix runtime config lookup, restore canonical config placement, add Symfony tag routes, repair surface contract, normalize unit unique-violation stub, and remove non-canonical root residues.",
+  "goal": "Canonical stabilization: align snapshot-purity gates with root workspace policy and keep cumulative snapshots free of transport files and transient workspaces.",
   "limits": {
     "files_max": 20,
     "loc_max": 1500
@@ -14,8 +14,18 @@
     "EN-only comments",
     "copyright header"
   ],
-  "version": "tagging-debt-wave-09",
-  "notes": "Adds explicit root cleanup tooling and switches touched-files delivery away from root ZZ transport artifacts.",
+  "version": "tagging-debt-wave-13-release-grade-portrait",
+  "notes": [
+    "wave 14 removes transient root workspaces from the cumulative snapshot",
+    "wave 14 extends repo hygiene guards to forbid transport workspace directories in repository root",
+    "wave 14 keeps canonical repository content and runtime layout unchanged",
+    "wave 15 extends snapshot purity guards to forbid transient root workspace directories",
+    "wave 15 aligns snapshot-purity coverage with repo-hygiene policy so the narrower gate catches workspace residue too",
+    "debt wave 10 makes status/quota/assign/unassign failures observable through optional error sinks and explicit failure codes",
+    "debt wave 11 separates runnable core from adjacent cargo in README/docs and adds a core-boundary audit gate",
+    "debt wave 12 compacts demo/fixtures/seed documentation into one truthful final demo pack and adds an audit gate for demo truth",
+    "Wave 13 adds a release-grade portrait doc, audit, and PHPUnit guard for runtime/core/demo truth-line."
+  ],
   "wave_12": {
     "focus": "ci workflow validity hardening",
     "changes": [
@@ -64,45 +74,6 @@
       "tag_cons_patched",
       "tag_fix",
       "tmp"
-    ]
-  },
-  "debt_wave_01": {
-    "focus": "protocol debt recovery",
-    "changes": [
-      "src/Http/Api/Tag/RuntimeSurfaceCatalog.php",
-      "src/Http/Api/Tag/SurfaceController.php",
-      "config/tag_quota.yaml",
-      "config/tag_assignment.yaml",
-      "config/routes/tag.yaml",
-      "sdk/README.md",
-      "tests/TagWriteUseCaseTest.php",
-      "MANIFEST.json"
-    ],
-    "removed_root_items": [
-      "tag_quota.yaml",
-      "tag_assignment.yaml",
-      "tag.yaml",
-      "tag_cons_patched",
-      "tag_fix",
-      "tmp"
-    ]
-  },
-  "debt_wave_03": {
-    "focus": "historical release manifest purity",
-    "changes": [
-      "MANIFEST.json",
-      "docs/ops/repo-hygiene.md"
-    ],
-    "removed_release_items": [
-      "release/tag-rc5/RC5-E1-MANIFEST.json",
-      "release/tag-rc5/RC5-E2-MANIFEST.json",
-      "release/tag-rc5/RC5-E3-MANIFEST.json",
-      "release/tag-rc5/RC5-E4-MANIFEST.json",
-      "release/tag-rc5/RC5-E5-MANIFEST.json",
-      "release/tag-rc5/RC5-E6-MANIFEST.json",
-      "release/tag-rc5/RC5-E7-MANIFEST.json",
-      "release/tag-rc5/RC5-E8-MANIFEST.json",
-      "release/tag-rc5/RC5-E9-MANIFEST.json"
     ]
   }
 }

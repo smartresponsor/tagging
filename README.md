@@ -1,50 +1,41 @@
-## Shipped audit and tooling
-
-The shipped archive now includes runnable `tools/` scripts for audit, preflight, migrate, seed, clear and smoke.
-
-Recommended publish gate:
-
-- `composer run -n audit:surface`
-- `composer run -n audit:contract`
-- `composer run -n audit:route`
-- `composer run -n audit:bootstrap`
-- `composer run -n audit:config`
-- `composer run -n audit:sdk`
-- `composer run -n audit:version`
-- `composer run -n release:preflight`
-
 # Smartresponsor Tag (Tagging)
 
-Canonical tagging for any object type (user/product/project/category/…): create and manage tags, attach/detach them to
-entities, and expose a stable API for CRUD, assignment, search, and suggest.
+Canonical tagging component for any object type: create and manage tags, attach/detach them to entities, and expose a stable API for CRUD, assignment, search, suggest, status, and surface discovery.
 
-This repository contains:
+## Runnable core
 
-- a PHP library (PSR-4 `App\*`)
-- a minimal runnable host (`host-minimal/`)
-- database migrations (`db/postgres/migrations/`)
-- HTTP contract (OpenAPI): `contracts/http/tag-openapi.yaml`
-- ops assets (Grafana/alerts) under `ops/`
-
-## What is actually runnable in the shipped archive
-
-The current `host-minimal/` path exposes:
+The current shipped `host-minimal/` runtime is the source of truth for what is actually runnable now:
 
 - tag CRUD
 - assign / unassign
 - assignment list by entity
 - search / suggest
-- `_status`
-- `_surface`
+- `GET /tag/_status`
+- `GET /tag/_surface`
 
-The shipped archive does **not** currently provide a runnable public path for:
+Core runtime assets:
 
-- webhook worker
-- metrics endpoint
-- runtime public surface catalog via `/tag/_surface`
-- quota / RBAC / HMAC middleware chain in `host-minimal/`
+- PSR-4 library under `src/`
+- minimal runnable host under `host-minimal/`
+- database migrations under `db/postgres/migrations/`
+- HTTP contract under `contracts/http/tag-openapi.yaml`
+- config under `config/`
+- fixtures / seed used by demo and validation
 
-Those capabilities should be treated as internal or future work until they are wired into the runnable host.
+## Adjacent assets (not core runtime)
+
+The following trees belong to delivery, demo, release, or operational support. They are valuable, but they are not the runtime core of the component:
+
+- `admin/`
+- `docs/`
+- `ops/`
+- `release/`
+- `report/`
+- `sdk/`
+- `public/`
+- helper scripts under `tools/`
+
+These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, or `contracts/http/`, the runnable core wins.
 
 ## Quickstart (host-minimal)
 
@@ -54,15 +45,15 @@ Prereqs:
 - Postgres
 - Composer
 
-1) Install dependencies:
+1. Install dependencies:
 
 - `composer install`
 
-2) Apply migrations:
+2. Apply migrations:
 
 - `php tools/db/tag-migrate.php`
 
-3) Run:
+3. Run:
 
 - `php -S 127.0.0.1:8080 host-minimal/index.php`
 
@@ -74,48 +65,40 @@ Environment variables used by code:
 
 ## Integration tests (Postgres harness)
 
-1) Start Postgres (for example with the bundled compose file):
+1. Start Postgres:
 
 - `docker compose up -d db`
 
-2) Export environment values and apply migrations:
+2. Apply migrations:
 
 - `export POSTGRES_DB=app POSTGRES_USER=app POSTGRES_PASSWORD=app DB_HOST=127.0.0.1 DB_PORT=5432`
 - `for f in db/postgres/migrations/*.sql; do psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$DB_HOST:$DB_PORT/$POSTGRES_DB" -f "$f"; done`
 
-3) Run integration suite:
+3. Run suites:
 
-- `vendor/bin/phpunit --testsuite integration`
-
-The integration tests are deterministic only after the schema has been applied to the target database.
+- `composer test`
+- `composer run -n test:integration`
+- `composer run -n test:all`
 
 ## Demo scenario
 
-See: `docs/demo/tag-quick-demo.md`
+See `docs/demo/tag-quick-demo.md`.
+Start with `GET /tag/_surface` to verify the public runtime catalog before create/search flows.
 
-The first discovery call in the shipped shell is `GET /tag/_surface`. Use it to verify the public runtime catalog before create/search flows.
-
-Recommended publish gate:
+## Publish gate
 
 - `composer run -n audit:surface`
 - `composer run -n audit:contract`
 - `composer run -n audit:route`
 - `composer run -n audit:bootstrap`
-- `composer run -n audit:version`
+- `composer run -n audit:bootstrap-runtime`
 - `composer run -n audit:config`
 - `composer run -n audit:sdk`
-- `composer run -n release:preflight`
-
-Recommended publish gate:
-
-- `composer run -n audit:surface`
-- `composer run -n audit:contract`
-- `composer run -n audit:route`
 - `composer run -n audit:version`
+- `composer run -n audit:core-boundary`
+- `composer run -n audit:release-grade-portrait`
 - `composer run -n release:preflight`
-
 
 ## Repository hygiene
 
-Run `composer run -n audit:repo-hygiene` to verify that transport-only wave metadata is not kept in the repository root.
-Snapshot policy: cumulative snapshots must not contain root transport artifacts such as `MANIFEST.wave-*.json` or `ZZ_*`.
+Run `composer run -n audit:repo-hygiene` to verify that transport-only wave metadata is not kept in the repository root. Cumulative snapshots must not contain root transport artifacts such as `MANIFEST.wave-*.json`, `ZZ_*`, duplicate tag config files, or transient workspace directories.

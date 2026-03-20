@@ -1,44 +1,41 @@
 # Tag final demo pack
 
-This document is the compact final demo truth-pack for the current Tagging/Tag slice.
+This file is the compact final truth pack for demonstration, fixtures, and seed-driven verification.
 
-## Runnable endpoints
+## Truth order
 
-- `GET /tag/_status`
-- `GET /tag/_surface`
-- `POST /tag`
-- `GET /tag/{id}`
-- `PATCH /tag/{id}`
-- `DELETE /tag/{id}`
-- `POST /tag/assign`
-- `POST /tag/unassign`
-- `GET /tag/assignments`
-- `GET /tag/search`
-- `GET /tag/suggest`
+1. `host-minimal/`
+2. `config/`
+3. `contracts/http/tag-openapi.yaml`
+4. runtime-facing tests
+5. docs and SDK examples
 
-## Truth line
+## Runnable demo flow
 
-This demo pack must stay aligned with:
+1. Validate fixtures:
+   - `php tools/seed/tag-fixture-validate.php`
+2. Apply migrations:
+   - `php tools/db/tag-migrate.php`
+3. Seed deterministic demo data:
+   - `SEED_RESET=1 TENANT=demo php tools/seed/tag-seed.php`
+4. Verify runtime discovery:
+   - `GET /tag/_surface`
+5. Verify runtime health:
+   - `GET /tag/_status`
+6. Run search and assignment reads:
+   - `GET /tag/search?q=elect`
+   - `GET /tag/assignments?entityType=product&entityId=demo-product-1`
 
+## Source-of-truth assets
+
+- `fixtures/tag-demo-fixture.php`
+- `fixtures/tag-demo-catalog.php`
+- `seed/tag/tag-demo.ndjson`
+- `seed/tag/tag-links-demo.ndjson`
 - `docs/demo/tag-quick-demo.md`
 - `docs/fixtures/demo.md`
 - `docs/seed/tag-seed.md`
-- current runtime `_status`
-- current runtime `_surface`
 
-## Minimal demo flow
+## Demo promise
 
-1. Check runtime:
-   - `GET /tag/_status`
-2. Inspect public surface:
-   - `GET /tag/_surface`
-3. Seed demo data if needed.
-4. Create a tag.
-5. Search and suggest tags.
-6. Assign and unassign a tag.
-7. Verify assignments read surface.
-
-## Notes
-
-- This file is a release-grade documentation dependency.
-- It should not promise routes or capabilities that are not present in the current runnable slice.
+The final demo pack documents only the currently runnable core surface. It must not promise routes, assets, or workflows that are absent from `host-minimal/`, `config/`, or the shipped HTTP contract.

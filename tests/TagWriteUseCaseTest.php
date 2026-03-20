@@ -30,7 +30,10 @@ final class TagWriteUseCaseTest extends TestCase
 
             public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
             {
-                throw new \PDOException('duplicate', 23505);
+                $exception = new \PDOException('duplicate');
+                $property = new \ReflectionProperty(\PDOException::class, 'code');
+                $property->setValue($exception, '23505');
+                throw $exception;
             }
 
             public function patch(string $tenant, string $id, array $patch): void

@@ -23,8 +23,14 @@ SEED_RESET=1 php tools/seed/tag-seed.php
 php tools/seed/tag-clear.php
 ```
 
-## Verify
+## Verify runtime truth
 
 ```bash
+curl -sS 'http://127.0.0.1:8080/tag/_surface'
+curl -sS 'http://127.0.0.1:8080/tag/_status'
 BASE_URL=http://127.0.0.1:8080 TENANT=demo php tools/smoke/tag-smoke.php
 ```
+
+## Final reference
+
+For the compact final demo truth pack, see `docs/demo/tag-final-demo-pack.md`.

@@ -1,0 +1,14 @@
+{
+  "name": "tag-rc5-e2-data-model",
+  "version": "rc5-e2",
+  "generated_at": "2025-10-27T20:27:58.494525",
+  "paths": [
+    "db/postgres/migrations/2025_10_27_tag.sql",
+    "db/postgres/indexes/2025_10_27_tag_idx.sql",
+    "src/Data/Tag/TagEntity.php",
+    "src/Data/Tag/TagLink.php",
+    "src/Infra/Tag/TagReadModel.php",
+    "docs/data/tag-schema.md",
+    "docs/acceptance/e2.md"
+  ]
+}

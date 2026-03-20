@@ -38,7 +38,3 @@ These are documentation areas, not transport artifacts.
 
 Cumulative snapshots must not contain temporary overlay or handoff workspaces such as `tag_cons_patched/`, `tag_fix/`, or `tmp/`.
 These are transport or operator leftovers, not canonical repository roots.
-
-## Historical release manifests
-
-Per-wave historical release manifests such as `release/tag-rc5/RC5-E*-MANIFEST.json` must not remain in the active cumulative snapshot when they enumerate stale pre-canonical paths. Keep current release assets, contracts, and docs, but drop obsolete per-wave manifest envelopes from the working slice.

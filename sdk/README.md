@@ -1,20 +1,13 @@
 # SDK quick usage
 
-The shipped SDK surface matches the runnable `host-minimal` public API only.
+The shipped SDK surface matches the runnable `host-minimal` public API only:
 
-## Public endpoints
-
-- `GET /tag/_status`
-- `GET /tag/_surface`
-- `POST /tag`
-- `GET /tag/{id}`
-- `PATCH /tag/{id}`
-- `DELETE /tag/{id}`
-- `POST /tag/{id}/assign`
-- `POST /tag/{id}/unassign`
-- `GET /tag/assignments`
-- `GET /tag/search`
-- `GET /tag/suggest`
+- `GET /tag/_status` via `status()`
+- `GET /tag/_surface` via `surface()`
+- `create()` / `get()` / `patch()` / `delete()`
+- `assign()` / `unassign()` / `assignments()`
+- `GET /tag/search` via `search()`
+- `GET /tag/suggest` via `suggest()`
 
 ## TypeScript
 
@@ -24,6 +17,7 @@ import { TagClient } from './ts/tag/client';
 const client = new TagClient('http://127.0.0.1:8080', { 'X-Tenant-Id': 'demo' });
 await client.surface();
 await client.search('priority');
+await client.suggest('pri');
 ```
 
 ## PHP
@@ -34,6 +28,7 @@ use SR\SDK\Tag\Client;
 $client = new Client('http://127.0.0.1:8080', ['X-Tenant-Id' => 'demo']);
 $client->surface();
 $client->search('priority');
+$client->suggest('pri');
 ```
 
 Gate recommendation:

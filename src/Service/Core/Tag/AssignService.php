@@ -9,14 +9,18 @@ use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 
 final readonly class AssignService
 {
+    private ?\Closure $errorSink;
+
     public function __construct(
         private \PDO $pdo,
         private OutboxPublisher $outbox,
         private ?IdempotencyStore $idem = null,
+        ?callable $errorSink = null,
     ) {
+        $this->errorSink = null !== $errorSink ? \Closure::fromCallable($errorSink) : null;
     }
 
-    /** @return array{ok:bool, duplicated?:bool} */
+    /** @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string} */
     public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
     {
         $checksum = hash('sha256', implode('|', [$tenant, $tagId, $entityType, $entityId]));
@@ -35,7 +39,6 @@ final readonly class AssignService
 
         $this->pdo->beginTransaction();
         try {
-            // Ensure tag exists (optional strict check)
             $chk = $this->pdo->prepare('SELECT 1 FROM tag_entity WHERE tenant=:t AND id=:id');
             $chk->execute([':t' => $tenant, ':id' => $tagId]);
             if (!$chk->fetch()) {
@@ -55,7 +58,10 @@ final readonly class AssignService
 
             if ($created) {
                 $this->outbox->publish($tenant, 'tag.assigned', [
-                    'tenant' => $tenant, 'tag_id' => $tagId, 'entity_type' => $entityType, 'entity_id' => $entityId,
+                    'tenant' => $tenant,
+                    'tag_id' => $tagId,
+                    'entity_type' => $entityType,
+                    'entity_id' => $entityId,
                     'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
                 ]);
             }
@@ -68,12 +74,32 @@ final readonly class AssignService
             }
 
             return $result;
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
+            $this->report('tag.assign_failed', $e, [
+                'tenant' => $tenant,
+                'tag_id' => $tagId,
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+            ]);
 
-            return ['ok' => false];
+            return ['ok' => false, 'code' => 'assign_failed'];
         }
+    }
+
+    private function report(string $code, \Throwable $e, array $context = []): void
+    {
+        if (null === $this->errorSink) {
+            return;
+        }
+
+        ($this->errorSink)([
+            'code' => $code,
+            'message' => $e->getMessage(),
+            'exception' => $e::class,
+            'context' => $context,
+        ]);
     }
 }

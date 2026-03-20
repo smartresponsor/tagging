@@ -7,8 +7,11 @@ namespace App\Service\Core\Tag;
 
 final readonly class QuotaService
 {
-    public function __construct(private ?\PDO $pdo = null, private array $cfg = [])
+    private ?\Closure $errorSink;
+
+    public function __construct(private ?\PDO $pdo = null, private array $cfg = [], ?callable $errorSink = null)
     {
+        $this->errorSink = null !== $errorSink ? \Closure::fromCallable($errorSink) : null;
     }
 
     public function canCreateTag(string $tenantId): array
@@ -46,8 +49,24 @@ final readonly class QuotaService
             $st->execute([':tenant' => $tenantId]);
 
             return (int) $st->fetchColumn();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->report('quota.count_failed', $e, ['tenant' => $tenantId]);
+
             return 0;
         }
+    }
+
+    private function report(string $code, \Throwable $e, array $context = []): void
+    {
+        if (null === $this->errorSink) {
+            return;
+        }
+
+        ($this->errorSink)([
+            'code' => $code,
+            'message' => $e->getMessage(),
+            'exception' => $e::class,
+            'context' => $context,
+        ]);
     }
 }

@@ -1,61 +1,62 @@
 # Tag quick demo
 
+This quick demo is the shortest truthful runnable flow for the current core.
+
 Assumptions:
 
 - server runs on `http://127.0.0.1:8080`
 - tenant header is `X-Tenant-Id: demo`
 - migrations are already applied
-- optional deterministic reset uses `SEED_RESET=1`
+- deterministic seed uses `SEED_RESET=1`
 
-Discovery:
+## 1. Validate and seed
 
 ```bash
-curl -sS 'http://127.0.0.1:8080/tag/_surface'
+php tools/seed/tag-fixture-validate.php
+SEED_RESET=1 TENANT=demo php tools/seed/tag-seed.php
 ```
 
-Create:
+## 2. Create
 
 ```bash
-curl -sS http://127.0.0.1:8080/tag/_surface -H 'X-Tenant-Id: demo'
-```
-
-Create:
-
-```bash
-curl -sS 'http://127.0.0.1:8080/tag/_surface' \
-  -H 'X-Tenant-Id: demo'
-```
-
-Create:
-
-```bash
-curl -sS -X POST http://127.0.0.1:8080/tag \
+curl -sS -X POST 'http://127.0.0.1:8080/tag' \
   -H 'Content-Type: application/json' \
   -H 'X-Tenant-Id: demo' \
   -H 'X-Idempotency-Key: demo-create-1' \
   -d '{"name":"Samsung","locale":"en","slug":"samsung"}'
 ```
 
-Search:
+## 3. Discovery
 
 ```bash
-curl -sS 'http://127.0.0.1:8080/tag/search?q=elect&pageSize=10' -H 'X-Tenant-Id: demo'
+curl -sS 'http://127.0.0.1:8080/tag/_surface'
 ```
 
-Suggest:
-
-```bash
-curl -sS 'http://127.0.0.1:8080/tag/suggest?q=pre&limit=5' -H 'X-Tenant-Id: demo'
-```
-
-List entity assignments:
-
-```bash
-curl -sS 'http://127.0.0.1:8080/tag/assignments?entityType=product&entityId=demo-product-1' -H 'X-Tenant-Id: demo'
-```
-
-Status:
+## 4. Status
 
 ```bash
 curl -sS 'http://127.0.0.1:8080/tag/_status'
 ```
+
+## 5. Search
+
+```bash
+curl -sS 'http://127.0.0.1:8080/tag/search?q=elect&pageSize=10' \
+  -H 'X-Tenant-Id: demo'
+```
+
+## 6. Suggest
+
+```bash
+curl -sS 'http://127.0.0.1:8080/tag/suggest?q=pre&limit=5' \
+  -H 'X-Tenant-Id: demo'
+```
+
+## 7. List entity assignments
+
+```bash
+curl -sS 'http://127.0.0.1:8080/tag/assignments?entityType=product&entityId=demo-product-1' \
+  -H 'X-Tenant-Id: demo'
+```
+
+For the final compact pack, also see `docs/demo/tag-final-demo-pack.md`.

@@ -1,0 +1,14 @@
+{
+  "name": "tag-rc5-e6-slug-policy",
+  "version": "rc5-e6",
+  "generated_at": "2025-10-27T20:54:00.844068",
+  "paths": [
+    "db/postgres/migrations/2025_10_27_slug_policy.sql",
+    "config/tag_slug.yaml",
+    "src/Service/Tag/Slug/Slugifier.php",
+    "src/Service/Tag/Slug/SlugPolicy.php",
+    "tools/slugify/slugify.php",
+    "docs/policy/tag-slug.md",
+    "docs/acceptance/e6.md"
+  ]
+}

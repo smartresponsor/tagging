@@ -9,14 +9,18 @@ use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 
 final readonly class UnassignService
 {
+    private ?\Closure $errorSink;
+
     public function __construct(
         private \PDO $pdo,
         private OutboxPublisher $outbox,
         private ?IdempotencyStore $idem = null,
+        ?callable $errorSink = null,
     ) {
+        $this->errorSink = null !== $errorSink ? \Closure::fromCallable($errorSink) : null;
     }
 
-    /** @return array{ok:bool, not_found?:bool, duplicated?:bool} */
+    /** @return array{ok:bool, not_found?:bool, duplicated?:bool, conflict?:bool, code?:string} */
     public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
     {
         $checksum = hash('sha256', implode('|', [$tenant, $tagId, $entityType, $entityId]));
@@ -43,7 +47,10 @@ final readonly class UnassignService
 
             if ($deleted) {
                 $this->outbox->publish($tenant, 'tag.unassigned', [
-                    'tenant' => $tenant, 'tag_id' => $tagId, 'entity_type' => $entityType, 'entity_id' => $entityId,
+                    'tenant' => $tenant,
+                    'tag_id' => $tagId,
+                    'entity_type' => $entityType,
+                    'entity_id' => $entityId,
                     'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
                 ]);
             }
@@ -54,12 +61,32 @@ final readonly class UnassignService
             }
 
             return ['ok' => true, 'not_found' => !$deleted];
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
+            $this->report('tag.unassign_failed', $e, [
+                'tenant' => $tenant,
+                'tag_id' => $tagId,
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+            ]);
 
-            return ['ok' => false];
+            return ['ok' => false, 'code' => 'unassign_failed'];
         }
+    }
+
+    private function report(string $code, \Throwable $e, array $context = []): void
+    {
+        if (null === $this->errorSink) {
+            return;
+        }
+
+        ($this->errorSink)([
+            'code' => $code,
+            'message' => $e->getMessage(),
+            'exception' => $e::class,
+            'context' => $context,
+        ]);
     }
 }

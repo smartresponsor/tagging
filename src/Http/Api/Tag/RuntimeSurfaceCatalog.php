@@ -10,7 +10,7 @@ final class RuntimeSurfaceCatalog
     /** @return array<string,mixed> */
     public static function read(): array
     {
-        $cfg = require dirname(__DIR__, 4).'/config/tag_runtime.php';
+        $cfg = require dirname(__DIR__, 4).'/config/tag_public_surface.php';
 
         return is_array($cfg) ? $cfg : [];
     }

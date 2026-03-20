@@ -1,0 +1,17 @@
+{
+  "name": "tag-rc5-e4-search-suggest",
+  "version": "rc5-e4",
+  "generated_at": "2025-10-27T20:49:59.757907",
+  "paths": [
+    "config/tag_cache.yaml",
+    "src/Cache/Tag/SearchCache.php",
+    "src/Cache/Tag/SuggestCache.php",
+    "src/Service/Tag/SearchService.php",
+    "src/Service/Tag/SuggestService.php",
+    "src/Http/Tag/SearchController.php",
+    "src/Http/Tag/SuggestController.php",
+    "docs/api/search.md",
+    "docs/deploy/host-minimal-search.md",
+    "docs/acceptance/e4.md"
+  ]
+}

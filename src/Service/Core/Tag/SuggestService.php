@@ -7,16 +7,24 @@ namespace App\Service\Core\Tag;
 
 use App\Cache\Store\Tag\SuggestCache;
 
+/**
+ * Host-minimal suggest read service backed by the tag read-model.
+ */
 final readonly class SuggestService
 {
-    public function __construct(private \PDO $pdo, private SuggestCache $cache)
+    public function __construct(private TagReadModelInterface $read, private SuggestCache $cache)
     {
     }
 
     /** @return array{items:array<int,array{slug:string,name:string}>, cacheHit:bool} */
     public function suggest(string $tenant, string $q, int $limit = 10): array
     {
+        $q = trim($q);
         $limit = max(1, min(50, $limit));
+        if ('' === $q) {
+            return ['items' => [], 'cacheHit' => false];
+        }
+
         $c = $this->cache->get($tenant, $q, $limit);
         if ($c['hit'] ?? false) {
             $data = $c['data'] ?? ['items' => []];
@@ -25,17 +33,7 @@ final readonly class SuggestService
             return $data;
         }
 
-        $stmt = $this->pdo->prepare(
-            'SELECT slug, name FROM tag_entity
-             WHERE tenant=:t AND (slug ILIKE :pfx OR name ILIKE :pfx)
-             ORDER BY weight DESC, name ASC LIMIT :l'
-        );
-        $pfx = strtolower(trim($q)).'%';
-        $stmt->bindValue(':t', $tenant);
-        $stmt->bindValue(':pfx', $pfx);
-        $stmt->bindValue(':l', $limit, \PDO::PARAM_INT);
-        $stmt->execute();
-        $items = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+        $items = $this->read->suggest($tenant, $q, $limit);
         $res = ['items' => $items, 'cacheHit' => false];
         $this->cache->set($tenant, $q, $limit, ['items' => $items]);
 

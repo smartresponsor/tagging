@@ -10,7 +10,7 @@ use App\Entity\Core\Tag\TagAssignment;
 use App\Entity\Core\Tag\TagRelation;
 use App\Entity\Core\Tag\TagScheme;
 use App\Entity\Core\Tag\TagSynonym;
-use App\ServiceInterface\Core\Tag\TagRepositoryInterface;
+use App\Service\Core\Tag\TagRepositoryInterface;
 
 final class InMemoryTagRepository implements TagRepositoryInterface
 {
@@ -42,6 +42,25 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         }
 
         return null;
+    }
+
+    public function existsSlug(string $tenantId, string $slug, ?string $excludeTagId = null): bool
+    {
+        foreach (($this->tags[$tenantId] ?? []) as $tag) {
+            if (null !== $excludeTagId && $tag->id() === $excludeTagId) {
+                continue;
+            }
+            if ($tag->slug() === $slug) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function i18nSlugExists(string $tenantId, string $locale, string $slug, ?string $excludeTagId = null): bool
+    {
+        return $this->existsSlug($tenantId, $slug, $excludeTagId);
     }
 
     /**

@@ -8,19 +8,19 @@ namespace App\Http\Api\Tag;
 use App\Application\Write\Tag\Dto\CreateTagCommand;
 use App\Application\Write\Tag\Dto\DeleteTagCommand;
 use App\Application\Write\Tag\Dto\PatchTagCommand;
-use App\Application\Write\Tag\UseCase\CreateTag;
-use App\Application\Write\Tag\UseCase\DeleteTag;
-use App\Application\Write\Tag\UseCase\PatchTag;
+use App\Application\Write\Tag\UseCase\CreateTagInterface;
+use App\Application\Write\Tag\UseCase\DeleteTagInterface;
+use App\Application\Write\Tag\UseCase\PatchTagInterface;
 use App\Http\Api\Tag\Responder\TagWriteResponder;
-use App\Service\Core\Tag\TagEntityService;
+use App\Service\Core\Tag\TagEntityQueryServiceInterface;
 
 final readonly class TagController
 {
     public function __construct(
-        private TagEntityService $queryService,
-        private CreateTag $createTag,
-        private PatchTag $patchTag,
-        private DeleteTag $deleteTag,
+        private TagEntityQueryServiceInterface $queryService,
+        private CreateTagInterface $createTag,
+        private PatchTagInterface $patchTag,
+        private DeleteTagInterface $deleteTag,
         private TagWriteResponder $responder,
     ) {
     }
@@ -28,58 +28,44 @@ final readonly class TagController
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function create(array $req): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
-        $payload = is_array($req['body'] ?? null) ? $req['body'] : [];
-
-        return $this->responder->respond($this->createTag->execute(new CreateTagCommand($tenant, $payload)));
+        return $this->responder->respond(
+            $this->createTag->execute(new CreateTagCommand(TagHttpRequest::tenant($req), TagHttpRequest::body($req)))
+        );
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function get(array $req, string $id): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
+        $tenant = TagHttpRequest::tenant($req);
+        if ('' === $tenant) {
+            return $this->responder->bad('invalid_tenant');
+        }
 
         try {
             $row = $this->queryService->get($tenant, $id);
             if (null === $row) {
-                return self::notFound();
+                return $this->responder->bad('not_found', 404);
             }
 
-            return self::ok($row);
+            return $this->responder->ok($row);
         } catch (\InvalidArgumentException $e) {
-            return self::bad($e->getMessage());
+            return $this->responder->bad($e->getMessage());
         }
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function patch(array $req, string $id): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
-        $payload = is_array($req['body'] ?? null) ? $req['body'] : [];
-
-        return $this->responder->respond($this->patchTag->execute(new PatchTagCommand($tenant, $id, $payload)));
+        return $this->responder->respond(
+            $this->patchTag->execute(new PatchTagCommand(TagHttpRequest::tenant($req), $id, TagHttpRequest::body($req)))
+        );
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function delete(array $req, string $id): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
-
-        return $this->responder->respond($this->deleteTag->execute(new DeleteTagCommand($tenant, $id)));
-    }
-
-    private static function ok(array $body): array
-    {
-        return [200, ['Content-Type' => 'application/json'], json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}'];
-    }
-
-    private static function bad(string $code): array
-    {
-        return [400, ['Content-Type' => 'application/json'], json_encode(['code' => $code]) ?: '{"code":"validation_failed"}'];
-    }
-
-    private static function notFound(): array
-    {
-        return [404, ['Content-Type' => 'application/json'], json_encode(['code' => 'not_found']) ?: '{"code":"not_found"}'];
+        return $this->responder->respond(
+            $this->deleteTag->execute(new DeleteTagCommand(TagHttpRequest::tenant($req), $id))
+        );
     }
 }

@@ -19,6 +19,7 @@ final class SurfaceController
         return [
             'ok' => true,
             'service' => (string) ($runtime['service'] ?? 'tag'),
+            'runtime' => (string) ($runtime['runtime'] ?? 'host-minimal'),
             'version' => (string) ($runtime['version'] ?? RuntimeVersion::read()),
             'surface' => is_array($runtime['route'] ?? null) ? $runtime['route'] : [],
             'examples' => is_array($runtime['example'] ?? null) ? $runtime['example'] : [],

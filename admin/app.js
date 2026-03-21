@@ -114,7 +114,7 @@
     const result = show('#createOut', await call('POST', '/tag', payload));
     try {
       const parsed = JSON.parse(result.text);
-      const id = parsed && parsed.result && parsed.result.id ? String(parsed.result.id) : '';
+      const id = parsed && parsed.id ? String(parsed.id) : (parsed && parsed.result && parsed.result.id ? String(parsed.result.id) : '');
       if (id) {
         $('#tagId').value = id;
         activate('assign');

@@ -14,3 +14,8 @@ The tagging component keeps failure handling compact, but no longer allows silen
 This component is intentionally small. It should not grow a heavy logging subsystem inside the core, but it should still make failures observable for host or application wiring.
 
 The optional callable error sink gives the host shell a place to log or capture structured errors without forcing a framework dependency into the core services.
+
+## Internal sink contract
+
+Runtime-facing controllers and core tag services should report degradations through `TagErrorSink`, with `CallableTagErrorSink` kept only as a compatibility adapter for tests and lightweight host wiring.
+The sink contract now lives beside the rest of the core tag service contracts under `src/Service/Core/Tag/`, instead of in the former competing service-contract tree.

@@ -5,11 +5,12 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag;
 
-use App\Infrastructure\ReadModel\Tag\TagReadModel;
+use App\Http\Api\Tag\Responder\TagReadResponder;
+use App\Service\Core\Tag\TagReadModelInterface;
 
 final readonly class AssignmentReadController
 {
-    public function __construct(private TagReadModel $read)
+    public function __construct(private TagReadModelInterface $read, private TagReadResponder $responder = new TagReadResponder())
     {
     }
 
@@ -20,35 +21,27 @@ final readonly class AssignmentReadController
      */
     public function listByEntity(array $req): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
+        $tenant = TagHttpRequest::tenant($req);
         if ('' === $tenant) {
-            return self::bad('invalid_tenant');
+            return $this->responder->bad('invalid_tenant');
         }
 
-        $q = is_array($req['query'] ?? null) ? $req['query'] : [];
-        $etype = (string) ($q['entityType'] ?? ($q['entity_type'] ?? ''));
-        $eid = (string) ($q['entityId'] ?? ($q['entity_id'] ?? ''));
-        $limit = (int) ($q['limit'] ?? 100);
-        $limit = max(1, min(500, $limit));
+        $q = TagHttpRequest::query($req);
+        $etype = trim((string) ($q['entityType'] ?? ($q['entity_type'] ?? '')));
+        $eid = trim((string) ($q['entityId'] ?? ($q['entity_id'] ?? '')));
+        $limit = max(1, min(500, (int) ($q['limit'] ?? 100)));
 
         if ('' === $etype || '' === $eid) {
-            return self::bad('validation_failed');
+            return $this->responder->bad('validation_failed');
         }
 
         $items = $this->read->tagsForEntity($tenant, $etype, $eid, $limit);
 
-        return self::ok(['ok' => true, 'items' => $items]);
-    }
-
-    /** @return array{0:int,1:array<string,string>,2:string} */
-    private static function ok(array $body): array
-    {
-        return [200, ['Content-Type' => 'application/json'], json_encode($body)];
-    }
-
-    /** @return array{0:int,1:array<string,string>,2:string} */
-    private static function bad(string $code): array
-    {
-        return [400, ['Content-Type' => 'application/json'], json_encode(['code' => $code])];
+        return $this->responder->ok([
+            'ok' => true,
+            'entityType' => $etype,
+            'entityId' => $eid,
+            'items' => $items,
+        ]);
     }
 }

@@ -5,17 +5,27 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag;
 
+use App\Service\Core\Tag\TagErrorSink;
+use App\Service\Core\Tag\TagErrorSinkFactory;
+
 final class StatusController
 {
     private ?\Closure $dbProbe;
     private string $version;
-    private ?\Closure $errorSink;
+    private TagErrorSink $errorSink;
 
-    public function __construct(?callable $dbProbe = null, ?string $version = null, ?callable $errorSink = null)
+    /** @var array<string,mixed> */
+    private array $runtime;
+
+    /**
+     * @param array<string,mixed> $runtime
+     */
+    public function __construct(?callable $dbProbe = null, ?string $version = null, TagErrorSink|callable|null $errorSink = null, array $runtime = [])
     {
         $this->dbProbe = null !== $dbProbe ? \Closure::fromCallable($dbProbe) : null;
         $this->version = null !== $version && '' !== $version ? $version : RuntimeVersion::read();
-        $this->errorSink = null !== $errorSink ? \Closure::fromCallable($errorSink) : null;
+        $this->errorSink = TagErrorSinkFactory::from($errorSink);
+        $this->runtime = $runtime;
     }
 
     /** @return array<string,mixed> */
@@ -37,17 +47,37 @@ final class StatusController
             'ts' => gmdate('c'),
             'service' => 'tag',
             'version' => $this->version,
+            'runtime' => $this->runtimeName(),
+            'surface' => [
+                'status' => $this->routeValue('status', '/tag/_status'),
+                'discovery' => $this->routeValue('discovery', '/tag/_surface'),
+            ],
             'db' => $db,
         ];
     }
 
-    private function report(string $code, \Throwable $e, array $context = []): void
+    private function runtimeName(): string
     {
-        if (null === $this->errorSink) {
-            return;
+        $runtime = $this->runtime['runtime'] ?? null;
+
+        return is_string($runtime) && '' !== $runtime ? $runtime : 'host-minimal';
+    }
+
+    private function routeValue(string $key, string $fallback): string
+    {
+        $routes = $this->runtime['route'] ?? null;
+        if (!is_array($routes)) {
+            return $fallback;
         }
 
-        ($this->errorSink)([
+        $route = $routes[$key] ?? null;
+
+        return is_string($route) && '' !== $route ? $route : $fallback;
+    }
+
+    private function report(string $code, \Throwable $e, array $context = []): void
+    {
+        $this->errorSink->report([
             'code' => $code,
             'message' => $e->getMessage(),
             'exception' => $e::class,

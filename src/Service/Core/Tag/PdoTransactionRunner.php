@@ -5,8 +5,6 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
-use App\ServiceInterface\Core\Tag\TransactionRunnerInterface;
-
 final readonly class PdoTransactionRunner implements TransactionRunnerInterface
 {
     public function __construct(private \PDO $pdo)

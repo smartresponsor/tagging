@@ -10,17 +10,22 @@ use App\Application\Write\Tag\Dto\TagError;
 use App\Application\Write\Tag\Dto\TagResult;
 use App\Cache\Store\Tag\SearchCache;
 use App\Cache\Store\Tag\SuggestCache;
-use App\ServiceInterface\Core\Tag\TagEntityRepositoryInterface;
-use App\ServiceInterface\Core\Tag\TransactionRunnerInterface;
+use App\Cache\Store\Tag\TagQueryCacheInvalidator;
+use App\Service\Core\Tag\TagEntityRepositoryInterface;
+use App\Service\Core\Tag\TransactionRunnerInterface;
 
-final readonly class DeleteTag
+final class DeleteTag implements DeleteTagInterface
 {
+    private TagQueryCacheInvalidator $cacheInvalidator;
+
     public function __construct(
         private TagEntityRepositoryInterface $repo,
         private TransactionRunnerInterface $transaction,
         private ?SearchCache $searchCache = null,
         private ?SuggestCache $suggestCache = null,
+        ?TagQueryCacheInvalidator $cacheInvalidator = null,
     ) {
+        $this->cacheInvalidator = $cacheInvalidator ?? new TagQueryCacheInvalidator($this->searchCache, $this->suggestCache);
     }
 
     public function execute(DeleteTagCommand $command): TagResult
@@ -37,8 +42,7 @@ final readonly class DeleteTag
             $this->repo->delete($command->tenant, $command->id);
         });
 
-        $this->searchCache?->clearTenant($command->tenant);
-        $this->suggestCache?->clearTenant($command->tenant);
+        $this->cacheInvalidator->clearTenant($command->tenant);
 
         return TagResult::success(204);
     }

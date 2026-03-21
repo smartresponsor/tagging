@@ -5,8 +5,6 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
-use App\ServiceInterface\Core\Tag\TagBulkRepositoryInterface;
-
 final readonly class TagBulkService
 {
     public function __construct(private TagBulkRepositoryInterface $repo)

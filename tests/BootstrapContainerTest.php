@@ -13,7 +13,11 @@ final class BootstrapContainerTest extends TestCase
     {
         $container = require dirname(__DIR__).'/host-minimal/bootstrap.php';
         $required = [
+            'runtime',
             'idempotencyMiddleware',
+            'observeMiddleware',
+            'verifySignatureMiddleware',
+            'httpPipeline',
             'statusController',
             'surfaceController',
             'tagController',

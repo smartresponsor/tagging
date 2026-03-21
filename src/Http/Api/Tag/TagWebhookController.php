@@ -5,46 +5,55 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag;
 
+use App\Http\Api\Tag\Responder\TagWebhookResponder;
 use App\Service\Core\Tag\Audit\TagAuditEmitter;
 use App\Service\Core\Tag\Webhook\TagWebhookRegistry;
 
 final readonly class TagWebhookController
 {
-    public function __construct(private TagWebhookRegistry $reg, private TagAuditEmitter $audit)
-    {
+    public function __construct(
+        private TagWebhookRegistry $registry,
+        private TagAuditEmitter $audit,
+        private ?TagWebhookResponder $responder = null,
+    ) {
     }
 
-    /**
-     * @return string[]|true[]
-     */
-    /**
-     * @return string[]|true[]
-     */
-    public function subscribe($requestBody): array
+    /** @param array<string,mixed> $request */
+    public function subscribe(array $request): array
     {
-        $url = $requestBody['url'] ?? '';
-        $secret = $requestBody['secret'] ?? null;
+        $body = TagHttpRequest::body($request);
+        $url = trim((string) ($body['url'] ?? ''));
+        $secret = isset($body['secret']) && '' !== $body['secret'] ? (string) $body['secret'] : null;
+
         if ('' === $url) {
-            return ['error' => 'url_required'];
+            return $this->responder()->bad('url_required');
         }
-        $this->reg->add($url, $secret);
 
-        return ['ok' => true];
+        try {
+            $this->registry->add($url, $secret);
+        } catch (\InvalidArgumentException $e) {
+            return $this->responder()->bad((string) $e->getMessage());
+        }
+
+        return $this->responder()->ok(['url' => $url], 201);
     }
 
-    public function list(): array
+    /** @param array<string,mixed> $request */
+    public function list(array $request = []): array
     {
-        return ['items' => $this->reg->list()];
+        return $this->responder()->list($this->registry->list());
     }
 
-    /**
-     * @return true[]
-     */
-    public function test(): array
+    /** @param array<string,mixed> $request */
+    public function test(array $request = []): array
     {
-        // Emit a test event; emitter will fanout via registry
         $this->audit->emit('tag.created', ['id' => 'test', 'label' => '_test_']);
 
-        return ['ok' => true];
+        return $this->responder()->ok(['event' => 'tag.created']);
+    }
+
+    private function responder(): TagWebhookResponder
+    {
+        return $this->responder ?? new TagWebhookResponder();
     }
 }

@@ -28,10 +28,14 @@ if ($method === 'OPTIONS') {
 
 $rawBody = file_get_contents('php://input') ?: '';
 $norm = $container['idempotencyMiddleware']()->normalize($_SERVER, $_GET, $rawBody);
-[$code, $headers, $body] = $dispatch($method, $path, $norm);
+$pipeline = $container['httpPipeline']();
+[$code, $headers, $body] = $pipeline->handle(
+    ['method' => $method, 'path' => $path] + $norm,
+    static fn(array $request): array => $dispatch($method, $path, $request),
+);
 $headers = $headers + $corsHeaders;
 
-http_response_code((int)$code);
+http_response_code((int) $code);
 foreach ($headers as $name => $value) {
     header($name . ': ' . $value);
 }

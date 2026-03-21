@@ -10,10 +10,6 @@ use App\Entity\Core\Tag\TagAssignment;
 use App\Entity\Core\Tag\TagRelation;
 use App\Entity\Core\Tag\TagScheme;
 use App\Entity\Core\Tag\TagSynonym;
-use App\ServiceInterface\Core\Tag\TagPolicyRepositoryInterface;
-use App\ServiceInterface\Core\Tag\TagReadRepositoryInterface;
-use App\ServiceInterface\Core\Tag\TagRepositoryInterface;
-use App\ServiceInterface\Core\Tag\TagWriteRepositoryInterface;
 
 final readonly class TagRepositoryAdapter implements TagRepositoryInterface
 {
@@ -37,6 +33,21 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
     public function getBySlug(string $tenantId, string $slug): ?Tag
     {
         return $this->tagReadRepository->getBySlug($tenantId, $slug);
+    }
+
+    public function existsSlug(string $tenantId, string $slug, ?string $excludeTagId = null): bool
+    {
+        $existing = $this->tagReadRepository->getBySlug($tenantId, $slug);
+        if (null === $existing) {
+            return false;
+        }
+
+        return null === $excludeTagId || $existing->id() !== $excludeTagId;
+    }
+
+    public function i18nSlugExists(string $tenantId, string $locale, string $slug, ?string $excludeTagId = null): bool
+    {
+        return $this->existsSlug($tenantId, $slug, $excludeTagId);
     }
 
     /**

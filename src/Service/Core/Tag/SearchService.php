@@ -6,18 +6,24 @@ declare(strict_types=1);
 namespace App\Service\Core\Tag;
 
 use App\Cache\Store\Tag\SearchCache;
-use App\Infrastructure\ReadModel\Tag\TagReadModel;
 
 final readonly class SearchService
 {
-    public function __construct(private TagReadModel $read, private SearchCache $cache)
+    /**
+     * @param \App\Infrastructure\ReadModel\Tag\TagReadModelInterface $read
+     */
+    public function __construct(private TagReadModelInterface $read, private SearchCache $cache)
     {
     }
 
     /** @return array{items:array<int,array<string,mixed>>, total:int, nextPageToken: ?string, cacheHit:bool} */
     public function search(string $tenant, string $q, int $pageSize = 20, ?string $pageToken = null): array
     {
+        $q = trim($q);
         $pageSize = max(1, min(100, $pageSize));
+        if ('' === $q) {
+            return ['items' => [], 'total' => 0, 'nextPageToken' => null, 'cacheHit' => false];
+        }
         $offset = 0;
         if ($pageToken) {
             $dec = base64_decode($pageToken, true);

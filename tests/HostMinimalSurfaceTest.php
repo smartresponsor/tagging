@@ -15,12 +15,16 @@ final class HostMinimalSurfaceTest extends TestCase
         $routerFactory = require dirname(__DIR__).'/host-minimal/route.php';
         $dispatch = $routerFactory($container);
 
-        [$code, , $body] = $dispatch('GET', '/tag/_status', ['headers' => [], 'query' => [], 'body' => null]);
+        [$code, $headers, $body] = $dispatch('GET', '/tag/_status', ['headers' => [], 'query' => [], 'body' => null]);
         $payload = json_decode($body, true);
 
         self::assertSame(200, $code);
         self::assertIsArray($payload);
         self::assertSame('tag', $payload['service'] ?? null);
+        self::assertSame('host-minimal', $payload['runtime'] ?? null);
+        self::assertSame('/tag/_surface', $payload['surface']['discovery'] ?? null);
+        self::assertSame('no-store', $headers['Cache-Control'] ?? null);
+        self::assertArrayHasKey('X-Tag-Version', $headers);
         self::assertArrayHasKey('db', $payload);
         self::assertArrayHasKey('available', $payload['db']);
         self::assertArrayHasKey('ok', $payload['db']);

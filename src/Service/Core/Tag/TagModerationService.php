@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
-use App\ServiceInterface\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
+use App\Service\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
 
 final readonly class TagModerationService
 {

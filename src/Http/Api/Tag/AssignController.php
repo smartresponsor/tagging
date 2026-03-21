@@ -5,16 +5,24 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag;
 
-use App\Service\Core\Tag\AssignService;
-use App\Service\Core\Tag\UnassignService;
+use App\Http\Api\Tag\Responder\TagAssignmentResponder;
+use App\Service\Core\Tag\AssignOperationInterface;
+use App\Service\Core\Tag\UnassignOperationInterface;
 
 final class AssignController
 {
     /** @var string[] */
     private array $allowedTypes;
 
-    public function __construct(private readonly AssignService $assign, private readonly UnassignService $unassign, array $cfg = [])
+    private TagAssignmentResponder $responder;
+
+    /**
+     * @param \App\Service\Core\Tag\AssignService   $assign
+     * @param \App\Service\Core\Tag\UnassignService $unassign
+     */
+    public function __construct(private readonly AssignOperationInterface $assign, private readonly UnassignOperationInterface $unassign, array $cfg = [])
     {
+        $this->responder = new TagAssignmentResponder();
         $types = $cfg['entity_types'] ?? ['*'];
         if (!is_array($types)) {
             $types = ['*'];
@@ -33,41 +41,41 @@ final class AssignController
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function assign(array $req, string $tagId): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
+        $tenant = TagHttpRequest::tenant($req);
         if ('' === $tenant) {
-            return self::bad('invalid_tenant');
+            return $this->fail('invalid_tenant');
         }
-        $body = is_array($req['body'] ?? null) ? $req['body'] : [];
+        $body = TagHttpRequest::body($req);
 
         [$etype, $eid] = $this->readEntity($body);
         if ('' === $etype || '' === $eid) {
-            return self::bad('validation_failed');
+            return $this->fail('validation_failed');
         }
 
         $idem = (string) ($req['idemKey'] ?? '');
         $res = $this->assign->assign($tenant, $tagId, $etype, $eid, $idem ?: null);
 
-        return self::ok(['ok' => $res['ok'] ?? false, 'duplicated' => $res['duplicated'] ?? false]);
+        return $this->assignmentResponse($res, ['duplicated' => false, 'conflict' => false]);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function unassign(array $req, string $tagId): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
+        $tenant = TagHttpRequest::tenant($req);
         if ('' === $tenant) {
-            return self::bad('invalid_tenant');
+            return $this->fail('invalid_tenant');
         }
-        $body = is_array($req['body'] ?? null) ? $req['body'] : [];
+        $body = TagHttpRequest::body($req);
 
         [$etype, $eid] = $this->readEntity($body);
         if ('' === $etype || '' === $eid) {
-            return self::bad('validation_failed');
+            return $this->fail('validation_failed');
         }
 
         $idem = (string) ($req['idemKey'] ?? '');
         $res = $this->unassign->unassign($tenant, $tagId, $etype, $eid, $idem ?: null);
 
-        return self::ok(['ok' => $res['ok'] ?? false, 'not_found' => $res['not_found'] ?? false]);
+        return $this->assignmentResponse($res, ['not_found' => false, 'duplicated' => false, 'conflict' => false]);
     }
 
     /**
@@ -80,11 +88,11 @@ final class AssignController
      */
     public function bulk(array $req): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
+        $tenant = TagHttpRequest::tenant($req);
         if ('' === $tenant) {
-            return self::bad('invalid_tenant');
+            return $this->fail('invalid_tenant');
         }
-        $body = is_array($req['body'] ?? null) ? $req['body'] : [];
+        $body = TagHttpRequest::body($req);
         $ops = is_array($body['operations'] ?? null) ? $body['operations'] : [];
 
         $done = 0;
@@ -130,11 +138,11 @@ final class AssignController
      */
     public function assignBulkToEntity(array $req): array
     {
-        $tenant = (string) ($req['headers']['x-tenant-id'] ?? '');
+        $tenant = TagHttpRequest::tenant($req);
         if ('' === $tenant) {
-            return self::bad('invalid_tenant');
+            return $this->fail('invalid_tenant');
         }
-        $body = is_array($req['body'] ?? null) ? $req['body'] : [];
+        $body = TagHttpRequest::body($req);
 
         [$etype, $eid] = $this->readEntity($body);
         $tagIds = $body['tagIds'] ?? ($body['tag_ids'] ?? null);
@@ -143,7 +151,7 @@ final class AssignController
         }
 
         if ('' === $etype || '' === $eid || [] === $tagIds) {
-            return self::bad('validation_failed');
+            return $this->fail('validation_failed');
         }
 
         $ok = 0;
@@ -198,15 +206,37 @@ final class AssignController
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
-    private static function ok(array $body): array
+    private function ok(array $body): array
     {
-        return [200, ['Content-Type' => 'application/json'], json_encode($body)];
+        return $this->responder->success($body);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
-    private static function bad(string $code): array
+    private function fail(string $code, array $body = []): array
     {
-        return [400, ['Content-Type' => 'application/json'], json_encode(['code' => $code])];
+        return $this->responder->failure($code, $this->responder->statusForCode($code), $body);
+    }
+
+    /** @return array{0:int,1:array<string,string>,2:string} */
+    private function assignmentResponse(array $result, array $defaults = []): array
+    {
+        $ok = (bool) ($result['ok'] ?? false);
+        $code = isset($result['code']) ? (string) $result['code'] : null;
+        $body = ['ok' => $ok];
+
+        foreach ($defaults as $field => $default) {
+            $body[$field] = $result[$field] ?? $default;
+        }
+
+        if (null !== $code && '' !== $code) {
+            $body['code'] = $code;
+        }
+
+        if ($ok) {
+            return $this->ok($body);
+        }
+
+        return $this->responder->failure($code ?? 'assign_failed', $this->responder->statusForCode($code), $body);
     }
 
     /** @return array{0:string,1:string} */

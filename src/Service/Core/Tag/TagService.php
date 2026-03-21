@@ -10,7 +10,7 @@ use App\Entity\Core\Tag\TagAssignment;
 use App\Entity\Core\Tag\TagRelation;
 use App\Entity\Core\Tag\TagScheme;
 use App\Entity\Core\Tag\TagSynonym;
-use App\ServiceInterface\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
+use App\Service\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
 
 final readonly class TagService
 {

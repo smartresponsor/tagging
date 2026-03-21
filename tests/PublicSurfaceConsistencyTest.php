@@ -16,9 +16,9 @@ final class PublicSurfaceConsistencyTest extends TestCase
         self::assertStringNotContainsString('/redirect/', $route);
         self::assertStringNotContainsString('/tag/assign-bulk', $route);
         self::assertStringNotContainsString('/tag/assignment/bulk', $route);
-        self::assertStringNotContainsString('/tag/assign-bulk', $route);
-        self::assertStringNotContainsString('/tag/assignment/bulk', $route);
         self::assertStringContainsString('/tag/_surface', $route);
+        self::assertStringContainsString('X-Tag-Surface-Version', $route);
+        self::assertStringContainsString('Cache-Control', $route);
     }
 
     public function testSymfonyRouteConfigMatchesPublicSurface(): void
@@ -29,5 +29,7 @@ final class PublicSurfaceConsistencyTest extends TestCase
         self::assertStringNotContainsString('/tag/assign-bulk', $route);
         self::assertStringNotContainsString('/tag/assignment/bulk', $route);
         self::assertStringContainsString('/tag/_surface', $route);
+        self::assertStringContainsString('App\\Http\\Api\\Tag\\AssignController::assign', $route);
+        self::assertStringContainsString('App\\Http\\Api\\Tag\\SuggestController::get', $route);
     }
 }

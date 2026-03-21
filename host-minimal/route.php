@@ -7,6 +7,17 @@ declare(strict_types=1);
  * @return callable(string,string,array<string,mixed>):array{0:int,1:array<string,string>,2:string}
  */
 return static function (array $container): callable {
+    $json = static function (int $status, array $payload, array $headers = []): array {
+        return [
+            $status,
+            $headers + [
+                'Content-Type' => 'application/json',
+                'Cache-Control' => 'no-store',
+            ],
+            json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{"code":"encode_error"}',
+        ];
+    };
+
     $routes = [
         ['method' => 'POST', 'pattern' => '#^/tag$#', 'handler' => static fn(array $norm): array => $container['tagController']()->create($norm)],
         ['method' => 'GET', 'pattern' => '#^/tag/([A-Za-z0-9]{26})$#', 'handler' => static fn(array $norm, array $m): array => $container['tagController']()->get($norm, $m[1])],
@@ -17,24 +28,24 @@ return static function (array $container): callable {
         ['method' => 'GET', 'pattern' => '#^/tag/assignments$#', 'handler' => static fn(array $norm): array => $container['assignmentReadController']()->listByEntity($norm)],
         ['method' => 'GET', 'pattern' => '#^/tag/search$#', 'handler' => static fn(array $norm): array => $container['searchController']()->get($norm)],
         ['method' => 'GET', 'pattern' => '#^/tag/suggest$#', 'handler' => static fn(array $norm): array => $container['suggestController']()->get($norm)],
-
-
-
-        ['method' => 'GET', 'pattern' => '#^/tag/_status$#', 'handler' => static fn(): array => [
+        ['method' => 'GET', 'pattern' => '#^/tag/_webhooks$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->list($norm)],
+        ['method' => 'POST', 'pattern' => '#^/tag/_webhooks/subscribe$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->subscribe($norm)],
+        ['method' => 'POST', 'pattern' => '#^/tag/_webhooks/test$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->test($norm)],
+        ['method' => 'GET', 'pattern' => '#^/tag/_status$#', 'handler' => static fn(): array => $json(
             200,
-            ['Content-Type' => 'application/json'],
-            json_encode($container['statusController']()->status(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{"code":"encode_error"}',
-        ]],
-        ['method' => 'GET', 'pattern' => '#^/tag/_surface$#', 'handler' => static fn(): array => [
+            $container['statusController']()->status(),
+            ['X-Tag-Version' => (string) (($container['runtime']()['version'] ?? 'dev'))],
+        )],
+        ['method' => 'GET', 'pattern' => '#^/tag/_surface$#', 'handler' => static fn(): array => $json(
             200,
-            ['Content-Type' => 'application/json'],
-            json_encode($container['surfaceController']()->surface(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{"code":"encode_error"}',
-        ]],
+            $container['surfaceController']()->surface(),
+            ['X-Tag-Surface-Version' => (string) (($container['runtime']()['version'] ?? 'dev'))],
+        )],
     ];
 
-    return static function (string $method, string $path, array $norm) use ($routes): array {
+    return static function (string $method, string $path, array $norm) use ($routes, $json): array {
         if ($method === 'OPTIONS') {
-            return [204, ['Content-Type' => 'application/json'], ''];
+            return [204, ['Content-Type' => 'application/json', 'Allow' => 'GET,POST,PATCH,DELETE,OPTIONS'], ''];
         }
 
         foreach ($routes as $route) {
@@ -45,6 +56,6 @@ return static function (array $container): callable {
             return $route['handler']($norm, $matches);
         }
 
-        return [404, ['Content-Type' => 'application/json'], json_encode(['code' => 'not_found']) ?: '{"code":"not_found"}'];
+        return $json(404, ['code' => 'not_found']);
     };
 };

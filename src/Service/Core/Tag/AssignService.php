@@ -7,17 +7,17 @@ namespace App\Service\Core\Tag;
 
 use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 
-final readonly class AssignService
+final readonly class AssignService implements AssignOperationInterface
 {
-    private ?\Closure $errorSink;
+    private TagErrorSink $errorSink;
 
     public function __construct(
         private \PDO $pdo,
         private OutboxPublisher $outbox,
         private ?IdempotencyStore $idem = null,
-        ?callable $errorSink = null,
+        TagErrorSink|callable|null $errorSink = null,
     ) {
-        $this->errorSink = null !== $errorSink ? \Closure::fromCallable($errorSink) : null;
+        $this->errorSink = TagErrorSinkFactory::from($errorSink);
     }
 
     /** @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string} */
@@ -44,7 +44,7 @@ final readonly class AssignService
             if (!$chk->fetch()) {
                 $this->pdo->rollBack();
 
-                return ['ok' => false];
+                return ['ok' => false, 'code' => 'tag_not_found'];
             }
 
             $ins = $this->pdo->prepare(
@@ -91,11 +91,7 @@ final readonly class AssignService
 
     private function report(string $code, \Throwable $e, array $context = []): void
     {
-        if (null === $this->errorSink) {
-            return;
-        }
-
-        ($this->errorSink)([
+        $this->errorSink->report([
             'code' => $code,
             'message' => $e->getMessage(),
             'exception' => $e::class,

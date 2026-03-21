@@ -12,14 +12,13 @@
 
 - There is a visible split of namespaces (`Domain`, `Service`, `Infra`, `Http`, `Data`) that indicates a layered intent.
 - Core domain entities (`Tag`, `TagAssignment`, `TagRelation`, etc.) exist and are independent of HTTP.
-- Read/write concerns are partially separated for assignments/search via `TagReadModel`, `SearchService`, and
-  `SuggestService`.
+- Host-minimal read paths now depend on a colocated `TagReadModelInterface`; search, suggest, and assignment reads share one read-model contract and one infrastructure implementation.
+- Search and suggest now share one file-backed cache-store pattern, and write use-cases invalidate both read caches through a single query-cache invalidator instead of duplicating per-cache clear logic.
 
 ### Structural risks and growth points
 
 1. **Boundary mismatch and dual contracts**
-    - `App\Service\Core\Tag\TagRepositoryInterface` is a thin alias over `App\ServiceInterface\Core\Tag\TagRepositoryInterface`,
-      creating duplication without clear ownership.
+    - Repository contracts now live directly beside the core tag services under `App\Service\Core\Tag`, removing the competing `ServiceInterface` tree and clarifying ownership.
     - Repository contract is very broad (CRUD + policy + moderation + analytics + effects), violating Interface
       Segregation and creating a god-interface.
 
@@ -60,6 +59,7 @@
   broader and partly different layout.
 - **Duplicated concepts** (`src/Service/Core/Tag/TagQuotaService.php` and `src/Service/Core/Tag/QuotaService.php`) need
   consolidation review.
+- Stale cache trees should not exist beside active cache/store code; the old `src/Service/Cache/` subtree was removed to keep store ownership under `src/Cache/Store/Tag/`.
 
 ### Refactor blocks
 
@@ -206,7 +206,20 @@
 ## Suggested “ready next” implementation tasks
 
 - Create `src/Application/Write/Tag/CreateTag.php`, `PatchTag.php`, `DeleteTag.php` with typed command/result DTOs.
-- Add `src/ServiceInterface/Core/Tag/TagWriteRepositoryInterface.php` and `TagReadRepositoryInterface.php`.
+- Keep repository contracts colocated in `src/Service/Core/Tag/` and do not reintroduce a parallel interface tree.
 - Add `tests/integration/TagAssignmentIdempotencyTest.php` and `tests/integration/TenantIsolationTest.php`.
 - Add `.github/workflows/ci.yml` with matrix for PHP 8.2/8.3 and Postgres service.
 - Add `docs/ops/runbook.md` + `docs/architecture/adr-0001-tenancy-boundary.md`.
+
+- Wave 18 hardens assign/unassign controller response codes, normalizes quota result shape, and removes the stale src/Service/Quota tree.
+
+
+## Wave 19 bootstrap/container cleanup
+
+- extracted a minimal host container under `src/HostMinimal/Container/`
+- moved runtime/env parsing out of `host-minimal/bootstrap.php` into `HostMinimalRuntimeConfig`
+- kept exported host-minimal callable keys stable while shrinking composition-root drift
+
+- Wave 20 cleans webhook/audit/observability edges: host-minimal exports observe+webhook composition, transport contracts are stabilized, and stale Service/Audit, Service/Webhook, Service/Metric trees are removed.
+
+- wave 21 hardens host-minimal transport security by moving signature verification into an explicit middleware pipeline, exporting the verify-signature middleware from bootstrap, and removing stale duplicate security trees.

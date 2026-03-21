@@ -15,6 +15,11 @@ final class CanonicalStaleReferenceAuditTest extends TestCase
 
         self::assertStringNotContainsString('src/Service/Tag/', $plan);
         self::assertStringNotContainsString('src/Application/Tag/', $plan);
-        self::assertStringNotContainsString('src/ServiceInterface/Tag/', $plan);
+        self::assertStringNotContainsString('src/ServiceInterface/', $plan);
+        self::assertStringNotContainsString('src/Service/Audit/', $plan);
+        self::assertStringNotContainsString('src/Service/Webhook/', $plan);
+        self::assertStringNotContainsString('src/Service/Metric/', $plan);
+        self::assertStringNotContainsString('src/Service/Security/Tag/', $plan);
+        self::assertStringNotContainsString('src/Service/Core/Tag/Security/', $plan);
     }
 }

@@ -10,7 +10,7 @@ use App\Entity\Core\Tag\TagAssignment;
 use App\Entity\Core\Tag\TagRelation;
 use App\Entity\Core\Tag\TagScheme;
 use App\Entity\Core\Tag\TagSynonym;
-use App\ServiceInterface\Core\Tag\TagRepositoryInterface;
+use App\Service\Core\Tag\TagRepositoryInterface;
 
 final readonly class PdoTagRepository implements TagRepositoryInterface
 {

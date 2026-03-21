@@ -80,9 +80,6 @@ src/Service/
 src/Service/Core/
 src/Service/Core/Tag/
 src/Service/Security/
-src/ServiceInterface/
-src/ServiceInterface/Core/
-src/ServiceInterface/Core/Tag/
 tests/
 tests/integration/
 tools/
@@ -109,7 +106,6 @@ tools/test-db/
 - `src/Infrastructure/Persistence/Tag/...`
 - `src/Infrastructure/ReadModel/Tag/...`
 - `src/Service/Core/Tag/...`
-- `src/ServiceInterface/Core/Tag/...`
 
 ## gates
 - `composer run -n audit:canonical-structure`

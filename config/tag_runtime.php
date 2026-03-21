@@ -3,20 +3,61 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
+$surface = require __DIR__.'/tag_public_surface.php';
+if (!is_array($surface)) {
+    return [
+        'service' => 'tag',
+        'version' => 'dev',
+        'route' => [],
+        'example' => [],
+        'doc' => [],
+        'public_surface' => [],
+    ];
+}
+
+$routeMap = is_array($surface['route'] ?? null) ? $surface['route'] : [];
+$methodByOperation = [
+    'status' => 'GET',
+    'discovery' => 'GET',
+    'create' => 'POST',
+    'read' => 'GET',
+    'patch' => 'PATCH',
+    'delete' => 'DELETE',
+    'assign' => 'POST',
+    'unassign' => 'POST',
+    'assignments' => 'GET',
+    'search' => 'GET',
+    'suggest' => 'GET',
+];
+
+$publicSurface = [];
+foreach ($methodByOperation as $operation => $defaultMethod) {
+    $route = $routeMap[$operation] ?? null;
+    if (!is_string($route) || '' === $route) {
+        continue;
+    }
+
+    $method = $defaultMethod;
+    $path = $route;
+
+    if (1 === preg_match('/^([A-Z]+)\s+(.+)$/', $route, $m)) {
+        $method = $m[1];
+        $path = $m[2];
+    }
+
+    $publicSurface[] = [
+        'method' => $method,
+        'path' => $path,
+        'name' => str_replace('_', ' ', $operation),
+    ];
+}
+
 return [
-    'service' => 'tag',
-    'version' => 'p111-public-surface-reconcile',
-    'public_surface' => [
-        ['method' => 'POST', 'path' => '/tag', 'name' => 'create tag'],
-        ['method' => 'GET', 'path' => '/tag/{id}', 'name' => 'get tag'],
-        ['method' => 'PATCH', 'path' => '/tag/{id}', 'name' => 'patch tag'],
-        ['method' => 'DELETE', 'path' => '/tag/{id}', 'name' => 'delete tag'],
-        ['method' => 'POST', 'path' => '/tag/{id}/assign', 'name' => 'assign tag'],
-        ['method' => 'POST', 'path' => '/tag/{id}/unassign', 'name' => 'unassign tag'],
-        ['method' => 'GET', 'path' => '/tag/assignments', 'name' => 'list entity assignments'],
-        ['method' => 'GET', 'path' => '/tag/search', 'name' => 'search tags'],
-        ['method' => 'GET', 'path' => '/tag/suggest', 'name' => 'suggest tags'],
-        ['method' => 'GET', 'path' => '/tag/_status', 'name' => 'status'],
-        ['method' => 'GET', 'path' => '/tag/_surface', 'name' => 'surface catalog'],
-    ],
+    'service' => (string) ($surface['service'] ?? 'tag'),
+    'runtime' => (string) ($surface['runtime'] ?? 'host-minimal'),
+    'version' => (string) ($surface['version'] ?? 'dev'),
+    'route' => $routeMap,
+    'example' => is_array($surface['example'] ?? null) ? $surface['example'] : [],
+    'doc' => is_array($surface['doc'] ?? null) ? $surface['doc'] : [],
+    'public_surface' => $publicSurface,
 ];

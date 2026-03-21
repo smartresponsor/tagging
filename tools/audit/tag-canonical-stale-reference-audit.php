@@ -21,7 +21,7 @@ $forbidden = [
     'src/Data/Tag/',
     'src/Http/Tag/',
     'src/Service/Tag/',
-    'src/ServiceInterface/Tag/',
+    'src/ServiceInterface/',
 ];
 
 $hits = [];

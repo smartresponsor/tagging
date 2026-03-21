@@ -10,19 +10,24 @@ use App\Application\Write\Tag\Dto\TagError;
 use App\Application\Write\Tag\Dto\TagResult;
 use App\Cache\Store\Tag\SearchCache;
 use App\Cache\Store\Tag\SuggestCache;
+use App\Cache\Store\Tag\TagQueryCacheInvalidator;
 use App\Service\Core\Tag\Slug\SlugPolicy;
-use App\ServiceInterface\Core\Tag\TagEntityRepositoryInterface;
-use App\ServiceInterface\Core\Tag\TransactionRunnerInterface;
+use App\Service\Core\Tag\TagEntityRepositoryInterface;
+use App\Service\Core\Tag\TransactionRunnerInterface;
 
-final readonly class CreateTag
+final class CreateTag implements CreateTagInterface
 {
+    private TagQueryCacheInvalidator $cacheInvalidator;
+
     public function __construct(
         private TagEntityRepositoryInterface $repo,
         private SlugPolicy $slugPolicy,
         private TransactionRunnerInterface $transaction,
         private ?SearchCache $searchCache = null,
         private ?SuggestCache $suggestCache = null,
+        ?TagQueryCacheInvalidator $cacheInvalidator = null,
     ) {
+        $this->cacheInvalidator = $cacheInvalidator ?? new TagQueryCacheInvalidator($this->searchCache, $this->suggestCache);
     }
 
     public function execute(CreateTagCommand $command): TagResult
@@ -61,8 +66,7 @@ final readonly class CreateTag
                 return $this->repo->create($command->tenant, $this->ulid(), $slug, $name, $locale, $weight);
             });
 
-            $this->searchCache?->clearTenant($command->tenant);
-            $this->suggestCache?->clearTenant($command->tenant);
+            $this->cacheInvalidator->clearTenant($command->tenant);
 
             return TagResult::success(201, $created);
         } catch (\PDOException $e) {

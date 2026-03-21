@@ -14,7 +14,8 @@ final class RepoMapTruthAuditTest extends TestCase
         self::assertIsString($repoMap);
 
         self::assertStringContainsString('src/Infrastructure/ReadModel/Tag/', $repoMap);
-        self::assertStringContainsString('src/ServiceInterface/Core/Tag/', $repoMap);
+        self::assertStringContainsString('src/Service/Core/Tag/', $repoMap);
+        self::assertStringNotContainsString('src/ServiceInterface/', $repoMap);
         self::assertStringNotContainsString('src/Domain/', $repoMap);
         self::assertStringNotContainsString('src/Infra/', $repoMap);
         self::assertStringContainsString('docs/public/', $repoMap);

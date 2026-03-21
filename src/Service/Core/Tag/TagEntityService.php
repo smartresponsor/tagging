@@ -6,43 +6,36 @@ declare(strict_types=1);
 namespace App\Service\Core\Tag;
 
 use App\Service\Core\Tag\Slug\SlugPolicy;
-use App\ServiceInterface\Core\Tag\TagEntityRepositoryInterface;
 
-final readonly class TagEntityService
+final readonly class TagEntityService implements TagEntityQueryServiceInterface
 {
-    public function __construct(private TagEntityRepositoryInterface $repo, private SlugPolicy $slugPolicy)
-    {
+    public function __construct(
+        private TagEntityRepositoryInterface $repo,
+        private SlugPolicy $slugPolicy,
+        private TagEntityPayloadNormalizer $normalizer = new TagEntityPayloadNormalizer(),
+    ) {
     }
 
-    /**
-     * @param array<string,mixed> $payload
-     *
-     * @throws \Random\RandomException
-     */
+    /** @param array<string,mixed> $payload */
     public function create(string $tenant, array $payload): array
     {
         if ('' === $tenant) {
             throw new \InvalidArgumentException('invalid_tenant');
         }
 
-        $name = trim((string) ($payload['name'] ?? ''));
-        if ('' === $name) {
+        $normalized = $this->normalizer->normalizeCreate($payload, fn (string $name): string => $this->slugPolicy->make($tenant, $name));
+        if (!$this->slugPolicy->validate($normalized['slug'])) {
             throw new \InvalidArgumentException('validation_failed');
         }
 
-        $slug = trim((string) ($payload['slug'] ?? ''));
-        if ('' === $slug) {
-            $slug = $this->slugPolicy->make($tenant, $name);
-        }
-        if (!$this->slugPolicy->validate($slug)) {
-            throw new \InvalidArgumentException('validation_failed');
-        }
-
-        $locale = (string) ($payload['locale'] ?? 'en');
-        $weight = (int) ($payload['weight'] ?? 0);
-        $id = $this->ulid();
-
-        return $this->repo->create($tenant, $id, $slug, $name, $locale, $weight);
+        return $this->repo->create(
+            $tenant,
+            $this->ulid(),
+            $normalized['slug'],
+            $normalized['name'],
+            $normalized['locale'],
+            $normalized['weight'],
+        );
     }
 
     public function get(string $tenant, string $id): ?array
@@ -60,7 +53,13 @@ final readonly class TagEntityService
         if ('' === $tenant) {
             throw new \InvalidArgumentException('invalid_tenant');
         }
-        $this->repo->patch($tenant, $id, $payload);
+
+        $patch = $this->normalizer->normalizePatch($payload);
+        if ([] === $patch) {
+            throw new \InvalidArgumentException('validation_failed');
+        }
+
+        $this->repo->patch($tenant, $id, $patch);
     }
 
     public function delete(string $tenant, string $id): void
@@ -68,12 +67,10 @@ final readonly class TagEntityService
         if ('' === $tenant) {
             throw new \InvalidArgumentException('invalid_tenant');
         }
+
         $this->repo->delete($tenant, $id);
     }
 
-    /**
-     * @throws \Random\RandomException
-     */
     private function ulid(): string
     {
         return substr(strtoupper(bin2hex(random_bytes(13))), 0, 26);

@@ -1,0 +1,42 @@
+<?php
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
+
+namespace App\Http\Api\Tag\Responder;
+
+final class TagAssignmentResponder
+{
+    /** @return array<string,string> */
+    private function headers(): array
+    {
+        return [
+            'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-store',
+        ];
+    }
+
+    /** @return array{0:int,1:array<string,string>,2:string} */
+    public function success(array $body, int $status = 200): array
+    {
+        return [$status, $this->headers(), (string) json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)];
+    }
+
+    /** @return array{0:int,1:array<string,string>,2:string} */
+    public function failure(string $code, int $status, array $body = []): array
+    {
+        return $this->success(['ok' => false, 'code' => $code] + $body, $status);
+    }
+
+    public function statusForCode(?string $code): int
+    {
+        return match ($code) {
+            'tag_not_found' => 404,
+            'idempotency_conflict' => 409,
+            'assign_failed', 'unassign_failed' => 500,
+            'invalid_tenant', 'validation_failed' => 400,
+            null, '' => 500,
+            default => 500,
+        };
+    }
+}

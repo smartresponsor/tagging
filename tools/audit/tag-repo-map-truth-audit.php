@@ -18,7 +18,11 @@ $forbidden = [
     'src/Infra/',
     'src/Application/Tag/',
     'src/Service/Tag/',
-    'src/ServiceInterface/Tag/',
+    'src/ServiceInterface/',
+    'src/Service/Audit/',
+    'src/Service/Webhook/',
+    'src/Service/Metric/',
+    'src/Service/Security/Tag/',
 ];
 
 $required = [
@@ -32,7 +36,6 @@ $required = [
     'src/Infrastructure/Persistence/Tag/',
     'src/Infrastructure/ReadModel/Tag/',
     'src/Service/Core/Tag/',
-    'src/ServiceInterface/Core/Tag/',
 ];
 
 $errors = [];

@@ -30,25 +30,25 @@ tag_delete:
 
 tag_assign:
   path: /tag/{id}/assign
-  controller: App\Http\Api\Tag\TagAssignmentController::assign
+  controller: App\Http\Api\Tag\AssignController::assign
   methods: [POST]
 
 tag_unassign:
   path: /tag/{id}/unassign
-  controller: App\Http\Api\Tag\TagAssignmentController::unassign
+  controller: App\Http\Api\Tag\AssignController::unassign
   methods: [POST]
 
 tag_assignments:
   path: /tag/assignments
-  controller: App\Http\Api\Tag\TagAssignmentReadController::listByEntity
+  controller: App\Http\Api\Tag\AssignmentReadController::listByEntity
   methods: [GET]
 
 tag_search:
   path: /tag/search
-  controller: App\Http\Api\Tag\TagSearchController::get
+  controller: App\Http\Api\Tag\SearchController::get
   methods: [GET]
 
 tag_suggest:
   path: /tag/suggest
-  controller: App\Http\Api\Tag\TagSuggestController::get
+  controller: App\Http\Api\Tag\SuggestController::get
   methods: [GET]

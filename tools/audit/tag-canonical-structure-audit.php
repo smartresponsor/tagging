@@ -14,6 +14,12 @@ $forbiddenPaths = [
     'src/Port',
     'src/Adaptor',
     'src/Adapter',
+    'src/ServiceInterface',
+    'src/Service/Audit',
+    'src/Service/Webhook',
+    'src/Service/Metric',
+    'src/Service/Security/Tag',
+    'src/Service/Core/Tag/Security',
     'src/opr',
 ];
 

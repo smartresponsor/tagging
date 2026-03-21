@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Tag;
 
-use App\ServiceInterface\Core\Tag\TagEntityRepositoryInterface;
+use App\Service\Core\Tag\TagEntityRepositoryInterface;
 
 final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterface
 {

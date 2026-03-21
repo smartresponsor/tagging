@@ -25,3 +25,13 @@ Metrics:
 
 - tag_webhook_delivered_total{url,type}
 - tag_webhook_failed_total{url,type}
+
+
+## Host-minimal cleanup
+
+- Host-minimal now wires `TagWebhookController` directly.
+- Stable transport contract:
+  - `GET /tag/_webhooks` → `{ok:true,items:[...],total:n}`
+  - `POST /tag/_webhooks/subscribe` → `201 {ok:true,url:"..."}` or `400 {ok:false,code:"..."}`
+  - `POST /tag/_webhooks/test` → `{ok:true,event:"tag.created"}`
+- All webhook responses are `Cache-Control: no-store`.

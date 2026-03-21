@@ -7,35 +7,71 @@ namespace App\Service\Core\Tag;
 
 final readonly class QuotaService
 {
-    private ?\Closure $errorSink;
+    private TagErrorSink $errorSink;
 
-    public function __construct(private ?\PDO $pdo = null, private array $cfg = [], ?callable $errorSink = null)
-    {
-        $this->errorSink = null !== $errorSink ? \Closure::fromCallable($errorSink) : null;
+    public function __construct(
+        private ?\PDO $pdo = null,
+        private array $cfg = [],
+        TagErrorSink|callable|null $errorSink = null,
+    ) {
+        $this->errorSink = TagErrorSinkFactory::from($errorSink);
     }
 
     public function canCreateTag(string $tenantId): array
     {
-        $max = (int) ($this->cfg['quotas']['max_tags'] ?? 0);
-        if ($max <= 0) {
-            return ['ok' => true];
-        }
-
-        $count = $this->countBySql('SELECT COUNT(*) FROM tag_entity WHERE tenant = :tenant', $tenantId);
-
-        return ['ok' => $count < $max, 'used' => $count, 'max' => $max];
+        return $this->quotaResult(
+            $tenantId,
+            (int) ($this->cfg['quotas']['max_tags'] ?? 0),
+            'SELECT COUNT(*) FROM tag_entity WHERE tenant = :tenant',
+            'quota_tags_exceeded'
+        );
     }
 
     public function canAssign(string $tenantId): array
     {
-        $max = (int) ($this->cfg['quotas']['max_assignments'] ?? 0);
+        return $this->quotaResult(
+            $tenantId,
+            (int) ($this->cfg['quotas']['max_assignments'] ?? 0),
+            'SELECT COUNT(*) FROM tag_link WHERE tenant = :tenant',
+            'quota_assignments_exceeded'
+        );
+    }
+
+    public function assertCanCreateTag(string $tenantId): void
+    {
+        $this->assertAllowed($this->canCreateTag($tenantId));
+    }
+
+    public function assertCanAssign(string $tenantId): void
+    {
+        $this->assertAllowed($this->canAssign($tenantId));
+    }
+
+    private function quotaResult(string $tenantId, int $max, string $sql, string $code): array
+    {
         if ($max <= 0) {
-            return ['ok' => true];
+            return ['ok' => true, 'used' => 0, 'max' => 0, 'remaining' => null, 'code' => null];
         }
 
-        $count = $this->countBySql('SELECT COUNT(*) FROM tag_link WHERE tenant = :tenant', $tenantId);
+        $count = $this->countBySql($sql, $tenantId);
+        $ok = $count < $max;
 
-        return ['ok' => $count < $max, 'used' => $count, 'max' => $max];
+        return [
+            'ok' => $ok,
+            'used' => $count,
+            'max' => $max,
+            'remaining' => max(0, $max - $count),
+            'code' => $ok ? null : $code,
+        ];
+    }
+
+    private function assertAllowed(array $result): void
+    {
+        if (($result['ok'] ?? false) === true) {
+            return;
+        }
+
+        throw new \RuntimeException((string) ($result['code'] ?? 'quota_exceeded'));
     }
 
     private function countBySql(string $sql, string $tenantId): int
@@ -58,11 +94,7 @@ final readonly class QuotaService
 
     private function report(string $code, \Throwable $e, array $context = []): void
     {
-        if (null === $this->errorSink) {
-            return;
-        }
-
-        ($this->errorSink)([
+        $this->errorSink->report([
             'code' => $code,
             'message' => $e->getMessage(),
             'exception' => $e::class,

@@ -1,35 +1,118 @@
 openapi: 3.1.0
 info:
   title: Tag API
-  version: 0.2.1
+  version: 0.2.2
 servers:
   - url: http://localhost:8080
 paths:
   /tag:
     post:
       summary: Create tag
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Entity-shaped JSON payload `{ id, slug, name, locale, weight, ... }`
+        '400':
+          description: Error payload `{ ok: false, code }`
+        '409':
+          description: Conflict payload `{ ok: false, code: conflict }`
   /tag/{id}:
     get:
       summary: Get tag
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Entity-shaped JSON payload `{ id, slug, name, locale, weight, ... }`
+        '400':
+          description: Error payload `{ ok: false, code }`
+        '404':
+          description: Error payload `{ ok: false, code: not_found }`
     patch:
       summary: Patch tag
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Minimal success payload `{ id }`
+        '400':
+          description: Error payload `{ ok: false, code }`
+        '404':
+          description: Error payload `{ ok: false, code: not_found }`
     delete:
       summary: Delete tag
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No content
+        '400':
+          description: Error payload `{ ok: false, code }`
+        '404':
+          description: Error payload `{ ok: false, code: not_found }`
   /tag/{id}/assign:
     post:
       summary: Assign tag to entity
+      responses:
+        '200':
+          description: Success payload `{ ok, duplicated, conflict }`
+        '400':
+          description: Error payload `{ ok: false, code }`
+        '404':
+          description: Error payload `{ ok: false, code: tag_not_found }`
+        '409':
+          description: Error payload `{ ok: false, code: idempotency_conflict }`
+        '500':
+          description: Error payload `{ ok: false, code: assign_failed }`
   /tag/{id}/unassign:
     post:
       summary: Unassign tag from entity
+      responses:
+        '200':
+          description: Success payload `{ ok, not_found, duplicated, conflict }`
+        '400':
+          description: Error payload `{ ok: false, code }`
+        '404':
+          description: Error payload `{ ok: false, code: tag_not_found }`
+        '409':
+          description: Error payload `{ ok: false, code: idempotency_conflict }`
+        '500':
+          description: Error payload `{ ok: false, code: unassign_failed }`
   /tag/assignments:
     get:
       summary: List assignments by entityType/entityId
+      responses:
+        '200':
+          description: OK payload `{ ok, entityType, entityId, items }`
   /tag/search:
     get:
       summary: Search tags
+      responses:
+        '200':
+          description: OK payload `{ ok, items, total, nextPageToken, cacheHit }`
   /tag/suggest:
     get:
       summary: Suggest tags
+      responses:
+        '200':
+          description: OK payload `{ ok, items, cacheHit }`
   /tag/_status:
     get:
       summary: Status and DB readiness

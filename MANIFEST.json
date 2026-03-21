@@ -14,7 +14,7 @@
     "EN-only comments",
     "copyright header"
   ],
-  "version": "tagging-debt-wave-13-release-grade-portrait",
+  "version": "tagging-wave-16-structural-canon-cleanup",
   "notes": [
     "wave 14 removes transient root workspaces from the cumulative snapshot",
     "wave 14 extends repo hygiene guards to forbid transport workspace directories in repository root",
@@ -24,7 +24,8 @@
     "debt wave 10 makes status/quota/assign/unassign failures observable through optional error sinks and explicit failure codes",
     "debt wave 11 separates runnable core from adjacent cargo in README/docs and adds a core-boundary audit gate",
     "debt wave 12 compacts demo/fixtures/seed documentation into one truthful final demo pack and adds an audit gate for demo truth",
-    "Wave 13 adds a release-grade portrait doc, audit, and PHPUnit guard for runtime/core/demo truth-line."
+    "Wave 13 adds a release-grade portrait doc, audit, and PHPUnit guard for runtime/core/demo truth-line.",
+    "Wave 16 collapses the competing src/ServiceInterface tree into src/Service/Core/Tag and tightens structural audits accordingly."
   ],
   "wave_12": {
     "focus": "ci workflow validity hardening",
@@ -74,6 +75,115 @@
       "tag_cons_patched",
       "tag_fix",
       "tmp"
+    ]
+  },
+  "wave_16": {
+    "focus": "structural canon cleanup",
+    "changes": [
+      "MANIFEST.json",
+      "repo-map.md",
+      "tools/audit/tag-canonical-structure-audit.php",
+      "tools/audit/tag-repo-map-truth-audit.php",
+      "tests/RepoMapTruthAuditTest.php",
+      "docs/ops/error-visibility.md",
+      "docs/architecture/repository-production-readiness-plan.md",
+      "src/Service/Core/Tag/*.php",
+      "src/Application/Write/Tag/UseCase/*.php",
+      "src/Infrastructure/Persistence/Tag/*.php",
+      "tests/TagWriteUseCaseTest.php"
+    ],
+    "removed_directories": [
+      "src/ServiceInterface"
+    ]
+  },
+  "wave": "13",
+  "wave_note": "security signature + middleware contract hardening; explicit host-minimal middleware pipeline, exported verify-signature middleware, stable transport rejection contract, and removal of stale duplicate security trees",
+  "wave_17": {
+    "focus": "cache/store cleanup and invalidation consistency",
+    "changes": [
+      "MANIFEST.json",
+      "host-minimal/bootstrap.php",
+      "docs/architecture/repository-production-readiness-plan.md",
+      "src/Cache/Store/Tag/*.php",
+      "src/Application/Write/Tag/UseCase/*.php",
+      "tests/TagCacheInvalidationConsistencyTest.php"
+    ],
+    "removed_directories": [
+      "src/Service/Cache"
+    ]
+  },
+  "wave_18": {
+    "focus": "assign/unassign + policy/quota hardening",
+    "changes": [
+      "MANIFEST.json",
+      "docs/api/assign.md",
+      "docs/architecture/repository-production-readiness-plan.md",
+      "src/Http/Api/Tag/AssignController.php",
+      "src/Http/Api/Tag/Responder/TagAssignmentResponder.php",
+      "src/Service/Core/Tag/AssignService.php",
+      "src/Service/Core/Tag/QuotaService.php",
+      "src/Service/Core/Tag/TagPolicyService.php",
+      "tests/AssignQuotaPolicyHardeningTest.php"
+    ],
+    "removed_directories": [
+      "src/Service/Quota"
+    ]
+  },
+  "wave_19": {
+    "focus": "host-minimal bootstrap/container cleanup",
+    "changes": [
+      "MANIFEST.json",
+      "host-minimal/bootstrap.php",
+      "src/HostMinimal/Container/*.php",
+      "tests/BootstrapContainerTest.php",
+      "tests/HostMinimalContainerTest.php",
+      "tests/HostMinimalRuntimeConfigTest.php",
+      "docs/architecture/repository-production-readiness-plan.md"
+    ]
+  },
+  "wave_20": {
+    "focus": "webhook/audit/observability cleanup",
+    "changes": [
+      "MANIFEST.json",
+      "host-minimal/bootstrap.php",
+      "host-minimal/index.php",
+      "host-minimal/route.php",
+      "src/HostMinimal/Container/HostMinimalRuntimeConfig.php",
+      "src/Http/Api/Tag/Responder/TagWebhookResponder.php",
+      "src/Http/Api/Tag/TagWebhookController.php",
+      "tools/audit/tag-canonical-structure-audit.php",
+      "tools/audit/tag-repo-map-truth-audit.php",
+      "tests/WebhookObservabilityCleanupTest.php",
+      "docs/ops/observability.md",
+      "docs/ops/tag_webhooks.md"
+    ],
+    "removed_directories": [
+      "src/Service/Audit",
+      "src/Service/Webhook",
+      "src/Service/Metric"
+    ]
+  }
+,
+  "wave_21": {
+    "focus": "security signature + middleware contract hardening",
+    "changes": [
+      "MANIFEST.json",
+      "host-minimal/bootstrap.php",
+      "host-minimal/index.php",
+      "src/HostMinimal/Container/HostMinimalRuntimeConfig.php",
+      "src/Http/Api/Tag/Middleware/TagMiddlewarePipeline.php",
+      "src/Http/Api/Tag/Middleware/VerifySignature.php",
+      "src/Http/Api/Tag/Responder/TagMiddlewareResponder.php",
+      "tests/BootstrapContainerTest.php",
+      "tests/SecurityMiddlewareContractTest.php",
+      "tools/audit/tag-canonical-structure-audit.php",
+      "tools/audit/tag-repo-map-truth-audit.php",
+      "docs/security/signature-middleware.md"
+    ],
+    "removed_directories": [
+      "src/Service/Security/Tag",
+      "src/Service/Core/Tag/Security",
+      "src/Http/Middleware/HmacMiddleware.php"
     ]
   }
 }

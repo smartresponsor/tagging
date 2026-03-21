@@ -23,3 +23,9 @@ Integration:
 Ops:
 
 - Экспортируйте /tag/_metrics в Prometheus, а slowlog собирайте filebeat/fluent-bit.
+
+
+## Host-minimal cleanup
+
+- Host-minimal now wraps dispatch through `Observe`, so latency/error metrics and slowlog recording apply on live requests, not only in docs.
+- The composition root exports `observeMiddleware` explicitly for isolated testing.

@@ -7,64 +7,26 @@ namespace App\Cache\Store\Tag;
 
 final readonly class SuggestCache
 {
+    private TagFileCacheStore $store;
+
     public function __construct(private string $dir = 'var/cache/tag-suggest', private int $ttl = 60)
     {
-        if (!is_dir($this->dir)) {
-            mkdir($this->dir, 0777, true);
-        }
+        $this->store = new TagFileCacheStore($this->dir, $this->ttl);
     }
 
-    private function safeSegment(string $value): string
-    {
-        $normalized = strtolower(trim($value));
-        $safe = preg_replace('/[^a-z0-9]+/', '-', $normalized) ?? 'tenant';
-
-        return trim($safe, '-') ?: 'tenant';
-    }
-
-    private function key(string $tenant, string $q, int $limit): string
-    {
-        $norm = strtolower(trim($q));
-        $hash = sha1($tenant.'|'.$norm.'|'.$limit);
-        $tenantSafe = $this->safeSegment($tenant);
-        $querySafe = $this->safeSegment($norm);
-
-        return $this->dir.DIRECTORY_SEPARATOR.$tenantSafe.'__q_'.$querySafe.'__'.$hash.'.json';
-    }
-
-    /** @return array{hit:bool,data?:array<string,mixed>} */
     public function get(string $tenant, string $q, int $limit): array
     {
-        $file = $this->key($tenant, $q, $limit);
-        if (!is_file($file)) {
-            return ['hit' => false];
-        }
-        if (filemtime($file) + $this->ttl < time()) {
-            if (is_file($file)) {
-                unlink($file);
-            }
-
-            return ['hit' => false];
-        }
-        $raw = file_get_contents($file);
-
-        return ['hit' => true, 'data' => json_decode($raw ?: '{}', true) ?: []];
+        return $this->store->get('suggest', $tenant, [$q, $limit]);
     }
 
     public function clearTenant(string $tenant): void
     {
-        $pattern = $this->dir.DIRECTORY_SEPARATOR.$this->safeSegment($tenant).'__*.json';
-        foreach (glob($pattern) ?: [] as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
-        }
+        $this->store->clearTenant('suggest', $tenant);
     }
 
     /** @param array<string,mixed> $data */
     public function set(string $tenant, string $q, int $limit, array $data): void
     {
-        $file = $this->key($tenant, $q, $limit);
-        file_put_contents($file, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        $this->store->set('suggest', $tenant, [$q, $limit], $data);
     }
 }

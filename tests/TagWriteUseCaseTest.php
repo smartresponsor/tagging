@@ -14,8 +14,8 @@ use App\Application\Write\Tag\UseCase\PatchTag;
 use App\Http\Api\Tag\Responder\TagWriteResponder;
 use App\Service\Core\Tag\Slug\Slugifier;
 use App\Service\Core\Tag\Slug\SlugPolicy;
-use App\ServiceInterface\Core\Tag\TagEntityRepositoryInterface;
-use App\ServiceInterface\Core\Tag\TransactionRunnerInterface;
+use App\Service\Core\Tag\TagEntityRepositoryInterface;
+use App\Service\Core\Tag\TransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagWriteUseCaseTest extends TestCase

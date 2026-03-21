@@ -18,6 +18,9 @@ final class StatusControllerTest extends TestCase
         self::assertSame('tag', $payload['service']);
         self::assertArrayHasKey('ts', $payload);
         self::assertArrayHasKey('db', $payload);
+        self::assertSame('host-minimal', $payload['runtime']);
+        self::assertSame('/tag/_surface', $payload['surface']['discovery'] ?? null);
+        self::assertSame('/tag/_status', $payload['surface']['status'] ?? null);
         self::assertSame(['available' => false, 'ok' => false], $payload['db']);
         self::assertSame(RuntimeVersion::read(), $payload['version']);
     }

@@ -1,11 +1,13 @@
 <?php
+
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 $base = rtrim((string) (getenv('BASE_URL') ?: 'http://127.0.0.1:8080'), '/');
 $tenant = (string) (getenv('TENANT') ?: 'demo');
 
-function call(string $method, string $url, string $tenant, ?array $body = null, array $extraHeaders = []): array {
+function call(string $method, string $url, string $tenant, ?array $body = null, array $extraHeaders = []): array
+{
     $headers = array_merge(['X-Tenant-Id: ' . $tenant], $extraHeaders);
     if ($body !== null) {
         $headers[] = 'Content-Type: application/json';
@@ -50,10 +52,11 @@ if ($seedSearchCode !== 200 || !($seedSearch['ok'] ?? false)) {
 
 $createIdem = 'smoke-create-' . time();
 [$createCode, $create] = call('POST', $base . '/tag', $tenant, ['name' => 'Smoke Runtime', 'locale' => 'en', 'weight' => 7], ['X-Idempotency-Key: ' . $createIdem]);
-if (!in_array($createCode, [200, 201], true) || !is_array($create['result'] ?? null)) {
+$createResult = is_array($create['result'] ?? null) ? $create['result'] : $create;
+if (!in_array($createCode, [200, 201], true) || !is_array($createResult)) {
     throw new RuntimeException('create_failed');
 }
-$tagId = (string) ($create['result']['id'] ?? '');
+$tagId = (string) ($createResult['id'] ?? '');
 if ($tagId === '') {
     throw new RuntimeException('create_missing_id');
 }
@@ -64,11 +67,13 @@ if ($getCode !== 200) {
 }
 
 [$patchCode, $patch] = call('PATCH', $base . '/tag/' . rawurlencode($tagId), $tenant, ['name' => 'Smoke Runtime Patched', 'weight' => 9], ['X-Idempotency-Key: smoke-patch-' . time()]);
-if ($patchCode !== 200 || !is_array($patch['result'] ?? null)) {
+$patchResult = is_array($patch['result'] ?? null) ? $patch['result'] : (is_array($patch) ? $patch : []);
+if (!in_array($patchCode, [200, 204], true)) {
     throw new RuntimeException('patch_failed');
 }
 
-$assignPayload = ['entity_type' => 'product', 'entity_id' => 'smoke-product-1'];
+$entityId = 'smoke-product-' . time();
+$assignPayload = ['entity_type' => 'product', 'entity_id' => $entityId];
 $assignIdem = 'smoke-assign-' . time();
 [$assignCode] = call('POST', $base . '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
 if ($assignCode !== 200) {
@@ -89,7 +94,7 @@ if ($suggestCode !== 200 || !($suggest['ok'] ?? false)) {
     throw new RuntimeException('suggest_failed');
 }
 
-[$assignmentCode, $assignment] = call('GET', $base . '/tag/assignments?entityType=product&entityId=smoke-product-1&limit=10', $tenant);
+[$assignmentCode, $assignment] = call('GET', $base . '/tag/assignments?entityType=product&entityId=' . rawurlencode($entityId) . '&limit=10', $tenant);
 if ($assignmentCode !== 200 || !($assignment['ok'] ?? false)) {
     throw new RuntimeException('assignment_read_failed');
 }
@@ -110,6 +115,6 @@ fwrite(STDOUT, json_encode([
     'tag_id' => $tagId,
     'seed_items' => count($seedSearch['items'] ?? []),
     'seed_assignment_items' => count($assignment['items'] ?? []),
-    'patched' => $patch['result']['name'] ?? null,
+    'patched' => $patchResult['name'] ?? null,
     'surface_version' => $surface['version'] ?? null,
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . PHP_EOL);

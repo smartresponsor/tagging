@@ -52,7 +52,7 @@ final readonly class TagFileCacheStore
             $this->dir,
             DIRECTORY_SEPARATOR,
             $this->safeSegment($namespace),
-            $this->safeSegment($tenant)
+            $this->safeSegment($tenant),
         );
 
         foreach (glob($pattern) ?: [] as $file) {
@@ -66,11 +66,11 @@ final readonly class TagFileCacheStore
     private function key(string $namespace, string $tenant, array $segments): string
     {
         $normalizedSegments = array_map(
-            static fn (string|int $value): string => strtolower(trim((string) $value)),
+            static fn(string|int $value): string => strtolower(trim((string) $value)),
             $segments,
         );
 
-        $hash = sha1($namespace.'|'.$tenant.'|'.implode('|', $normalizedSegments));
+        $hash = sha1($namespace . '|' . $tenant . '|' . implode('|', $normalizedSegments));
         $slug = implode('__', array_map($this->safeSegment(...), $normalizedSegments));
         if ('' === $slug) {
             $slug = 'entry';

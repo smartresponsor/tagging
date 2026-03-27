@@ -1,4 +1,5 @@
 <?php
+
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -15,8 +16,8 @@ $cfgPath = __DIR__ . '/../../config/tag_slug.yaml';
 $cfg = function_exists('yaml_parse_file') ? (yaml_parse_file($cfgPath) ?: []) : [];
 $reserved = $cfg['reserved_words'] ?? [];
 
-$slugifier = new Slugifier((bool)(($cfg['lowercase'] ?? true)), (int)($cfg['max_length'] ?? 64));
-$policy = new SlugPolicy($pdo, $slugifier, $reserved, (int)($cfg['max_length'] ?? 64));
+$slugifier = new Slugifier((bool) (($cfg['lowercase'] ?? true)), (int) ($cfg['max_length'] ?? 64));
+$policy = new SlugPolicy($pdo, $slugifier, $reserved, (int) ($cfg['max_length'] ?? 64));
 
 $src = $argv[1] ?? 'Demo Тег №1';
 $slug = $policy->make($tenant, $src);

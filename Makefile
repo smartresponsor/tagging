@@ -1,14 +1,26 @@
 .SILENT:
 
 help:
-	@echo "Targets: up, migrate, migration-smoke, seed, clear, smoke, audit, preflight, serve, logs, down, ps"
+	@echo "Targets: up, migrate, migration-smoke, seed, clear, smoke, audit, preflight, serve, symfony-serve, lint, cs-check, cs-fix, phpstan, test, test-integration, test-panther, test-e2e, fixture-dry-run, logs, down, ps"
 	@echo "Set DB_DSN/DB_USER/DB_PASS and optional TENANT=demo."
 
 lint:
 	composer run -n lint
 
+cs-check:
+	composer run -n cs:check
+
+cs-fix:
+	composer run -n cs:fix
+
+phpstan:
+	composer run -n phpstan
+
 serve:
 	bash tools/local/tag-serve.sh
+
+symfony-serve:
+	composer run -n symfony:server:start
 
 migrate:
 	php tools/db/tag-migrate.php
@@ -24,6 +36,21 @@ clear:
 
 smoke:
 	php tools/smoke/tag-smoke.php
+
+test:
+	composer run -n test:unit
+
+test-integration:
+	composer run -n test:integration
+
+test-panther:
+	composer run -n test:panther
+
+test-e2e:
+	composer run -n test:e2e
+
+fixture-dry-run:
+	composer run -n fixture:dry-run
 
 audit:
 	php tools/audit/tag-surface-audit.php
@@ -52,3 +79,6 @@ down:
 
 ps:
 	docker compose ps
+
+up:
+	docker compose up -d --build

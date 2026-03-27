@@ -11,8 +11,7 @@ final readonly class TagSynonym
         private string $id,
         private string $tagId,
         private string $label,
-    ) {
-    }
+    ) {}
 
     public static function create(string $id, string $tagId, string $label): self
     {

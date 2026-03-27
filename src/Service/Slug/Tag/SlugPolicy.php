@@ -13,8 +13,7 @@ final readonly class SlugPolicy
         private Slugifier $slugifier,
         private array $reserved = [],
         private int $maxLen = 64,
-    ) {
-    }
+    ) {}
 
     public function make(string $tenant, string $source): string
     {
@@ -32,7 +31,7 @@ final readonly class SlugPolicy
             ++$i;
             $suffix = (string) $i;
             $cut = max(1, $this->maxLen - (1 + strlen($suffix)));
-            $slug = substr($base, 0, $cut).'-'.$suffix;
+            $slug = substr($base, 0, $cut) . '-' . $suffix;
         }
 
         return $slug;

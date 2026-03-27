@@ -11,7 +11,7 @@ final class BootstrapContainerTest extends TestCase
 {
     public function testBootstrapExposesExpectedCallableEntries(): void
     {
-        $container = require dirname(__DIR__).'/host-minimal/bootstrap.php';
+        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
         $required = [
             'runtime',
             'idempotencyMiddleware',

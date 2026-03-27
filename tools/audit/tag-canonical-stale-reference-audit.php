@@ -1,4 +1,5 @@
 <?php
+
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
@@ -38,12 +39,12 @@ foreach ($targets as $file) {
 }
 
 if ($hits !== []) {
-    fwrite(STDERR, "Stale canonical references found:
-" . implode("
-", $hits) . "
-");
+    fwrite(STDERR, 'Stale canonical references found:
+' . implode('
+', $hits) . '
+');
     exit(1);
 }
 
-echo "tag canonical stale reference audit: ok
-";
+echo 'tag canonical stale reference audit: ok
+';

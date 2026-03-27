@@ -9,9 +9,7 @@ use App\Service\Core\Tag\Authz\TagAuthorizer;
 
 final readonly class Authorize
 {
-    public function __construct(private TagAuthorizer $auth, private array $cfg)
-    {
-    }
+    public function __construct(private TagAuthorizer $auth, private array $cfg) {}
 
     /**
      * Framework-agnostic example:

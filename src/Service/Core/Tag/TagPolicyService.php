@@ -126,7 +126,7 @@ final readonly class TagPolicyService
             return false;
         }
 
-        $match = @preg_match('/'.$pattern.'/', $slug);
+        $match = @preg_match('/' . $pattern . '/', $slug);
 
         return 1 === $match;
     }

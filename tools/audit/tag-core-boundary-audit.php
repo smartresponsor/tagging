@@ -55,12 +55,12 @@ if (!is_file($demo)) {
 }
 
 if ($errors !== []) {
-    fwrite(STDERR, "Core boundary audit failed:
-- " . implode("
-- ", $errors) . "
-");
+    fwrite(STDERR, 'Core boundary audit failed:
+- ' . implode('
+- ', $errors) . '
+');
     exit(1);
 }
 
-echo "Core boundary audit passed
-";
+echo 'Core boundary audit passed
+';

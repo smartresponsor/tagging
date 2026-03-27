@@ -15,7 +15,7 @@ final class SecurityMiddlewareContractTest extends TestCase
 {
     public function testVerifySignatureRejectsMissingHeadersWithStableJsonContract(): void
     {
-        $store = new NonceStore(sys_get_temp_dir().'/tag-nonce-'.uniqid('', true), 300, 1000);
+        $store = new NonceStore(sys_get_temp_dir() . '/tag-nonce-' . uniqid('', true), 300, 1000);
         $middleware = new VerifySignature(
             new HmacV2Verifier('secret', 120, $store),
             ['enforce' => true, 'secret' => 'secret', 'apply' => ['include' => ['/tag/**'], 'exclude' => ['/tag/_status']]],
@@ -23,7 +23,7 @@ final class SecurityMiddlewareContractTest extends TestCase
 
         [$status, $headers, $body] = $middleware->handle(
             ['method' => 'POST', 'path' => '/tag', 'headers' => [], 'body' => '{}'],
-            static fn (array $request): array => [200, ['Content-Type' => 'application/json'], json_encode(['ok' => true])],
+            static fn(array $request): array => [200, ['Content-Type' => 'application/json'], json_encode(['ok' => true])],
         );
 
         self::assertSame(401, $status);
@@ -35,7 +35,7 @@ final class SecurityMiddlewareContractTest extends TestCase
 
     public function testVerifySignatureSkipsExcludedMetaRoutes(): void
     {
-        $store = new NonceStore(sys_get_temp_dir().'/tag-nonce-'.uniqid('', true), 300, 1000);
+        $store = new NonceStore(sys_get_temp_dir() . '/tag-nonce-' . uniqid('', true), 300, 1000);
         $middleware = new VerifySignature(
             new HmacV2Verifier('secret', 120, $store),
             ['enforce' => true, 'secret' => 'secret', 'apply' => ['include' => ['/tag/**'], 'exclude' => ['/tag/_status']]],
@@ -43,7 +43,7 @@ final class SecurityMiddlewareContractTest extends TestCase
 
         [$status, , $body] = $middleware->handle(
             ['method' => 'GET', 'path' => '/tag/_status', 'headers' => [], 'body' => ''],
-            static fn (array $request): array => [200, ['Content-Type' => 'application/json'], json_encode(['ok' => true])],
+            static fn(array $request): array => [200, ['Content-Type' => 'application/json'], json_encode(['ok' => true])],
         );
 
         self::assertSame(200, $status);
@@ -57,10 +57,8 @@ final class SecurityMiddlewareContractTest extends TestCase
             public array $events = [];
         };
 
-        $middlewareA = new class($trace) {
-            public function __construct(private object $trace)
-            {
-            }
+        $middlewareA = new class ($trace) {
+            public function __construct(private object $trace) {}
 
             public function handle(array $request, callable $next): array
             {
@@ -72,10 +70,8 @@ final class SecurityMiddlewareContractTest extends TestCase
             }
         };
 
-        $middlewareB = new class($trace) {
-            public function __construct(private object $trace)
-            {
-            }
+        $middlewareB = new class ($trace) {
+            public function __construct(private object $trace) {}
 
             public function handle(array $request, callable $next): array
             {

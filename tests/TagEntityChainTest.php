@@ -20,8 +20,12 @@ use PHPUnit\Framework\TestCase;
 
 final class TagEntityChainTest extends TestCase
 {
+    use RequiresSqlite;
+
     public function testEntityRepositoryServiceAndControllerChain(): void
     {
+        $this->requireSqlite();
+
         $pdo = new \PDO('sqlite::memory:');
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $pdo->exec('CREATE TABLE tag_entity (
@@ -88,6 +92,8 @@ final class TagEntityChainTest extends TestCase
 
     public function testServiceRejectsEmptyPatchAfterNormalization(): void
     {
+        $this->requireSqlite();
+
         $pdo = new \PDO('sqlite::memory:');
         $pdo->exec('CREATE TABLE tag_entity (id TEXT PRIMARY KEY, tenant TEXT NOT NULL, slug TEXT NOT NULL, name TEXT NOT NULL, locale TEXT NOT NULL DEFAULT "en", weight INTEGER NOT NULL DEFAULT 0)');
         $repo = new PdoTagEntityRepository($pdo);

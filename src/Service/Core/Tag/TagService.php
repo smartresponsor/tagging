@@ -17,8 +17,7 @@ final readonly class TagService
     public function __construct(
         private TagRepositoryContract $repo,
         private TagConfig $cfg = new TagConfig(),
-    ) {
-    }
+    ) {}
 
     /**
      * @throws \Random\RandomException

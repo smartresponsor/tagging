@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
@@ -53,5 +54,5 @@ if ($errors !== []) {
     exit(1);
 }
 
-fwrite(STDOUT, "[repo-hygiene] OK
-");
+fwrite(STDOUT, '[repo-hygiene] OK
+');

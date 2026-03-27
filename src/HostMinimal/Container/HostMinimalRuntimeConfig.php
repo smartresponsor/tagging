@@ -25,15 +25,14 @@ final readonly class HostMinimalRuntimeConfig
         public array $webhook,
         public array $observability,
         public array $security,
-    ) {
-    }
+    ) {}
 
     public static function fromGlobals(): self
     {
-        $runtime = require dirname(__DIR__, 3).'/config/tag_runtime.php';
+        $runtime = require dirname(__DIR__, 3) . '/config/tag_runtime.php';
         $entityTypes = array_values(array_filter(
             array_map('trim', explode(',', self::env('TAG_ENTITY_TYPES', '*'))),
-            static fn (string $value): bool => '' !== $value
+            static fn(string $value): bool => '' !== $value,
         ));
 
         if ([] === $entityTypes) {
@@ -43,9 +42,9 @@ final readonly class HostMinimalRuntimeConfig
         return new self(
             is_array($runtime) ? $runtime : [],
             is_array($runtime) ? (string) ($runtime['version'] ?? 'dev') : 'dev',
-            self::env('DB_DSN', 'pgsql:host=localhost;port=5432;dbname=app'),
-            self::env('DB_USER', 'app'),
-            self::env('DB_PASS', 'app'),
+            self::dbDsn(),
+            self::dbUser(),
+            self::dbPass(),
             self::env('TENANT', 'demo'),
             $entityTypes,
             self::webhookConfig(),
@@ -113,5 +112,39 @@ final readonly class HostMinimalRuntimeConfig
         $value = getenv($name);
 
         return is_string($value) && '' !== $value ? $value : $default;
+    }
+
+    private static function dbDsn(): string
+    {
+        $dsn = getenv('DB_DSN');
+        if (is_string($dsn) && '' !== $dsn) {
+            return $dsn;
+        }
+
+        $host = self::env('DB_HOST', 'localhost');
+        $port = self::env('DB_PORT', '5432');
+        $name = self::env('POSTGRES_DB', 'app');
+
+        return sprintf('pgsql:host=%s;port=%s;dbname=%s', $host, $port, $name);
+    }
+
+    private static function dbUser(): string
+    {
+        $user = getenv('DB_USER');
+        if (is_string($user) && '' !== $user) {
+            return $user;
+        }
+
+        return self::env('POSTGRES_USER', 'app');
+    }
+
+    private static function dbPass(): string
+    {
+        $pass = getenv('DB_PASS');
+        if (is_string($pass) && '' !== $pass) {
+            return $pass;
+        }
+
+        return self::env('POSTGRES_PASSWORD', 'app');
     }
 }

@@ -9,9 +9,7 @@ use App\Service\Core\Tag\TagReadModelInterface;
 
 final readonly class TagReadModel implements TagReadModelInterface
 {
-    public function __construct(private \PDO $pdo)
-    {
-    }
+    public function __construct(private \PDO $pdo) {}
 
     /** @return array<int, array{id:string,slug:string,name:string,locale:?string,weight:int}> */
     public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
@@ -24,16 +22,16 @@ final readonly class TagReadModel implements TagReadModelInterface
         $stmt = $this->pdo->prepare(
             'SELECT id, slug, name, locale, weight
 '
-            .'FROM tag_entity
+            . 'FROM tag_entity
 '
-            .'WHERE tenant = :t AND (slug ILIKE :q OR name ILIKE :q)
+            . 'WHERE tenant = :t AND (slug ILIKE :q OR name ILIKE :q)
 '
-            .'ORDER BY weight DESC, name ASC
+            . 'ORDER BY weight DESC, name ASC
 '
-            .'LIMIT :l OFFSET :o'
+            . 'LIMIT :l OFFSET :o',
         );
         $stmt->bindValue(':t', $tenant);
-        $stmt->bindValue(':q', '%'.$query.'%');
+        $stmt->bindValue(':q', '%' . $query . '%');
         $stmt->bindValue(':l', max(1, $limit), \PDO::PARAM_INT);
         $stmt->bindValue(':o', max(0, $offset), \PDO::PARAM_INT);
         $stmt->execute();
@@ -52,16 +50,16 @@ final readonly class TagReadModel implements TagReadModelInterface
         $stmt = $this->pdo->prepare(
             'SELECT slug, name
 '
-            .'FROM tag_entity
+            . 'FROM tag_entity
 '
-            .'WHERE tenant = :t AND (slug ILIKE :pfx OR name ILIKE :pfx)
+            . 'WHERE tenant = :t AND (slug ILIKE :pfx OR name ILIKE :pfx)
 '
-            .'ORDER BY weight DESC, name ASC
+            . 'ORDER BY weight DESC, name ASC
 '
-            .'LIMIT :l'
+            . 'LIMIT :l',
         );
         $stmt->bindValue(':t', $tenant);
-        $stmt->bindValue(':pfx', $query.'%');
+        $stmt->bindValue(':pfx', $query . '%');
         $stmt->bindValue(':l', max(1, min(50, $limit)), \PDO::PARAM_INT);
         $stmt->execute();
 
@@ -102,7 +100,7 @@ final readonly class TagReadModel implements TagReadModelInterface
              FROM tag_link
              WHERE tenant = :t AND tag_id = :id
              ORDER BY entity_type, entity_id
-             LIMIT :l'
+             LIMIT :l',
         );
         $stmt->bindValue(':t', $tenant);
         $stmt->bindValue(':id', $tagId);
@@ -121,7 +119,7 @@ final readonly class TagReadModel implements TagReadModelInterface
              JOIN tag_entity e ON e.tenant = l.tenant AND e.id = l.tag_id
              WHERE l.tenant = :t AND l.entity_type = :et AND l.entity_id = :eid
              ORDER BY e.weight DESC, e.name ASC
-             LIMIT :l'
+             LIMIT :l',
         );
         $stmt->bindValue(':t', $tenant);
         $stmt->bindValue(':et', $etype);

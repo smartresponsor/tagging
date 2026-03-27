@@ -11,7 +11,7 @@ final class FixtureDemoTest extends TestCase
 {
     public function testDemoFixtureHasUniqueTagIdsSlugsAndLinks(): void
     {
-        $fixture = require dirname(__DIR__).'/fixtures/tag-demo-fixture.php';
+        $fixture = require dirname(__DIR__) . '/fixtures/tag-demo-fixture.php';
         self::assertIsArray($fixture);
 
         $tags = $fixture['tags'] ?? [];
@@ -36,7 +36,7 @@ final class FixtureDemoTest extends TestCase
         $seen = [];
         foreach ($links as $row) {
             self::assertIsArray($row);
-            $key = (string) ($row['entity_type'] ?? '').'|'.(string) ($row['entity_id'] ?? '').'|'.(string) ($row['tag_id'] ?? '');
+            $key = (string) ($row['entity_type'] ?? '') . '|' . (string) ($row['entity_id'] ?? '') . '|' . (string) ($row['tag_id'] ?? '');
             self::assertArrayHasKey((string) ($row['tag_id'] ?? ''), $ids);
             self::assertArrayNotHasKey($key, $seen);
             $seen[$key] = true;

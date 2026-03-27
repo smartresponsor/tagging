@@ -110,6 +110,9 @@ fabric.properties
 !bin/console
 !bin/symfony_requirements
 /vendor/
+/node_modules/
+/playwright-report/
+/test-results/
 
 # Assets and user uploads
 /web/bundles/

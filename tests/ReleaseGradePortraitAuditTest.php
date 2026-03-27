@@ -11,8 +11,8 @@ final class ReleaseGradePortraitAuditTest extends TestCase
 {
     public function testReleaseGradePortraitAuditPasses(): void
     {
-        $cmd = escapeshellarg(PHP_BINARY).' '.escapeshellarg(dirname(__DIR__).'/tools/audit/tag-release-grade-portrait-audit.php');
-        exec($cmd.' 2>&1', $output, $code);
+        $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(dirname(__DIR__) . '/tools/audit/tag-release-grade-portrait-audit.php');
+        exec($cmd . ' 2>&1', $output, $code);
 
         self::assertSame(0, $code, implode(PHP_EOL, $output));
     }

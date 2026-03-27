@@ -16,6 +16,8 @@ use PHPUnit\Framework\TestCase;
 
 final class AssignQuotaPolicyHardeningTest extends TestCase
 {
+    use RequiresSqlite;
+
     public function testAssignControllerUses404ForMissingTagAndSupportsHeaderCase(): void
     {
         $assign = new class implements AssignOperationInterface {
@@ -72,6 +74,8 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
 
     public function testQuotaServiceProvidesRemainingAndThrowsOnExceeded(): void
     {
+        $this->requireSqlite();
+
         $pdo = new \PDO('sqlite::memory:');
         $pdo->exec('CREATE TABLE tag_link (tenant TEXT NOT NULL)');
         $pdo->exec("INSERT INTO tag_link (tenant) VALUES ('tenant-a'), ('tenant-a')");
@@ -113,6 +117,6 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
 
     public function testLegacyQuotaTreeIsRemoved(): void
     {
-        self::assertFileDoesNotExist(dirname(__DIR__).'/src/Service/Quota/Tag/TagQuota.php');
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/src/Service/Quota/Tag/TagQuota.php');
     }
 }

@@ -10,9 +10,7 @@ use App\Service\Core\Tag\SearchService;
 
 final readonly class SearchController
 {
-    public function __construct(private SearchService $svc, private TagReadResponder $responder = new TagReadResponder())
-    {
-    }
+    public function __construct(private SearchService $svc, private TagReadResponder $responder = new TagReadResponder()) {}
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function get(array $req): array

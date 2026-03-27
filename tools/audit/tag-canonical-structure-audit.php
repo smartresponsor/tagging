@@ -33,7 +33,7 @@ foreach ($forbiddenPaths as $relativePath) {
 
 $directoryIterator = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($root . DIRECTORY_SEPARATOR . 'src', FilesystemIterator::SKIP_DOTS),
-    RecursiveIteratorIterator::SELF_FIRST
+    RecursiveIteratorIterator::SELF_FIRST,
 );
 
 foreach ($directoryIterator as $item) {
@@ -48,7 +48,7 @@ foreach ($directoryIterator as $item) {
     if (count($segments) >= 3 && $segments[0] === 'src' && in_array($segments[2], ['Tag', 'Tagging'], true)) {
         $violations[] = sprintf(
             'Tag/Tagging appears too early under src: %s (expected src/[Layer]/[Responsibility]/Tag/...)',
-            $relativePath
+            $relativePath,
         );
     }
 }

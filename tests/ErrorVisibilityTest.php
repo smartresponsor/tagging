@@ -14,6 +14,8 @@ use PHPUnit\Framework\TestCase;
 
 final class ErrorVisibilityTest extends TestCase
 {
+    use RequiresSqlite;
+
     public function testStatusControllerReportsProbeFailuresToErrorSink(): void
     {
         $errors = [];
@@ -24,7 +26,7 @@ final class ErrorVisibilityTest extends TestCase
             'test-version',
             static function (array $error) use (&$errors): void {
                 $errors[] = $error;
-            }
+            },
         );
 
         $payload = $controller->status();
@@ -38,6 +40,8 @@ final class ErrorVisibilityTest extends TestCase
 
     public function testQuotaServiceReportsQueryFailuresToErrorSink(): void
     {
+        $this->requireSqlite();
+
         $errors = [];
         $pdo = new \PDO('sqlite::memory:');
         $service = new QuotaService(
@@ -45,7 +49,7 @@ final class ErrorVisibilityTest extends TestCase
             ['quotas' => ['max_tags' => 5]],
             static function (array $error) use (&$errors): void {
                 $errors[] = $error;
-            }
+            },
         );
 
         $result = $service->canCreateTag('tenant-a');
@@ -59,6 +63,8 @@ final class ErrorVisibilityTest extends TestCase
 
     public function testAssignServiceReportsFailuresToErrorSinkAndReturnsCode(): void
     {
+        $this->requireSqlite();
+
         $errors = [];
         $pdo = new \PDO('sqlite::memory:');
         $service = new AssignService(
@@ -67,7 +73,7 @@ final class ErrorVisibilityTest extends TestCase
             null,
             static function (array $error) use (&$errors): void {
                 $errors[] = $error;
-            }
+            },
         );
 
         $result = $service->assign('tenant-a', 'tag-1', 'file', 'file-1');
@@ -80,6 +86,8 @@ final class ErrorVisibilityTest extends TestCase
 
     public function testUnassignServiceReportsFailuresToErrorSinkAndReturnsCode(): void
     {
+        $this->requireSqlite();
+
         $errors = [];
         $pdo = new \PDO('sqlite::memory:');
         $service = new UnassignService(
@@ -88,7 +96,7 @@ final class ErrorVisibilityTest extends TestCase
             null,
             static function (array $error) use (&$errors): void {
                 $errors[] = $error;
-            }
+            },
         );
 
         $result = $service->unassign('tenant-a', 'tag-1', 'file', 'file-1');

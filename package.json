@@ -1,0 +1,13 @@
+{
+  "name": "tagging",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local E2E tooling for the Smartresponsor tagging runtime.",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:install": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2"
+  }
+}

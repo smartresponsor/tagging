@@ -1,4 +1,5 @@
 <?php
+
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
@@ -35,7 +36,7 @@ foreach ($forbidden as $path) {
 
 $rii = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS),
-    RecursiveIteratorIterator::SELF_FIRST
+    RecursiveIteratorIterator::SELF_FIRST,
 );
 
 foreach ($rii as $item) {
@@ -77,12 +78,12 @@ $violations = array_values(array_unique($violations));
 sort($violations);
 
 if ($violations !== []) {
-    fwrite(STDERR, "Tagging/Tag protocol violations detected:
-- " . implode("
-- ", $violations) . "
-");
+    fwrite(STDERR, 'Tagging/Tag protocol violations detected:
+- ' . implode('
+- ', $violations) . '
+');
     exit(1);
 }
 
-echo "Tagging/Tag protocol audit passed.
-";
+echo 'Tagging/Tag protocol audit passed.
+';

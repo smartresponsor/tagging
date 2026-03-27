@@ -1,4 +1,5 @@
 <?php
+
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
@@ -24,9 +25,7 @@ final readonly class HmacV2Verifier
         private string     $secret,
         private int        $skewSec = 120,
         private NonceStore $nonce = new NonceStore(),
-    )
-    {
-    }
+    ) {}
 
     /** @param array<string,string> $headers */
     public function verify(string $method, string $path, string $body, array $headers): array
@@ -37,8 +36,10 @@ final readonly class HmacV2Verifier
         if ($ts === '' || $nonce === '' || $sig === '') {
             return ['ok' => false, 'code' => 401, 'msg' => 'signature_missing'];
         }
-        if (!ctype_digit($ts)) return ['ok' => false, 'code' => 401, 'msg' => 'timestamp_invalid'];
-        $its = (int)$ts;
+        if (!ctype_digit($ts)) {
+            return ['ok' => false, 'code' => 401, 'msg' => 'timestamp_invalid'];
+        }
+        $its = (int) $ts;
         $now = time();
         if (abs($now - $its) > $this->skewSec) {
             return ['ok' => false, 'code' => 401, 'msg' => 'timestamp_skew'];

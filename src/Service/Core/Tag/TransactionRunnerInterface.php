@@ -7,6 +7,12 @@ namespace App\Service\Core\Tag;
 
 interface TransactionRunnerInterface
 {
-    /** @template T */
+    /**
+     * @template T
+     *
+     * @param callable():T $callback
+     *
+     * @return T
+     */
     public function run(callable $callback): mixed;
 }

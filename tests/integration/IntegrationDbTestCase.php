@@ -10,6 +10,14 @@ use PHPUnit\Framework\TestCase;
 
 abstract class IntegrationDbTestCase extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $pdo = $this->createPdo();
+        $pdo->exec('TRUNCATE TABLE tag_assignment_effect, tag_audit_log, tag_classification, tag_link, tag_policy, tag_proposal, tag_redirect, tag_relation, tag_scheme, tag_synonym, tag_entity, outbox_event, idempotency_store RESTART IDENTITY CASCADE');
+    }
+
     protected function getEnv(string $key, string $default): string
     {
         $v = \getenv($key);

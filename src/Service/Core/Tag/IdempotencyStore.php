@@ -7,9 +7,7 @@ namespace App\Service\Core\Tag;
 
 final readonly class IdempotencyStore
 {
-    public function __construct(private readonly \PDO $pdo)
-    {
-    }
+    public function __construct(private readonly \PDO $pdo) {}
 
     /** @return array{state:string,result?:array<string,mixed>} state: fresh|duplicate */
     public function begin(string $tenant, string $key, string $op, string $checksum): array
@@ -30,7 +28,7 @@ final readonly class IdempotencyStore
         // Insert pending
         $ins = $this->pdo->prepare(
             'INSERT INTO idempotency_store (tenant, key, op, checksum, status, result_json)
-             VALUES (:t,:k,:op,:c,:st,CAST(:res AS jsonb))'
+             VALUES (:t,:k,:op,:c,:st,CAST(:res AS jsonb))',
         );
         $ins->execute([
             ':t' => $tenant, ':k' => $key, ':op' => $op, ':c' => $checksum, ':st' => 'pending', ':res' => json_encode([]),
@@ -43,7 +41,7 @@ final readonly class IdempotencyStore
     public function complete(string $tenant, string $key, array $result): void
     {
         $upd = $this->pdo->prepare(
-            'UPDATE idempotency_store SET status=:st, result_json=CAST(:res AS jsonb) WHERE tenant=:t AND key=:k'
+            'UPDATE idempotency_store SET status=:st, result_json=CAST(:res AS jsonb) WHERE tenant=:t AND key=:k',
         );
         $upd->execute([
             ':st' => 'done',

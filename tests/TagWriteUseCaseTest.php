@@ -20,8 +20,12 @@ use PHPUnit\Framework\TestCase;
 
 final class TagWriteUseCaseTest extends TestCase
 {
+    use RequiresSqlite;
+
     public function testCreateTagMapsUniqueViolationToConflict(): void
     {
+        $this->requireSqlite();
+
         $repo = new class implements TagEntityRepositoryInterface {
             public function findById(string $tenant, string $id): ?array
             {
@@ -36,13 +40,9 @@ final class TagWriteUseCaseTest extends TestCase
                 throw $exception;
             }
 
-            public function patch(string $tenant, string $id, array $patch): void
-            {
-            }
+            public function patch(string $tenant, string $id, array $patch): void {}
 
-            public function delete(string $tenant, string $id): void
-            {
-            }
+            public function delete(string $tenant, string $id): void {}
         };
 
         $tx = new class implements TransactionRunnerInterface {
@@ -75,13 +75,9 @@ final class TagWriteUseCaseTest extends TestCase
                 return [];
             }
 
-            public function patch(string $tenant, string $id, array $patch): void
-            {
-            }
+            public function patch(string $tenant, string $id, array $patch): void {}
 
-            public function delete(string $tenant, string $id): void
-            {
-            }
+            public function delete(string $tenant, string $id): void {}
         };
 
         $tx = new class implements TransactionRunnerInterface {
@@ -114,9 +110,7 @@ final class TagWriteUseCaseTest extends TestCase
                 return [];
             }
 
-            public function patch(string $tenant, string $id, array $patch): void
-            {
-            }
+            public function patch(string $tenant, string $id, array $patch): void {}
 
             public function delete(string $tenant, string $id): void
             {

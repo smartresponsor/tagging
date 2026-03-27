@@ -34,8 +34,8 @@ sort($violations);
 $violations = array_values(array_unique($violations));
 
 if ($violations !== []) {
-    fwrite(STDERR, "Snapshot purity audit failed. Forbidden transport artifacts detected at repository root:
-");
+    fwrite(STDERR, 'Snapshot purity audit failed. Forbidden transport artifacts detected at repository root:
+');
     foreach ($violations as $violation) {
         fwrite(STDERR, " - {$violation}
 ");
@@ -43,5 +43,5 @@ if ($violations !== []) {
     exit(1);
 }
 
-fwrite(STDOUT, "Snapshot purity audit passed. Repository root is free of wave/transport artifacts and transient workspaces.
-");
+fwrite(STDOUT, 'Snapshot purity audit passed. Repository root is free of wave/transport artifacts and transient workspaces.
+');

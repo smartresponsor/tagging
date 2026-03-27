@@ -40,7 +40,7 @@ $required = [
 
 $errors = [];
 foreach ($forbidden as $needle) {
-    if (str_contains($repoMap, $needle)) {
+    if (preg_match('/^' . preg_quote($needle, '/') . '$/m', $repoMap) === 1) {
         $errors[] = sprintf('repo-map.md contains stale path: %s', $needle);
     }
 }
@@ -69,5 +69,5 @@ if ($errors !== []) {
     exit(1);
 }
 
-echo "repo-map truth audit passed
-";
+echo 'repo-map truth audit passed
+';

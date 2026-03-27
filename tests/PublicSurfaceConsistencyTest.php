@@ -11,7 +11,7 @@ final class PublicSurfaceConsistencyTest extends TestCase
 {
     public function testHostMinimalRouteDoesNotExposeSynonymOrRedirect(): void
     {
-        $route = (string) file_get_contents(__DIR__.'/../host-minimal/route.php');
+        $route = (string) file_get_contents(__DIR__ . '/../host-minimal/route.php');
         self::assertStringNotContainsString('/synonym', $route);
         self::assertStringNotContainsString('/redirect/', $route);
         self::assertStringNotContainsString('/tag/assign-bulk', $route);
@@ -23,7 +23,7 @@ final class PublicSurfaceConsistencyTest extends TestCase
 
     public function testSymfonyRouteConfigMatchesPublicSurface(): void
     {
-        $route = (string) file_get_contents(__DIR__.'/../config/routes/tag.yaml');
+        $route = (string) file_get_contents(__DIR__ . '/../config/routes/tag.yaml');
         self::assertStringNotContainsString('/synonym', $route);
         self::assertStringNotContainsString('/redirect/', $route);
         self::assertStringNotContainsString('/tag/assign-bulk', $route);

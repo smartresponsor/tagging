@@ -51,7 +51,7 @@ final readonly class AssignService implements AssignOperationInterface
                 'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id)
                  VALUES (:t,:et,:eid,:tid)
                  ON CONFLICT (tenant, entity_type, entity_id, tag_id) DO NOTHING
-                 RETURNING 1'
+                 RETURNING 1',
             );
             $ins->execute([':t' => $tenant, ':et' => $entityType, ':eid' => $entityId, ':tid' => $tagId]);
             $created = false !== $ins->fetchColumn();

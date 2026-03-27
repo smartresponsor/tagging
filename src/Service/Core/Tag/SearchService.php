@@ -12,9 +12,7 @@ final readonly class SearchService
     /**
      * @param \App\Infrastructure\ReadModel\Tag\TagReadModelInterface $read
      */
-    public function __construct(private TagReadModelInterface $read, private SearchCache $cache)
-    {
-    }
+    public function __construct(private TagReadModelInterface $read, private SearchCache $cache) {}
 
     /** @return array{items:array<int,array<string,mixed>>, total:int, nextPageToken: ?string, cacheHit:bool} */
     public function search(string $tenant, string $q, int $pageSize = 20, ?string $pageToken = null): array

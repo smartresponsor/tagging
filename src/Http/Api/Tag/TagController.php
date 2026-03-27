@@ -22,14 +22,13 @@ final readonly class TagController
         private PatchTagInterface $patchTag,
         private DeleteTagInterface $deleteTag,
         private TagWriteResponder $responder,
-    ) {
-    }
+    ) {}
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function create(array $req): array
     {
         return $this->responder->respond(
-            $this->createTag->execute(new CreateTagCommand(TagHttpRequest::tenant($req), TagHttpRequest::body($req)))
+            $this->createTag->execute(new CreateTagCommand(TagHttpRequest::tenant($req), TagHttpRequest::body($req))),
         );
     }
 
@@ -57,7 +56,7 @@ final readonly class TagController
     public function patch(array $req, string $id): array
     {
         return $this->responder->respond(
-            $this->patchTag->execute(new PatchTagCommand(TagHttpRequest::tenant($req), $id, TagHttpRequest::body($req)))
+            $this->patchTag->execute(new PatchTagCommand(TagHttpRequest::tenant($req), $id, TagHttpRequest::body($req))),
         );
     }
 
@@ -65,7 +64,7 @@ final readonly class TagController
     public function delete(array $req, string $id): array
     {
         return $this->responder->respond(
-            $this->deleteTag->execute(new DeleteTagCommand(TagHttpRequest::tenant($req), $id))
+            $this->deleteTag->execute(new DeleteTagCommand(TagHttpRequest::tenant($req), $id)),
         );
     }
 }

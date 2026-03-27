@@ -40,7 +40,7 @@ final readonly class UnassignService implements UnassignOperationInterface
         $this->pdo->beginTransaction();
         try {
             $del = $this->pdo->prepare(
-                'DELETE FROM tag_link WHERE tenant=:t AND entity_type=:et AND entity_id=:eid AND tag_id=:tid'
+                'DELETE FROM tag_link WHERE tenant=:t AND entity_type=:et AND entity_id=:eid AND tag_id=:tid',
             );
             $del->execute([':t' => $tenant, ':et' => $entityType, ':eid' => $entityId, ':tid' => $tagId]);
             $deleted = $del->rowCount() > 0;

@@ -6,8 +6,8 @@ $root = dirname(__DIR__, 2);
 $workflow = $root . '/.github/workflows/ci.yml';
 
 if (!is_file($workflow)) {
-    fwrite(STDERR, "Missing CI workflow: .github/workflows/ci.yml
-");
+    fwrite(STDERR, 'Missing CI workflow: .github/workflows/ci.yml
+');
     exit(1);
 }
 
@@ -34,10 +34,10 @@ foreach ($required as $needle) {
 
 if (preg_match('/^\s*-\s*run:\s*composer run -n audit:repo-hygiene\s*
 \s*composer run -n audit:snapshot-purity/m', $content)) {
-    fwrite(STDERR, "Malformed workflow run block detected around repo-hygiene/snapshot-purity.
-");
+    fwrite(STDERR, 'Malformed workflow run block detected around repo-hygiene/snapshot-purity.
+');
     exit(1);
 }
 
-fwrite(STDOUT, "CI workflow audit passed.
-");
+fwrite(STDOUT, 'CI workflow audit passed.
+');

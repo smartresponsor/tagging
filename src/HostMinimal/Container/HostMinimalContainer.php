@@ -33,7 +33,7 @@ final class HostMinimalContainer
 
     public function value(string $id, mixed $value): void
     {
-        $this->entries[$id] = static fn (): mixed => $value;
+        $this->entries[$id] = static fn(): mixed => $value;
     }
 
     public function has(string $id): bool

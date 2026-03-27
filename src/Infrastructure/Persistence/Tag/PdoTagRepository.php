@@ -14,9 +14,7 @@ use App\Service\Core\Tag\TagRepositoryInterface;
 
 final readonly class PdoTagRepository implements TagRepositoryInterface
 {
-    public function __construct(private \PDO $pdo)
-    {
-    }
+    public function __construct(private \PDO $pdo) {}
 
     public function saveTag(string $tenantId, Tag $tag): void
     {
@@ -49,6 +47,38 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         return $r ? new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])) : null;
     }
 
+    public function existsSlug(string $tenantId, string $slug, ?string $excludeTagId = null): bool
+    {
+        $sql = 'SELECT 1 FROM tag WHERE tenant=:tenant AND slug=:slug';
+        $params = [':tenant' => $tenantId, ':slug' => $slug];
+
+        if (null !== $excludeTagId && '' !== $excludeTagId) {
+            $sql .= ' AND id <> :exclude';
+            $params[':exclude'] = $excludeTagId;
+        }
+
+        $stmt = $this->pdo->prepare($sql . ' LIMIT 1');
+        $stmt->execute($params);
+
+        return false !== $stmt->fetchColumn();
+    }
+
+    public function i18nSlugExists(string $tenantId, string $locale, string $slug, ?string $excludeTagId = null): bool
+    {
+        $sql = 'SELECT 1 FROM tag_entity WHERE tenant=:tenant AND locale=:locale AND slug=:slug';
+        $params = [':tenant' => $tenantId, ':locale' => $locale, ':slug' => $slug];
+
+        if (null !== $excludeTagId && '' !== $excludeTagId) {
+            $sql .= ' AND id <> :exclude';
+            $params[':exclude'] = $excludeTagId;
+        }
+
+        $stmt = $this->pdo->prepare($sql . ' LIMIT 1');
+        $stmt->execute($params);
+
+        return false !== $stmt->fetchColumn();
+    }
+
     /**
      * @return array|Tag[]
      *
@@ -59,7 +89,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         $hasQuery = null !== $query && '' !== $query;
         if ($hasQuery) {
             $stmt = $this->pdo->prepare('SELECT * FROM tag WHERE tenant=:tenant AND (slug ILIKE :q OR label ILIKE :q) ORDER BY created_at DESC LIMIT :l OFFSET :o');
-            $stmt->bindValue(':q', '%'.$query.'%');
+            $stmt->bindValue(':q', '%' . $query . '%');
         } else {
             $stmt = $this->pdo->prepare('SELECT * FROM tag WHERE tenant=:tenant ORDER BY created_at DESC LIMIT :l OFFSET :o');
         }
@@ -69,7 +99,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         $stmt->execute();
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        return array_map(fn ($r) => new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])), $rows);
+        return array_map(fn($r) => new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])), $rows);
     }
 
     public function deleteTag(string $tenantId, string $id): void
@@ -110,7 +140,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         $st->execute($p);
         $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
 
-        return array_map(fn ($r) => new TagAssignment($r['id'], $r['tag_id'], $r['assigned_type'], $r['assigned_id'], new \DateTimeImmutable($r['created_at'])), $rows);
+        return array_map(fn($r) => new TagAssignment($r['id'], $r['tag_id'], $r['assigned_type'], $r['assigned_id'], new \DateTimeImmutable($r['created_at'])), $rows);
     }
 
     public function saveSynonym(string $tenantId, TagSynonym $s): void
@@ -128,7 +158,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         $st->execute([':tenant' => $tenantId, ':tid' => $tagId]);
         $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
 
-        return array_map(fn ($r) => new TagSynonym($r['id'], $r['tag_id'], $r['label']), $rows);
+        return array_map(fn($r) => new TagSynonym($r['id'], $r['tag_id'], $r['label']), $rows);
     }
 
     public function saveRelation(string $tenantId, TagRelation $r): void
@@ -152,7 +182,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         $st->execute($p);
         $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
 
-        return array_map(fn ($r) => new TagRelation($r['id'], $r['from_tag_id'], $r['to_tag_id'], $r['type']), $rows);
+        return array_map(fn($r) => new TagRelation($r['id'], $r['from_tag_id'], $r['to_tag_id'], $r['type']), $rows);
     }
 
     public function saveScheme(string $tenantId, TagScheme $s): void
@@ -215,7 +245,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         $st->execute([':tenant' => $tenantId]);
         $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
 
-        return array_map(fn ($r) => new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])), $rows);
+        return array_map(fn($r) => new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])), $rows);
     }
 
     /**

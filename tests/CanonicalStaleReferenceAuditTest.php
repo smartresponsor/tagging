@@ -11,7 +11,7 @@ final class CanonicalStaleReferenceAuditTest extends TestCase
 {
     public function testRepositoryPlanDoesNotMentionRemovedCanonicalViolations(): void
     {
-        $plan = (string) file_get_contents(dirname(__DIR__).'/docs/architecture/repository-production-readiness-plan.md');
+        $plan = (string) file_get_contents(dirname(__DIR__) . '/docs/architecture/repository-production-readiness-plan.md');
 
         self::assertStringNotContainsString('src/Service/Tag/', $plan);
         self::assertStringNotContainsString('src/Application/Tag/', $plan);

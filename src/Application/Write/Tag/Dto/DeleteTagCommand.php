@@ -10,6 +10,5 @@ final readonly class DeleteTagCommand
     public function __construct(
         public string $tenant,
         public string $id,
-    ) {
-    }
+    ) {}
 }

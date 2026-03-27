@@ -9,9 +9,7 @@ use App\Service\Core\Tag\TenantGuard;
 
 final readonly class TenantContext
 {
-    public function __construct(private TenantGuard $guard)
-    {
-    }
+    public function __construct(private TenantGuard $guard) {}
 
     /** @param array{headers:array} $req */
     public function handle(array $req, callable $next): array

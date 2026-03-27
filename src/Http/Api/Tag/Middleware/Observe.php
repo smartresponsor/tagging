@@ -9,9 +9,7 @@ use App\Service\Core\Tag\Metric\TagMetrics;
 
 final readonly class Observe
 {
-    public function __construct(private array $cfg)
-    {
-    }
+    public function __construct(private array $cfg) {}
 
     public function handle(array $request, callable $next): array
     {
@@ -52,7 +50,7 @@ final readonly class Observe
                 if (!is_dir($dir) && !mkdir($dir, 0777, true) && !is_dir($dir)) {
                     return $resp;
                 }
-                file_put_contents($pathFile, $line."\n", FILE_APPEND | LOCK_EX);
+                file_put_contents($pathFile, $line . "\n", FILE_APPEND | LOCK_EX);
             }
         }
 

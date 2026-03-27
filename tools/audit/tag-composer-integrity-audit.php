@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
@@ -28,7 +29,7 @@ if ($autoload !== 'src/') {
 $requiredDevPackages = array_keys($composerJson['require-dev'] ?? []);
 $lockedDevPackages = array_map(
     static fn(array $package): string => (string) ($package['name'] ?? ''),
-    $composerLock['packages-dev'] ?? []
+    $composerLock['packages-dev'] ?? [],
 );
 
 foreach ($requiredDevPackages as $packageName) {

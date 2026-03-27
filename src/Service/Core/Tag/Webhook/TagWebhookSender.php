@@ -9,9 +9,7 @@ use App\Service\Core\Tag\Metric\TagMetrics;
 
 final readonly class TagWebhookSender
 {
-    public function __construct(private array $cfg)
-    {
-    }
+    public function __construct(private array $cfg) {}
 
     private function dir(): string
     {
@@ -67,7 +65,7 @@ final readonly class TagWebhookSender
         if (!is_dir($dir)) {
             @mkdir($dir, $this->dirMode(), true);
         }
-        $this->writeJsonFile($dir.'/'.$job['id'].'.json', $job);
+        $this->writeJsonFile($dir . '/' . $job['id'] . '.json', $job);
     }
 
     /** @return int processed count */
@@ -77,7 +75,7 @@ final readonly class TagWebhookSender
         if (!is_dir($dir)) {
             return 0;
         }
-        $files = glob($dir.'/*.json');
+        $files = glob($dir . '/*.json');
         if (!$files) {
             return 0;
         }
@@ -144,7 +142,7 @@ final readonly class TagWebhookSender
         if (!is_dir($dir) && !mkdir($dir, $this->dirMode(), true) && !is_dir($dir)) {
             return;
         }
-        file_put_contents($path, $line."\n", FILE_APPEND | LOCK_EX);
+        file_put_contents($path, $line . "\n", FILE_APPEND | LOCK_EX);
     }
 
     private function deliver(array $j): bool
@@ -163,7 +161,7 @@ final readonly class TagWebhookSender
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
-            $this->header().': '.hash_hmac('sha256', $body, (string) ($j['secret'] ?? '')),
+            $this->header() . ': ' . hash_hmac('sha256', $body, (string) ($j['secret'] ?? '')),
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         $timeoutMs = (int) ($this->cfg['timeout_ms'] ?? 1000);
@@ -190,7 +188,7 @@ final readonly class TagWebhookSender
         if (!is_dir($dir) && !mkdir($dir, $this->dirMode(), true) && !is_dir($dir)) {
             return;
         }
-        $tmp = $path.'.'.bin2hex(random_bytes(8)).'.tmp';
+        $tmp = $path . '.' . bin2hex(random_bytes(8)) . '.tmp';
         $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if (false === $json) {
             return;

@@ -74,7 +74,7 @@ final class AdminHttpContractCleanupTest extends TestCase
 
     public function testAdminShellSupportsTopLevelCreateId(): void
     {
-        $js = (string) file_get_contents(dirname(__DIR__).'/admin/app.js');
+        $js = (string) file_get_contents(dirname(__DIR__) . '/admin/app.js');
         self::assertStringContainsString('parsed && parsed.id', $js);
         self::assertStringContainsString('parsed.result && parsed.result.id', $js);
     }

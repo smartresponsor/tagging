@@ -7,9 +7,7 @@ namespace App\Service\Core\Tag\Webhook;
 
 final readonly class TagWebhookRegistry
 {
-    public function __construct(private string $path)
-    {
-    }
+    public function __construct(private string $path) {}
 
     /** @return array<int, array{url:string,secret?:string}> */
     public function list(): array

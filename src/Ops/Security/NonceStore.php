@@ -1,4 +1,5 @@
 <?php
+
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
@@ -48,14 +49,14 @@ final class NonceStore
         if (is_file($path)) {
             // if entry exists and not yet expired -> replay
             $raw = file_get_contents($path);
-            $exp = is_string($raw) ? (int)trim($raw) : 0;
+            $exp = is_string($raw) ? (int) trim($raw) : 0;
             if ($exp > $now) {
                 return false;
             }
         }
 
         // write new expiry
-        file_put_contents($path, (string)($ts + $this->ttl), LOCK_EX);
+        file_put_contents($path, (string) ($ts + $this->ttl), LOCK_EX);
         return true;
     }
 
@@ -97,7 +98,7 @@ final class NonceStore
 
             $n++;
             $raw = file_get_contents($p);
-            $exp = is_string($raw) ? (int)trim($raw) : 0;
+            $exp = is_string($raw) ? (int) trim($raw) : 0;
             if ($exp <= $now) {
                 unlink($p);
             }

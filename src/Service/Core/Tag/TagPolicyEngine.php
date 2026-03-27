@@ -7,9 +7,7 @@ namespace App\Service\Core\Tag;
 
 final readonly class TagPolicyEngine
 {
-    public function __construct(private array $policy)
-    {
-    }
+    public function __construct(private array $policy) {}
 
     public function validateTag(string $slug, string $label): void
     {

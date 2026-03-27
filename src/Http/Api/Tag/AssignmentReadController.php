@@ -10,9 +10,7 @@ use App\Service\Core\Tag\TagReadModelInterface;
 
 final readonly class AssignmentReadController
 {
-    public function __construct(private TagReadModelInterface $read, private TagReadResponder $responder = new TagReadResponder())
-    {
-    }
+    public function __construct(private TagReadModelInterface $read, private TagReadResponder $responder = new TagReadResponder()) {}
 
     /**
      * GET /tag/assignments?entityType=...&entityId=...&limit=...

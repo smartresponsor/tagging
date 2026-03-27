@@ -37,6 +37,33 @@ The following trees belong to delivery, demo, release, or operational support. T
 
 These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, or `contracts/http/`, the runnable core wins.
 
+## Quickstart (Docker)
+
+Prereqs:
+
+- Docker Desktop or Docker Engine with Compose
+
+1. Start the stack:
+
+- `docker compose up -d --build`
+
+2. Verify the runtime:
+
+- `curl http://127.0.0.1:8080/tag/_status`
+- `curl http://127.0.0.1:8080/tag/_surface`
+
+3. Run QA inside the app container:
+
+- `docker compose exec app composer run -n test:unit`
+- `docker compose exec app composer run -n test:integration`
+- `docker compose exec app composer run -n phpstan`
+- `docker compose exec app composer run -n cs:check`
+- `docker compose exec app composer run -n fixture:dry-run`
+- `docker compose exec app composer run -n test:panther`
+- `docker compose exec app composer run -n test:e2e`
+
+The app container auto-runs migrations and demo seeding on startup. Set `APP_AUTO_SEED=0` if you want a blank runtime.
+
 ## Quickstart (host-minimal)
 
 Prereqs:
@@ -63,6 +90,12 @@ Environment variables used by code:
 - `TENANT` (optional default tenant)
 - `TAG_ALLOW_ORIGIN` (optional CORS origin pinning)
 
+## Local server
+
+- `composer run -n symfony:server:start`
+
+If the Symfony CLI is installed, the wrapper uses it with `public/` as the document root. If it is not installed, the wrapper falls back to `php -S`.
+
 ## Integration tests (Postgres harness)
 
 1. Start Postgres:
@@ -71,7 +104,7 @@ Environment variables used by code:
 
 2. Apply migrations:
 
-- `export POSTGRES_DB=app POSTGRES_USER=app POSTGRES_PASSWORD=app DB_HOST=127.0.0.1 DB_PORT=5432`
+- `export POSTGRES_DB=app POSTGRES_USER=app POSTGRES_PASSWORD=app DB_HOST=127.0.0.1 DB_PORT=54329`
 - `for f in db/postgres/migrations/*.sql; do psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$DB_HOST:$DB_PORT/$POSTGRES_DB" -f "$f"; done`
 
 3. Run suites:
@@ -79,6 +112,18 @@ Environment variables used by code:
 - `composer test`
 - `composer run -n test:integration`
 - `composer run -n test:all`
+
+## QA commands
+
+- `composer run -n lint`
+- `composer run -n lint:admin`
+- `composer run -n phpstan`
+- `composer run -n cs:check`
+- `composer run -n cs:fix`
+- `composer run -n fixture:validate`
+- `composer run -n fixture:dry-run`
+- `composer run -n test:panther`
+- `composer run -n test:e2e`
 
 ## Demo scenario
 

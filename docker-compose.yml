@@ -1,41 +1,66 @@
-version: "3.9"
 services:
   db:
-    image: postgres:15
+    image: postgres:16
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
       POSTGRES_DB: ${POSTGRES_DB:-app}
       POSTGRES_USER: ${POSTGRES_USER:-app}
-    ports: [ "5432:5432" ]
-    volumes:
-      - dbdata:/var/lib/postgresql/data
-
-  tag:
-    build:
-      context: ./host
-    environment:
-      DB_DSN: pgsql:host=db;port=5432;dbname=${POSTGRES_DB:-app}
-      DB_USER: ${POSTGRES_USER:-app}
-      DB_PASS: ${POSTGRES_PASSWORD:-app}
-      TENANT: ${TENANT:-demo}
-    ports: [ "${PORT:-8080}:8080" ]
-    volumes:
-      - ${SRC_ROOT:-.}/host-minimal:/app/host-minimal:ro
-      - ${SRC_ROOT:-.}/src:/app/src:ro
-      - ${SRC_ROOT:-.}/config:/app/config:ro
-      - ${SRC_ROOT:-.}/db:/app/db:ro
-      - ${SRC_ROOT:-.}/tools:/app/tools:ro
-      - ${SRC_ROOT:-.}/fixtures:/app/fixtures:ro
-      - ${SRC_ROOT:-.}/sdk:/app/sdk:ro
-      - cache:/app/var/cache
-    depends_on:
-      - db
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
     healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/tag/_status | grep -q '"ok":true' || exit 1" ]
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-app}
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_FORWARD_PORT:-54329}:5432"
+
+  app:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile
+    working_dir: /app
+    environment:
+      APP_AUTO_MIGRATE: ${APP_AUTO_MIGRATE:-1}
+      APP_AUTO_SEED: ${APP_AUTO_SEED:-1}
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8080
+      BASE_URL: http://127.0.0.1:${PORT:-8080}
+      DB_DSN: pgsql:host=db;port=5432;dbname=${POSTGRES_DB:-app}
+      DB_HOST: db
+      DB_PASS: ${POSTGRES_PASSWORD:-app}
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-app}
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      PANTHER_EXTERNAL_BASE_URI: http://127.0.0.1:${PORT:-8080}
+      TENANT: ${TENANT:-demo}
+    ports:
+      - "${PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl -fsS http://127.0.0.1:8080/tag/_status | grep -q '"ok":true'
       interval: 10s
       timeout: 5s
       retries: 15
+    volumes:
+      - .:/app
+      - composer_cache:/tmp/composer-cache
+      - node_modules:/app/node_modules
+      - vendor:/app/vendor
+      - playwright_cache:/ms-playwright
 
 volumes:
-  dbdata:
-  cache:
+  composer_cache:
+  node_modules:
+  playwright_cache:
+  postgres_data:
+  vendor:

@@ -23,7 +23,7 @@ final readonly class QuotaService
             $tenantId,
             (int) ($this->cfg['quotas']['max_tags'] ?? 0),
             'SELECT COUNT(*) FROM tag_entity WHERE tenant = :tenant',
-            'quota_tags_exceeded'
+            'quota_tags_exceeded',
         );
     }
 
@@ -33,7 +33,7 @@ final readonly class QuotaService
             $tenantId,
             (int) ($this->cfg['quotas']['max_assignments'] ?? 0),
             'SELECT COUNT(*) FROM tag_link WHERE tenant = :tenant',
-            'quota_assignments_exceeded'
+            'quota_assignments_exceeded',
         );
     }
 

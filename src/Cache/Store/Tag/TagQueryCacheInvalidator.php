@@ -10,8 +10,7 @@ final readonly class TagQueryCacheInvalidator
     public function __construct(
         private ?SearchCache $searchCache = null,
         private ?SuggestCache $suggestCache = null,
-    ) {
-    }
+    ) {}
 
     public function clearTenant(string $tenant): void
     {

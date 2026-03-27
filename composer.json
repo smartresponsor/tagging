@@ -17,7 +17,8 @@
     "friendsofphp/php-cs-fixer": "^3.94",
     "phpmd/phpmd": "^2.15",
     "phpstan/phpstan": "^1.12",
-    "phpunit/phpunit": "^10.5"
+    "phpunit/phpunit": "^10.5",
+    "symfony/panther": "^2.2"
     },
   "autoload": {
     "psr-4": {
@@ -32,7 +33,11 @@
   "scripts": {
     "lint": "find src tests host-minimal tools -name \"*.php\" -print0 | xargs -0 -n1 php -l",
     "lint:admin": "node --check admin/app.js",
+    "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon.dist --memory-limit=512M",
+    "cs:check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --using-cache=no",
+    "cs:fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --using-cache=no",
     "fixture:validate": "php tools/seed/tag-fixture-validate.php",
+    "fixture:dry-run": "php tools/seed/tag-fixture-dry-run.php",
     "audit:surface": "php tools/audit/tag-surface-audit.php",
     "audit:contract": "php tools/audit/tag-contract-audit.php",
     "audit:route": "php tools/audit/tag-route-controller-audit.php",
@@ -54,6 +59,10 @@
     "test": "vendor/bin/phpunit --testsuite unit",
     "test:unit": "vendor/bin/phpunit --testsuite unit",
     "test:integration": "vendor/bin/phpunit --testsuite integration",
+    "test:panther": "sh -lc 'if command -v chromium >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v chromium); elif command -v chromium-browser >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v chromium-browser); elif command -v google-chrome >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v google-chrome); fi; export PANTHER_CHROME_ARGUMENTS=\"--headless=new --disable-dev-shm-usage --no-sandbox\"; vendor/bin/phpunit --testsuite panther'",
+    "test:e2e": "npx playwright test",
+    "test:e2e:install": "npx playwright install chromium",
+    "symfony:server:start": "bash tools/local/symfony-server-start.sh",
     "gate:install-test": "composer validate --no-interaction --strict && composer run -n audit:composer-integrity && composer run -n test:unit",
     "audit:repo-hygiene": "php tools/audit/tag-repo-hygiene-audit.php",
     "audit:snapshot-purity": "php tools/audit/tag-snapshot-purity-audit.php",

@@ -10,6 +10,5 @@ final readonly class TagConfig
     public function __construct(
         public int $maxTagLength = 255,
         public int $defaultMaxTagsPerEntity = 250,
-    ) {
-    }
+    ) {}
 }

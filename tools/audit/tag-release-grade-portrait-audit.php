@@ -1,4 +1,5 @@
 <?php
+
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
@@ -42,5 +43,5 @@ foreach ($checks as [$label, $haystack, $needle]) {
     }
 }
 
-echo "OK
-";
+echo 'OK
+';

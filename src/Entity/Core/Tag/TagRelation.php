@@ -12,8 +12,7 @@ final readonly class TagRelation
         private string $fromTagId,
         private string $toTagId,
         private string $type, // 'broader' | 'related'
-    ) {
-    }
+    ) {}
 
     public static function create(string $id, string $fromTagId, string $toTagId, string $type): self
     {

@@ -10,9 +10,7 @@ use App\Service\Core\Tag\RateLimiter;
 
 final readonly class QuotaGate
 {
-    public function __construct(private RateLimiter $limiter, private array $cfg = [])
-    {
-    }
+    public function __construct(private RateLimiter $limiter, private array $cfg = []) {}
 
     /** @param array{method:string,path:string,headers:array,body:string} $req */
     public function handle(array $req, callable $next): array
@@ -32,8 +30,8 @@ final readonly class QuotaGate
 
         $g = $this->cfg['hard']['global'] ?? ['rps' => 1000, 'burst' => 2000];
         $pt = $this->cfg['hard']['per_tenant'] ?? ['rps' => 50, 'burst' => 100];
-        $globalKey = 'global|'.$route;
-        $tenantKey = 'tenant|'.$tenant.'|'.$route;
+        $globalKey = 'global|' . $route;
+        $tenantKey = 'tenant|' . $tenant . '|' . $route;
 
         $allowed = $this->limiter->allow($globalKey, (float) ($g['rps'] ?? 1000), (int) ($g['burst'] ?? 2000));
         if (!$allowed['ok']) {
@@ -58,7 +56,7 @@ final readonly class QuotaGate
         }
 
         if ($limit > 0) {
-            $slotKey = 'soft|'.$tenant.'|'.$op;
+            $slotKey = 'soft|' . $tenant . '|' . $op;
             $res = $this->limiter->softAllow($slotKey, $limit, (int) ($this->cfg['window_sec'] ?? 60));
             if (!$res['ok']) {
                 $this->bumpMetric('tag_quota_exceeded_total', ['tenant' => $tenant, 'op' => $op]);
@@ -92,7 +90,7 @@ final readonly class QuotaGate
     {
         $re = preg_quote($pat, '#');
         $re = str_replace(['\\*\\*', '\\*'], ['.*', '[^/]*'], $re);
-        $re = '#^'.$re.'$#';
+        $re = '#^' . $re . '$#';
 
         return (bool) preg_match($re, $path);
     }
@@ -101,7 +99,7 @@ final readonly class QuotaGate
     {
         $norm = preg_replace('#/[A-Za-z0-9_-]+#', '/:id', $path, 1);
 
-        return strtoupper($method).' '.$norm;
+        return strtoupper($method) . ' ' . $norm;
     }
 
     private function opFromPath(string $path): string

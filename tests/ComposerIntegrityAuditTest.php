@@ -10,7 +10,7 @@ final class ComposerIntegrityAuditTest extends TestCase
 {
     public function testComposerConfigurationContainsInstallAndTestGates(): void
     {
-        $composer = json_decode((string) file_get_contents(__DIR__.'/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
+        $composer = json_decode((string) file_get_contents(__DIR__ . '/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertSame('src/', $composer['autoload']['psr-4']['App\\'] ?? null);
         self::assertArrayHasKey('phpunit/phpunit', $composer['require-dev'] ?? []);

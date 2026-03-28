@@ -9,32 +9,46 @@ READ_P95_MAX="${READ_P95_MAX:-0.25}"
 ERROR_RATE_MAX="${ERROR_RATE_MAX:-0.005}"
 ITERATIONS="${ITERATIONS:-20}"
 SEARCH_QUERY="${SEARCH_QUERY:-elect}"
+results_file="$(mktemp)"
+body_file="$(mktemp)"
 
-hit() {
-  local path="$1"
-  local started ended code elapsed
-  started=$(python3 - <<'PY'
+cleanup() {
+  rm -f "$results_file" "$body_file"
+}
+
+now() {
+  python3 - <<'PY'
 import time
 print(time.time())
 PY
-)
-  code=$(curl -sS -o /tmp/tag-slo-body.$$ -w '%{http_code}' -H "X-Tenant-Id: ${TENANT}" "${BASE_URL}${path}" || true)
-  ended=$(python3 - <<'PY'
-import time
-print(time.time())
-PY
-)
-  elapsed=$(python3 - <<PY
+}
+
+elapsed_seconds() {
+  local started="$1"
+  local ended="$2"
+  python3 - <<PY
 start=${started}
 end=${ended}
 print(f"{end-start:.6f}")
 PY
-)
+}
+
+curl_code() {
+  local path="$1"
+  curl -sS -o "$body_file" -w '%{http_code}' -H "X-Tenant-Id: ${TENANT}" "${BASE_URL}${path}" || true
+}
+
+hit() {
+  local path="$1"
+  local started ended code elapsed
+  started="$(now)"
+  code="$(curl_code "$path")"
+  ended="$(now)"
+  elapsed="$(elapsed_seconds "$started" "$ended")"
   printf '%s %s\n' "$code" "$elapsed"
 }
 
-results_file="$(mktemp)"
-trap 'rm -f "$results_file" /tmp/tag-slo-body.$$' EXIT
+trap cleanup EXIT
 
 for _ in $(seq 1 "$ITERATIONS"); do
   hit "/tag/_status" >> "$results_file"

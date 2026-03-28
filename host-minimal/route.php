@@ -11,36 +11,42 @@ use App\Http\Api\Tag\Responder\JsonResponder;
  */
 return static function (array $container): callable {
     $json = new JsonResponder();
+    $controller = static fn(string $id): object => $container[$id]();
+    $runtimeVersion = static fn(): string => (string) (($container['runtime']()['version'] ?? 'dev'));
+    $invoke = static fn(string $serviceId, string $method, array $norm, mixed ...$args): array => $controller($serviceId)->{$method}($norm, ...$args);
+    $route = static fn(string $method, string $pattern, callable $handler): array => [
+        'method' => $method,
+        'pattern' => $pattern,
+        'handler' => $handler,
+    ];
+    $statusRoute = static fn(string $path, string $header, string $controllerId, string $method): array => $route(
+        'GET',
+        $path,
+        static fn(): array => $json->respond(
+            200,
+            $controller($controllerId)->{$method}(),
+            [
+                $header => $runtimeVersion(),
+                'Cache-Control' => 'no-store',
+            ],
+        ),
+    );
 
     $routes = [
-        ['method' => 'POST', 'pattern' => '#^/tag$#', 'handler' => static fn(array $norm): array => $container['tagController']()->create($norm)],
-        ['method' => 'GET', 'pattern' => '#^/tag/([A-Za-z0-9]{26})$#', 'handler' => static fn(array $norm, array $m): array => $container['tagController']()->get($norm, $m[1])],
-        ['method' => 'PATCH', 'pattern' => '#^/tag/([A-Za-z0-9]{26})$#', 'handler' => static fn(array $norm, array $m): array => $container['tagController']()->patch($norm, $m[1])],
-        ['method' => 'DELETE', 'pattern' => '#^/tag/([A-Za-z0-9]{26})$#', 'handler' => static fn(array $norm, array $m): array => $container['tagController']()->delete($norm, $m[1])],
-        ['method' => 'POST', 'pattern' => '#^/tag/([A-Za-z0-9]{26})/assign$#', 'handler' => static fn(array $norm, array $m): array => $container['assignController']()->assign($norm, $m[1])],
-        ['method' => 'POST', 'pattern' => '#^/tag/([A-Za-z0-9]{26})/unassign$#', 'handler' => static fn(array $norm, array $m): array => $container['assignController']()->unassign($norm, $m[1])],
-        ['method' => 'GET', 'pattern' => '#^/tag/assignments$#', 'handler' => static fn(array $norm): array => $container['assignmentReadController']()->listByEntity($norm)],
-        ['method' => 'GET', 'pattern' => '#^/tag/search$#', 'handler' => static fn(array $norm): array => $container['searchController']()->get($norm)],
-        ['method' => 'GET', 'pattern' => '#^/tag/suggest$#', 'handler' => static fn(array $norm): array => $container['suggestController']()->get($norm)],
-        ['method' => 'GET', 'pattern' => '#^/tag/_webhooks$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->list($norm)],
-        ['method' => 'POST', 'pattern' => '#^/tag/_webhooks/subscribe$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->subscribe($norm)],
-        ['method' => 'POST', 'pattern' => '#^/tag/_webhooks/test$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->test($norm)],
-        ['method' => 'GET', 'pattern' => '#^/tag/_status$#', 'handler' => static fn(): array => $json->respond(
-            200,
-            $container['statusController']()->status(),
-            [
-                'X-Tag-Version' => (string) (($container['runtime']()['version'] ?? 'dev')),
-                'Cache-Control' => 'no-store',
-            ],
-        )],
-        ['method' => 'GET', 'pattern' => '#^/tag/_surface$#', 'handler' => static fn(): array => $json->respond(
-            200,
-            $container['surfaceController']()->surface(),
-            [
-                'X-Tag-Surface-Version' => (string) (($container['runtime']()['version'] ?? 'dev')),
-                'Cache-Control' => 'no-store',
-            ],
-        )],
+        $route('POST', '#^/tag$#', static fn(array $norm): array => $invoke('tagController', 'create', $norm)),
+        $route('GET', '#^/tag/([A-Za-z0-9]{26})$#', static fn(array $norm, array $m): array => $invoke('tagController', 'get', $norm, $m[1])),
+        $route('PATCH', '#^/tag/([A-Za-z0-9]{26})$#', static fn(array $norm, array $m): array => $invoke('tagController', 'patch', $norm, $m[1])),
+        $route('DELETE', '#^/tag/([A-Za-z0-9]{26})$#', static fn(array $norm, array $m): array => $invoke('tagController', 'delete', $norm, $m[1])),
+        $route('POST', '#^/tag/([A-Za-z0-9]{26})/assign$#', static fn(array $norm, array $m): array => $invoke('assignController', 'assign', $norm, $m[1])),
+        $route('POST', '#^/tag/([A-Za-z0-9]{26})/unassign$#', static fn(array $norm, array $m): array => $invoke('assignController', 'unassign', $norm, $m[1])),
+        $route('GET', '#^/tag/assignments$#', static fn(array $norm): array => $invoke('assignmentReadController', 'listByEntity', $norm)),
+        $route('GET', '#^/tag/search$#', static fn(array $norm): array => $invoke('searchController', 'get', $norm)),
+        $route('GET', '#^/tag/suggest$#', static fn(array $norm): array => $invoke('suggestController', 'get', $norm)),
+        $route('GET', '#^/tag/_webhooks$#', static fn(array $norm): array => $invoke('webhookController', 'list', $norm)),
+        $route('POST', '#^/tag/_webhooks/subscribe$#', static fn(array $norm): array => $invoke('webhookController', 'subscribe', $norm)),
+        $route('POST', '#^/tag/_webhooks/test$#', static fn(array $norm): array => $invoke('webhookController', 'test', $norm)),
+        $statusRoute('#^/tag/_status$#', 'X-Tag-Version', 'statusController', 'status'),
+        $statusRoute('#^/tag/_surface$#', 'X-Tag-Surface-Version', 'surfaceController', 'surface'),
     ];
 
     return static function (string $method, string $path, array $norm) use ($routes, $json): array {

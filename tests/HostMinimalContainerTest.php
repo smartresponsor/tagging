@@ -35,4 +35,23 @@ final class HostMinimalContainerTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $container->export(['missing']);
     }
+
+    public function testGetThrowsForUnknownEntry(): void
+    {
+        $container = new HostMinimalContainer();
+
+        $this->expectException(\RuntimeException::class);
+        $container->get('missing');
+    }
+
+    public function testValueEntryReturnsSameConfiguredValue(): void
+    {
+        $container = new HostMinimalContainer();
+        $value = new \stdClass();
+
+        $container->value('sample', $value);
+
+        self::assertSame($value, $container->get('sample'));
+        self::assertSame(['sample' => $container->get('sample')], ['sample' => $container->export(['sample'])['sample']()]);
+    }
 }

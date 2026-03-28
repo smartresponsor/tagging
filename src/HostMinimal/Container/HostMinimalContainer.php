@@ -8,27 +8,11 @@ namespace App\HostMinimal\Container;
 final class HostMinimalContainer
 {
     /** @var array<string, callable():mixed> */
-    private array $factories = [];
-
-    /** @var array<string, callable():mixed> */
     private array $entries = [];
 
     public function share(string $id, callable $factory): void
     {
-        $this->factories[$id] = $factory;
-        $resolved = false;
-        $instance = null;
-
-        $this->entries[$id] = static function () use (&$resolved, &$instance, $factory) {
-            if ($resolved) {
-                return $instance;
-            }
-
-            $instance = $factory();
-            $resolved = true;
-
-            return $instance;
-        };
+        $this->entries[$id] = self::sharedEntry($factory);
     }
 
     public function value(string $id, mixed $value): void
@@ -43,11 +27,7 @@ final class HostMinimalContainer
 
     public function get(string $id): mixed
     {
-        if (!$this->has($id)) {
-            throw new \RuntimeException(sprintf('Unknown container entry: %s', $id));
-        }
-
-        return ($this->entries[$id])();
+        return ($this->entry($id, 'Unknown container entry: %s'))();
     }
 
     /**
@@ -64,13 +44,33 @@ final class HostMinimalContainer
         $export = [];
 
         foreach ($ids as $id) {
-            if (!$this->has($id)) {
-                throw new \RuntimeException(sprintf('Cannot export unknown container entry: %s', $id));
-            }
-
-            $export[$id] = $this->entries[$id];
+            $export[$id] = $this->entry($id, 'Cannot export unknown container entry: %s');
         }
 
         return $export;
+    }
+
+    private static function sharedEntry(callable $factory): callable
+    {
+        $resolved = false;
+        $instance = null;
+
+        return static function () use (&$resolved, &$instance, $factory) {
+            if (!$resolved) {
+                $instance = $factory();
+                $resolved = true;
+            }
+
+            return $instance;
+        };
+    }
+
+    private function entry(string $id, string $messageTemplate): callable
+    {
+        if (!isset($this->entries[$id])) {
+            throw new \RuntimeException(sprintf($messageTemplate, $id));
+        }
+
+        return $this->entries[$id];
     }
 }

@@ -69,12 +69,14 @@ The app container auto-runs migrations and demo seeding on startup. Set `APP_AUT
 Prereqs:
 
 - PHP 8.2+
-- Postgres
+- `pdo_pgsql` for a DB-backed Postgres runtime
+- `pdo_sqlite` for SQLite-backed local/test paths
 - Composer
 
 1. Install dependencies:
 
 - `composer install`
+- `composer run -n doctor:php-ext`
 
 2. Apply migrations:
 
@@ -95,6 +97,11 @@ Environment variables used by code:
 - `composer run -n symfony:server:start`
 
 If the Symfony CLI is installed, the wrapper uses it with `public/` as the document root. If it is not installed, the wrapper falls back to `php -S`.
+
+Host PHP extension install on Debian/Ubuntu:
+
+- `sudo apt-get update`
+- `sudo apt-get install -y php8.4-pgsql php8.4-sqlite3`
 
 ## Integration tests (Postgres harness)
 

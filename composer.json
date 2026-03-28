@@ -62,6 +62,7 @@
     "test:panther": "sh -lc 'if command -v chromium >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v chromium); elif command -v chromium-browser >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v chromium-browser); elif command -v google-chrome >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v google-chrome); fi; export PANTHER_CHROME_ARGUMENTS=\"--headless=new --disable-dev-shm-usage --no-sandbox\"; vendor/bin/phpunit --testsuite panther'",
     "test:e2e": "npx playwright test",
     "test:e2e:install": "npx playwright install chromium",
+    "doctor:php-ext": "bash tools/local/php-extension-doctor.sh",
     "symfony:server:start": "bash tools/local/symfony-server-start.sh",
     "gate:install-test": "composer validate --no-interaction --strict && composer run -n audit:composer-integrity && composer run -n test:unit",
     "audit:repo-hygiene": "php tools/audit/tag-repo-hygiene-audit.php",

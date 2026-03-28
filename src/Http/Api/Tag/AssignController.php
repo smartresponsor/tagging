@@ -23,59 +23,19 @@ final class AssignController
     public function __construct(private readonly AssignOperationInterface $assign, private readonly UnassignOperationInterface $unassign, array $cfg = [])
     {
         $this->responder = new TagAssignmentResponder();
-        $types = $cfg['entity_types'] ?? ['*'];
-        if (!is_array($types)) {
-            $types = ['*'];
-        }
-        $norm = [];
-        foreach ($types as $t) {
-            $t = strtolower(trim((string) $t));
-            if ('' !== $t) {
-                $norm[] = $t;
-            }
-        }
-        $norm = array_values(array_unique($norm));
-        $this->allowedTypes = $norm ?: ['*'];
+        $this->allowedTypes = $this->normalizeAllowedTypes($cfg['entity_types'] ?? ['*']);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function assign(array $req, string $tagId): array
     {
-        $tenant = TagHttpRequest::tenant($req);
-        if ('' === $tenant) {
-            return $this->fail('invalid_tenant');
-        }
-        $body = TagHttpRequest::body($req);
-
-        [$etype, $eid] = $this->readEntity($body);
-        if ('' === $etype || '' === $eid) {
-            return $this->fail('validation_failed');
-        }
-
-        $idem = (string) ($req['idemKey'] ?? '');
-        $res = $this->assign->assign($tenant, $tagId, $etype, $eid, $idem ?: null);
-
-        return $this->assignmentResponse($res, ['duplicated' => false, 'conflict' => false]);
+        return $this->handleSingleOperation($req, $tagId, 'assign', ['duplicated' => false, 'conflict' => false]);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function unassign(array $req, string $tagId): array
     {
-        $tenant = TagHttpRequest::tenant($req);
-        if ('' === $tenant) {
-            return $this->fail('invalid_tenant');
-        }
-        $body = TagHttpRequest::body($req);
-
-        [$etype, $eid] = $this->readEntity($body);
-        if ('' === $etype || '' === $eid) {
-            return $this->fail('validation_failed');
-        }
-
-        $idem = (string) ($req['idemKey'] ?? '');
-        $res = $this->unassign->unassign($tenant, $tagId, $etype, $eid, $idem ?: null);
-
-        return $this->assignmentResponse($res, ['not_found' => false, 'duplicated' => false, 'conflict' => false]);
+        return $this->handleSingleOperation($req, $tagId, 'unassign', ['not_found' => false, 'duplicated' => false, 'conflict' => false]);
     }
 
     /**
@@ -88,8 +48,8 @@ final class AssignController
      */
     public function bulk(array $req): array
     {
-        $tenant = TagHttpRequest::tenant($req);
-        if ('' === $tenant) {
+        $tenant = $this->tenant($req);
+        if (null === $tenant) {
             return $this->fail('invalid_tenant');
         }
         $body = TagHttpRequest::body($req);
@@ -104,20 +64,15 @@ final class AssignController
                 continue;
             }
             $optype = (string) ($op['op'] ?? '');
-            $tagId = (string) ($op['tagId'] ?? ($op['tag_id'] ?? ''));
-            [$etype, $eid] = $this->readEntity($op);
-            $idem = (string) ($op['idem'] ?? '');
+            $tagId = $this->tagId($op);
+            $entity = $this->readEntity($op);
 
-            if ('' === $optype || '' === $tagId || '' === $etype || '' === $eid) {
+            if ('' === $optype || '' === $tagId || null === $entity) {
                 ++$errors;
                 continue;
             }
-
-            if ('assign' === $optype) {
-                $r = $this->assign->assign($tenant, $tagId, $etype, $eid, $idem ?: null);
-            } elseif ('unassign' === $optype) {
-                $r = $this->unassign->unassign($tenant, $tagId, $etype, $eid, $idem ?: null);
-            } else {
+            $r = $this->dispatchOperation($optype, $tenant, $tagId, $entity[0], $entity[1], $this->idempotencyKey($op));
+            if (null === $r) {
                 ++$errors;
                 continue;
             }
@@ -138,19 +93,19 @@ final class AssignController
      */
     public function assignBulkToEntity(array $req): array
     {
-        $tenant = TagHttpRequest::tenant($req);
-        if ('' === $tenant) {
+        $tenant = $this->tenant($req);
+        if (null === $tenant) {
             return $this->fail('invalid_tenant');
         }
         $body = TagHttpRequest::body($req);
 
-        [$etype, $eid] = $this->readEntity($body);
+        $entity = $this->readEntity($body);
         $tagIds = $body['tagIds'] ?? ($body['tag_ids'] ?? null);
         if (!is_array($tagIds)) {
             $tagIds = [];
         }
 
-        if ('' === $etype || '' === $eid || [] === $tagIds) {
+        if (null === $entity || [] === $tagIds) {
             return $this->fail('validation_failed');
         }
 
@@ -160,7 +115,7 @@ final class AssignController
             if ('' === $tagId) {
                 continue;
             }
-            $r = $this->assign->assign($tenant, $tagId, $etype, $eid);
+            $r = $this->assign->assign($tenant, $tagId, $entity[0], $entity[1]);
             $ok += ($r['ok'] ?? false) ? 1 : 0;
         }
 
@@ -177,6 +132,28 @@ final class AssignController
         }
 
         return in_array($etype, $this->allowedTypes, true);
+    }
+
+    /** @param mixed $types
+     *  @return list<string>
+     */
+    private function normalizeAllowedTypes(mixed $types): array
+    {
+        if (!is_array($types)) {
+            return ['*'];
+        }
+
+        $normalized = [];
+        foreach ($types as $type) {
+            $type = strtolower(trim((string) $type));
+            if ('' !== $type) {
+                $normalized[] = $type;
+            }
+        }
+
+        $normalized = array_values(array_unique($normalized));
+
+        return $normalized !== [] ? $normalized : ['*'];
     }
 
     private static function normalizeEntityType(string $etype): string
@@ -218,6 +195,27 @@ final class AssignController
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
+    private function handleSingleOperation(array $request, string $tagId, string $operation, array $defaults): array
+    {
+        $tenant = $this->tenant($request);
+        if (null === $tenant) {
+            return $this->fail('invalid_tenant');
+        }
+
+        $entity = $this->readEntity(TagHttpRequest::body($request));
+        if (null === $entity) {
+            return $this->fail('validation_failed');
+        }
+
+        $result = $this->dispatchOperation($operation, $tenant, $tagId, $entity[0], $entity[1], $this->idempotencyKey($request));
+        if (null === $result) {
+            return $this->fail('validation_failed');
+        }
+
+        return $this->assignmentResponse($result, $defaults);
+    }
+
+    /** @return array{0:int,1:array<string,string>,2:string} */
     private function assignmentResponse(array $result, array $defaults = []): array
     {
         $ok = (bool) ($result['ok'] ?? false);
@@ -239,20 +237,49 @@ final class AssignController
         return $this->responder->failure($code ?? 'assign_failed', $this->responder->statusForCode($code), $body);
     }
 
-    /** @return array{0:string,1:string} */
-    private function readEntity(array $body): array
+    /** @return array{0:string,1:string}|null */
+    private function readEntity(array $body): ?array
     {
         $etypeRaw = (string) ($body['entityType'] ?? ($body['entity_type'] ?? ''));
         $eidRaw = (string) ($body['entityId'] ?? ($body['entity_id'] ?? ''));
         $etype = self::normalizeEntityType($etypeRaw);
         $eid = self::normalizeEntityId($eidRaw);
         if ('' === $etype || '' === $eid) {
-            return ['', ''];
+            return null;
         }
         if (!$this->isAllowedType($etype)) {
-            return ['', ''];
+            return null;
         }
 
         return [$etype, $eid];
+    }
+
+    private function tenant(array $request): ?string
+    {
+        $tenant = TagHttpRequest::tenant($request);
+
+        return '' !== $tenant ? $tenant : null;
+    }
+
+    private function tagId(array $payload): string
+    {
+        return trim((string) ($payload['tagId'] ?? ($payload['tag_id'] ?? '')));
+    }
+
+    private function idempotencyKey(array $payload): ?string
+    {
+        $idem = trim((string) ($payload['idem'] ?? ($payload['idemKey'] ?? '')));
+
+        return '' !== $idem ? $idem : null;
+    }
+
+    /** @return array<string,mixed>|null */
+    private function dispatchOperation(string $operation, string $tenant, string $tagId, string $entityType, string $entityId, ?string $idem): ?array
+    {
+        return match ($operation) {
+            'assign' => $this->assign->assign($tenant, $tagId, $entityType, $entityId, $idem),
+            'unassign' => $this->unassign->unassign($tenant, $tagId, $entityType, $entityId, $idem),
+            default => null,
+        };
     }
 }

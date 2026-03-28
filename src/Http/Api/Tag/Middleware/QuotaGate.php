@@ -5,12 +5,17 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag\Middleware;
 
+use App\Http\Api\Tag\Responder\JsonResponder;
 use App\Ops\Metrics\TagMetrics;
 use App\Service\Core\Tag\RateLimiter;
 
 final readonly class QuotaGate
 {
-    public function __construct(private RateLimiter $limiter, private array $cfg = []) {}
+    public function __construct(
+        private RateLimiter $limiter,
+        private array $cfg = [],
+        private JsonResponder $responder = new JsonResponder(),
+    ) {}
 
     /** @param array{method:string,path:string,headers:array,body:string} $req */
     public function handle(array $req, callable $next): array
@@ -116,11 +121,13 @@ final readonly class QuotaGate
 
     private function tooMany(int $retryAfter, string $code): array
     {
-        return [
+        return $this->responder->reject(
             429,
-            ['Content-Type' => 'application/json', 'Retry-After' => (string) max(1, $retryAfter)],
-            json_encode(['code' => $code]),
-        ];
+            $code,
+            [],
+            ['Retry-After' => (string) max(1, $retryAfter)],
+            false,
+        );
     }
 
     private function bumpMetric(string $name, array $labels): void

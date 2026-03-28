@@ -5,11 +5,16 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag\Middleware;
 
+use App\Http\Api\Tag\Responder\JsonResponder;
 use App\Service\Core\Tag\Authz\TagAuthorizer;
 
 final readonly class Authorize
 {
-    public function __construct(private TagAuthorizer $auth, private array $cfg) {}
+    public function __construct(
+        private TagAuthorizer $auth,
+        private array $cfg,
+        private JsonResponder $responder = new JsonResponder(),
+    ) {}
 
     /**
      * Framework-agnostic example:
@@ -25,7 +30,7 @@ final readonly class Authorize
         $op = $this->auth->detectOp((string) ($request['method'] ?? 'GET'), (string) ($request['path'] ?? '/'));
 
         if (!$this->auth->isAllowed($op, $roles)) {
-            return [403, ['Content-Type' => 'application/json'], json_encode(['code' => 'forbidden', 'op' => $op])];
+            return $this->responder->reject(403, 'forbidden', ['op' => $op], [], false);
         }
 
         return $next($request);

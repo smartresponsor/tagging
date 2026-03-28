@@ -16,11 +16,70 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
 {
     public function __construct(private \PDO $pdo) {}
 
+    /** @param array<string, mixed> $params */
+    private function execute(string $sql, array $params = []): \PDOStatement
+    {
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($params);
+
+        return $statement;
+    }
+
+    /** @param array<string, mixed> $params */
+    private function fetchAssoc(string $sql, array $params = []): array|false
+    {
+        return $this->execute($sql, $params)->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    /** @param array<string, mixed> $params
+     *  @return array<int, array<string, mixed>>
+     */
+    private function fetchAllAssoc(string $sql, array $params = []): array
+    {
+        return $this->execute($sql, $params)->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** @param array<string, mixed> $row
+     *  @throws \Exception
+     */
+    private function hydrateTag(array $row): Tag
+    {
+        return new Tag($row['id'], $row['slug'], $row['label'], new \DateTimeImmutable($row['created_at']));
+    }
+
+    /** @param array<string, mixed> $row */
+    private function hydrateAssignment(array $row): TagAssignment
+    {
+        return new TagAssignment($row['id'], $row['tag_id'], $row['assigned_type'], $row['assigned_id'], new \DateTimeImmutable($row['created_at']));
+    }
+
+    /** @param array<string, mixed> $row */
+    private function hydrateSynonym(array $row): TagSynonym
+    {
+        return new TagSynonym($row['id'], $row['tag_id'], $row['label']);
+    }
+
+    /** @param array<string, mixed> $row */
+    private function hydrateRelation(array $row): TagRelation
+    {
+        return new TagRelation($row['id'], $row['from_tag_id'], $row['to_tag_id'], $row['type']);
+    }
+
+    /** @param array<string, mixed> $row
+     *  @throws \Exception
+     */
+    private function hydrateScheme(array $row): TagScheme
+    {
+        return new TagScheme($row['id'], $row['name'], $row['locale'], new \DateTimeImmutable($row['created_at']));
+    }
+
     public function saveTag(string $tenantId, Tag $tag): void
     {
-        $stmt = $this->pdo->prepare('INSERT INTO tag(tenant,id,slug,label,created_at) VALUES (:tenant,:id,:slug,:label,:created_at)
-            ON CONFLICT (tenant,id) DO UPDATE SET slug=EXCLUDED.slug, label=EXCLUDED.label');
-        $stmt->execute([':tenant' => $tenantId, ':id' => $tag->id(), ':slug' => $tag->slug(), ':label' => $tag->label(), ':created_at' => $tag->createdAt()->format('c')]);
+        $this->execute(
+            'INSERT INTO tag(tenant,id,slug,label,created_at) VALUES (:tenant,:id,:slug,:label,:created_at)
+            ON CONFLICT (tenant,id) DO UPDATE SET slug=EXCLUDED.slug, label=EXCLUDED.label',
+            [':tenant' => $tenantId, ':id' => $tag->id(), ':slug' => $tag->slug(), ':label' => $tag->label(), ':created_at' => $tag->createdAt()->format('c')],
+        );
     }
 
     /**
@@ -28,11 +87,9 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function getById(string $tenantId, string $id): ?Tag
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM tag WHERE tenant=:tenant AND id=:id');
-        $stmt->execute([':tenant' => $tenantId, ':id' => $id]);
-        $r = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $r = $this->fetchAssoc('SELECT * FROM tag WHERE tenant=:tenant AND id=:id', [':tenant' => $tenantId, ':id' => $id]);
 
-        return $r ? new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])) : null;
+        return is_array($r) ? $this->hydrateTag($r) : null;
     }
 
     /**
@@ -40,11 +97,9 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function getBySlug(string $tenantId, string $slug): ?Tag
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM tag WHERE tenant=:tenant AND slug=:slug');
-        $stmt->execute([':tenant' => $tenantId, ':slug' => $slug]);
-        $r = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $r = $this->fetchAssoc('SELECT * FROM tag WHERE tenant=:tenant AND slug=:slug', [':tenant' => $tenantId, ':slug' => $slug]);
 
-        return $r ? new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])) : null;
+        return is_array($r) ? $this->hydrateTag($r) : null;
     }
 
     public function existsSlug(string $tenantId, string $slug, ?string $excludeTagId = null): bool
@@ -57,8 +112,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
             $params[':exclude'] = $excludeTagId;
         }
 
-        $stmt = $this->pdo->prepare($sql . ' LIMIT 1');
-        $stmt->execute($params);
+        $stmt = $this->execute($sql . ' LIMIT 1', $params);
 
         return false !== $stmt->fetchColumn();
     }
@@ -73,8 +127,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
             $params[':exclude'] = $excludeTagId;
         }
 
-        $stmt = $this->pdo->prepare($sql . ' LIMIT 1');
-        $stmt->execute($params);
+        $stmt = $this->execute($sql . ' LIMIT 1', $params);
 
         return false !== $stmt->fetchColumn();
     }
@@ -99,24 +152,24 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         $stmt->execute();
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        return array_map(fn($r) => new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])), $rows);
+        return array_map($this->hydrateTag(...), $rows);
     }
 
     public function deleteTag(string $tenantId, string $id): void
     {
-        $this->pdo->prepare('DELETE FROM tag WHERE tenant=:tenant AND id=:id')->execute([':tenant' => $tenantId, ':id' => $id]);
+        $this->execute('DELETE FROM tag WHERE tenant=:tenant AND id=:id', [':tenant' => $tenantId, ':id' => $id]);
     }
 
     public function saveAssignment(string $tenantId, TagAssignment $a): void
     {
         $sql = 'INSERT INTO tag_assignment(tenant,id,tag_id,assigned_type,assigned_id,created_at) VALUES (:tenant,:id,:tag_id,:type,:aid,:created_at)
             ON CONFLICT (tenant,id) DO NOTHING';
-        $this->pdo->prepare($sql)->execute([':tenant' => $tenantId, ':id' => $a->id(), ':tag_id' => $a->tagId(), ':type' => $a->assignedType(), ':aid' => $a->assignedId(), ':created_at' => $a->createdAt()->format('c')]);
+        $this->execute($sql, [':tenant' => $tenantId, ':id' => $a->id(), ':tag_id' => $a->tagId(), ':type' => $a->assignedType(), ':aid' => $a->assignedId(), ':created_at' => $a->createdAt()->format('c')]);
     }
 
     public function deleteAssignment(string $tenantId, string $assignmentId): void
     {
-        $this->pdo->prepare('DELETE FROM tag_assignment WHERE tenant=:tenant AND id=:id')->execute([':tenant' => $tenantId, ':id' => $assignmentId]);
+        $this->execute('DELETE FROM tag_assignment WHERE tenant=:tenant AND id=:id', [':tenant' => $tenantId, ':id' => $assignmentId]);
     }
 
     /**
@@ -136,17 +189,17 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
             $sql .= ' AND assigned_id=:aid';
             $p[':aid'] = $assignedId;
         }
-        $st = $this->pdo->prepare($sql);
-        $st->execute($p);
-        $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $this->fetchAllAssoc($sql, $p);
 
-        return array_map(fn($r) => new TagAssignment($r['id'], $r['tag_id'], $r['assigned_type'], $r['assigned_id'], new \DateTimeImmutable($r['created_at'])), $rows);
+        return array_map($this->hydrateAssignment(...), $rows);
     }
 
     public function saveSynonym(string $tenantId, TagSynonym $s): void
     {
-        $this->pdo->prepare('INSERT INTO tag_synonym(tenant,id,tag_id,label) VALUES (:tenant,:id,:tid,:label) ON CONFLICT (tenant,id) DO NOTHING')
-            ->execute([':tenant' => $tenantId, ':id' => $s->id(), ':tid' => $s->tagId(), ':label' => $s->label()]);
+        $this->execute(
+            'INSERT INTO tag_synonym(tenant,id,tag_id,label) VALUES (:tenant,:id,:tid,:label) ON CONFLICT (tenant,id) DO NOTHING',
+            [':tenant' => $tenantId, ':id' => $s->id(), ':tid' => $s->tagId(), ':label' => $s->label()],
+        );
     }
 
     /**
@@ -154,17 +207,17 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function listSynonyms(string $tenantId, string $tagId): array
     {
-        $st = $this->pdo->prepare('SELECT * FROM tag_synonym WHERE tenant=:tenant AND tag_id=:tid');
-        $st->execute([':tenant' => $tenantId, ':tid' => $tagId]);
-        $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $this->fetchAllAssoc('SELECT * FROM tag_synonym WHERE tenant=:tenant AND tag_id=:tid', [':tenant' => $tenantId, ':tid' => $tagId]);
 
-        return array_map(fn($r) => new TagSynonym($r['id'], $r['tag_id'], $r['label']), $rows);
+        return array_map($this->hydrateSynonym(...), $rows);
     }
 
     public function saveRelation(string $tenantId, TagRelation $r): void
     {
-        $this->pdo->prepare('INSERT INTO tag_relation(tenant,id,from_tag_id,to_tag_id,type) VALUES (:tenant,:id,:f,:t,:type) ON CONFLICT (tenant,id) DO NOTHING')
-            ->execute([':tenant' => $tenantId, ':id' => $r->id(), ':f' => $r->fromTagId(), ':t' => $r->toTagId(), ':type' => $r->type()]);
+        $this->execute(
+            'INSERT INTO tag_relation(tenant,id,from_tag_id,to_tag_id,type) VALUES (:tenant,:id,:f,:t,:type) ON CONFLICT (tenant,id) DO NOTHING',
+            [':tenant' => $tenantId, ':id' => $r->id(), ':f' => $r->fromTagId(), ':t' => $r->toTagId(), ':type' => $r->type()],
+        );
     }
 
     /**
@@ -178,18 +231,18 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
             $sql .= ' AND type=:type';
             $p[':type'] = $type;
         }
-        $st = $this->pdo->prepare($sql);
-        $st->execute($p);
-        $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $this->fetchAllAssoc($sql, $p);
 
-        return array_map(fn($r) => new TagRelation($r['id'], $r['from_tag_id'], $r['to_tag_id'], $r['type']), $rows);
+        return array_map($this->hydrateRelation(...), $rows);
     }
 
     public function saveScheme(string $tenantId, TagScheme $s): void
     {
-        $this->pdo->prepare('INSERT INTO tag_scheme(tenant,id,name,locale,created_at) VALUES (:tenant,:id,:name,:loc,:created_at)
-            ON CONFLICT (tenant,id) DO UPDATE SET name=EXCLUDED.name, locale=EXCLUDED.locale')
-            ->execute([':tenant' => $tenantId, ':id' => $s->id(), ':name' => $s->name(), ':loc' => $s->locale(), ':created_at' => $s->createdAt()->format('c')]);
+        $this->execute(
+            'INSERT INTO tag_scheme(tenant,id,name,locale,created_at) VALUES (:tenant,:id,:name,:loc,:created_at)
+            ON CONFLICT (tenant,id) DO UPDATE SET name=EXCLUDED.name, locale=EXCLUDED.locale',
+            [':tenant' => $tenantId, ':id' => $s->id(), ':name' => $s->name(), ':loc' => $s->locale(), ':created_at' => $s->createdAt()->format('c')],
+        );
     }
 
     /**
@@ -197,41 +250,39 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function getSchemeByName(string $tenantId, string $name): ?TagScheme
     {
-        $st = $this->pdo->prepare('SELECT * FROM tag_scheme WHERE tenant=:tenant AND name=:n');
-        $st->execute([':tenant' => $tenantId, ':n' => $name]);
-        $r = $st->fetch(\PDO::FETCH_ASSOC);
+        $r = $this->fetchAssoc('SELECT * FROM tag_scheme WHERE tenant=:tenant AND name=:n', [':tenant' => $tenantId, ':n' => $name]);
 
-        return $r ? new TagScheme($r['id'], $r['name'], $r['locale'], new \DateTimeImmutable($r['created_at'])) : null;
+        return is_array($r) ? $this->hydrateScheme($r) : null;
     }
 
     public function reassignAssignments(string $tenantId, string $fromTagId, string $toTagId): void
     {
-        $this->pdo->prepare('UPDATE tag_assignment SET tag_id=:to WHERE tenant=:tenant AND tag_id=:from')->execute([':tenant' => $tenantId, ':to' => $toTagId, ':from' => $fromTagId]);
+        $this->execute('UPDATE tag_assignment SET tag_id=:to WHERE tenant=:tenant AND tag_id=:from', [':tenant' => $tenantId, ':to' => $toTagId, ':from' => $fromTagId]);
     }
 
     public function setTagFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void
     {
-        $this->pdo->prepare('UPDATE tag SET required_flag=:r, mod_only_flag=:m WHERE tenant=:tenant AND id=:id')->execute([':tenant' => $tenantId, ':r' => $required ? 1 : 0, ':m' => $modOnly ? 1 : 0, ':id' => $tagId]);
+        $this->execute('UPDATE tag SET required_flag=:r, mod_only_flag=:m WHERE tenant=:tenant AND id=:id', [':tenant' => $tenantId, ':r' => $required ? 1 : 0, ':m' => $modOnly ? 1 : 0, ':id' => $tagId]);
     }
 
     public function renameTag(string $tenantId, string $tagId, string $newLabel, string $newSlug): void
     {
-        $this->pdo->prepare('UPDATE tag SET label=:l, slug=:s WHERE tenant=:tenant AND id=:id')->execute([':tenant' => $tenantId, ':l' => $newLabel, ':s' => $newSlug, ':id' => $tagId]);
+        $this->execute('UPDATE tag SET label=:l, slug=:s WHERE tenant=:tenant AND id=:id', [':tenant' => $tenantId, ':l' => $newLabel, ':s' => $newSlug, ':id' => $tagId]);
     }
 
     public function insertProposal(string $tenantId, string $id, string $type, string $payloadJson): void
     {
-        $this->pdo->prepare('INSERT INTO tag_proposal(tenant,id,type,payload,status) VALUES (:tenant,:id,:t,:p,\'pending\')')->execute([':tenant' => $tenantId, ':id' => $id, ':t' => $type, ':p' => $payloadJson]);
+        $this->execute('INSERT INTO tag_proposal(tenant,id,type,payload,status) VALUES (:tenant,:id,:t,:p,\'pending\')', [':tenant' => $tenantId, ':id' => $id, ':t' => $type, ':p' => $payloadJson]);
     }
 
     public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void
     {
-        $this->pdo->prepare('UPDATE tag_proposal SET status=:s, decided_at=now(), decided_by=:by WHERE tenant=:tenant AND id=:id')->execute([':tenant' => $tenantId, ':s' => $status, ':by' => $decidedBy, ':id' => $id]);
+        $this->execute('UPDATE tag_proposal SET status=:s, decided_at=now(), decided_by=:by WHERE tenant=:tenant AND id=:id', [':tenant' => $tenantId, ':s' => $status, ':by' => $decidedBy, ':id' => $id]);
     }
 
     public function insertAudit(string $tenantId, string $id, string $action, string $entityType, string $entityId, string $detailsJson): void
     {
-        $this->pdo->prepare('INSERT INTO tag_audit_log(tenant,id,action,entity_type,entity_id,details) VALUES (:tenant,:id,:a,:et,:eid,:d)')->execute([':tenant' => $tenantId, ':id' => $id, ':a' => $action, ':et' => $entityType, ':eid' => $entityId, ':d' => $detailsJson]);
+        $this->execute('INSERT INTO tag_audit_log(tenant,id,action,entity_type,entity_id,details) VALUES (:tenant,:id,:a,:et,:eid,:d)', [':tenant' => $tenantId, ':id' => $id, ':a' => $action, ':et' => $entityType, ':eid' => $entityId, ':d' => $detailsJson]);
     }
 
     /**
@@ -241,11 +292,9 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function listAllTags(string $tenantId): array
     {
-        $st = $this->pdo->prepare('SELECT * FROM tag WHERE tenant=:tenant');
-        $st->execute([':tenant' => $tenantId]);
-        $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $this->fetchAllAssoc('SELECT * FROM tag WHERE tenant=:tenant', [':tenant' => $tenantId]);
 
-        return array_map(fn($r) => new Tag($r['id'], $r['slug'], $r['label'], new \DateTimeImmutable($r['created_at'])), $rows);
+        return array_map($this->hydrateTag(...), $rows);
     }
 
     /**
@@ -253,9 +302,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function getPolicy(string $tenantId): array
     {
-        $st = $this->pdo->prepare('SELECT policy FROM tag_policy WHERE tenant=:tenant');
-        $st->execute([':tenant' => $tenantId]);
-        $row = $st->fetch(\PDO::FETCH_ASSOC);
+        $row = $this->fetchAssoc('SELECT policy FROM tag_policy WHERE tenant=:tenant', [':tenant' => $tenantId]);
 
         return $row ? json_decode($row['policy'], true, 512, JSON_THROW_ON_ERROR) : [];
     }
@@ -265,8 +312,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function setPolicy(string $tenantId, array $policy): void
     {
-        $st = $this->pdo->prepare('INSERT INTO tag_policy(tenant,policy) VALUES (:tenant,:p) ON CONFLICT (tenant) DO UPDATE SET policy=EXCLUDED.policy');
-        $st->execute([':tenant' => $tenantId, ':p' => json_encode($policy, JSON_THROW_ON_ERROR)]);
+        $this->execute('INSERT INTO tag_policy(tenant,policy) VALUES (:tenant,:p) ON CONFLICT (tenant) DO UPDATE SET policy=EXCLUDED.policy', [':tenant' => $tenantId, ':p' => json_encode($policy, JSON_THROW_ON_ERROR)]);
     }
 
     /**
@@ -300,7 +346,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
 
     public function putClassification(string $tenantId, string $id, string $scope, string $refId, string $key, string $value): void
     {
-        $this->pdo->prepare('INSERT INTO tag_classification(tenant,id,scope,ref_id,key,value) VALUES (:tenant,:id,:scope,:ref,:k,:v) ON CONFLICT (tenant,id) DO UPDATE SET key=EXCLUDED.key, value=EXCLUDED.value')->execute([':tenant' => $tenantId, ':id' => $id, ':scope' => $scope, ':ref' => $refId, ':k' => $key, ':v' => $value]);
+        $this->execute('INSERT INTO tag_classification(tenant,id,scope,ref_id,key,value) VALUES (:tenant,:id,:scope,:ref,:k,:v) ON CONFLICT (tenant,id) DO UPDATE SET key=EXCLUDED.key, value=EXCLUDED.value', [':tenant' => $tenantId, ':id' => $id, ':scope' => $scope, ':ref' => $refId, ':k' => $key, ':v' => $value]);
     }
 
     /**
@@ -308,20 +354,17 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function listClassifications(string $tenantId, string $scope, string $refId): array
     {
-        $st = $this->pdo->prepare('SELECT key,value FROM tag_classification WHERE tenant=:tenant AND scope=:s AND ref_id=:r');
-        $st->execute([':tenant' => $tenantId, ':s' => $scope, ':r' => $refId]);
-
-        return $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->fetchAllAssoc('SELECT key,value FROM tag_classification WHERE tenant=:tenant AND scope=:s AND ref_id=:r', [':tenant' => $tenantId, ':s' => $scope, ':r' => $refId]);
     }
 
     public function putEffect(string $tenantId, string $id, string $assignedType, string $assignedId, string $key, string $value, string $sourceScope, string $sourceId): void
     {
-        $this->pdo->prepare('INSERT INTO tag_assignment_effect(tenant,id,assigned_type,assigned_id,key,value,source_scope,source_id) VALUES (:tenant,:id,:t,:a,:k,:v,:ss,:sid) ON CONFLICT (tenant,id) DO NOTHING')->execute([':tenant' => $tenantId, ':id' => $id, ':t' => $assignedType, ':a' => $assignedId, ':k' => $key, ':v' => $value, ':ss' => $sourceScope, ':sid' => $sourceId]);
+        $this->execute('INSERT INTO tag_assignment_effect(tenant,id,assigned_type,assigned_id,key,value,source_scope,source_id) VALUES (:tenant,:id,:t,:a,:k,:v,:ss,:sid) ON CONFLICT (tenant,id) DO NOTHING', [':tenant' => $tenantId, ':id' => $id, ':t' => $assignedType, ':a' => $assignedId, ':k' => $key, ':v' => $value, ':ss' => $sourceScope, ':sid' => $sourceId]);
     }
 
     public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void
     {
-        $this->pdo->prepare('DELETE FROM tag_assignment_effect WHERE tenant=:tenant AND source_scope=:s AND source_id=:id')->execute([':tenant' => $tenantId, ':s' => $sourceScope, ':id' => $sourceId]);
+        $this->execute('DELETE FROM tag_assignment_effect WHERE tenant=:tenant AND source_scope=:s AND source_id=:id', [':tenant' => $tenantId, ':s' => $sourceScope, ':id' => $sourceId]);
     }
 
     /**
@@ -329,10 +372,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function listAssignmentsByTag(string $tenantId, string $tagId): array
     {
-        $st = $this->pdo->prepare('SELECT assigned_type, assigned_id FROM tag_assignment WHERE tenant=:tenant AND tag_id=:t');
-        $st->execute([':tenant' => $tenantId, ':t' => $tagId]);
-
-        return $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->fetchAllAssoc('SELECT assigned_type, assigned_id FROM tag_assignment WHERE tenant=:tenant AND tag_id=:t', [':tenant' => $tenantId, ':t' => $tagId]);
     }
 
     /**
@@ -340,9 +380,6 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
      */
     public function listTagsByScheme(string $tenantId, string $schemeName): array
     {
-        $st = $this->pdo->prepare('SELECT t.id as tag_id FROM tag t JOIN tag_scheme s ON s.tenant=t.tenant WHERE t.tenant=:tenant AND s.name=:n');
-        $st->execute([':tenant' => $tenantId, ':n' => $schemeName]);
-
-        return $st->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->fetchAllAssoc('SELECT t.id as tag_id FROM tag t JOIN tag_scheme s ON s.tenant=t.tenant WHERE t.tenant=:tenant AND s.name=:n', [':tenant' => $tenantId, ':n' => $schemeName]);
     }
 }

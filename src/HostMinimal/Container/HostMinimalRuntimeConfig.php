@@ -109,15 +109,20 @@ final readonly class HostMinimalRuntimeConfig
 
     private static function env(string $name, string $default): string
     {
+        return self::envNullable($name) ?? $default;
+    }
+
+    private static function envNullable(string $name): ?string
+    {
         $value = getenv($name);
 
-        return is_string($value) && '' !== $value ? $value : $default;
+        return is_string($value) && '' !== $value ? $value : null;
     }
 
     private static function dbDsn(): string
     {
-        $dsn = getenv('DB_DSN');
-        if (is_string($dsn) && '' !== $dsn) {
+        $dsn = self::envNullable('DB_DSN');
+        if (null !== $dsn) {
             return $dsn;
         }
 
@@ -130,8 +135,8 @@ final readonly class HostMinimalRuntimeConfig
 
     private static function dbUser(): string
     {
-        $user = getenv('DB_USER');
-        if (is_string($user) && '' !== $user) {
+        $user = self::envNullable('DB_USER');
+        if (null !== $user) {
             return $user;
         }
 
@@ -140,8 +145,8 @@ final readonly class HostMinimalRuntimeConfig
 
     private static function dbPass(): string
     {
-        $pass = getenv('DB_PASS');
-        if (is_string($pass) && '' !== $pass) {
+        $pass = self::envNullable('DB_PASS');
+        if (null !== $pass) {
             return $pass;
         }
 

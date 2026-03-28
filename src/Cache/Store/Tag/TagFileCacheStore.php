@@ -7,6 +7,8 @@ namespace App\Cache\Store\Tag;
 
 final class TagFileCacheStore
 {
+    private const JSON_FLAGS = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+
     private string $dir;
     private int $ttl;
 
@@ -33,9 +35,7 @@ final class TagFileCacheStore
             return ['hit' => false];
         }
 
-        $raw = file_get_contents($file);
-
-        return ['hit' => true, 'data' => json_decode($raw ?: '{}', true) ?: []];
+        return ['hit' => true, 'data' => $this->decodePayload(file_get_contents($file))];
     }
 
     /** @param list<string|int> $segments
@@ -44,7 +44,7 @@ final class TagFileCacheStore
     public function set(string $namespace, string $tenant, array $segments, array $data): void
     {
         $file = $this->key($namespace, $tenant, $segments);
-        file_put_contents($file, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        file_put_contents($file, json_encode($data, self::JSON_FLAGS | JSON_THROW_ON_ERROR));
     }
 
     public function clearTenant(string $namespace, string $tenant): void
@@ -91,10 +91,29 @@ final class TagFileCacheStore
 
     private function safeSegment(string $value): string
     {
-        $normalized = strtolower(trim($value));
-        $safe = preg_replace('/[^a-z0-9]+/', '-', $normalized) ?? 'entry';
+        $safe = preg_replace('/[^a-z0-9]+/', '-', $this->normalizeSegment($value)) ?? 'entry';
 
         return trim($safe, '-') ?: 'entry';
+    }
+
+    private function decodePayload(string|false $raw): array
+    {
+        if (false === $raw || '' === $raw) {
+            return [];
+        }
+
+        try {
+            $decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return [];
+        }
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    private function normalizeSegment(string|int $value): string
+    {
+        return strtolower(trim((string) $value));
     }
 
     private function resolveWritableDir(string $preferredDir): string

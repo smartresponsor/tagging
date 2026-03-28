@@ -6,6 +6,11 @@ declare(strict_types=1);
 $base = rtrim((string) (getenv('BASE_URL') ?: 'http://127.0.0.1:8080'), '/');
 $tenant = (string) (getenv('TENANT') ?: 'demo');
 
+function uniqueToken(string $prefix): string
+{
+    return sprintf('%s-%s', $prefix, bin2hex(random_bytes(6)));
+}
+
 /**
  * @param array<string, mixed>|null $body
  * @param list<string> $extraHeaders
@@ -93,7 +98,7 @@ $createResult = resultPayload(expectTuple(
     '/tag',
     $tenant,
     ['name' => 'Smoke Runtime', 'locale' => 'en', 'weight' => 7],
-    ['X-Idempotency-Key: smoke-create-' . time()],
+    ['X-Idempotency-Key: ' . uniqueToken('smoke-create')],
     [200, 201],
 ));
 $tagId = (string) ($createResult['id'] ?? '');
@@ -109,13 +114,13 @@ $patchResult = resultPayload(expectTuple(
     '/tag/' . rawurlencode($tagId),
     $tenant,
     ['name' => 'Smoke Runtime Patched', 'weight' => 9],
-    ['X-Idempotency-Key: smoke-patch-' . time()],
+    ['X-Idempotency-Key: ' . uniqueToken('smoke-patch')],
     [200, 204],
 ));
 
-$entityId = 'smoke-product-' . time();
+$entityId = uniqueToken('smoke-product');
 $assignPayload = ['entity_type' => 'product', 'entity_id' => $entityId];
-$assignIdem = 'smoke-assign-' . time();
+$assignIdem = uniqueToken('smoke-assign');
 expectTuple('assign_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
 $assignRepeat = expectTuple('assign_repeat_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
 if (!(($assignRepeat['duplicated'] ?? false) || ($assignRepeat['ok'] ?? false))) {
@@ -131,7 +136,7 @@ $assignment = expectTuple(
     $tenant,
 );
 
-expectTuple('unassign_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/unassign', $tenant, $assignPayload, ['X-Idempotency-Key: smoke-unassign-' . time()]);
+expectTuple('unassign_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/unassign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . uniqueToken('smoke-unassign')]);
 expectTuple('delete_failed', 'DELETE', '/tag/' . rawurlencode($tagId), $tenant, null, [], [200, 204]);
 
 fwrite(STDOUT, json_encode([

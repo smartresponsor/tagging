@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-php "$(cd "$(dirname "$0")" && pwd)/tag-smoke.php"
+"$(cd "$(dirname "$0")" && pwd)/tag-smoke.sh"

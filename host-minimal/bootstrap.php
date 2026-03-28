@@ -46,6 +46,12 @@ return (static function (): array {
     $cfg = HostMinimalRuntimeConfig::fromGlobals();
     $container = new HostMinimalContainer();
     $pdoOptions = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC];
+    $get = static fn(string $id): mixed => $container->get($id);
+    $queryCacheInvalidator = static fn(): TagQueryCacheInvalidator => new TagQueryCacheInvalidator(
+        $get('searchCache'),
+        $get('suggestCache'),
+    );
+    $tagWriteResponder = static fn(): TagWriteResponder => new TagWriteResponder();
 
     $container->value('runtime', $cfg->runtime);
     $container->value('defaultTenant', $cfg->defaultTenant);
@@ -56,83 +62,78 @@ return (static function (): array {
     $container->share('pdo', static fn(): \PDO => new \PDO($cfg->dbDsn, $cfg->dbUser, $cfg->dbPass, $pdoOptions));
     $container->share('searchCache', static fn(): SearchCache => new SearchCache());
     $container->share('suggestCache', static fn(): SuggestCache => new SuggestCache());
-    $container->share('queryCacheInvalidator', static fn(): TagQueryCacheInvalidator => new TagQueryCacheInvalidator(
-        $container->get('searchCache'),
-        $container->get('suggestCache'),
-    ));
+    $container->share('queryCacheInvalidator', $queryCacheInvalidator);
     $container->share('idempotencyMiddleware', static fn(): IdempotencyMiddleware => new IdempotencyMiddleware());
-    $container->share('observeMiddleware', static fn(): Observe => new Observe($container->get('observabilityConfig')));
+    $container->share('observeMiddleware', static fn(): Observe => new Observe($get('observabilityConfig')));
 
     $container->share('nonceStore', static fn(): NonceStore => new NonceStore(
-        (string) ($container->get('securityConfig')['nonce_dir'] ?? 'var/cache/nonce'),
-        (int) ($container->get('securityConfig')['nonce_ttl_sec'] ?? 300),
-        (int) ($container->get('securityConfig')['max_entries'] ?? 100000),
+        (string) ($get('securityConfig')['nonce_dir'] ?? 'var/cache/nonce'),
+        (int) ($get('securityConfig')['nonce_ttl_sec'] ?? 300),
+        (int) ($get('securityConfig')['max_entries'] ?? 100000),
     ));
     $container->share('signatureVerifier', static fn(): HmacV2Verifier => new HmacV2Verifier(
-        (string) ($container->get('securityConfig')['secret'] ?? ''),
-        (int) ($container->get('securityConfig')['skew_sec'] ?? 120),
-        $container->get('nonceStore'),
+        (string) ($get('securityConfig')['secret'] ?? ''),
+        (int) ($get('securityConfig')['skew_sec'] ?? 120),
+        $get('nonceStore'),
     ));
     $container->share('verifySignatureMiddleware', static fn(): VerifySignature => new VerifySignature(
-        $container->get('signatureVerifier'),
-        $container->get('securityConfig'),
+        $get('signatureVerifier'),
+        $get('securityConfig'),
         new TagMiddlewareResponder(),
     ));
     $container->share('httpPipeline', static fn(): TagMiddlewarePipeline => new TagMiddlewarePipeline([
-        $container->get('observeMiddleware'),
-        $container->get('verifySignatureMiddleware'),
+        $get('observeMiddleware'),
+        $get('verifySignatureMiddleware'),
     ]));
+    $container->share('slugifier', static fn(): Slugifier => new Slugifier());
+    $container->share('slugPolicy', static fn(): SlugPolicy => new SlugPolicy($get('pdo'), $get('slugifier')));
+    $container->share('tagRepo', static fn(): PdoTagEntityRepository => new PdoTagEntityRepository($get('pdo')));
+    $container->share('txRunner', static fn(): PdoTransactionRunner => new PdoTransactionRunner($get('pdo')));
+    $container->share('outboxPublisher', static fn(): OutboxPublisher => new OutboxPublisher($get('pdo')));
+    $container->share('idempotencyStore', static fn(): IdempotencyStore => new IdempotencyStore($get('pdo')));
+    $container->share('tagEntityService', static fn(): TagEntityService => new TagEntityService($get('tagRepo'), $get('slugPolicy')));
     $container->share('statusController', static fn(): StatusController => new StatusController(
-        static fn(): bool => (bool) $container->get('pdo')->query('SELECT 1')->fetchColumn(),
+        static fn(): bool => (bool) $get('pdo')->query('SELECT 1')->fetchColumn(),
         $cfg->runtimeVersion,
         null,
         $cfg->runtime,
     ));
     $container->share('surfaceController', static fn(): SurfaceController => new SurfaceController($cfg->runtime));
-    $container->share('tagReadModel', static fn(): TagReadModel => new TagReadModel($container->get('pdo')));
-    $container->share('webhookRegistry', static fn(): TagWebhookRegistry => new TagWebhookRegistry((string) ($container->get('webhookConfig')['registry_path'] ?? 'report/webhook/registry.json')));
-    $container->share('webhookSender', static fn(): TagWebhookSender => new TagWebhookSender($container->get('webhookConfig')));
-    $container->share('auditEmitter', static fn(): TagAuditEmitter => new TagAuditEmitter($container->get('webhookConfig'), $container->get('webhookSender')));
+    $container->share('tagReadModel', static fn(): TagReadModel => new TagReadModel($get('pdo')));
+    $container->share('webhookRegistry', static fn(): TagWebhookRegistry => new TagWebhookRegistry((string) ($get('webhookConfig')['registry_path'] ?? 'report/webhook/registry.json')));
+    $container->share('webhookSender', static fn(): TagWebhookSender => new TagWebhookSender($get('webhookConfig')));
+    $container->share('auditEmitter', static fn(): TagAuditEmitter => new TagAuditEmitter($get('webhookConfig'), $get('webhookSender')));
     $container->share('webhookController', static fn(): TagWebhookController => new TagWebhookController(
-        $container->get('webhookRegistry'),
-        $container->get('auditEmitter'),
+        $get('webhookRegistry'),
+        $get('auditEmitter'),
         new TagWebhookResponder(),
     ));
 
-    $container->share('tagController', static function () use ($container): TagController {
-        $slugifier = new Slugifier();
-        $slugPolicy = new SlugPolicy($container->get('pdo'), $slugifier);
-        $tagRepo = new PdoTagEntityRepository($container->get('pdo'));
-        $tx = new PdoTransactionRunner($container->get('pdo'));
-        $tagSvc = new TagEntityService($tagRepo, $slugPolicy);
-
+    $container->share('tagController', static function () use ($get, $tagWriteResponder): TagController {
         return new TagController(
-            $tagSvc,
-            new CreateTag($tagRepo, $slugPolicy, $tx, $container->get('searchCache'), $container->get('suggestCache'), $container->get('queryCacheInvalidator')),
-            new PatchTag($tagRepo, $tx, $container->get('searchCache'), $container->get('suggestCache'), $container->get('queryCacheInvalidator')),
-            new DeleteTag($tagRepo, $tx, $container->get('searchCache'), $container->get('suggestCache'), $container->get('queryCacheInvalidator')),
-            new TagWriteResponder(),
+            $get('tagEntityService'),
+            new CreateTag($get('tagRepo'), $get('slugPolicy'), $get('txRunner'), $get('searchCache'), $get('suggestCache'), $get('queryCacheInvalidator')),
+            new PatchTag($get('tagRepo'), $get('txRunner'), $get('searchCache'), $get('suggestCache'), $get('queryCacheInvalidator')),
+            new DeleteTag($get('tagRepo'), $get('txRunner'), $get('searchCache'), $get('suggestCache'), $get('queryCacheInvalidator')),
+            $tagWriteResponder(),
         );
     });
 
-    $container->share('assignController', static function () use ($container, $cfg): AssignController {
-        $outbox = new OutboxPublisher($container->get('pdo'));
-        $idemStore = new IdempotencyStore($container->get('pdo'));
-
+    $container->share('assignController', static function () use ($get, $cfg): AssignController {
         return new AssignController(
-            new AssignService($container->get('pdo'), $outbox, $idemStore),
-            new UnassignService($container->get('pdo'), $outbox, $idemStore),
+            new AssignService($get('pdo'), $get('outboxPublisher'), $get('idempotencyStore')),
+            new UnassignService($get('pdo'), $get('outboxPublisher'), $get('idempotencyStore')),
             ['entity_types' => $cfg->entityTypes],
         );
     });
 
     $container->share('searchController', static fn(): SearchController => new SearchController(
-        new SearchService($container->get('tagReadModel'), $container->get('searchCache')),
+        new SearchService($get('tagReadModel'), $get('searchCache')),
     ));
     $container->share('suggestController', static fn(): SuggestController => new SuggestController(
-        new SuggestService($container->get('tagReadModel'), $container->get('suggestCache')),
+        new SuggestService($get('tagReadModel'), $get('suggestCache')),
     ));
-    $container->share('assignmentReadController', static fn(): AssignmentReadController => new AssignmentReadController($container->get('tagReadModel')));
+    $container->share('assignmentReadController', static fn(): AssignmentReadController => new AssignmentReadController($get('tagReadModel')));
 
     return $container->export([
         'runtime',

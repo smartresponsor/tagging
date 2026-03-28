@@ -10,13 +10,11 @@ use App\Application\Write\Tag\Dto\TagResult;
 
 final class TagWriteResponder
 {
-    /** @return array<string,string> */
-    private function headers(): array
+    private JsonResponder $json;
+
+    public function __construct()
     {
-        return [
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-store',
-        ];
+        $this->json = new JsonResponder();
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
@@ -24,14 +22,10 @@ final class TagWriteResponder
     {
         if ($result->ok) {
             if (204 === $result->status) {
-                return [204, $this->headers(), ''];
+                return $this->json->empty(204);
             }
 
-            return [
-                $result->status,
-                $this->headers(),
-                json_encode($result->payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}',
-            ];
+            return $this->json->respond($result->status, $result->payload);
         }
 
         $status = match ($result->error) {
@@ -40,22 +34,18 @@ final class TagWriteResponder
             default => 400,
         };
 
-        return [
-            $status,
-            $this->headers(),
-            json_encode(['ok' => false, 'code' => $result->error?->value ?? TagError::ValidationFailed->value], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{"ok":false,"code":"validation_failed"}',
-        ];
+        return $this->json->reject($status, $result->error?->value ?? TagError::ValidationFailed->value);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function ok(array $body, int $status = 200): array
     {
-        return [$status, $this->headers(), json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}'];
+        return $this->json->respond($status, $body);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function bad(string $code, int $status = 400, array $extra = []): array
     {
-        return $this->ok(['ok' => false, 'code' => $code] + $extra, $status);
+        return $this->json->reject($status, $code, $extra);
     }
 }

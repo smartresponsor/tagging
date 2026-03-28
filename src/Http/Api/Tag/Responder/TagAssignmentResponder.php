@@ -7,25 +7,23 @@ namespace App\Http\Api\Tag\Responder;
 
 final class TagAssignmentResponder
 {
-    /** @return array<string,string> */
-    private function headers(): array
+    private JsonResponder $json;
+
+    public function __construct()
     {
-        return [
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-store',
-        ];
+        $this->json = new JsonResponder();
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function success(array $body, int $status = 200): array
     {
-        return [$status, $this->headers(), (string) json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)];
+        return $this->json->respond($status, $body);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function failure(string $code, int $status, array $body = []): array
     {
-        return $this->success(['ok' => false, 'code' => $code] + $body, $status);
+        return $this->json->reject($status, $code, $body);
     }
 
     public function statusForCode(?string $code): int

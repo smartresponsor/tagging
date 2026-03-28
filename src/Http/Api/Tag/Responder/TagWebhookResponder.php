@@ -7,16 +7,23 @@ namespace App\Http\Api\Tag\Responder;
 
 final class TagWebhookResponder
 {
+    private JsonResponder $json;
+
+    public function __construct()
+    {
+        $this->json = new JsonResponder();
+    }
+
     /** @return array{int,array<string,string>,string} */
     public function ok(array $payload = [], int $status = 200): array
     {
-        return $this->json($status, ['ok' => true] + $payload);
+        return $this->json->respond($status, ['ok' => true] + $payload);
     }
 
     /** @return array{int,array<string,string>,string} */
     public function bad(string $code, int $status = 400, array $extra = []): array
     {
-        return $this->json($status, ['ok' => false, 'code' => $code] + $extra);
+        return $this->json->reject($status, $code, $extra);
     }
 
     /** @param array<int,array<string,mixed>> $items
@@ -27,16 +34,4 @@ final class TagWebhookResponder
         return $this->ok(['items' => $items, 'total' => count($items)]);
     }
 
-    /** @return array{int,array<string,string>,string} */
-    private function json(int $status, array $payload): array
-    {
-        return [
-            $status,
-            [
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-store',
-            ],
-            json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{"ok":false,"code":"encode_error"}',
-        ];
-    }
 }

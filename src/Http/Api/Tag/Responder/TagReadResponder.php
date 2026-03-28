@@ -10,19 +10,22 @@ namespace App\Http\Api\Tag\Responder;
  */
 final class TagReadResponder
 {
+    private JsonResponder $json;
+
+    public function __construct()
+    {
+        $this->json = new JsonResponder();
+    }
+
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function ok(array $body, int $status = 200): array
     {
-        return [
-            $status,
-            ['Content-Type' => 'application/json'],
-            json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}',
-        ];
+        return $this->json->respond($status, $body, [], false);
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function bad(string $code, int $status = 400, array $extra = []): array
     {
-        return $this->ok(['ok' => false, 'code' => $code] + $extra, $status);
+        return $this->json->reject($status, $code, $extra, [], false);
     }
 }

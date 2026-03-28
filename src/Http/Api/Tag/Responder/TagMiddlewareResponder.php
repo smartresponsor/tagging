@@ -7,16 +7,11 @@ namespace App\Http\Api\Tag\Responder;
 
 final readonly class TagMiddlewareResponder
 {
+    public function __construct(private JsonResponder $json = new JsonResponder()) {}
+
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function reject(int $status, string $code, array $payload = [], array $headers = []): array
     {
-        return [
-            $status,
-            $headers + [
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-store',
-            ],
-            json_encode(['ok' => false, 'code' => $code] + $payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{"ok":false,"code":"encode_error"}',
-        ];
+        return $this->json->reject($status, $code, $payload, $headers);
     }
 }

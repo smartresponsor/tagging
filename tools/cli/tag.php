@@ -28,21 +28,17 @@ try {
 /** @return array<string, mixed> */
 function dispatch(string $command, array $options, array $container): array
 {
-    return match ($command) {
-        'help', '--help', '-h' => helpPayload(),
-        'status' => callStatus($container),
-        'surface' => callSurface($container),
-        'create' => callTuple($container['tagController'](), 'create', buildWriteRequest($options)),
-        'get' => callTuple($container['tagController'](), 'get', buildHeaderRequest($options), requireString($options, 'id')),
-        'patch' => callTuple($container['tagController'](), 'patch', buildWriteRequest($options), requireString($options, 'id')),
-        'delete' => callTuple($container['tagController'](), 'delete', buildHeaderRequest($options), requireString($options, 'id')),
-        'assign' => callTuple($container['assignController'](), 'assign', buildAssignRequest($options), requireString($options, 'tag')),
-        'unassign' => callTuple($container['assignController'](), 'unassign', buildAssignRequest($options), requireString($options, 'tag')),
-        'assignments' => callTuple($container['assignmentReadController'](), 'listByEntity', buildAssignmentsRequest($options)),
-        'search' => callTuple($container['searchController'](), 'get', buildSearchRequest($options)),
-        'suggest' => callTuple($container['suggestController'](), 'get', buildSuggestRequest($options)),
-        default => throw new InvalidArgumentException('Unknown command: ' . $command),
-    };
+    if (isHelpCommand($command)) {
+        return helpPayload();
+    }
+
+    $commands = commandHandlers();
+    $handler = $commands[$command] ?? null;
+    if (!is_callable($handler)) {
+        throw new InvalidArgumentException('Unknown command: ' . $command);
+    }
+
+    return $handler($options, $container);
 }
 
 /** @return array<string, mixed> */
@@ -81,6 +77,29 @@ function callSurface(array $container): array
     return $container['surfaceController']()->surface();
 }
 
+function isHelpCommand(string $command): bool
+{
+    return in_array($command, ['help', '--help', '-h'], true);
+}
+
+/** @return array<string, callable(array<string, string|bool>, array<string, callable():mixed>): array<string, mixed>>> */
+function commandHandlers(): array
+{
+    return [
+        'status' => static fn(array $options, array $container): array => callStatus($container),
+        'surface' => static fn(array $options, array $container): array => callSurface($container),
+        'create' => static fn(array $options, array $container): array => invokeController($container, 'tagController', 'create', buildWriteRequest($options)),
+        'get' => static fn(array $options, array $container): array => invokeController($container, 'tagController', 'get', baseRequest($options), requireString($options, 'id')),
+        'patch' => static fn(array $options, array $container): array => invokeController($container, 'tagController', 'patch', buildWriteRequest($options), requireString($options, 'id')),
+        'delete' => static fn(array $options, array $container): array => invokeController($container, 'tagController', 'delete', baseRequest($options), requireString($options, 'id')),
+        'assign' => static fn(array $options, array $container): array => invokeController($container, 'assignController', 'assign', buildAssignRequest($options), requireString($options, 'tag')),
+        'unassign' => static fn(array $options, array $container): array => invokeController($container, 'assignController', 'unassign', buildAssignRequest($options), requireString($options, 'tag')),
+        'assignments' => static fn(array $options, array $container): array => invokeController($container, 'assignmentReadController', 'listByEntity', buildAssignmentsRequest($options)),
+        'search' => static fn(array $options, array $container): array => invokeController($container, 'searchController', 'get', buildSearchRequest($options)),
+        'suggest' => static fn(array $options, array $container): array => invokeController($container, 'suggestController', 'get', buildSuggestRequest($options)),
+    ];
+}
+
 /** @return array<string, mixed> */
 function callTuple(object $controller, string $method, mixed ...$args): array
 {
@@ -99,25 +118,21 @@ function callTuple(object $controller, string $method, mixed ...$args): array
 }
 
 /** @return array<string, mixed> */
-function buildHeaderRequest(array $options): array
+function baseRequest(array $options): array
 {
-    return ['headers' => ['x-tenant-id' => optionOrDefault($options, 'tenant', 'demo')]];
+    return ['headers' => tenantHeaders($options)];
 }
 
 /** @return array<string, mixed> */
 function buildWriteRequest(array $options): array
 {
-    return [
-        'headers' => ['x-tenant-id' => optionOrDefault($options, 'tenant', 'demo')],
-        'body' => readJsonBody($options),
-    ];
+    return baseRequest($options) + ['body' => readJsonBody($options)];
 }
 
 /** @return array<string, mixed> */
 function buildAssignRequest(array $options): array
 {
-    return [
-        'headers' => ['x-tenant-id' => optionOrDefault($options, 'tenant', 'demo')],
+    return baseRequest($options) + [
         'body' => [
             'entityType' => requireString($options, 'entity-type'),
             'entityId' => requireString($options, 'entity-id'),
@@ -129,12 +144,11 @@ function buildAssignRequest(array $options): array
 /** @return array<string, mixed> */
 function buildAssignmentsRequest(array $options): array
 {
-    return [
-        'headers' => ['x-tenant-id' => optionOrDefault($options, 'tenant', 'demo')],
+    return baseRequest($options) + [
         'query' => [
             'entityType' => requireString($options, 'entity-type'),
             'entityId' => requireString($options, 'entity-id'),
-            'limit' => (int) optionOrDefault($options, 'limit', '50'),
+            'limit' => intOption($options, 'limit', 50),
         ],
     ];
 }
@@ -142,11 +156,10 @@ function buildAssignmentsRequest(array $options): array
 /** @return array<string, mixed> */
 function buildSearchRequest(array $options): array
 {
-    return [
-        'headers' => ['x-tenant-id' => optionOrDefault($options, 'tenant', 'demo')],
+    return baseRequest($options) + [
         'query' => [
             'q' => requireString($options, 'q'),
-            'pageSize' => (int) optionOrDefault($options, 'page-size', '20'),
+            'pageSize' => intOption($options, 'page-size', 20),
             'pageToken' => optionOrDefault($options, 'page-token', ''),
         ],
     ];
@@ -155,11 +168,10 @@ function buildSearchRequest(array $options): array
 /** @return array<string, mixed> */
 function buildSuggestRequest(array $options): array
 {
-    return [
-        'headers' => ['x-tenant-id' => optionOrDefault($options, 'tenant', 'demo')],
+    return baseRequest($options) + [
         'query' => [
             'q' => requireString($options, 'q'),
-            'limit' => (int) optionOrDefault($options, 'limit', '10'),
+            'limit' => intOption($options, 'limit', 10),
         ],
     ];
 }
@@ -192,6 +204,23 @@ function optionOrDefault(array $options, string $name, string $default): string
 {
     $value = $options[$name] ?? $default;
     return is_string($value) ? $value : $default;
+}
+
+/** @return array<string, string> */
+function tenantHeaders(array $options): array
+{
+    return ['x-tenant-id' => optionOrDefault($options, 'tenant', 'demo')];
+}
+
+function intOption(array $options, string $name, int $default): int
+{
+    return (int) optionOrDefault($options, $name, (string) $default);
+}
+
+/** @return array<string, mixed> */
+function invokeController(array $container, string $serviceId, string $method, mixed ...$args): array
+{
+    return callTuple($container[$serviceId](), $method, ...$args);
 }
 
 /** @param list<string> $args @return array<string, string|bool> */

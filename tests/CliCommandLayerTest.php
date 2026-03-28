@@ -38,6 +38,15 @@ final class CliCommandLayerTest extends TestCase
         self::assertStringContainsString('/tag/_surface', $result['stdout']);
     }
 
+    public function testCliRejectsUnknownCommand(): void
+    {
+        $result = $this->runCli('unknown-command');
+
+        self::assertSame(2, $result['exit']);
+        self::assertStringContainsString('"code": "invalid_cli_arguments"', $result['stderr']);
+        self::assertStringContainsString('Unknown command: unknown-command', $result['stderr']);
+    }
+
     /** @return array{exit:int,stdout:string,stderr:string} */
     private function runCli(string $args): array
     {

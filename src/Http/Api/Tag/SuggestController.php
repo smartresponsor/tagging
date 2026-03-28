@@ -15,16 +15,15 @@ final readonly class SuggestController
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function get(array $req): array
     {
-        $tenant = $this->tenant($req);
+        $tenant = TagHttpRequest::tenantOrNull($req);
         if (null === $tenant) {
             return $this->responder->bad('invalid_tenant');
         }
 
-        $query = TagHttpRequest::query($req);
         $result = $this->svc->suggest(
             $tenant,
-            (string) ($query['q'] ?? ''),
-            $this->boundedInt($query['limit'] ?? 10, 10, 1, 50),
+            TagHttpRequest::queryString($req, 'q'),
+            TagHttpRequest::queryInt($req, 'limit', 10, 1, 50),
         );
 
         return $this->responder->ok([
@@ -33,17 +32,5 @@ final readonly class SuggestController
             'cacheHit' => (bool) ($result['cacheHit'] ?? false),
             'result' => $result,
         ]);
-    }
-
-    private function tenant(array $request): ?string
-    {
-        $tenant = TagHttpRequest::tenant($request);
-
-        return '' !== $tenant ? $tenant : null;
-    }
-
-    private function boundedInt(mixed $value, int $default, int $min, int $max): int
-    {
-        return max($min, min($max, (int) ($value ?? $default)));
     }
 }

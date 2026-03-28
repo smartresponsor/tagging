@@ -45,7 +45,7 @@ final class StatusController
         return [
             'ok' => true,
             'ts' => gmdate('c'),
-            'service' => 'tag',
+            'service' => $this->runtimeString('service', 'tag'),
             'version' => $this->version,
             'runtime' => $this->runtimeName(),
             'surface' => [
@@ -58,9 +58,7 @@ final class StatusController
 
     private function runtimeName(): string
     {
-        $runtime = $this->runtime['runtime'] ?? null;
-
-        return is_string($runtime) && '' !== $runtime ? $runtime : 'host-minimal';
+        return $this->runtimeString('runtime', 'host-minimal');
     }
 
     private function routeValue(string $key, string $fallback): string
@@ -73,6 +71,13 @@ final class StatusController
         $route = $routes[$key] ?? null;
 
         return is_string($route) && '' !== $route ? $route : $fallback;
+    }
+
+    private function runtimeString(string $key, string $fallback): string
+    {
+        $value = $this->runtime[$key] ?? null;
+
+        return is_string($value) && '' !== $value ? $value : $fallback;
     }
 
     private function report(string $code, \Throwable $e, array $context = []): void

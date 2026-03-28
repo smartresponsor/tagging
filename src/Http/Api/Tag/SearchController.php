@@ -15,17 +15,16 @@ final readonly class SearchController
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function get(array $req): array
     {
-        $tenant = $this->tenant($req);
+        $tenant = TagHttpRequest::tenantOrNull($req);
         if (null === $tenant) {
             return $this->responder->bad('invalid_tenant');
         }
 
-        $query = TagHttpRequest::query($req);
         $result = $this->svc->search(
             $tenant,
-            (string) ($query['q'] ?? ''),
-            $this->boundedInt($query['pageSize'] ?? 20, 20, 1, 100),
-            $this->optionalString($query['pageToken'] ?? null),
+            TagHttpRequest::queryString($req, 'q'),
+            TagHttpRequest::queryInt($req, 'pageSize', 20, 1, 100),
+            $this->optionalString(TagHttpRequest::queryString($req, 'pageToken')),
         );
 
         return $this->responder->ok([
@@ -38,22 +37,10 @@ final readonly class SearchController
         ]);
     }
 
-    private function tenant(array $request): ?string
-    {
-        $tenant = TagHttpRequest::tenant($request);
-
-        return '' !== $tenant ? $tenant : null;
-    }
-
     private function optionalString(mixed $value): ?string
     {
         $value = trim((string) $value);
 
         return '' !== $value ? $value : null;
-    }
-
-    private function boundedInt(mixed $value, int $default, int $min, int $max): int
-    {
-        return max($min, min($max, (int) ($value ?? $default)));
     }
 }

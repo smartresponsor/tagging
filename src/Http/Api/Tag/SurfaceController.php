@@ -16,13 +16,31 @@ final class SurfaceController
 
         return [
             'ok' => true,
-            'service' => (string) ($runtime['service'] ?? 'tag'),
-            'runtime' => (string) ($runtime['runtime'] ?? 'host-minimal'),
-            'version' => (string) ($runtime['version'] ?? RuntimeVersion::read()),
-            'surface' => is_array($runtime['route'] ?? null) ? $runtime['route'] : [],
-            'examples' => is_array($runtime['example'] ?? null) ? $runtime['example'] : [],
-            'docs' => is_array($runtime['doc'] ?? null) ? $runtime['doc'] : [],
-            'public_surface' => is_array($runtime['public_surface'] ?? null) ? $runtime['public_surface'] : [],
+            'service' => $this->runtimeString($runtime, 'service', 'tag'),
+            'runtime' => $this->runtimeString($runtime, 'runtime', 'host-minimal'),
+            'version' => $this->runtimeString($runtime, 'version', RuntimeVersion::read()),
+            'surface' => $this->runtimeArray($runtime, 'route'),
+            'examples' => $this->runtimeArray($runtime, 'example'),
+            'docs' => $this->runtimeArray($runtime, 'doc'),
+            'public_surface' => $this->runtimeArray($runtime, 'public_surface'),
         ];
+    }
+
+    /** @param array<string,mixed> $runtime */
+    private function runtimeString(array $runtime, string $key, string $fallback): string
+    {
+        $value = $runtime[$key] ?? null;
+
+        return is_string($value) && '' !== $value ? $value : $fallback;
+    }
+
+    /** @param array<string,mixed> $runtime
+     *  @return array<string,mixed>
+     */
+    private function runtimeArray(array $runtime, string $key): array
+    {
+        $value = $runtime[$key] ?? null;
+
+        return is_array($value) ? $value : [];
     }
 }

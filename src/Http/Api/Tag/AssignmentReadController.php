@@ -19,15 +19,14 @@ final readonly class AssignmentReadController
      */
     public function listByEntity(array $req): array
     {
-        $tenant = $this->tenant($req);
+        $tenant = TagHttpRequest::tenantOrNull($req);
         if (null === $tenant) {
             return $this->responder->bad('invalid_tenant');
         }
 
-        $query = TagHttpRequest::query($req);
-        $entityType = $this->queryValue($query, 'entityType', 'entity_type');
-        $entityId = $this->queryValue($query, 'entityId', 'entity_id');
-        $limit = $this->boundedInt($query['limit'] ?? 100, 100, 1, 500);
+        $entityType = TagHttpRequest::queryString($req, 'entityType', 'entity_type');
+        $entityId = TagHttpRequest::queryString($req, 'entityId', 'entity_id');
+        $limit = TagHttpRequest::queryInt($req, 'limit', 100, 1, 500);
 
         if ('' === $entityType || '' === $entityId) {
             return $this->responder->bad('validation_failed');
@@ -41,22 +40,5 @@ final readonly class AssignmentReadController
             'entityId' => $entityId,
             'items' => $items,
         ]);
-    }
-
-    private function tenant(array $request): ?string
-    {
-        $tenant = TagHttpRequest::tenant($request);
-
-        return '' !== $tenant ? $tenant : null;
-    }
-
-    private function queryValue(array $query, string $primary, string $fallback): string
-    {
-        return trim((string) ($query[$primary] ?? ($query[$fallback] ?? '')));
-    }
-
-    private function boundedInt(mixed $value, int $default, int $min, int $max): int
-    {
-        return max($min, min($max, (int) ($value ?? $default)));
     }
 }

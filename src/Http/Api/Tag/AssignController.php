@@ -256,9 +256,7 @@ final class AssignController
 
     private function tenant(array $request): ?string
     {
-        $tenant = TagHttpRequest::tenant($request);
-
-        return '' !== $tenant ? $tenant : null;
+        return TagHttpRequest::tenantOrNull($request);
     }
 
     private function tagId(array $payload): string

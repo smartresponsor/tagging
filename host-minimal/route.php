@@ -3,21 +3,14 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
+use App\Http\Api\Tag\Responder\JsonResponder;
+
 /**
  * @param array<string, callable():mixed> $container
  * @return callable(string,string,array<string,mixed>):array{0:int,1:array<string,string>,2:string}
  */
 return static function (array $container): callable {
-    $json = static function (int $status, array $payload, array $headers = []): array {
-        return [
-            $status,
-            $headers + [
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-store',
-            ],
-            json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{"code":"encode_error"}',
-        ];
-    };
+    $json = new JsonResponder();
 
     $routes = [
         ['method' => 'POST', 'pattern' => '#^/tag$#', 'handler' => static fn(array $norm): array => $container['tagController']()->create($norm)],
@@ -32,21 +25,27 @@ return static function (array $container): callable {
         ['method' => 'GET', 'pattern' => '#^/tag/_webhooks$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->list($norm)],
         ['method' => 'POST', 'pattern' => '#^/tag/_webhooks/subscribe$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->subscribe($norm)],
         ['method' => 'POST', 'pattern' => '#^/tag/_webhooks/test$#', 'handler' => static fn(array $norm): array => $container['webhookController']()->test($norm)],
-        ['method' => 'GET', 'pattern' => '#^/tag/_status$#', 'handler' => static fn(): array => $json(
+        ['method' => 'GET', 'pattern' => '#^/tag/_status$#', 'handler' => static fn(): array => $json->respond(
             200,
             $container['statusController']()->status(),
-            ['X-Tag-Version' => (string) (($container['runtime']()['version'] ?? 'dev'))],
+            [
+                'X-Tag-Version' => (string) (($container['runtime']()['version'] ?? 'dev')),
+                'Cache-Control' => 'no-store',
+            ],
         )],
-        ['method' => 'GET', 'pattern' => '#^/tag/_surface$#', 'handler' => static fn(): array => $json(
+        ['method' => 'GET', 'pattern' => '#^/tag/_surface$#', 'handler' => static fn(): array => $json->respond(
             200,
             $container['surfaceController']()->surface(),
-            ['X-Tag-Surface-Version' => (string) (($container['runtime']()['version'] ?? 'dev'))],
+            [
+                'X-Tag-Surface-Version' => (string) (($container['runtime']()['version'] ?? 'dev')),
+                'Cache-Control' => 'no-store',
+            ],
         )],
     ];
 
     return static function (string $method, string $path, array $norm) use ($routes, $json): array {
         if ($method === 'OPTIONS') {
-            return [204, ['Content-Type' => 'application/json', 'Allow' => 'GET,POST,PATCH,DELETE,OPTIONS'], ''];
+            return $json->empty(204, ['Allow' => 'GET,POST,PATCH,DELETE,OPTIONS', 'Cache-Control' => 'no-store']);
         }
 
         foreach ($routes as $route) {
@@ -57,6 +56,6 @@ return static function (array $container): callable {
             return $route['handler']($norm, $matches);
         }
 
-        return $json(404, ['code' => 'not_found']);
+        return $json->reject(404, 'not_found');
     };
 };

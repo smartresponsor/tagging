@@ -5,13 +5,15 @@ declare(strict_types=1);
 
 namespace App\Cache\Store\Tag;
 
-final readonly class TagFileCacheStore
+final class TagFileCacheStore
 {
-    public function __construct(private string $dir, private int $ttl = 60)
+    private string $dir;
+    private int $ttl;
+
+    public function __construct(string $dir, int $ttl = 60)
     {
-        if (!is_dir($this->dir)) {
-            mkdir($this->dir, 0777, true);
-        }
+        $this->ttl = $ttl;
+        $this->dir = $this->resolveWritableDir($dir);
     }
 
     /** @param list<string|int> $segments */
@@ -93,5 +95,36 @@ final readonly class TagFileCacheStore
         $safe = preg_replace('/[^a-z0-9]+/', '-', $normalized) ?? 'entry';
 
         return trim($safe, '-') ?: 'entry';
+    }
+
+    private function resolveWritableDir(string $preferredDir): string
+    {
+        if ($this->ensureWritableDirectory($preferredDir)) {
+            return $preferredDir;
+        }
+
+        $fallbackDir = sprintf(
+            '%s%s%s%s%s',
+            rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR),
+            DIRECTORY_SEPARATOR,
+            'smartresponsor-tag-cache',
+            DIRECTORY_SEPARATOR,
+            trim(str_replace(['/', '\\'], '-', $preferredDir), '-'),
+        );
+
+        if ($this->ensureWritableDirectory($fallbackDir)) {
+            return $fallbackDir;
+        }
+
+        return $preferredDir;
+    }
+
+    private function ensureWritableDirectory(string $dir): bool
+    {
+        if (!is_dir($dir) && !@mkdir($dir, 0777, true) && !is_dir($dir)) {
+            return false;
+        }
+
+        return is_writable($dir);
     }
 }

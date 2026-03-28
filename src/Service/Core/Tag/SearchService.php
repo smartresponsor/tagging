@@ -18,23 +18,14 @@ final readonly class SearchService
     public function search(string $tenant, string $q, int $pageSize = 20, ?string $pageToken = null): array
     {
         $q = trim($q);
-        $pageSize = max(1, min(100, $pageSize));
+        $pageSize = $this->normalizePageSize($pageSize);
         if ('' === $q) {
-            return ['items' => [], 'total' => 0, 'nextPageToken' => null, 'cacheHit' => false];
+            return $this->emptyResult();
         }
-        $offset = 0;
-        if ($pageToken) {
-            $dec = base64_decode($pageToken, true);
-            if (false !== $dec) {
-                $off = (int) $dec;
-                if ($off >= 0) {
-                    $offset = $off;
-                }
-            }
-        }
-        $c = $this->cache->get($tenant, $q, $pageSize, $offset);
-        if ($c['hit'] ?? false) {
-            $data = $c['data'] ?? ['items' => [], 'total' => 0, 'nextPageToken' => null];
+        $offset = $this->decodeOffset($pageToken);
+        $cacheEntry = $this->cache->get($tenant, $q, $pageSize, $offset);
+        if ($cacheEntry['hit'] ?? false) {
+            $data = $cacheEntry['data'] ?? $this->emptyResult();
             $data['cacheHit'] = true;
 
             return $data;
@@ -45,10 +36,43 @@ final readonly class SearchService
         if ($hasNext) {
             array_pop($items);
         }
-        $next = $hasNext ? base64_encode((string) ($offset + $pageSize)) : null;
-        $res = ['items' => $items, 'total' => -1, 'nextPageToken' => $next, 'cacheHit' => false];
-        $this->cache->set($tenant, $q, $pageSize, $offset, ['items' => $items, 'total' => -1, 'nextPageToken' => $next]);
+        $result = [
+            'items' => $items,
+            'total' => -1,
+            'nextPageToken' => $hasNext ? base64_encode((string) ($offset + $pageSize)) : null,
+            'cacheHit' => false,
+        ];
+        $this->cache->set($tenant, $q, $pageSize, $offset, [
+            'items' => $result['items'],
+            'total' => $result['total'],
+            'nextPageToken' => $result['nextPageToken'],
+        ]);
 
-        return $res;
+        return $result;
+    }
+
+    private function normalizePageSize(int $pageSize): int
+    {
+        return max(1, min(100, $pageSize));
+    }
+
+    private function decodeOffset(?string $pageToken): int
+    {
+        if (null === $pageToken || '' === $pageToken) {
+            return 0;
+        }
+
+        $decoded = base64_decode($pageToken, true);
+        if (false === $decoded) {
+            return 0;
+        }
+
+        return max(0, (int) $decoded);
+    }
+
+    /** @return array{items:array<int,array<string,mixed>>, total:int, nextPageToken:?string, cacheHit:bool} */
+    private function emptyResult(): array
+    {
+        return ['items' => [], 'total' => 0, 'nextPageToken' => null, 'cacheHit' => false];
     }
 }

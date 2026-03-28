@@ -35,13 +35,8 @@ final readonly class TagController
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function get(array $req, string $id): array
     {
-        $tenant = TagHttpRequest::tenant($req);
-        if ('' === $tenant) {
-            return $this->responder->bad('invalid_tenant');
-        }
-
         try {
-            $row = $this->queryService->get($tenant, $id);
+            $row = $this->queryService->get($this->tenant($req), $id);
             if (null === $row) {
                 return $this->responder->bad('not_found', 404);
             }
@@ -66,5 +61,15 @@ final readonly class TagController
         return $this->responder->respond(
             $this->deleteTag->execute(new DeleteTagCommand(TagHttpRequest::tenant($req), $id)),
         );
+    }
+
+    private function tenant(array $request): string
+    {
+        $tenant = TagHttpRequest::tenant($request);
+        if ('' === $tenant) {
+            throw new \InvalidArgumentException('invalid_tenant');
+        }
+
+        return $tenant;
     }
 }

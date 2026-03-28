@@ -9,6 +9,8 @@ use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 
 final readonly class AssignService implements AssignOperationInterface
 {
+    private const ACTION = 'tag.assign';
+
     private TagErrorSink $errorSink;
 
     public function __construct(
@@ -23,55 +25,29 @@ final readonly class AssignService implements AssignOperationInterface
     /** @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string} */
     public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
     {
-        $checksum = hash('sha256', implode('|', [$tenant, $tagId, $entityType, $entityId]));
-        if ($idemKey && $this->idem) {
-            $st = $this->idem->begin($tenant, $idemKey, 'tag.assign', $checksum);
-            if ('duplicate' === $st['state']) {
-                $result = is_array($st['result'] ?? null) ? $st['result'] : ['ok' => true];
-                $result['duplicated'] = true;
-
-                return $result;
-            }
-            if ('conflict' === $st['state']) {
-                return ['ok' => false, 'conflict' => true, 'code' => 'idempotency_conflict'];
-            }
+        $idempotencyDecision = $this->beginIdempotency($tenant, $tagId, $entityType, $entityId, $idemKey);
+        if (null !== $idempotencyDecision) {
+            return $idempotencyDecision;
         }
 
         $this->pdo->beginTransaction();
         try {
-            $chk = $this->pdo->prepare('SELECT 1 FROM tag_entity WHERE tenant=:t AND id=:id');
-            $chk->execute([':t' => $tenant, ':id' => $tagId]);
-            if (!$chk->fetch()) {
+            if (!$this->tagExists($tenant, $tagId)) {
                 $this->pdo->rollBack();
 
                 return ['ok' => false, 'code' => 'tag_not_found'];
             }
 
-            $ins = $this->pdo->prepare(
-                'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id)
-                 VALUES (:t,:et,:eid,:tid)
-                 ON CONFLICT (tenant, entity_type, entity_id, tag_id) DO NOTHING
-                 RETURNING 1',
-            );
-            $ins->execute([':t' => $tenant, ':et' => $entityType, ':eid' => $entityId, ':tid' => $tagId]);
-            $created = false !== $ins->fetchColumn();
+            $created = $this->insertAssignment($tenant, $tagId, $entityType, $entityId);
 
             if ($created) {
-                $this->outbox->publish($tenant, 'tag.assigned', [
-                    'tenant' => $tenant,
-                    'tag_id' => $tagId,
-                    'entity_type' => $entityType,
-                    'entity_id' => $entityId,
-                    'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
-                ]);
+                $this->publishAssignedEvent($tenant, $tagId, $entityType, $entityId);
             }
 
-            $result = $created ? ['ok' => true] : ['ok' => true, 'duplicated' => true];
+            $result = $this->assignmentResult($created);
 
             $this->pdo->commit();
-            if ($idemKey && $this->idem) {
-                $this->idem->complete($tenant, $idemKey, $result);
-            }
+            $this->completeIdempotency($tenant, $idemKey, $result);
 
             return $result;
         } catch (\Throwable $e) {
@@ -87,6 +63,87 @@ final readonly class AssignService implements AssignOperationInterface
 
             return ['ok' => false, 'code' => 'assign_failed'];
         }
+    }
+
+    /** @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string}|null */
+    private function beginIdempotency(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey): ?array
+    {
+        if (null === $idemKey || '' === $idemKey || null === $this->idem) {
+            return null;
+        }
+
+        $checksum = hash('sha256', implode('|', [$tenant, $tagId, $entityType, $entityId]));
+        $state = $this->idem->begin($tenant, $idemKey, self::ACTION, $checksum);
+
+        return match ($state['state'] ?? null) {
+            'duplicate' => $this->duplicateResult($state),
+            'conflict' => ['ok' => false, 'conflict' => true, 'code' => 'idempotency_conflict'],
+            default => null,
+        };
+    }
+
+    /** @param array<string, mixed> $state
+     *  @return array{ok:bool, duplicated:bool, conflict?:bool, code?:string}
+     */
+    private function duplicateResult(array $state): array
+    {
+        $result = is_array($state['result'] ?? null) ? $state['result'] : ['ok' => true];
+        $result['duplicated'] = true;
+
+        return $result;
+    }
+
+    private function tagExists(string $tenant, string $tagId): bool
+    {
+        $statement = $this->pdo->prepare('SELECT 1 FROM tag_entity WHERE tenant=:tenant AND id=:id');
+        $statement->execute([':tenant' => $tenant, ':id' => $tagId]);
+
+        return false !== $statement->fetchColumn();
+    }
+
+    private function insertAssignment(string $tenant, string $tagId, string $entityType, string $entityId): bool
+    {
+        $statement = $this->pdo->prepare(
+            'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id)
+             VALUES (:tenant,:entity_type,:entity_id,:tag_id)
+             ON CONFLICT (tenant, entity_type, entity_id, tag_id) DO NOTHING
+             RETURNING 1',
+        );
+        $statement->execute([
+            ':tenant' => $tenant,
+            ':entity_type' => $entityType,
+            ':entity_id' => $entityId,
+            ':tag_id' => $tagId,
+        ]);
+
+        return false !== $statement->fetchColumn();
+    }
+
+    private function publishAssignedEvent(string $tenant, string $tagId, string $entityType, string $entityId): void
+    {
+        $this->outbox->publish($tenant, 'tag.assigned', [
+            'tenant' => $tenant,
+            'tag_id' => $tagId,
+            'entity_type' => $entityType,
+            'entity_id' => $entityId,
+            'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
+        ]);
+    }
+
+    /** @return array{ok:bool, duplicated?:bool} */
+    private function assignmentResult(bool $created): array
+    {
+        return $created ? ['ok' => true] : ['ok' => true, 'duplicated' => true];
+    }
+
+    /** @param array{ok:bool, duplicated?:bool, conflict?:bool, code?:string} $result */
+    private function completeIdempotency(string $tenant, ?string $idemKey, array $result): void
+    {
+        if (null === $idemKey || '' === $idemKey || null === $this->idem) {
+            return;
+        }
+
+        $this->idem->complete($tenant, $idemKey, $result);
     }
 
     private function report(string $code, \Throwable $e, array $context = []): void

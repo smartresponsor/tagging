@@ -10,6 +10,9 @@ use App\Service\Security\HmacV2Verifier;
 
 final readonly class VerifySignature
 {
+    private const DEFAULT_INCLUDE = ['/tag/**'];
+    private const DEFAULT_EXCLUDE = ['/tag/_status', '/tag/_surface', '/tag/_metrics'];
+
     public function __construct(
         private HmacV2Verifier $verifier,
         private array $cfg = [],
@@ -19,29 +22,23 @@ final readonly class VerifySignature
     /** @param array{method:string,path:string,headers:array,body:string} $req */
     public function handle(array $req, callable $next): array
     {
-        if (!$this->isEnabled() || !$this->shouldApply((string) ($req['path'] ?? '/'))) {
+        $path = (string) ($req['path'] ?? '/');
+        if (!$this->isEnabled() || !$this->shouldApply($path)) {
             return $next($req);
         }
 
-        $res = $this->verifier->verify(
+        $result = $this->verifier->verify(
             (string) ($req['method'] ?? 'GET'),
-            (string) ($req['path'] ?? '/'),
+            $path,
             (string) ($req['body'] ?? ''),
             is_array($req['headers'] ?? null) ? $req['headers'] : [],
         );
 
-        if (($res['ok'] ?? false) === true) {
+        if (($result['ok'] ?? false) === true) {
             return $next($req);
         }
 
-        $status = (int) ($res['code'] ?? 401);
-        $code = (string) ($res['msg'] ?? 'signature_invalid');
-        $headers = [];
-        if (401 === $status) {
-            $headers['WWW-Authenticate'] = 'HMAC-SHA256';
-        }
-
-        return $this->responder->reject($status, $code, [], $headers);
+        return $this->reject((int) ($result['code'] ?? 401), (string) ($result['msg'] ?? 'signature_invalid'));
     }
 
     private function isEnabled(): bool
@@ -51,20 +48,42 @@ final readonly class VerifySignature
 
     private function shouldApply(string $path): bool
     {
-        $inc = $this->cfg['apply']['include'] ?? ['/tag/**'];
-        $exc = $this->cfg['apply']['exclude'] ?? ['/tag/_status', '/tag/_surface', '/tag/_metrics'];
-        foreach ($exc as $pat) {
+        foreach ($this->excludePatterns() as $pat) {
             if ($this->match((string) $pat, $path)) {
                 return false;
             }
         }
-        foreach ($inc as $pat) {
+        foreach ($this->includePatterns() as $pat) {
             if ($this->match((string) $pat, $path)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /** @return list<string> */
+    private function includePatterns(): array
+    {
+        $patterns = $this->cfg['apply']['include'] ?? self::DEFAULT_INCLUDE;
+
+        return is_array($patterns) ? array_values(array_map('strval', $patterns)) : self::DEFAULT_INCLUDE;
+    }
+
+    /** @return list<string> */
+    private function excludePatterns(): array
+    {
+        $patterns = $this->cfg['apply']['exclude'] ?? self::DEFAULT_EXCLUDE;
+
+        return is_array($patterns) ? array_values(array_map('strval', $patterns)) : self::DEFAULT_EXCLUDE;
+    }
+
+    /** @return array{0:int,1:array<string,string>,2:string} */
+    private function reject(int $status, string $code): array
+    {
+        $headers = 401 === $status ? ['WWW-Authenticate' => 'HMAC-SHA256'] : [];
+
+        return $this->responder->reject($status, $code, [], $headers);
     }
 
     private function match(string $pat, string $path): bool

@@ -19,27 +19,44 @@ final readonly class AssignmentReadController
      */
     public function listByEntity(array $req): array
     {
-        $tenant = TagHttpRequest::tenant($req);
-        if ('' === $tenant) {
+        $tenant = $this->tenant($req);
+        if (null === $tenant) {
             return $this->responder->bad('invalid_tenant');
         }
 
-        $q = TagHttpRequest::query($req);
-        $etype = trim((string) ($q['entityType'] ?? ($q['entity_type'] ?? '')));
-        $eid = trim((string) ($q['entityId'] ?? ($q['entity_id'] ?? '')));
-        $limit = max(1, min(500, (int) ($q['limit'] ?? 100)));
+        $query = TagHttpRequest::query($req);
+        $entityType = $this->queryValue($query, 'entityType', 'entity_type');
+        $entityId = $this->queryValue($query, 'entityId', 'entity_id');
+        $limit = $this->boundedInt($query['limit'] ?? 100, 100, 1, 500);
 
-        if ('' === $etype || '' === $eid) {
+        if ('' === $entityType || '' === $entityId) {
             return $this->responder->bad('validation_failed');
         }
 
-        $items = $this->read->tagsForEntity($tenant, $etype, $eid, $limit);
+        $items = $this->read->tagsForEntity($tenant, $entityType, $entityId, $limit);
 
         return $this->responder->ok([
             'ok' => true,
-            'entityType' => $etype,
-            'entityId' => $eid,
+            'entityType' => $entityType,
+            'entityId' => $entityId,
             'items' => $items,
         ]);
+    }
+
+    private function tenant(array $request): ?string
+    {
+        $tenant = TagHttpRequest::tenant($request);
+
+        return '' !== $tenant ? $tenant : null;
+    }
+
+    private function queryValue(array $query, string $primary, string $fallback): string
+    {
+        return trim((string) ($query[$primary] ?? ($query[$fallback] ?? '')));
+    }
+
+    private function boundedInt(mixed $value, int $default, int $min, int $max): int
+    {
+        return max($min, min($max, (int) ($value ?? $default)));
     }
 }

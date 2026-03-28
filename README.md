@@ -81,10 +81,12 @@ Prereqs:
 2. Apply migrations:
 
 - `php tools/db/tag-migrate.php`
+- or self-contained with Docker-backed test DB: `composer run -n db:smoke:self-contained`
 
 3. Run:
 
 - `php -S 127.0.0.1:8080 host-minimal/index.php`
+- or self-contained host + Docker-backed test DB: `composer run -n host:test-db:serve`
 
 Environment variables used by code:
 
@@ -108,17 +110,20 @@ Host PHP extension install on Debian/Ubuntu:
 1. Start Postgres:
 
 - `docker compose up -d db`
+- or `composer run -n db:test:start`
 
 2. Apply migrations:
 
 - `export POSTGRES_DB=app POSTGRES_USER=app POSTGRES_PASSWORD=app DB_HOST=127.0.0.1 DB_PORT=54329`
 - `for f in db/postgres/migrations/*.sql; do psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$DB_HOST:$DB_PORT/$POSTGRES_DB" -f "$f"; done`
+- or `composer run -n db:smoke:self-contained`
 
 3. Run suites:
 
 - `composer test`
 - `composer run -n test:integration`
 - `composer run -n test:all`
+- `composer run -n db:test:stop`
 
 ## QA commands
 

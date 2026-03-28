@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-php "$(dirname "$0")/tag-migrate.php"
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+php "$ROOT_DIR/tools/db/tag-migrate.php" "$@"
 echo "OK tag-migration-smoke"

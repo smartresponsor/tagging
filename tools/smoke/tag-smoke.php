@@ -6,6 +6,11 @@ declare(strict_types=1);
 $base = rtrim((string) (getenv('BASE_URL') ?: 'http://127.0.0.1:8080'), '/');
 $tenant = (string) (getenv('TENANT') ?: 'demo');
 
+/**
+ * @param array<string, mixed>|null $body
+ * @param list<string> $extraHeaders
+ * @return array{0:int,1:array<string,mixed>}
+ */
 function call(string $method, string $url, string $tenant, ?array $body = null, array $extraHeaders = []): array
 {
     $headers = array_merge(['X-Tenant-Id: ' . $tenant], $extraHeaders);
@@ -30,84 +35,104 @@ function call(string $method, string $url, string $tenant, ?array $body = null, 
     return [$code, is_array($json) ? $json : ['raw' => $raw]];
 }
 
-[$statusCode, $status] = call('GET', $base . '/tag/_status', $tenant);
-if ($statusCode !== 200 || !($status['ok'] ?? false)) {
-    throw new RuntimeException('status_failed');
+/** @return array{0:int,1:array<string,mixed>} */
+function request(string $method, string $path, string $tenant, ?array $body = null, array $extraHeaders = []): array
+{
+    global $base;
+
+    return call($method, $base . $path, $tenant, $body, $extraHeaders);
 }
 
-[$surfaceCode, $surface] = call('GET', $base . '/tag/_surface', $tenant);
-if ($surfaceCode !== 200 || !($surface['ok'] ?? false) || (($surface['surface']['search'] ?? '') !== 'GET /tag/search')) {
+/** @param list<int> $allowedCodes @return array<string, mixed> */
+function expectResponse(string $failureCode, array $allowedCodes, int $code, array $payload): array
+{
+    if (!in_array($code, $allowedCodes, true) || (($payload['ok'] ?? true) === false)) {
+        throw new RuntimeException($failureCode);
+    }
+
+    return $payload;
+}
+
+/** @return array<string, mixed> */
+function expectTuple(string $failureCode, string $method, string $path, string $tenant, ?array $body = null, array $extraHeaders = [], array $allowedCodes = [200]): array
+{
+    [$code, $payload] = request($method, $path, $tenant, $body, $extraHeaders);
+
+    return expectResponse($failureCode, $allowedCodes, $code, $payload);
+}
+
+/** @return array<string, mixed> */
+function resultPayload(array $payload): array
+{
+    $result = $payload['result'] ?? null;
+
+    return is_array($result) ? $result : $payload;
+}
+
+function expectCode(string $failureCode, int $expectedCode, int $actualCode): void
+{
+    if ($actualCode !== $expectedCode) {
+        throw new RuntimeException($failureCode);
+    }
+}
+
+$status = expectTuple('status_failed', 'GET', '/tag/_status', $tenant);
+$surface = expectTuple('surface_failed', 'GET', '/tag/_surface', $tenant);
+if (($surface['surface']['search'] ?? '') !== 'GET /tag/search') {
     throw new RuntimeException('surface_failed');
 }
 
-[$preflightCode] = call('OPTIONS', $base . '/tag', $tenant);
-if ($preflightCode !== 204) {
-    throw new RuntimeException('preflight_failed');
-}
+[$preflightCode] = request('OPTIONS', '/tag', $tenant);
+expectCode('preflight_failed', 204, $preflightCode);
 
-[$seedSearchCode, $seedSearch] = call('GET', $base . '/tag/search?q=elect&pageSize=10', $tenant);
-if ($seedSearchCode !== 200 || !($seedSearch['ok'] ?? false)) {
-    throw new RuntimeException('seed_search_failed');
-}
+$seedSearch = expectTuple('seed_search_failed', 'GET', '/tag/search?q=elect&pageSize=10', $tenant);
 
-$createIdem = 'smoke-create-' . time();
-[$createCode, $create] = call('POST', $base . '/tag', $tenant, ['name' => 'Smoke Runtime', 'locale' => 'en', 'weight' => 7], ['X-Idempotency-Key: ' . $createIdem]);
-$createResult = is_array($create['result'] ?? null) ? $create['result'] : $create;
-if (!in_array($createCode, [200, 201], true) || !is_array($createResult)) {
-    throw new RuntimeException('create_failed');
-}
+$createResult = resultPayload(expectTuple(
+    'create_failed',
+    'POST',
+    '/tag',
+    $tenant,
+    ['name' => 'Smoke Runtime', 'locale' => 'en', 'weight' => 7],
+    ['X-Idempotency-Key: smoke-create-' . time()],
+    [200, 201],
+));
 $tagId = (string) ($createResult['id'] ?? '');
 if ($tagId === '') {
     throw new RuntimeException('create_missing_id');
 }
 
-[$getCode] = call('GET', $base . '/tag/' . rawurlencode($tagId), $tenant);
-if ($getCode !== 200) {
-    throw new RuntimeException('get_failed');
-}
+expectTuple('get_failed', 'GET', '/tag/' . rawurlencode($tagId), $tenant);
 
-[$patchCode, $patch] = call('PATCH', $base . '/tag/' . rawurlencode($tagId), $tenant, ['name' => 'Smoke Runtime Patched', 'weight' => 9], ['X-Idempotency-Key: smoke-patch-' . time()]);
-$patchResult = is_array($patch['result'] ?? null) ? $patch['result'] : (is_array($patch) ? $patch : []);
-if (!in_array($patchCode, [200, 204], true)) {
-    throw new RuntimeException('patch_failed');
-}
+$patchResult = resultPayload(expectTuple(
+    'patch_failed',
+    'PATCH',
+    '/tag/' . rawurlencode($tagId),
+    $tenant,
+    ['name' => 'Smoke Runtime Patched', 'weight' => 9],
+    ['X-Idempotency-Key: smoke-patch-' . time()],
+    [200, 204],
+));
 
 $entityId = 'smoke-product-' . time();
 $assignPayload = ['entity_type' => 'product', 'entity_id' => $entityId];
 $assignIdem = 'smoke-assign-' . time();
-[$assignCode] = call('POST', $base . '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
-if ($assignCode !== 200) {
-    throw new RuntimeException('assign_failed');
-}
-[$assignRepeatCode, $assignRepeat] = call('POST', $base . '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
-if ($assignRepeatCode !== 200 || !(($assignRepeat['duplicated'] ?? false) || ($assignRepeat['ok'] ?? false))) {
+expectTuple('assign_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
+$assignRepeat = expectTuple('assign_repeat_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
+if (!(($assignRepeat['duplicated'] ?? false) || ($assignRepeat['ok'] ?? false))) {
     throw new RuntimeException('assign_repeat_failed');
 }
 
-[$searchCode, $search] = call('GET', $base . '/tag/search?q=smoke&pageSize=10', $tenant);
-if ($searchCode !== 200 || !($search['ok'] ?? false)) {
-    throw new RuntimeException('search_failed');
-}
+$search = expectTuple('search_failed', 'GET', '/tag/search?q=smoke&pageSize=10', $tenant);
+$suggest = expectTuple('suggest_failed', 'GET', '/tag/suggest?q=smo&limit=10', $tenant);
+$assignment = expectTuple(
+    'assignment_read_failed',
+    'GET',
+    '/tag/assignments?entityType=product&entityId=' . rawurlencode($entityId) . '&limit=10',
+    $tenant,
+);
 
-[$suggestCode, $suggest] = call('GET', $base . '/tag/suggest?q=smo&limit=10', $tenant);
-if ($suggestCode !== 200 || !($suggest['ok'] ?? false)) {
-    throw new RuntimeException('suggest_failed');
-}
-
-[$assignmentCode, $assignment] = call('GET', $base . '/tag/assignments?entityType=product&entityId=' . rawurlencode($entityId) . '&limit=10', $tenant);
-if ($assignmentCode !== 200 || !($assignment['ok'] ?? false)) {
-    throw new RuntimeException('assignment_read_failed');
-}
-
-[$unassignCode] = call('POST', $base . '/tag/' . rawurlencode($tagId) . '/unassign', $tenant, $assignPayload, ['X-Idempotency-Key: smoke-unassign-' . time()]);
-if ($unassignCode !== 200) {
-    throw new RuntimeException('unassign_failed');
-}
-
-[$deleteCode] = call('DELETE', $base . '/tag/' . rawurlencode($tagId), $tenant);
-if (!in_array($deleteCode, [200, 204], true)) {
-    throw new RuntimeException('delete_failed');
-}
+expectTuple('unassign_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/unassign', $tenant, $assignPayload, ['X-Idempotency-Key: smoke-unassign-' . time()]);
+expectTuple('delete_failed', 'DELETE', '/tag/' . rawurlencode($tagId), $tenant, null, [], [200, 204]);
 
 fwrite(STDOUT, json_encode([
     'ok' => true,

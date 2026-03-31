@@ -140,8 +140,11 @@ Host PHP extension install on Debian/Ubuntu:
 - `composer run -n cs:fix`
 - `composer run -n fixture:validate`
 - `composer run -n fixture:dry-run`
+- `composer run -n smoke:runtime`
 - `composer run -n test:panther`
 - `composer run -n test:e2e`
+
+`smoke:runtime` validates the current public runtime surface, including bulk assignment endpoints, missing-tag unassign semantics, flat read payloads, and authoritative search totals.
 
 ## Demo scenario
 

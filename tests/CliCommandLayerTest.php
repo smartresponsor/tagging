@@ -36,6 +36,8 @@ final class CliCommandLayerTest extends TestCase
         self::assertSame(0, $result['exit']);
         self::assertStringContainsString('"public_surface"', $result['stdout']);
         self::assertStringContainsString('/tag/_surface', $result['stdout']);
+        self::assertStringContainsString('/tag/assignments/bulk', $result['stdout']);
+        self::assertStringContainsString('/tag/assignments/bulk-to-entity', $result['stdout']);
     }
 
     public function testCliRejectsUnknownCommand(): void

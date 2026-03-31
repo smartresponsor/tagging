@@ -9,6 +9,7 @@ READ_P95_MAX="${READ_P95_MAX:-0.25}"
 ERROR_RATE_MAX="${ERROR_RATE_MAX:-0.005}"
 ITERATIONS="${ITERATIONS:-20}"
 SEARCH_QUERY="${SEARCH_QUERY:-elect}"
+SUGGEST_QUERY="${SUGGEST_QUERY:-pre}"
 results_file="$(mktemp)"
 body_file="$(mktemp)"
 
@@ -52,7 +53,9 @@ trap cleanup EXIT
 
 for _ in $(seq 1 "$ITERATIONS"); do
   hit "/tag/_status" >> "$results_file"
+  hit "/tag/_surface" >> "$results_file"
   hit "/tag/search?q=${SEARCH_QUERY}&pageSize=10" >> "$results_file"
+  hit "/tag/suggest?q=${SUGGEST_QUERY}&limit=10" >> "$results_file"
 done
 
 python3 - <<'PY' "$results_file" "$READ_P95_MAX" "$ERROR_RATE_MAX"

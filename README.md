@@ -10,7 +10,7 @@ The current shipped `host-minimal/` runtime is the source of truth for what is a
 - assign / unassign
 - bulk assignment operations
 - assignment list by entity
-- search / suggest
+- search / suggest with flat read payloads
 - `GET /tag/_status`
 - `GET /tag/_surface`
 
@@ -141,7 +141,7 @@ Host PHP extension install on Debian/Ubuntu:
 ## Demo scenario
 
 See `docs/demo/tag-quick-demo.md`.
-Start with `GET /tag/_surface` to verify the public runtime catalog before create/search/bulk flows, including the explicit `404 tag_not_found` unassign contract.
+Start with `GET /tag/_surface` to verify the public runtime catalog before create/search/bulk flows, including the explicit `404 tag_not_found` unassign contract and the flat search/suggest payload shape without a nested `result` envelope.
 
 ## Publish gate
 

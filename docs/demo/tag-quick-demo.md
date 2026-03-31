@@ -52,6 +52,8 @@ curl -sS 'http://127.0.0.1:8080/tag/suggest?q=pre&limit=5' \
   -H 'X-Tenant-Id: demo'
 ```
 
+Search and suggest now return flat read payloads. The runtime does not wrap them into a nested `result` object.
+
 ## 7. Mixed bulk assignments
 
 ```bash

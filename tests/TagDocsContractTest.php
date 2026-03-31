@@ -21,7 +21,9 @@ final class TagDocsContractTest extends TestCase
 
         self::assertStringContainsString('bulk assignment operations', $readme);
         self::assertStringContainsString('404 `tag_not_found` unassign contract', $readme);
+        self::assertStringContainsString('flat search/suggest payload shape without a nested `result` envelope', $readme);
         self::assertStringContainsString('/tag/assignments/bulk', $quickDemo);
+        self::assertStringContainsString('Search and suggest now return flat read payloads.', $quickDemo);
         self::assertStringContainsString('Expect an HTTP `404` payload with `code=tag_not_found`', $quickDemo);
         self::assertStringContainsString('/tag/{{missingTagId}}/unassign', $httpExample);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $httpExample);

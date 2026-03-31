@@ -70,7 +70,18 @@ curl -sS -X POST 'http://127.0.0.1:8080/tag/assignments/bulk-to-entity' \
   -d '{"entityType":"product","entityId":"demo-product-1","tagIds":["01HTESTASSIGN00000000000000","01HTESTASSIGN00000000000001"]}'
 ```
 
-## 9. List entity assignments
+## 9. Missing-tag unassign contract
+
+```bash
+curl -sS -X POST 'http://127.0.0.1:8080/tag/01HMISSINGTAG0000000000000/unassign' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Tenant-Id: demo' \
+  -d '{"entityType":"product","entityId":"demo-product-1"}'
+```
+
+Expect an HTTP `404` payload with `code=tag_not_found` when the tag entity itself does not exist.
+
+## 10. List entity assignments
 
 ```bash
 curl -sS 'http://127.0.0.1:8080/tag/assignments?entityType=product&entityId=demo-product-1' \

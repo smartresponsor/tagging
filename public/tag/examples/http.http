@@ -1,6 +1,7 @@
 @baseUrl = http://127.0.0.1:8080
 @tenant = demo
 @tagId = 01HTESTASSIGN00000000000000
+@missingTagId = 01HMISSINGTAG0000000000000
 
 ### status
 GET {{baseUrl}}/tag/_status
@@ -50,6 +51,17 @@ Content-Type: application/json
 POST {{baseUrl}}/tag/{{tagId}}/unassign
 X-Tenant-Id: {{tenant}}
 X-Idempotency-Key: op-2
+Content-Type: application/json
+
+{
+  "entityType": "product",
+  "entityId": "p-1001"
+}
+
+### unassign missing tag (expect 404 tag_not_found)
+POST {{baseUrl}}/tag/{{missingTagId}}/unassign
+X-Tenant-Id: {{tenant}}
+X-Idempotency-Key: op-404
 Content-Type: application/json
 
 {

@@ -14,7 +14,7 @@ final class TagReadPayloadContractTest extends TestCase
         $contract = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
 
         self::assertIsString($contract);
-        self::assertStringContainsString('Flat OK payload `{ ok, items, total, nextPageToken, cacheHit }` without nested `result`', $contract);
+        self::assertStringContainsString('Flat OK payload `{ ok, items, total, nextPageToken, cacheHit }` with authoritative `total` for the current query', $contract);
         self::assertStringContainsString('Flat OK payload `{ ok, items, cacheHit }` without nested `result`', $contract);
     }
 }

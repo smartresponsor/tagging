@@ -45,6 +45,8 @@ curl -sS 'http://127.0.0.1:8080/tag/search?q=elect&pageSize=10' \
   -H 'X-Tenant-Id: demo'
 ```
 
+Search returns an authoritative `total` for the current query, alongside the flat `items`, `nextPageToken`, and `cacheHit` fields.
+
 ## 6. Suggest
 
 ```bash

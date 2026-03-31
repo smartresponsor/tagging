@@ -69,6 +69,11 @@ final class SearchSuggestPayloadShapeTest extends TestCase
                 ]];
             }
 
+            public function countSearch(string $tenant, string $q): int
+            {
+                return 1;
+            }
+
             public function suggest(string $tenant, string $q, int $limit = 10): array
             {
                 return [[

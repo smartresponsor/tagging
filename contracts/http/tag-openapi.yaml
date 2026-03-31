@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Tag API
-  version: 0.2.5
+  version: 0.2.6
 servers:
   - url: http://localhost:8080
 paths:
@@ -122,7 +122,7 @@ paths:
       summary: Search tags
       responses:
         '200':
-          description: Flat OK payload `{ ok, items, total, nextPageToken, cacheHit }` without nested `result`
+          description: Flat OK payload `{ ok, items, total, nextPageToken, cacheHit }` with authoritative `total` for the current query
   /tag/suggest:
     get:
       summary: Suggest tags

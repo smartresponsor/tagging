@@ -31,15 +31,13 @@ final readonly class SearchService
             return $data;
         }
 
-        $items = $this->read->search($tenant, $q, $pageSize + 1, $offset);
-        $hasNext = count($items) > $pageSize;
-        if ($hasNext) {
-            array_pop($items);
-        }
+        $total = max(0, $this->read->countSearch($tenant, $q));
+        $items = $this->read->search($tenant, $q, $pageSize, $offset);
+        $nextPageToken = ($offset + count($items)) < $total ? base64_encode((string) ($offset + $pageSize)) : null;
         $result = [
             'items' => $items,
-            'total' => -1,
-            'nextPageToken' => $hasNext ? base64_encode((string) ($offset + $pageSize)) : null,
+            'total' => $total,
+            'nextPageToken' => $nextPageToken,
             'cacheHit' => false,
         ];
         $this->cache->set($tenant, $q, $pageSize, $offset, [

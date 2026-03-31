@@ -11,45 +11,57 @@ use App\Http\Api\Tag\Responder\JsonResponder;
  */
 return static function (array $container): callable {
     $json = new JsonResponder();
+    $catalog = require dirname(__DIR__) . '/config/tag_route_catalog.php';
     $controller = static fn(string $id): object => $container[$id]();
     $runtimeVersion = static fn(): string => (string) (($container['runtime']()['version'] ?? 'dev'));
-    $invoke = static fn(string $serviceId, string $method, array $norm, mixed ...$args): array => $controller($serviceId)->{$method}($norm, ...$args);
-    $route = static fn(string $method, string $pattern, callable $handler): array => [
-        'method' => $method,
-        'pattern' => $pattern,
-        'handler' => $handler,
-    ];
-    $statusRoute = static fn(string $path, string $header, string $controllerId, string $method): array => $route(
-        'GET',
-        $path,
-        static fn(): array => $json->respond(
-            200,
-            $controller($controllerId)->{$method}(),
-            [
-                $header => $runtimeVersion(),
-                'Cache-Control' => 'no-store',
-            ],
-        ),
-    );
+    $routeDefinitions = is_array($catalog['routes'] ?? null) ? $catalog['routes'] : [];
+    $buildHandler = static function (array $definition) use ($json, $controller, $runtimeVersion): callable {
+        $serviceId = (string) ($definition['service_id'] ?? '');
+        $action = (string) ($definition['action'] ?? '');
+        $path = (string) ($definition['path'] ?? '');
+        $responseHeader = (string) ($definition['response_header'] ?? '');
+        if ('' === $serviceId || '' === $action) {
+            throw new \LogicException('invalid_route_catalog_entry');
+        }
 
-    $routes = [
-        $route('POST', '#^/tag$#', static fn(array $norm): array => $invoke('tagController', 'create', $norm)),
-        $route('GET', '#^/tag/([A-Za-z0-9]{26})$#', static fn(array $norm, array $m): array => $invoke('tagController', 'get', $norm, $m[1])),
-        $route('PATCH', '#^/tag/([A-Za-z0-9]{26})$#', static fn(array $norm, array $m): array => $invoke('tagController', 'patch', $norm, $m[1])),
-        $route('DELETE', '#^/tag/([A-Za-z0-9]{26})$#', static fn(array $norm, array $m): array => $invoke('tagController', 'delete', $norm, $m[1])),
-        $route('POST', '#^/tag/([A-Za-z0-9]{26})/assign$#', static fn(array $norm, array $m): array => $invoke('assignController', 'assign', $norm, $m[1])),
-        $route('POST', '#^/tag/([A-Za-z0-9]{26})/unassign$#', static fn(array $norm, array $m): array => $invoke('assignController', 'unassign', $norm, $m[1])),
-        $route('POST', '#^/tag/assignments/bulk$#', static fn(array $norm): array => $invoke('assignController', 'bulk', $norm)),
-        $route('POST', '#^/tag/assignments/bulk-to-entity$#', static fn(array $norm): array => $invoke('assignController', 'assignBulkToEntity', $norm)),
-        $route('GET', '#^/tag/assignments$#', static fn(array $norm): array => $invoke('assignmentReadController', 'listByEntity', $norm)),
-        $route('GET', '#^/tag/search$#', static fn(array $norm): array => $invoke('searchController', 'get', $norm)),
-        $route('GET', '#^/tag/suggest$#', static fn(array $norm): array => $invoke('suggestController', 'get', $norm)),
-        $route('GET', '#^/tag/_webhooks$#', static fn(array $norm): array => $invoke('webhookController', 'list', $norm)),
-        $route('POST', '#^/tag/_webhooks/subscribe$#', static fn(array $norm): array => $invoke('webhookController', 'subscribe', $norm)),
-        $route('POST', '#^/tag/_webhooks/test$#', static fn(array $norm): array => $invoke('webhookController', 'test', $norm)),
-        $statusRoute('#^/tag/_status$#', 'X-Tag-Version', 'statusController', 'status'),
-        $statusRoute('#^/tag/_surface$#', 'X-Tag-Surface-Version', 'surfaceController', 'surface'),
-    ];
+        if ('' !== $responseHeader) {
+            return static fn(array $norm = [], array $matches = []): array => $json->respond(
+                200,
+                $controller($serviceId)->{$action}(),
+                [
+                    $responseHeader => $runtimeVersion(),
+                    'Cache-Control' => 'no-store',
+                ],
+            );
+        }
+
+        if (str_contains($path, '{id}')) {
+            return static fn(array $norm, array $matches): array => $controller($serviceId)->{$action}($norm, $matches[1]);
+        }
+
+        return static fn(array $norm, array $matches = []): array => $controller($serviceId)->{$action}($norm);
+    };
+
+    $routes = array_values(array_filter(array_map(
+        static function (mixed $definition) use ($buildHandler): ?array {
+            if (!is_array($definition)) {
+                return null;
+            }
+
+            $method = (string) ($definition['method'] ?? '');
+            $pattern = (string) ($definition['pattern'] ?? '');
+            if ('' === $method || '' === $pattern) {
+                return null;
+            }
+
+            return [
+                'method' => $method,
+                'pattern' => $pattern,
+                'handler' => $buildHandler($definition),
+            ];
+        },
+        $routeDefinitions,
+    )));
 
     return static function (string $method, string $path, array $norm) use ($routes, $json): array {
         if ($method === 'OPTIONS') {

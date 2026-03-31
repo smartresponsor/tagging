@@ -3,25 +3,31 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
+$catalog = require __DIR__.'/tag_route_catalog.php';
+$routes = is_array($catalog['routes'] ?? null) ? $catalog['routes'] : [];
+$routeMap = [];
+foreach ($routes as $route) {
+    if (!is_array($route) || true !== ($route['public'] ?? false)) {
+        continue;
+    }
+
+    $operation = (string) ($route['operation'] ?? '');
+    $method = (string) ($route['method'] ?? 'GET');
+    $path = (string) ($route['path'] ?? '');
+    if ('' === $operation || '' === $path) {
+        continue;
+    }
+
+    $routeMap[$operation] = in_array($operation, ['status', 'discovery'], true)
+        ? $path
+        : sprintf('%s %s', $method, $path);
+}
+
 return [
-    'service' => 'tag',
-    'runtime' => 'host-minimal',
-    'version' => 'p112-bulk-assignment-surface',
-    'route' => [
-        'status' => '/tag/_status',
-        'discovery' => '/tag/_surface',
-        'create' => 'POST /tag',
-        'read' => 'GET /tag/{id}',
-        'patch' => 'PATCH /tag/{id}',
-        'delete' => 'DELETE /tag/{id}',
-        'assign' => 'POST /tag/{id}/assign',
-        'unassign' => 'POST /tag/{id}/unassign',
-        'assignments_bulk' => 'POST /tag/assignments/bulk',
-        'assignments_bulk_to_entity' => 'POST /tag/assignments/bulk-to-entity',
-        'assignments' => 'GET /tag/assignments',
-        'search' => 'GET /tag/search',
-        'suggest' => 'GET /tag/suggest',
-    ],
+    'service' => (string) ($catalog['service'] ?? 'tag'),
+    'runtime' => (string) ($catalog['runtime'] ?? 'host-minimal'),
+    'version' => (string) ($catalog['version'] ?? 'dev'),
+    'route' => $routeMap,
     'example' => [
         'http' => 'public/tag/examples/http.http',
         'seed' => 'public/tag/examples/seed.http',

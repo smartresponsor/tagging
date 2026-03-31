@@ -15,10 +15,13 @@ The current shipped `host-minimal/` runtime is the source of truth for what is a
 - `GET /tag/_status`
 - `GET /tag/_surface`
 
+Runtime route truth is centralized in `tag.yaml`, then projected into the host router, public surface config, and route-controller audit.
+
 Core runtime assets:
 
 - PSR-4 library under `src/`
 - minimal runnable host under `host-minimal/`
+- canonical route catalog under `tag.yaml`
 - database migrations under `db/postgres/migrations/`
 - HTTP contract under `contracts/http/tag-openapi.yaml`
 - config under `config/`
@@ -37,7 +40,7 @@ The following trees belong to delivery, demo, release, or operational support. T
 - `public/`
 - helper scripts under `tools/`
 
-These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, or `contracts/http/`, the runnable core wins.
+These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, `tag.yaml`, or `contracts/http/`, the runnable core wins.
 
 ## Quickstart (Docker)
 

@@ -16,6 +16,7 @@ The current shipped `host-minimal/` runtime is the source of truth for what is a
 - `GET /tag/_surface`
 
 Runtime route truth is centralized in `tag.yaml`, then projected into the host router, public surface config, and route-controller audit.
+Canonical public route paths are further projected into contract and surface audits from `config/tag_public_route_paths.php`, so audits do not keep stale hardcoded path lists.
 
 Core runtime assets:
 

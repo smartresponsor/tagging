@@ -55,12 +55,15 @@ final class AssignController
         $body = TagHttpRequest::body($req);
         $ops = is_array($body['operations'] ?? null) ? $body['operations'] : [];
 
+        $results = [];
         $done = 0;
         $errors = 0;
 
-        foreach ($ops as $op) {
+        foreach ($ops as $index => $op) {
             if (!is_array($op)) {
                 ++$errors;
+                $results[] = ['index' => $index, 'ok' => false, 'code' => 'validation_failed'];
+
                 continue;
             }
             $optype = (string) ($op['op'] ?? '');
@@ -69,18 +72,54 @@ final class AssignController
 
             if ('' === $optype || '' === $tagId || null === $entity) {
                 ++$errors;
+                $results[] = [
+                    'index' => $index,
+                    'op' => $optype,
+                    'tagId' => $tagId,
+                    'ok' => false,
+                    'code' => 'validation_failed',
+                ];
+
                 continue;
             }
             $r = $this->dispatchOperation($optype, $tenant, $tagId, $entity[0], $entity[1], $this->idempotencyKey($op));
             if (null === $r) {
                 ++$errors;
+                $results[] = [
+                    'index' => $index,
+                    'op' => $optype,
+                    'tagId' => $tagId,
+                    'entityType' => $entity[0],
+                    'entityId' => $entity[1],
+                    'ok' => false,
+                    'code' => 'validation_failed',
+                ];
+
                 continue;
             }
 
-            $done += ($r['ok'] ?? false) ? 1 : 0;
+            if ((bool) ($r['ok'] ?? false)) {
+                ++$done;
+            } else {
+                ++$errors;
+            }
+
+            $results[] = [
+                'index' => $index,
+                'op' => $optype,
+                'tagId' => $tagId,
+                'entityType' => $entity[0],
+                'entityId' => $entity[1],
+            ] + $r;
         }
 
-        return self::ok(['done' => $done, 'errors' => $errors]);
+        return $this->ok([
+            'ok' => 0 === $errors,
+            'processed' => count($ops),
+            'done' => $done,
+            'errors' => $errors,
+            'results' => $results,
+        ]);
     }
 
     /**
@@ -109,17 +148,44 @@ final class AssignController
             return $this->fail('validation_failed');
         }
 
-        $ok = 0;
-        foreach ($tagIds as $tagId) {
-            $tagId = (string) $tagId;
+        $items = [];
+        $assigned = 0;
+        $duplicated = 0;
+        $errors = 0;
+
+        foreach ($tagIds as $index => $tagId) {
+            $tagId = trim((string) $tagId);
             if ('' === $tagId) {
+                ++$errors;
+                $items[] = ['index' => $index, 'ok' => false, 'code' => 'validation_failed'];
+
                 continue;
             }
-            $r = $this->assign->assign($tenant, $tagId, $entity[0], $entity[1]);
-            $ok += ($r['ok'] ?? false) ? 1 : 0;
+
+            $result = $this->assign->assign($tenant, $tagId, $entity[0], $entity[1]);
+            if ((bool) ($result['ok'] ?? false)) {
+                if ((bool) ($result['duplicated'] ?? false)) {
+                    ++$duplicated;
+                } else {
+                    ++$assigned;
+                }
+            } else {
+                ++$errors;
+            }
+
+            $items[] = ['index' => $index, 'tagId' => $tagId] + $result;
         }
 
-        return self::ok(['ok' => true, 'assigned' => $ok]);
+        return $this->ok([
+            'ok' => 0 === $errors,
+            'entityType' => $entity[0],
+            'entityId' => $entity[1],
+            'processed' => count($tagIds),
+            'assigned' => $assigned,
+            'duplicated' => $duplicated,
+            'errors' => $errors,
+            'items' => $items,
+        ]);
     }
 
     private function isAllowedType(string $etype): bool

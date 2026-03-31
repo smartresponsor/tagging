@@ -4,13 +4,22 @@
 declare(strict_types=1);
 
 $root = require __DIR__ . '/../_bootstrap.php';
-$yaml = file($root . '/tag.yaml', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
+$catalog = require $root . '/config/tag_route_catalog.php';
+$routes = is_array($catalog['routes'] ?? null) ? $catalog['routes'] : [];
 $errors = [];
-foreach ($yaml as $line) {
-    if (!str_contains($line, 'controller: ')) {
+foreach ($routes as $route) {
+    if (!is_array($route)) {
         continue;
     }
-    $controller = trim(substr($line, strpos($line, 'controller: ') + 12));
+
+    $controller = trim((string) ($route['controller'] ?? ''));
+    $operation = trim((string) ($route['operation'] ?? 'unknown'));
+    if ('' === $controller) {
+        $errors[] = 'missing controller for operation ' . $operation;
+
+        continue;
+    }
+
     [$class, $method] = explode('::', $controller, 2);
     $path = $root . '/src/' . str_replace('App\\', '', $class);
     $path = str_replace('\\', '/', $path) . '.php';

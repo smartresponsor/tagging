@@ -30,7 +30,6 @@ final readonly class SuggestController
             'ok' => true,
             'items' => $result['items'] ?? [],
             'cacheHit' => (bool) ($result['cacheHit'] ?? false),
-            'result' => $result,
         ]);
     }
 }

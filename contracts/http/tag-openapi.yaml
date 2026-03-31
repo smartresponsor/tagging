@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Tag API
-  version: 0.2.2
+  version: 0.2.6
 servers:
   - url: http://localhost:8080
 paths:
@@ -86,15 +86,31 @@ paths:
       summary: Unassign tag from entity
       responses:
         '200':
-          description: Success payload `{ ok, not_found, duplicated, conflict }`
+          description: Success payload `{ ok, not_found, duplicated, conflict }` when the tag exists and the entity link is removed or already absent
         '400':
           description: Error payload `{ ok: false, code }`
         '404':
-          description: Error payload `{ ok: false, code: tag_not_found }`
+          description: Error payload `{ ok: false, code: tag_not_found }` when the tag entity itself does not exist
         '409':
           description: Error payload `{ ok: false, code: idempotency_conflict }`
         '500':
           description: Error payload `{ ok: false, code: unassign_failed }`
+  /tag/assignments/bulk:
+    post:
+      summary: Execute mixed bulk assign and unassign operations
+      responses:
+        '200':
+          description: Batch payload `{ ok, processed, done, errors, results[] }`
+        '400':
+          description: Error payload `{ ok: false, code }`
+  /tag/assignments/bulk-to-entity:
+    post:
+      summary: Assign many tags to a single entity
+      responses:
+        '200':
+          description: Batch payload `{ ok, entityType, entityId, processed, assigned, duplicated, errors, items[] }`
+        '400':
+          description: Error payload `{ ok: false, code }`
   /tag/assignments:
     get:
       summary: List assignments by entityType/entityId
@@ -106,13 +122,13 @@ paths:
       summary: Search tags
       responses:
         '200':
-          description: OK payload `{ ok, items, total, nextPageToken, cacheHit }`
+          description: Flat OK payload `{ ok, items, total, nextPageToken, cacheHit }` with authoritative `total` for the current query
   /tag/suggest:
     get:
       summary: Suggest tags
       responses:
         '200':
-          description: OK payload `{ ok, items, cacheHit }`
+          description: Flat OK payload `{ ok, items, cacheHit }` without nested `result`
   /tag/_status:
     get:
       summary: Status and DB readiness

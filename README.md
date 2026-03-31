@@ -8,15 +8,21 @@ The current shipped `host-minimal/` runtime is the source of truth for what is a
 
 - tag CRUD
 - assign / unassign
+- bulk assignment operations
 - assignment list by entity
-- search / suggest
+- search / suggest with flat read payloads
+- authoritative search `total` and stable `nextPageToken`
 - `GET /tag/_status`
 - `GET /tag/_surface`
+
+Runtime route truth is centralized in `tag.yaml`, then projected into the host router, public surface config, and route-controller audit.
+Canonical public route paths are further projected into contract and surface audits from `config/tag_public_route_paths.php`, so audits do not keep stale hardcoded path lists.
 
 Core runtime assets:
 
 - PSR-4 library under `src/`
 - minimal runnable host under `host-minimal/`
+- canonical route catalog under `tag.yaml`
 - database migrations under `db/postgres/migrations/`
 - HTTP contract under `contracts/http/tag-openapi.yaml`
 - config under `config/`
@@ -35,7 +41,7 @@ The following trees belong to delivery, demo, release, or operational support. T
 - `public/`
 - helper scripts under `tools/`
 
-These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, or `contracts/http/`, the runnable core wins.
+These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, `tag.yaml`, or `contracts/http/`, the runnable core wins.
 
 ## Quickstart (Docker)
 
@@ -140,7 +146,7 @@ Host PHP extension install on Debian/Ubuntu:
 ## Demo scenario
 
 See `docs/demo/tag-quick-demo.md`.
-Start with `GET /tag/_surface` to verify the public runtime catalog before create/search flows.
+Start with `GET /tag/_surface` to verify the public runtime catalog before create/search/bulk flows, including the explicit `404 tag_not_found` unassign contract, the flat search/suggest payload shape, and the authoritative `total` returned by search.
 
 ## Publish gate
 

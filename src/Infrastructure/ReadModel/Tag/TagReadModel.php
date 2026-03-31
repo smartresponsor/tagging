@@ -39,6 +39,27 @@ final readonly class TagReadModel implements TagReadModelInterface
         return array_map(self::mapTagSummary(...), $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: []);
     }
 
+    public function countSearch(string $tenant, string $q): int
+    {
+        $query = self::normalizedQuery($q);
+        if ('' === $query) {
+            return 0;
+        }
+
+        $stmt = $this->pdo->prepare(
+            'SELECT COUNT(*)
+'
+            . 'FROM tag_entity
+'
+            . 'WHERE tenant = :t AND (slug ILIKE :q OR name ILIKE :q)',
+        );
+        $stmt->bindValue(':t', $tenant);
+        $stmt->bindValue(':q', '%' . $query . '%');
+        $stmt->execute();
+
+        return (int) ($stmt->fetchColumn() ?: 0);
+    }
+
     /** @return array<int, array{slug:string,name:string}> */
     public function suggest(string $tenant, string $q, int $limit = 10): array
     {

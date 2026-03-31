@@ -33,7 +33,6 @@ final readonly class SearchController
             'total' => $result['total'] ?? -1,
             'nextPageToken' => $result['nextPageToken'] ?? null,
             'cacheHit' => (bool) ($result['cacheHit'] ?? false),
-            'result' => $result,
         ]);
     }
 

@@ -1,6 +1,7 @@
 @baseUrl = http://127.0.0.1:8080
 @tenant = demo
 @tagId = 01HTESTASSIGN00000000000000
+@missingTagId = 01HMISSINGTAG0000000000000
 
 ### status
 GET {{baseUrl}}/tag/_status
@@ -55,6 +56,55 @@ Content-Type: application/json
 {
   "entityType": "product",
   "entityId": "p-1001"
+}
+
+### unassign missing tag (expect 404 tag_not_found)
+POST {{baseUrl}}/tag/{{missingTagId}}/unassign
+X-Tenant-Id: {{tenant}}
+X-Idempotency-Key: op-404
+Content-Type: application/json
+
+{
+  "entityType": "product",
+  "entityId": "p-1001"
+}
+
+### mixed bulk assignments
+POST {{baseUrl}}/tag/assignments/bulk
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "operations": [
+    {
+      "op": "assign",
+      "tagId": "{{tagId}}",
+      "entityType": "product",
+      "entityId": "p-1001",
+      "idem": "bulk-1"
+    },
+    {
+      "op": "unassign",
+      "tagId": "{{tagId}}",
+      "entityType": "product",
+      "entityId": "p-1002",
+      "idem": "bulk-2"
+    }
+  ]
+}
+
+### bulk assign to one entity
+POST {{baseUrl}}/tag/assignments/bulk-to-entity
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "entityType": "product",
+  "entityId": "p-1001",
+  "tagIds": [
+    "{{tagId}}",
+    "01HTESTASSIGN00000000000001"
+  ]
 }
 
 ### list assignments

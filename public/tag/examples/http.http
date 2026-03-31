@@ -57,6 +57,44 @@ Content-Type: application/json
   "entityId": "p-1001"
 }
 
+### mixed bulk assignments
+POST {{baseUrl}}/tag/assignments/bulk
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "operations": [
+    {
+      "op": "assign",
+      "tagId": "{{tagId}}",
+      "entityType": "product",
+      "entityId": "p-1001",
+      "idem": "bulk-1"
+    },
+    {
+      "op": "unassign",
+      "tagId": "{{tagId}}",
+      "entityType": "product",
+      "entityId": "p-1002",
+      "idem": "bulk-2"
+    }
+  ]
+}
+
+### bulk assign to one entity
+POST {{baseUrl}}/tag/assignments/bulk-to-entity
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "entityType": "product",
+  "entityId": "p-1001",
+  "tagIds": [
+    "{{tagId}}",
+    "01HTESTASSIGN00000000000001"
+  ]
+}
+
 ### list assignments
 GET {{baseUrl}}/tag/assignments?entityType=product&entityId=p-1001
 X-Tenant-Id: {{tenant}}

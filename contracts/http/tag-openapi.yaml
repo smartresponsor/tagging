@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Tag API
-  version: 0.2.2
+  version: 0.2.3
 servers:
   - url: http://localhost:8080
 paths:
@@ -95,6 +95,22 @@ paths:
           description: Error payload `{ ok: false, code: idempotency_conflict }`
         '500':
           description: Error payload `{ ok: false, code: unassign_failed }`
+  /tag/assignments/bulk:
+    post:
+      summary: Execute mixed bulk assign and unassign operations
+      responses:
+        '200':
+          description: Batch payload `{ ok, processed, done, errors, results[] }`
+        '400':
+          description: Error payload `{ ok: false, code }`
+  /tag/assignments/bulk-to-entity:
+    post:
+      summary: Assign many tags to a single entity
+      responses:
+        '200':
+          description: Batch payload `{ ok, entityType, entityId, processed, assigned, duplicated, errors, items[] }`
+        '400':
+          description: Error payload `{ ok: false, code }`
   /tag/assignments:
     get:
       summary: List assignments by entityType/entityId

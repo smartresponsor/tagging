@@ -6,7 +6,7 @@ declare(strict_types=1);
 return [
     'service' => 'tag',
     'runtime' => 'host-minimal',
-    'version' => 'p111-public-surface-reconcile',
+    'version' => 'p112-bulk-assignment-surface',
     'route' => [
         'status' => '/tag/_status',
         'discovery' => '/tag/_surface',
@@ -16,6 +16,8 @@ return [
         'delete' => 'DELETE /tag/{id}',
         'assign' => 'POST /tag/{id}/assign',
         'unassign' => 'POST /tag/{id}/unassign',
+        'assignments_bulk' => 'POST /tag/assignments/bulk',
+        'assignments_bulk_to_entity' => 'POST /tag/assignments/bulk-to-entity',
         'assignments' => 'GET /tag/assignments',
         'search' => 'GET /tag/search',
         'suggest' => 'GET /tag/suggest',

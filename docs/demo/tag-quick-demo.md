@@ -52,7 +52,25 @@ curl -sS 'http://127.0.0.1:8080/tag/suggest?q=pre&limit=5' \
   -H 'X-Tenant-Id: demo'
 ```
 
-## 7. List entity assignments
+## 7. Mixed bulk assignments
+
+```bash
+curl -sS -X POST 'http://127.0.0.1:8080/tag/assignments/bulk' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Tenant-Id: demo' \
+  -d '{"operations":[{"op":"assign","tagId":"01HTESTASSIGN00000000000000","entityType":"product","entityId":"demo-product-1","idem":"bulk-1"},{"op":"unassign","tagId":"01HTESTASSIGN00000000000000","entityType":"product","entityId":"demo-product-2","idem":"bulk-2"}]}'
+```
+
+## 8. Bulk assign many tags to one entity
+
+```bash
+curl -sS -X POST 'http://127.0.0.1:8080/tag/assignments/bulk-to-entity' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Tenant-Id: demo' \
+  -d '{"entityType":"product","entityId":"demo-product-1","tagIds":["01HTESTASSIGN00000000000000","01HTESTASSIGN00000000000001"]}'
+```
+
+## 9. List entity assignments
 
 ```bash
 curl -sS 'http://127.0.0.1:8080/tag/assignments?entityType=product&entityId=demo-product-1' \

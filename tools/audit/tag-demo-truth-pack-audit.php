@@ -14,6 +14,7 @@ $requiredFiles = [
     $root . '/fixtures/tag-demo-catalog.php',
     $root . '/seed/tag/tag-demo.ndjson',
     $root . '/seed/tag/tag-links-demo.ndjson',
+    $root . '/sdk/README.md',
 ];
 
 foreach ($requiredFiles as $file) {
@@ -27,6 +28,7 @@ $finalPack = file_get_contents($root . '/docs/demo/tag-final-demo-pack.md') ?: '
 $quickDemo = file_get_contents($root . '/docs/demo/tag-quick-demo.md') ?: '';
 $fixtureDemo = file_get_contents($root . '/docs/fixtures/demo.md') ?: '';
 $seedDoc = file_get_contents($root . '/docs/seed/tag-seed.md') ?: '';
+$sdkReadme = file_get_contents($root . '/sdk/README.md') ?: '';
 
 $checks = [
     ['docs/demo/tag-final-demo-pack.md', $finalPack, '`host-minimal/`'],
@@ -34,6 +36,12 @@ $checks = [
     ['docs/demo/tag-final-demo-pack.md', $finalPack, '`seed/tag/tag-demo.ndjson`'],
     ['docs/demo/tag-final-demo-pack.md', $finalPack, '/tag/_surface'],
     ['docs/demo/tag-final-demo-pack.md', $finalPack, '/tag/_status'],
+    ['docs/demo/tag-final-demo-pack.md', $finalPack, '/tag/assignments/bulk'],
+    ['docs/demo/tag-final-demo-pack.md', $finalPack, '/tag/assignments/bulk-to-entity'],
+    ['docs/demo/tag-final-demo-pack.md', $finalPack, 'tag_not_found'],
+    ['docs/demo/tag-final-demo-pack.md', $finalPack, 'authoritative `total`'],
+    ['docs/demo/tag-final-demo-pack.md', $finalPack, 'bulkAssignments()'],
+    ['docs/demo/tag-final-demo-pack.md', $finalPack, 'assignBulkToEntity()'],
     ['docs/demo/tag-quick-demo.md', $quickDemo, '/tag/_surface'],
     ['docs/demo/tag-quick-demo.md', $quickDemo, '/tag/_status'],
     ['docs/demo/tag-quick-demo.md', $quickDemo, 'tools/seed/tag-seed.php'],
@@ -42,6 +50,9 @@ $checks = [
     ['docs/seed/tag-seed.md', $seedDoc, 'tools/db/tag-migrate.php'],
     ['docs/seed/tag-seed.md', $seedDoc, '/tag/_surface'],
     ['docs/seed/tag-seed.md', $seedDoc, '/tag/_status'],
+    ['sdk/README.md', $sdkReadme, 'bulkAssignments()'],
+    ['sdk/README.md', $sdkReadme, 'assignBulkToEntity()'],
+    ['sdk/README.md', $sdkReadme, 'authoritative `total`'],
 ];
 
 foreach ($checks as [$label, $haystack, $needle]) {

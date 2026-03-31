@@ -65,6 +65,7 @@ final readonly class Client
         if (!is_array($decoded) && $res !== 'null') {
             throw new RuntimeException('Invalid JSON response.');
         }
+
         return is_array($decoded) ? $decoded : [];
     }
 
@@ -130,6 +131,22 @@ final readonly class Client
         return $this->req('/tag/assignments?entityType=' . rawurlencode($entityType) . '&entityId=' . rawurlencode($entityId));
     }
 
+    /** @param array<string,mixed> $body
+     *  @return array<string,mixed>
+     */
+    public function bulkAssignments(array $body): array
+    {
+        return $this->req('/tag/assignments/bulk', 'POST', $body);
+    }
+
+    /** @param array<string,mixed> $body
+     *  @return array<string,mixed>
+     */
+    public function assignBulkToEntity(array $body): array
+    {
+        return $this->req('/tag/assignments/bulk-to-entity', 'POST', $body);
+    }
+
     /** @return array<string,mixed> */
     public function search(string $q, int $pageSize = 20, ?string $pageToken = null): array
     {
@@ -137,6 +154,7 @@ final readonly class Client
         if ($pageToken !== null && $pageToken !== '') {
             $path .= '&pageToken=' . rawurlencode($pageToken);
         }
+
         return $this->req($path);
     }
 

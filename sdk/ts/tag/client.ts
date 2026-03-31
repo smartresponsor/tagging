@@ -14,6 +14,22 @@ export type AssignBody = {
   entity_id?: string;
 };
 
+export type BulkAssignmentsBody = {
+  operations: Array<{
+    op: 'assign' | 'unassign';
+    tagId: string;
+    entityType: string;
+    entityId: string;
+    idem?: string;
+  }>;
+};
+
+export type BulkToEntityBody = {
+  entityType: string;
+  entityId: string;
+  tagIds: string[];
+};
+
 export class TagClient {
   constructor(private readonly baseUrl: string, private readonly headers: Record<string, string> = {}) {}
 
@@ -71,11 +87,20 @@ export class TagClient {
     return this.req(`/tag/assignments?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`);
   }
 
+  bulkAssignments(body: BulkAssignmentsBody): Promise<unknown> {
+    return this.req('/tag/assignments/bulk', { method: 'POST', body: JSON.stringify(body) });
+  }
+
+  assignBulkToEntity(body: BulkToEntityBody): Promise<unknown> {
+    return this.req('/tag/assignments/bulk-to-entity', { method: 'POST', body: JSON.stringify(body) });
+  }
+
   search(q: string, pageSize = 20, pageToken?: string): Promise<unknown> {
     const params = new URLSearchParams({ q, pageSize: String(Math.max(1, Math.min(100, pageSize))) });
     if (pageToken) {
       params.set('pageToken', pageToken);
     }
+
     return this.req(`/tag/search?${params.toString()}`);
   }
 

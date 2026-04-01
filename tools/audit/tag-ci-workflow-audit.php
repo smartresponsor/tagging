@@ -18,9 +18,12 @@ $required = [
     'composer run -n audit:bootstrap-runtime',
     'composer run -n audit:snapshot-purity',
     'composer run -n audit:repo-map-truth',
+    'composer run -n audit:demo-truth-pack',
+    'composer run -n audit:release-grade-portrait',
     'composer run -n audit:ci-workflow',
     'composer run -n test:unit',
     'composer run -n test:integration',
+    'composer run -n smoke:runtime',
     'uses: actions/upload-artifact@v4',
 ];
 

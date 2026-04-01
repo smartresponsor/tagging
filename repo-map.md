@@ -1,6 +1,6 @@
 REPO MAP
 root: .
-generated: 2026-03-17 01:35:00 -0500
+generated: 2026-04-01 00:10:00 -0500
 
 TREE
 .
@@ -16,6 +16,9 @@ TREE
 .commanding/ps1/
 .commanding/sh/
 .commanding/test/
+.github/
+.github/workflows/
+MANIFEST.json
 admin/
 config/
 contracts/
@@ -45,7 +48,18 @@ docs/release/
 docs/security/
 docs/seed/
 docs/tag/
+fixtures/
 host-minimal/
+public/
+public/tag/
+public/tag/demo/
+public/tag/examples/
+repo-map.md
+sdk/
+sdk/php/
+sdk/php/tag/
+sdk/ts/
+sdk/ts/tag/
 src/
 src/Application/
 src/Application/Write/
@@ -80,6 +94,7 @@ src/Service/
 src/Service/Core/
 src/Service/Core/Tag/
 src/Service/Security/
+tag.yaml
 tests/
 tests/integration/
 tools/
@@ -92,8 +107,6 @@ tools/slugify/
 tools/smoke/
 tools/synthetic/
 tools/test-db/
-.github/
-.github/workflows/
 
 ## current canonical src layout
 - `src/Application/Write/Tag/...`
@@ -107,6 +120,21 @@ tools/test-db/
 - `src/Infrastructure/ReadModel/Tag/...`
 - `src/Service/Core/Tag/...`
 
+## current runtime and delivery truth roots
+- `tag.yaml`
+- `MANIFEST.json`
+- `host-minimal/`
+- `config/`
+- `contracts/http/`
+- `fixtures/`
+- `public/tag/...`
+- `sdk/php/tag/...`
+- `sdk/ts/tag/...`
+- `docs/public/`
+- `docs/release/`
+- `docs/demo/`
+- `docs/ops/`
+
 ## gates
 - `composer run -n audit:canonical-structure`
 - `composer run -n audit:canonical-stale`
@@ -117,3 +145,4 @@ tools/test-db/
 - `composer run -n audit:repo-map-truth`
 
 Snapshot policy: cumulative snapshots must not contain root transport artifacts such as `MANIFEST.wave-*.json` or `ZZ_*`.
+Retired legacy artifacts such as `fixtures/tag-demo.json` must not remain in the repository after authoritative PHP fixture truth is established.

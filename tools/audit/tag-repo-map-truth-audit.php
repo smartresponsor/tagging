@@ -11,9 +11,6 @@ $manifest = json_decode($manifestRaw ?: '', true, 512, JSON_THROW_ON_ERROR);
 
 $forbidden = [
     'host/',
-    'public/',
-    'release/',
-    'sdk/',
     'src/Domain/',
     'src/Infra/',
     'src/Application/Tag/',
@@ -23,9 +20,17 @@ $forbidden = [
     'src/Service/Webhook/',
     'src/Service/Metric/',
     'src/Service/Security/Tag/',
+    'fixtures/tag-demo.json',
 ];
 
 $required = [
+    'MANIFEST.json',
+    'tag.yaml',
+    'fixtures/',
+    'public/',
+    'sdk/',
+    'docs/public/',
+    'docs/release/',
     'src/Application/Write/Tag/',
     'src/Cache/Store/Tag/',
     'src/Data/Model/Tag/',

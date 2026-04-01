@@ -1,31 +1,33 @@
 # E25 Observability+
 
-Endpoints:
+Current runtime observability for the shipped Tag slice is centered on middleware-based request observation, not on a published metrics HTTP endpoint.
 
-- GET /tag/_status → минимальная проверка здоровья
+## Active runtime observation
 
-Metrics:
+- `Observe` wraps live host-minimal dispatch.
+- `_status` remains the minimal health/readiness route.
+- `_surface` remains the discovery route for the public shell.
 
-- tag_request_latency_seconds{op} summary (read/write)
-- tag_error_total{op,cls} counters (cls=4xx|5xx)
-- (existing) tag_up, tag_cache_*, tag_webhook_*
+## Signals
 
-Slowlog:
+- request latency and error classification are recorded through the observe middleware path
+- slow requests can be written to `report/tag/slowlog.ndjson`
+- config lives in `config/tag_observability.yaml`
 
-- report/tag/slowlog.ndjson
-- Пишется, если read > 500ms или write > 1000ms (по умолчанию; настраивается)
+## Current posture
 
-Integration:
-
-- Добавьте middleware Observe перед бизнес-обработчиками.
-- Конфиг см. config/tag_observability.yaml
-
-Ops:
-
-- Экспортируйте /tag/_metrics в Prometheus, а slowlog собирайте filebeat/fluent-bit.
-
+- there is **no shipped `/tag/_metrics` route** in the current public shell
+- observability is currently middleware/file/config driven, not Prometheus-endpoint driven
+- unpublished internal webhook routes are not part of the public shell
 
 ## Host-minimal cleanup
 
-- Host-minimal now wraps dispatch through `Observe`, so latency/error metrics and slowlog recording apply on live requests, not only in docs.
-- The composition root exports `observeMiddleware` explicitly for isolated testing.
+- host-minimal now wraps dispatch through `Observe`, so latency/error metrics and slowlog recording apply on live requests, not only in docs
+- the composition root exports `observeMiddleware` explicitly for isolated testing
+
+## Operational use
+
+- use `GET /tag/_status` for lightweight runtime liveness/readiness checks
+- use `GET /tag/_surface` to verify the current shipped public surface before smoke or manual checks
+- collect slowlog output from `report/tag/slowlog.ndjson` when enabled
+- treat a dedicated metrics endpoint as a future enhancement, not as a currently shipped contract

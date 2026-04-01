@@ -9,8 +9,11 @@ $checks = [
     $root . '/tools/audit/tag-contract-audit.php',
     $root . '/tools/audit/tag-route-controller-audit.php',
     $root . '/tools/audit/tag-bootstrap-audit.php',
+    $root . '/tools/audit/tag-bootstrap-runtime-audit.php',
     $root . '/tools/audit/tag-config-audit.php',
     $root . '/tools/audit/tag-sdk-audit.php',
+    $root . '/tools/audit/tag-demo-truth-pack-audit.php',
+    $root . '/tools/audit/tag-release-grade-portrait-audit.php',
     $root . '/tools/audit/tag-version-audit.php',
     $root . '/tools/seed/tag-fixture-validate.php',
 ];

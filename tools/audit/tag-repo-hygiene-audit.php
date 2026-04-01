@@ -23,6 +23,10 @@ $forbiddenRootDirectories = [
     'tmp',
 ];
 
+$forbiddenLegacyArtifacts = [
+    'fixtures/tag-demo.json',
+];
+
 foreach ($forbiddenRootFiles as $relativePath) {
     if (file_exists($root . '/' . $relativePath)) {
         $errors[] = sprintf('transport artifact must not live in repository root: %s', $relativePath);
@@ -32,6 +36,12 @@ foreach ($forbiddenRootFiles as $relativePath) {
 foreach ($forbiddenRootDirectories as $relativePath) {
     if (is_dir($root . '/' . $relativePath)) {
         $errors[] = sprintf('transport workspace directory must not live in repository root: %s', $relativePath);
+    }
+}
+
+foreach ($forbiddenLegacyArtifacts as $relativePath) {
+    if (file_exists($root . '/' . $relativePath)) {
+        $errors[] = sprintf('retired legacy artifact must not remain in repository: %s', $relativePath);
     }
 }
 

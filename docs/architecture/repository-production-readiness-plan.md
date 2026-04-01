@@ -2,224 +2,146 @@
 
 ## Scope and current baseline
 
-- Branch reality: repository currently exposes only local branch `work`; there is no local `master` branch to check out.
-- Platform baseline is a PHP 8.2 library with direct PDO usage and a minimal host router (`host-minimal/index.php`)
-  wiring services/controllers manually.
+- The repository is now centered on a shipped `host-minimal` runtime backed by canonical route truth in `tag.yaml`.
+- Public surface is no longer limited to CRUD + single assignment flows; it includes bulk assignment routes, discovery, health, search, and suggest.
+- CI, smoke, preflight, SDK, demo truth packs, and release-grade docs now exist and are part of the active quality perimeter.
+- Demo/seed truth is anchored in the canonical PHP fixture + catalog path, not in legacy JSON fixture cargo.
 
 ## 1) Architecture analysis
 
-### What is working
+### What is working now
 
-- There is a visible split of namespaces (`Domain`, `Service`, `Infra`, `Http`, `Data`) that indicates a layered intent.
-- Core domain entities (`Tag`, `TagAssignment`, `TagRelation`, etc.) exist and are independent of HTTP.
-- Host-minimal read paths now depend on a colocated `TagReadModelInterface`; search, suggest, and assignment reads share one read-model contract and one infrastructure implementation.
-- Search and suggest now share one file-backed cache-store pattern, and write use-cases invalidate both read caches through a single query-cache invalidator instead of duplicating per-cache clear logic.
+- Route truth is centralized in `tag.yaml` and projected into `host-minimal/route.php`, public surface config, and route/surface/contract audits.
+- Read paths share one explicit `TagReadModelInterface` and one infrastructure implementation for search, suggest, and assignment reads.
+- Search and suggest use flat payloads, and search now returns authoritative `total` instead of a placeholder value.
+- Assignment flows expose idempotency-aware behavior and distinguish missing tag entities from missing links on unassign.
+- The static admin shell, SDK clients, smoke checks, and demo examples are aligned with the shipped public runtime surface.
 
-### Structural risks and growth points
+### Remaining structural risks and growth points
 
-1. **Boundary mismatch and dual contracts**
-    - Repository contracts now live directly beside the core tag services under `App\Service\Core\Tag`, removing the competing `ServiceInterface` tree and clarifying ownership.
-    - Repository contract is very broad (CRUD + policy + moderation + analytics + effects), violating Interface
-      Segregation and creating a god-interface.
+1. **Framework gap vs shipped runtime**
+   - The repository is still fundamentally organized around `host-minimal` execution rather than a full Symfony runtime kernel/composition model.
+   - This is acceptable for the current slice, but it remains a medium-term readiness gap for richer policy/middleware/composition evolution.
 
-2. **Transport and application logic are intertwined**
-    - `TagController` directly performs SQL and response mapping, bypassing dedicated application services for write
-      paths.
-    - `host-minimal/index.php` manually instantiates every dependency and routes HTTP via conditionals; no composition
-      root abstraction.
+2. **Broad core service boundaries**
+   - Contracts are colocated under `src/Service/Core/Tag`, which is better than parallel interface trees, but the core tag service area still carries multiple concerns.
+   - Future decomposition may still be useful around write operations, policy/quota semantics, and webhook/observability interactions.
 
-3. **Tenant isolation is inconsistent in service abstractions**
-    - Database schema is tenant-centric, but several service/repository signatures do not force tenant in method
-      contracts, increasing risk of accidental cross-tenant operations.
-
-4. **Pattern usage is partial and uneven**
-    - Outbox and idempotency are present for assignment flows, but not systematically applied across all write
-      operations (e.g., tag create/update/delete path).
-    - Multiple policy/security classes exist (`TagPolicyEngine`, signature middleware/validators), but integration
-      appears fragmented.
-
-### Industry-grade target state
-
-- Introduce explicit **Application layer use-cases** (`CreateTag`, `PatchTag`, `AssignTag`, etc.) returning typed
-  results/errors.
-- Split repository contracts by aggregate/capability (`TagWriteRepository`, `TagReadRepository`, `PolicyRepository`,
-  `ModerationRepository`, `AnalyticsRepository`).
-- Make `tenant` an explicit required argument/value object for all persistence boundary methods.
-- Replace controller-level SQL with use-cases + mappers; keep controllers thin.
-- Add a small dependency container/composition root for `host-minimal` and future framework hosts.
+3. **Write-path consistency is stronger but not yet perfectly uniform**
+   - Assignment/unassign flows are the most hardened write paths.
+   - Create/patch/delete paths still deserve another pass for the same level of explicit error taxonomy, idempotency expectations, and observability discipline.
 
 ## 2) Code quality analysis
 
-### Observed issues
+### Current strengths
 
-- **God object tendency** in repository interface and `PdoTagRepository` implementation (many unrelated concerns).
-- **Inconsistent style/readability**: single-line methods mixed with long procedural blocks.
-- **Legacy/demo artifacts in tests path**: `tests/tag/AssignFlowTest.php` is a script, not a PHPUnit test class.
-- **Potentially stale references** in README (mentions paths like `ops/`, `docs/release/...`) while repository has
-  broader and partly different layout.
-- **Duplicated concepts** (`src/Service/Core/Tag/TagQuotaService.php` and `src/Service/Core/Tag/QuotaService.php`) need
-  consolidation review.
-- Stale cache trees should not exist beside active cache/store code; the old `src/Service/Cache/` subtree was removed to keep store ownership under `src/Cache/Store/Tag/`.
+- Canonical structure audits protect against reintroduction of `src/Domain/`, `src/Infra/`, and other non-canonical trees.
+- Repo-map, route truth, public surface, contract, SDK, demo pack, release portrait, and CI workflow each have dedicated truth checks.
+- Legacy demo fixture ambiguity was reduced by retiring `fixtures/tag-demo.json` and moving validation/seed/dry-run onto the canonical PHP fixture path.
 
-### Refactor blocks
+### Remaining code-quality risks
 
-- **Refactor Block A: Repository contract decomposition**
-    - Break `TagRepositoryInterface` into cohesive interfaces.
-    - Introduce adapter in `PdoTagRepository` during migration to keep backward compatibility.
-
-- **Refactor Block B: HTTP write flow cleanup**
-    - Move SQL from `TagController` into `TagService`/use-cases.
-    - Normalize error catalog and HTTP mapping in a shared responder.
-
-- **Refactor Block C: Bootstrap and wiring**
-    - Extract factory/bootstrap from `host-minimal/index.php` into dedicated bootstrap class/file.
-    - Add route table structure instead of long if-chains.
+- `host-minimal` remains a hand-built runtime rather than a framework-driven composition root.
+- Some docs and planning artifacts can still lag after active runtime waves if they are not directly guarded by tests or audits.
+- Broad PHP arrays remain the dominant transport/result contract style, which is practical but leaves room for stronger typed DTO/result objects later.
 
 ## 3) Testing analysis
 
 ### Current state
 
-- Core unit tests exist for normalization, graph, and service basics.
-- No clear automated integration/e2e suite in CI.
-- A non-test executable script is located in `tests/`, which can mislead tooling and contributors.
+- Unit, integration, smoke, and multiple truth-audit tests are present.
+- CI now runs on push/PR and covers lint, static analysis, integration, runtime smoke, and workflow self-auditing.
+- Release preflight now covers the active audit baseline instead of an older reduced subset.
 
-### Gaps
+### Remaining gaps
 
-- Missing deterministic integration tests for:
-    - tenant isolation guarantees,
-    - idempotency behavior for all write endpoints,
-    - conflict handling and optimistic race behavior,
-    - migration compatibility from earliest supported schema.
-- No coverage report or enforced quality gate in workflow.
-
-### Test strategy improvements
-
-- Create `tests/integration/` with Dockerized Postgres setup and seeded fixtures.
-- Convert `tests/tag/AssignFlowTest.php` into PHPUnit integration test class.
-- Add contract tests validating OpenAPI examples against host-minimal endpoints.
-- Add mutation/static checks (`phpstan`, `psalm`, `phpunit --coverage-text`) in CI.
+- There is still room for deeper deterministic integration coverage around full write-path symmetry, tenant isolation, and transient DB failure handling.
+- OpenAPI example execution is still more indirectly guarded than a full contract-example runner would provide.
+- No evidence in the current repository suggests formal mutation testing or stricter typed contract verification.
 
 ## 4) Reliability and predictability analysis
 
-### Risks
+### Current strengths
 
-- Inconsistent error handling strategy (`try/catch` in controller returning generic `conflict`) can hide root causes.
-- Concurrency behavior appears implicit; assignment dedup relies on DB constraints/idempotency table in some flows but
-  not systematically documented across all operations.
-- Multiple config files for policy/security/quotas exist without a clear precedence/merge strategy document.
+- Runtime route truth is centralized and projected.
+- Public shell guarantees are now documented and test-backed across runtime, docs, SDK, smoke, and CI.
+- Search total, flat payload behavior, and missing-tag unassign semantics are no longer ambiguous.
 
-### Strengthening actions
+### Remaining risks
 
-- Define global error taxonomy and map DB exceptions deterministically.
-- Add explicit transaction boundaries in write use-cases with retry policy for transient DB errors.
-- Formalize idempotency requirements endpoint-by-endpoint in docs and tests.
+- Some write paths still rely on conventional array/result handling rather than one globally normalized typed error/result catalog.
+- Retry and transient-failure policies are still lightweight rather than fully formalized across all write operations.
+- The repository still optimizes for a compact shipped runtime rather than a more industrial deployment/runtime stack.
 
 ## 5) Documentation and operations analysis
 
-### Present assets
+### Current strengths
 
-- OpenAPI contract available.
-- Operational docs exist (metrics, SLO, webhooks, observability, tenancy).
-- Grafana dashboard + alert yaml present.
+- Public-ready checklist, release-grade portrait, admin guide, SDK README, final demo pack, repo-map, smoke scripts, and CI docs were aligned with the actual shipped surface.
+- Repository hygiene now explicitly guards against resurrection of retired legacy demo truth artifacts.
 
-### Missing/weak for real deployment
+### Remaining documentation tasks
 
-- No clear production deployment bundle (Helm/K8s manifests absent).
-- No single runbook index covering incident response, backup/restore, migrations rollback.
-- README should distinguish demo host capabilities vs full component capabilities and declare support matrix.
-
-### Documentation tasks
-
-- Add `docs/ops/runbook.md` (startup checks, degraded modes, rollback steps).
-- Add `docs/architecture/decisions/` ADRs for tenancy model, outbox/idempotency guarantees, and repository
-  decomposition.
-- Add API error catalog aligned with implementation codes.
+- Add a concise runbook that covers startup, DB readiness, smoke verification, and rollback expectations in one place.
+- Add ADR-style documents for route truth centralization, seed truth unification, and public-shell policy.
+- Consider a compact API error catalog doc that maps runtime codes to transport meaning.
 
 ## 6) Data and migrations analysis
 
-### Observations
+### Current strengths
 
-- Multiple migration tracks exist (`db/postgres/migrations/*`, `data/migration/*`) which can drift.
-- Newer migration files are more comprehensive, but migration ordering and source-of-truth strategy are not explicit.
+- Demo seed truth is now unified on the canonical PHP fixture and catalog.
+- Runtime smoke and fixture validation are part of the active perimeter.
 
-### Data/migration hardening tasks
+### Remaining tasks
 
-- Declare a single authoritative migration pipeline and deprecate secondary tracks.
-- Add migration smoke job that runs from empty DB then verifies critical tables/indexes.
-- Add forward/backward compatibility policy for at least one previous release.
+- Add stronger migration evidence around forward compatibility, rollback expectations, and earliest-supported bootstrap path.
+- Consider explicit checks for index/table expectations after migrations in a dedicated migration smoke report.
 
 ## 7) CI/CD and infrastructure analysis
 
 ### Current baseline
 
-- GitHub Actions workflow exists only for manual SLO gate execution.
+- GitHub Actions CI exists and is active for push/PR.
+- Runtime smoke uploads host logs on failure.
+- CI workflow now validates itself through `audit:ci-workflow` and includes current delivery/release audits.
 
-### Gaps
+### Remaining gaps
 
-- No default CI on push/PR for lint/tests/static analysis.
-- No build/publish pipeline for container images.
-- No SBOM/dependency scanning/security checks.
-
-### CI/CD strengthening tasks
-
-- Add `ci.yml` for: composer validate, lint, phpunit, static analysis.
-- Add DB-backed integration job (service container Postgres).
-- Add image build workflow with provenance + vulnerability scan.
-- Add release workflow to package OpenAPI + migration artifacts.
+- There is still no container image build/publish flow, provenance flow, or vulnerability scan pipeline.
+- There is no explicit deployment bundle such as Helm/Kubernetes manifests; this may be a deliberate non-goal for now, but it should be stated clearly.
+- There is no release artifact packaging workflow for OpenAPI + migrations + demo truth/evidence bundles.
 
 ---
 
 ## Prioritized actionable backlog
 
-### P0 (Immediate, reliability and correctness)
+### P0 (Immediate next readiness moves)
 
-1. Decompose repository interface and add tenant-explicit contracts.
-2. Move `TagController` SQL writes into application services/use-cases.
-3. Convert `tests/tag/AssignFlowTest.php` into deterministic PHPUnit integration test.
-4. Create baseline CI workflow for tests + static analysis.
+1. Add a concise ops runbook with smoke/startup/rollback steps.
+2. Add a compact API error catalog aligned with current runtime codes.
+3. Add deeper integration coverage for tenant isolation and broader write-path behavior beyond assignment flows.
 
-### P1 (Near-term, maintainability and operability)
+### P1 (Near-term maintainability)
 
-1. Add architecture decision records and runbook.
-2. Unify migration source-of-truth and add migration verification job.
-3. Introduce centralized error catalog + responder mapping.
+1. Introduce stronger typed DTO/result shapes for selected write/read flows.
+2. Clarify whether a fuller Symfony-hosted runtime is a target or an explicit non-goal for this component.
+3. Add ADRs for route truth centralization, public-shell scope, and fixture truth unification.
 
 ### P2 (Scale/readiness)
 
-1. Add deployment manifests/examples (Kubernetes/Helm or explicit non-goal).
-2. Add contract test suite from OpenAPI examples.
-3. Add security/dependency scanning and release artifact pipeline.
-
-## Suggested commit units (execution slicing)
-
-1. **Commit 1: Contracts and interfaces**
-    - Introduce segregated repository interfaces + compatibility adapter.
-2. **Commit 2: Application use-cases for tag writes**
-    - Add use-case classes and refactor `TagController` to delegate.
-3. **Commit 3: Test modernization**
-    - Replace script-like test with PHPUnit integration tests + fixtures.
-4. **Commit 4: CI foundation**
-    - Add workflow for lint/static/unit/integration.
-5. **Commit 5: Docs and ops hardening**
-    - Add runbook, ADR skeletons, migration policy doc.
+1. Add image build/release/security scanning pipelines.
+2. Add release artifact packaging for contract + migrations + evidence.
+3. Add explicit deployment guidance or manifests, or document that such packaging is intentionally out of scope.
 
 ## Suggested “ready next” implementation tasks
 
-- Create `src/Application/Write/Tag/CreateTag.php`, `PatchTag.php`, `DeleteTag.php` with typed command/result DTOs.
-- Keep repository contracts colocated in `src/Service/Core/Tag/` and do not reintroduce a parallel interface tree.
-- Add `tests/integration/TagAssignmentIdempotencyTest.php` and `tests/integration/TenantIsolationTest.php`.
-- Add `.github/workflows/ci.yml` with matrix for PHP 8.2/8.3 and Postgres service.
-- Add `docs/ops/runbook.md` + `docs/architecture/adr-0001-tenancy-boundary.md`.
+- `docs/ops/runbook.md`
+- `docs/api/error-catalog.md`
+- `docs/architecture/decisions/adr-route-truth-centralization.md`
+- `docs/architecture/decisions/adr-demo-fixture-truth.md`
+- deeper integration tests for tenant isolation and write-path symmetry
 
-- Wave 18 hardens assign/unassign controller response codes, normalizes quota result shape, and removes the stale src/Service/Quota tree.
+## Current reading of readiness
 
-
-## Wave 19 bootstrap/container cleanup
-
-- extracted a minimal host container under `src/HostMinimal/Container/`
-- moved runtime/env parsing out of `host-minimal/bootstrap.php` into `HostMinimalRuntimeConfig`
-- kept exported host-minimal callable keys stable while shrinking composition-root drift
-
-- Wave 20 cleans webhook/audit/observability edges: host-minimal exports observe+webhook composition, transport contracts are stabilized, and stale Service/Audit, Service/Webhook, Service/Metric trees are removed.
-
-- wave 21 hardens host-minimal transport security by moving signature verification into an explicit middleware pipeline, exporting the verify-signature middleware from bootstrap, and removing stale duplicate security trees.
+The repository is meaningfully closer to release confidence than the older plan implied. The biggest remaining gaps are no longer basic CI/runtime/doc truth mismatches; they are the next-level concerns of runbooks, richer deployment posture, fuller typed contracts, and deeper integration evidence.

@@ -21,6 +21,7 @@
         <button data-tab="search">Search</button>
         <button data-tab="create">Create</button>
         <button data-tab="assign">Assignments</button>
+        <button data-tab="bulk">Bulk</button>
     </nav>
 </header>
 <main>
@@ -35,7 +36,7 @@
                 <li>Inspect <code>/tag/_surface</code>.</li>
                 <li>Seed deterministic demo fixtures if search is empty.</li>
                 <li>Use the seeded demo helper to jump directly to the known tag/entity pair.</li>
-                <li>Try create, assign and search from the tabs above. Successful create auto-fills the tagId field.</li>
+                <li>Try create, assign, bulk operations and search from the tabs above. Successful create auto-fills the tagId field.</li>
             </ol>
         </div>
         <div id="tourOut" class="out"></div>
@@ -71,9 +72,25 @@
         </form>
         <div id="assignOut" class="out"></div>
     </section>
+
+    <section id="tab-bulk" class="tab">
+        <form onsubmit="return false;">
+            <label>primary tagId <input id="bulkTagId" placeholder="01..."/></label>
+            <label>secondary tagId <input id="bulkSecondTagId" placeholder="01..."/></label>
+            <label>missing tagId <input id="bulkMissingTagId" placeholder="01HMISSINGTAG0000000000000" value="01HMISSINGTAG0000000000000"/></label>
+            <label>scratch entityType <input id="bulkEntityType" placeholder="collection" value="collection"/></label>
+            <label>scratch entityId <input id="bulkEntityId" placeholder="demo-collection-2" value="demo-collection-2"/></label>
+            <label>batch entityType <input id="bulkTargetEntityType" placeholder="bundle" value="bundle"/></label>
+            <label>batch entityId <input id="bulkTargetEntityId" placeholder="demo-bundle-2" value="demo-bundle-2"/></label>
+            <button id="btnBulkAssignments">Bulk assignments</button>
+            <button id="btnBulkToEntity">Bulk to entity</button>
+            <button id="btnMissingUnassign">Missing-tag unassign</button>
+        </form>
+        <div id="bulkOut" class="out"></div>
+    </section>
 </main>
 <footer>
-    <p class="muted">Static shell only. Discovery endpoint + CRUD + assignments + search/suggest.</p>
+    <p class="muted">Static shell only. Discovery endpoint + CRUD + assignments + bulk operations + search/suggest.</p>
 </footer>
 <script src="app.js"></script>
 </body>

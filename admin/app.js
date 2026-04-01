@@ -11,7 +11,7 @@
   $('#apiBase').value = cfg.apiBase;
   $('#tenant').value = cfg.tenant;
 
-  const tabs = ['tour', 'search', 'create', 'assign'];
+  const tabs = ['tour', 'search', 'create', 'assign', 'bulk'];
   function activate(name) {
     tabs.forEach((tab) => {
       $('#tab-' + tab).style.display = tab === name ? 'block' : 'none';
@@ -83,10 +83,29 @@
 
   $('#btnUseDemo').addEventListener('click', () => {
     $('#tagId').value = '01K3TAGDEMO00000000000001';
+    $('#bulkTagId').value = '01K3TAGDEMO00000000000001';
+    $('#bulkSecondTagId').value = '01K3TAGDEMO00000000000005';
     $('#entityType').value = 'product';
     $('#entityId').value = 'demo-product-1';
+    $('#bulkEntityType').value = 'collection';
+    $('#bulkEntityId').value = 'demo-collection-2';
+    $('#bulkTargetEntityType').value = 'bundle';
+    $('#bulkTargetEntityId').value = 'demo-bundle-2';
     $('#q').value = 'elect';
-    show('#tourOut', { status: 200, text: JSON.stringify({ ok: true, primaryTagId: '01K3TAGDEMO00000000000001', entityType: 'product', entityId: 'demo-product-1', query: 'elect' }, null, 2) });
+    show('#tourOut', {
+      status: 200,
+      text: JSON.stringify({
+        ok: true,
+        primaryTagId: '01K3TAGDEMO00000000000001',
+        secondaryTagId: '01K3TAGDEMO00000000000005',
+        missingTagId: '01HMISSINGTAG0000000000000',
+        entityType: 'product',
+        entityId: 'demo-product-1',
+        bulkEntityType: 'bundle',
+        bulkEntityId: 'demo-bundle-2',
+        query: 'elect'
+      }, null, 2)
+    });
     activate('assign');
   });
 
@@ -114,9 +133,10 @@
     const result = show('#createOut', await call('POST', '/tag', payload));
     try {
       const parsed = JSON.parse(result.text);
-      const id = parsed && parsed.id ? String(parsed.id) : (parsed && parsed.result && parsed.result.id ? String(parsed.result.id) : '');
+      const id = parsed && parsed.id ? String(parsed.id) : '';
       if (id) {
         $('#tagId').value = id;
+        $('#bulkTagId').value = id;
         activate('assign');
       }
     } catch (_) {
@@ -129,6 +149,14 @@
       entity_type: $('#entityType').value.trim(),
       entity_id: $('#entityId').value.trim(),
     };
+  }
+
+  function primaryBulkTagId() {
+    return $('#bulkTagId').value.trim() || $('#tagId').value.trim();
+  }
+
+  function secondaryBulkTagId() {
+    return $('#bulkSecondTagId').value.trim();
   }
 
   $('#btnAssign').addEventListener('click', async () => {
@@ -153,5 +181,53 @@
     const entityType = $('#entityType').value.trim();
     const entityId = $('#entityId').value.trim();
     show('#assignOut', await call('GET', '/tag/assignments?entityType=' + encodeURIComponent(entityType) + '&entityId=' + encodeURIComponent(entityId) + '&limit=10'));
+  });
+
+  $('#btnBulkAssignments').addEventListener('click', async () => {
+    const tagId = primaryBulkTagId();
+    const entityType = $('#bulkEntityType').value.trim();
+    const entityId = $('#bulkEntityId').value.trim();
+    if (!tagId || !entityType || !entityId) {
+      show('#bulkOut', { status: 0, text: 'bulk primary tagId, entityType and entityId are required' });
+      return;
+    }
+    const payload = {
+      operations: [
+        { op: 'assign', tagId, entityType, entityId, idem: 'ui-bulk-assign-' + Date.now() },
+        { op: 'unassign', tagId, entityType, entityId, idem: 'ui-bulk-unassign-' + Date.now() }
+      ]
+    };
+    show('#bulkOut', await call('POST', '/tag/assignments/bulk', payload));
+  });
+
+  $('#btnBulkToEntity').addEventListener('click', async () => {
+    const primary = primaryBulkTagId();
+    const secondary = secondaryBulkTagId();
+    const entityType = $('#bulkTargetEntityType').value.trim();
+    const entityId = $('#bulkTargetEntityId').value.trim();
+    const tagIds = [primary, secondary].filter(Boolean);
+    if (!entityType || !entityId || tagIds.length === 0) {
+      show('#bulkOut', { status: 0, text: 'bulk target entityType/entityId and at least one tagId are required' });
+      return;
+    }
+    show('#bulkOut', await call('POST', '/tag/assignments/bulk-to-entity', {
+      entityType,
+      entityId,
+      tagIds
+    }));
+  });
+
+  $('#btnMissingUnassign').addEventListener('click', async () => {
+    const tagId = $('#bulkMissingTagId').value.trim();
+    const entityType = $('#bulkEntityType').value.trim();
+    const entityId = $('#bulkEntityId').value.trim();
+    if (!tagId || !entityType || !entityId) {
+      show('#bulkOut', { status: 0, text: 'missing-tag probe requires tagId, entityType and entityId' });
+      return;
+    }
+    show('#bulkOut', await call('POST', '/tag/' + encodeURIComponent(tagId) + '/unassign', {
+      entity_type: entityType,
+      entity_id: entityId,
+    }));
   });
 })();

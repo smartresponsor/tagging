@@ -1,6 +1,12 @@
 @baseUrl = http://127.0.0.1:8080
 @tenant = demo
 @tagId = 01K3TAGDEMO00000000000001
+@secondaryTagId = 01K3TAGDEMO00000000000005
+@missingTagId = 01HMISSINGTAG0000000000000
+@scratchEntityType = collection
+@scratchEntityId = demo-collection-2
+@bulkEntityType = bundle
+@bulkEntityId = demo-bundle-2
 
 ### 1. service status
 GET {{baseUrl}}/tag/_status
@@ -33,8 +39,8 @@ Content-Type: application/json
 X-Idempotency-Key: tour-assign-1
 
 {
-  "entity_type": "collection",
-  "entity_id": "demo-collection-2"
+  "entity_type": "{{scratchEntityType}}",
+  "entity_id": "{{scratchEntityId}}"
 }
 
 ### 8. unassign seeded relation
@@ -44,6 +50,55 @@ Content-Type: application/json
 X-Idempotency-Key: tour-unassign-1
 
 {
-  "entity_type": "collection",
-  "entity_id": "demo-collection-2"
+  "entity_type": "{{scratchEntityType}}",
+  "entity_id": "{{scratchEntityId}}"
+}
+
+### 9. mixed bulk assignment tour
+POST {{baseUrl}}/tag/assignments/bulk
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "operations": [
+    {
+      "op": "assign",
+      "tagId": "{{tagId}}",
+      "entityType": "{{scratchEntityType}}",
+      "entityId": "{{scratchEntityId}}",
+      "idem": "tour-bulk-assign-1"
+    },
+    {
+      "op": "unassign",
+      "tagId": "{{tagId}}",
+      "entityType": "{{scratchEntityType}}",
+      "entityId": "{{scratchEntityId}}",
+      "idem": "tour-bulk-unassign-1"
+    }
+  ]
+}
+
+### 10. bulk assign multiple tags to one entity
+POST {{baseUrl}}/tag/assignments/bulk-to-entity
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "entityType": "{{bulkEntityType}}",
+  "entityId": "{{bulkEntityId}}",
+  "tagIds": [
+    "{{tagId}}",
+    "{{secondaryTagId}}"
+  ]
+}
+
+### 11. missing-tag unassign contract (expect 404 tag_not_found)
+POST {{baseUrl}}/tag/{{missingTagId}}/unassign
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+X-Idempotency-Key: tour-missing-unassign-1
+
+{
+  "entity_type": "{{scratchEntityType}}",
+  "entity_id": "{{scratchEntityId}}"
 }

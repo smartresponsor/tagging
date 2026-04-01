@@ -30,6 +30,8 @@ jobs:
       - run: composer run -n audit:bootstrap-runtime
       - run: composer run -n audit:config
       - run: composer run -n audit:sdk
+      - run: composer run -n audit:demo-truth-pack
+      - run: composer run -n audit:release-grade-portrait
       - run: composer run -n audit:version
       - run: composer run -n audit:canonical-stale
       - run: composer run -n audit:canonical-structure

@@ -1,6 +1,14 @@
 @baseUrl = http://127.0.0.1:8080
 @tenant = demo
 @tagId = 01K3TAGDEMO00000000000001
+@secondaryTagId = 01K3TAGDEMO00000000000005
+@missingTagId = 01HMISSINGTAG0000000000000
+@bulkEntityType = bundle
+@bulkEntityId = demo-bundle-2
+
+### status
+GET {{baseUrl}}/tag/_status
+X-Tenant-Id: {{tenant}}
 
 ### discovery
 GET {{baseUrl}}/tag/_surface
@@ -14,6 +22,59 @@ X-Tenant-Id: {{tenant}}
 GET {{baseUrl}}/tag/search?q=elect&pageSize=5
 X-Tenant-Id: {{tenant}}
 
+### seeded suggest
+GET {{baseUrl}}/tag/suggest?q=pre&limit=5
+X-Tenant-Id: {{tenant}}
+
 ### seeded assignments
 GET {{baseUrl}}/tag/assignments?entityType=product&entityId=demo-product-1&limit=10
 X-Tenant-Id: {{tenant}}
+
+### bulk assignments
+POST {{baseUrl}}/tag/assignments/bulk
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "operations": [
+    {
+      "op": "assign",
+      "tagId": "{{tagId}}",
+      "entityType": "collection",
+      "entityId": "demo-collection-2",
+      "idem": "demo-bulk-assign-1"
+    },
+    {
+      "op": "unassign",
+      "tagId": "{{tagId}}",
+      "entityType": "collection",
+      "entityId": "demo-collection-2",
+      "idem": "demo-bulk-unassign-1"
+    }
+  ]
+}
+
+### bulk assign to entity
+POST {{baseUrl}}/tag/assignments/bulk-to-entity
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+
+{
+  "entityType": "{{bulkEntityType}}",
+  "entityId": "{{bulkEntityId}}",
+  "tagIds": [
+    "{{tagId}}",
+    "{{secondaryTagId}}"
+  ]
+}
+
+### missing-tag unassign (expect 404 tag_not_found)
+POST {{baseUrl}}/tag/{{missingTagId}}/unassign
+X-Tenant-Id: {{tenant}}
+Content-Type: application/json
+X-Idempotency-Key: demo-missing-unassign-1
+
+{
+  "entityType": "collection",
+  "entityId": "demo-collection-2"
+}

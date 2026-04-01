@@ -7,8 +7,10 @@ $root = dirname(__DIR__, 2);
 $doc = $root . '/docs/release/tag-release-grade-portrait.md';
 $readme = $root . '/README.md';
 $demo = $root . '/docs/demo/tag-final-demo-pack.md';
+$publicChecklist = $root . '/docs/public/tag-public-ready-checklist.md';
+$adminGuide = $root . '/docs/admin/user-guide.md';
 
-foreach ([$doc, $readme, $demo] as $file) {
+foreach ([$doc, $readme, $demo, $publicChecklist, $adminGuide] as $file) {
     if (!is_file($file)) {
         fwrite(STDERR, 'Missing release-grade portrait dependency: ' . str_replace($root . '/', '', $file) . PHP_EOL);
         exit(1);
@@ -18,22 +20,37 @@ foreach ([$doc, $readme, $demo] as $file) {
 $docText = file_get_contents($doc) ?: '';
 $readmeText = file_get_contents($readme) ?: '';
 $demoText = file_get_contents($demo) ?: '';
+$publicChecklistText = file_get_contents($publicChecklist) ?: '';
+$adminGuideText = file_get_contents($adminGuide) ?: '';
 
 $checks = [
     ['docs/release/tag-release-grade-portrait.md', $docText, '`src/`'],
     ['docs/release/tag-release-grade-portrait.md', $docText, '`host-minimal/`'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, '`tag.yaml`'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'status.db_probe_failed'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'quota.count_failed'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'assign_failed'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'unassign_failed'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, 'tag_not_found'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, '/tag/assignments/bulk'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, '/tag/assignments/bulk-to-entity'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, 'authoritative `total`'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'composer test'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, 'smoke:runtime'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'audit:demo-truth-pack'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, 'audit:sdk'],
     ['docs/release/tag-release-grade-portrait.md', $docText, '/tag/_surface'],
     ['docs/release/tag-release-grade-portrait.md', $docText, '/tag/_status'],
     ['README.md', $readmeText, 'Runnable core'],
     ['README.md', $readmeText, 'Adjacent assets (not core runtime)'],
     ['docs/demo/tag-final-demo-pack.md', $demoText, '/tag/_surface'],
     ['docs/demo/tag-final-demo-pack.md', $demoText, '/tag/_status'],
+    ['docs/public/tag-public-ready-checklist.md', $publicChecklistText, '/tag/assignments/bulk'],
+    ['docs/public/tag-public-ready-checklist.md', $publicChecklistText, '/tag/assignments/bulk-to-entity'],
+    ['docs/public/tag-public-ready-checklist.md', $publicChecklistText, 'authoritative `total`'],
+    ['docs/admin/user-guide.md', $adminGuideText, '/tag/assignments/bulk'],
+    ['docs/admin/user-guide.md', $adminGuideText, '/tag/assignments/bulk-to-entity'],
+    ['docs/admin/user-guide.md', $adminGuideText, 'tag_not_found'],
 ];
 
 foreach ($checks as [$label, $haystack, $needle]) {

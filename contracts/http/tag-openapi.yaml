@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Tag API
-  version: 0.2.7
+  version: 0.2.8
 servers:
   - url: http://localhost:8080
 paths:
@@ -62,7 +62,7 @@ paths:
             type: string
       responses:
         '204':
-          description: No content
+          description: No content on successful delete
         '400':
           description: Error payload `{ ok: false, code }`, including `invalid_tenant`
         '404':
@@ -182,10 +182,10 @@ paths:
       summary: Status and DB readiness
       responses:
         '200':
-          description: Status payload with runtime readiness and version headers
+          description: Status payload with runtime readiness; response includes `X-Tag-Version` and `Cache-Control: no-store`
   /tag/_surface:
     get:
       summary: Public runtime surface catalog
       responses:
         '200':
-          description: Discovery payload for the current shipped public shell
+          description: Discovery payload for the current shipped public shell; response includes `X-Tag-Surface-Version` and `Cache-Control: no-store`

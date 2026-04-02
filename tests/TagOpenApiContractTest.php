@@ -34,4 +34,17 @@ final class TagOpenApiContractTest extends TestCase
         self::assertStringContainsString('including `invalid_tenant`', $contract);
         self::assertStringContainsString('per-item results may include `tag_not_found`, `assign_failed`, or `validation_failed`', $contract);
     }
+
+    public function testOpenApiDocumentsCrudSuccessStatusesAndMetaRouteHeaders(): void
+    {
+        $contract = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
+        self::assertIsString($contract);
+
+        self::assertStringContainsString("/tag:\n    post:", $contract);
+        self::assertStringContainsString("'201':\n          description: Entity-shaped JSON payload", $contract);
+        self::assertStringContainsString("'204':\n          description: No content on successful delete", $contract);
+        self::assertStringContainsString('`X-Tag-Version`', $contract);
+        self::assertStringContainsString('`X-Tag-Surface-Version`', $contract);
+        self::assertStringContainsString('`Cache-Control: no-store`', $contract);
+    }
 }

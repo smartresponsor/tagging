@@ -1,58 +1,197 @@
-# Runbook (Tag component)
+# Tag Runtime Ops Runbook
 
-This runbook covers the shipped public-ready shell for the Tag component.
+This runbook describes how to start, validate, and recover the shipped Tag runtime (`host-minimal`) in a predictable way.
 
-## Startup checklist
+---
 
-1) Configuration
+## 1. Preconditions
 
-- `DB_DSN`, `DB_USER`, `DB_PASS`
-- `TENANT` (demo default only; production should pass tenant per request)
+- PHP 8.2+
+- PostgreSQL 15+
+- Composer installed
 
-2) Database
+Environment variables (defaults shown):
 
-- Ensure Postgres is reachable
-- Run migrations:
-  - `make migrate`
-  - or `php tools/db/tag-migrate.php`
-  - or `bash tools/db/tag-migration-smoke.sh`
+```
+DB_DSN=pgsql:host=127.0.0.1;port=5432;dbname=app
+DB_USER=app
+DB_PASS=app
+TENANT=demo
+BASE_URL=http://127.0.0.1:8080
+```
 
-3) Service health
+---
 
-- Confirm the host is reachable:
-  - `GET /tag/_status`
-  - `GET /tag/_surface`
-- Run smoke:
-  - `make smoke`
-- Run preflight before publishing:
-  - `make audit`
-  - `make preflight`
+## 2. Install
 
-## Degraded modes
+```
+composer install --no-interaction --prefer-dist
+```
 
-- DB unavailable: `_status` stays reachable and reports `db.ok=false`.
-- Public shell scope remains CRUD, assign/unassign, assignment read, search, suggest, status, and discovery.
+---
 
-## Incident response
+## 3. Database migrate
 
-- Check DB health and locks.
-- Check migration drift.
-- Check outbox and idempotency tables for backlog.
-- Re-run `php tools/audit/tag-route-controller-audit.php` if route wiring changed.
+```
+composer run -n db:migrate
+```
 
-## Backup and restore (Postgres)
+Expected:
+- all migrations applied
+- no SQL errors
 
-- Backups must include core tag tables, outbox, and idempotency.
-- After restore: re-run migration smoke and runtime smoke.
+---
 
-## Rollback
+## 4. Seed demo data (optional but recommended)
 
-- Prefer app rollback if schema is forward-compatible.
-- Otherwise restore from backup.
+```
+composer run -n demo:seed
+```
 
-## Release validation
+Expected:
+- deterministic tags and assignments created
+- compatible with demo catalog and HTTP examples
 
-- `php tools/audit/tag-surface-audit.php`
-- `php tools/audit/tag-contract-audit.php`
-- `php tools/audit/tag-route-controller-audit.php`
-- `php tools/release/tag-preflight.php`
+---
+
+## 5. Start runtime
+
+```
+php -S 127.0.0.1:8080 host-minimal/index.php
+```
+
+---
+
+## 6. Basic health check
+
+```
+curl http://127.0.0.1:8080/tag/_status
+```
+
+Expected:
+```
+HTTP 200
+{"ok":true}
+```
+
+---
+
+## 7. Surface check (VERY IMPORTANT)
+
+```
+curl http://127.0.0.1:8080/tag/_surface
+```
+
+Verify presence of:
+- `/tag/assignments/bulk`
+- `/tag/assignments/bulk-to-entity`
+- `/tag/search`
+- `/tag/suggest`
+
+This confirms runtime matches expected public shell.
+
+---
+
+## 8. Smoke test
+
+```
+composer run -n smoke:runtime
+```
+
+Expected:
+- exit code 0
+- no transport/runtime errors
+
+If failed:
+- inspect `/tmp/tag-host.log` (CI)
+- or local console output
+
+---
+
+## 9. Quick manual verification
+
+### Search
+```
+GET /tag/search?q=elect
+```
+
+### Assign
+```
+POST /tag/{id}/assign
+```
+
+### Bulk
+```
+POST /tag/assignments/bulk
+POST /tag/assignments/bulk-to-entity
+```
+
+### Missing tag contract
+```
+POST /tag/{missing}/unassign
+→ 404 tag_not_found
+```
+
+---
+
+## 10. Observability
+
+- slowlog: `report/tag/slowlog.ndjson`
+- middleware: `Observe`
+- no `/tag/_metrics` endpoint (by design in current slice)
+
+---
+
+## 11. Common failure scenarios
+
+### DB connection fails
+- check DSN
+- check postgres running
+
+### Empty search results
+- run `demo:seed`
+
+### 400 invalid_tenant
+- ensure `X-Tenant-Id` header is set
+
+### 404 tag_not_found
+- tag does not exist (expected behavior)
+
+---
+
+## 12. Rollback strategy
+
+There is no automated rollback tool in current slice.
+
+Manual approach:
+
+1. reset DB
+2. re-run migrations
+3. re-run seed
+
+```
+dropdb app
+createdb app
+composer run -n db:migrate
+composer run -n demo:seed
+```
+
+---
+
+## 13. Evidence checklist (production readiness)
+
+Before considering environment stable:
+
+- `_status` OK
+- `_surface` matches expected routes
+- smoke passes
+- demo flows work
+- no unexpected 5xx
+
+---
+
+## 14. Notes
+
+- This runbook reflects the current shipped runtime, not a future Symfony-based host.
+- Bulk routes and flat payload semantics are part of the contract.
+- Error semantics are defined in `docs/api/error-catalog.md`.

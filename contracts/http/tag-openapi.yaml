@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Tag API
-  version: 0.2.6
+  version: 0.2.7
 servers:
   - url: http://localhost:8080
 paths:
@@ -18,7 +18,7 @@ paths:
         '201':
           description: Entity-shaped JSON payload `{ id, slug, name, locale, weight, ... }`
         '400':
-          description: Error payload `{ ok: false, code }`
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant` or validation errors
         '409':
           description: Conflict payload `{ ok: false, code: conflict }`
   /tag/{id}:
@@ -34,7 +34,7 @@ paths:
         '200':
           description: Entity-shaped JSON payload `{ id, slug, name, locale, weight, ... }`
         '400':
-          description: Error payload `{ ok: false, code }`
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant`
         '404':
           description: Error payload `{ ok: false, code: not_found }`
     patch:
@@ -49,7 +49,7 @@ paths:
         '200':
           description: Minimal success payload `{ id }`
         '400':
-          description: Error payload `{ ok: false, code }`
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant` or validation errors
         '404':
           description: Error payload `{ ok: false, code: not_found }`
     delete:
@@ -64,17 +64,23 @@ paths:
         '204':
           description: No content
         '400':
-          description: Error payload `{ ok: false, code }`
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant`
         '404':
           description: Error payload `{ ok: false, code: not_found }`
   /tag/{id}/assign:
     post:
       summary: Assign tag to entity
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Success payload `{ ok, duplicated, conflict }`
         '400':
-          description: Error payload `{ ok: false, code }`
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant` or `validation_failed`
         '404':
           description: Error payload `{ ok: false, code: tag_not_found }`
         '409':
@@ -84,11 +90,17 @@ paths:
   /tag/{id}/unassign:
     post:
       summary: Unassign tag from entity
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Success payload `{ ok, not_found, duplicated, conflict }` when the tag exists and the entity link is removed or already absent
         '400':
-          description: Error payload `{ ok: false, code }`
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant` or `validation_failed`
         '404':
           description: Error payload `{ ok: false, code: tag_not_found }` when the tag entity itself does not exist
         '409':
@@ -98,40 +110,82 @@ paths:
   /tag/assignments/bulk:
     post:
       summary: Execute mixed bulk assign and unassign operations
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Batch payload `{ ok, processed, done, errors, results[] }`
         '400':
-          description: Error payload `{ ok: false, code }`
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant`; batch items may also carry `validation_failed`, `tag_not_found`, `idempotency_conflict`, `assign_failed`, or `unassign_failed`
   /tag/assignments/bulk-to-entity:
     post:
       summary: Assign many tags to a single entity
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: Batch payload `{ ok, entityType, entityId, processed, assigned, duplicated, errors, items[] }`
+          description: Batch payload `{ ok, entityType, entityId, processed, assigned, duplicated, errors, items[] }`; per-item results may include `tag_not_found`, `assign_failed`, or `validation_failed`
         '400':
-          description: Error payload `{ ok: false, code }`
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant` or `validation_failed`
   /tag/assignments:
     get:
       summary: List assignments by entityType/entityId
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK payload `{ ok, entityType, entityId, items }`
+        '400':
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant` or `validation_failed`
   /tag/search:
     get:
       summary: Search tags
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Flat OK payload `{ ok, items, total, nextPageToken, cacheHit }` with authoritative `total` for the current query
+        '400':
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant`
   /tag/suggest:
     get:
       summary: Suggest tags
+      parameters:
+        - in: header
+          name: X-Tenant-Id
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Flat OK payload `{ ok, items, cacheHit }` without nested `result`
+        '400':
+          description: Error payload `{ ok: false, code }`, including `invalid_tenant`
   /tag/_status:
     get:
       summary: Status and DB readiness
+      responses:
+        '200':
+          description: Status payload with runtime readiness and version headers
   /tag/_surface:
     get:
       summary: Public runtime surface catalog
+      responses:
+        '200':
+          description: Discovery payload for the current shipped public shell

@@ -40,6 +40,10 @@ composer run -n test:unit
 composer run -n test:integration
 ```
 
+Integration evidence now explicitly includes:
+- tenant isolation across search and assignment reads on shared entity coordinates
+- write symmetry around assign / unassign / bulk flows, including idempotency and missing-tag behavior
+
 ## Operational notes
 
 - startup / migrate / seed / rollback steps are described in `docs/ops/runbook.md`

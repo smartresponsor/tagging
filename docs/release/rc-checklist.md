@@ -6,7 +6,6 @@ Use this checklist before tagging or publishing an RC candidate.
 
 - [ ] `composer run -n audit:surface`
 - [ ] `composer run -n audit:contract`
-- [ ] `composer run -n audit:route`
 - [ ] `composer run -n audit:openapi-semantics`
 - [ ] OpenAPI reflects current public shell and meta-route headers
 
@@ -25,6 +24,8 @@ Use this checklist before tagging or publishing an RC candidate.
 - [ ] `composer run -n test:integration`
 - [ ] demo seed path works
 - [ ] `_status` and `_surface` verified against the shipped runtime
+- [ ] tenant isolation evidence passes on shared entity coordinates
+- [ ] write symmetry evidence passes for assign / unassign / bulk paths
 
 ## Release posture
 

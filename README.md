@@ -43,6 +43,17 @@ The following trees belong to delivery, demo, release, or operational support. T
 
 These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, `tag.yaml`, or `contracts/http/`, the runnable core wins.
 
+## Release and publication assets
+
+For RC/release posture, use:
+
+- `CHANGELOG.md`
+- `RELEASE_NOTES.md`
+- `docs/public/index.md`
+- `docs/release/rc-checklist.md`
+- `docs/ops/runbook.md`
+- `.github/workflows/release-rc.yml`
+
 ## Quickstart (Docker)
 
 Prereqs:
@@ -141,6 +152,8 @@ Host PHP extension install on Debian/Ubuntu:
 - `composer run -n fixture:validate`
 - `composer run -n fixture:dry-run`
 - `composer run -n smoke:runtime`
+- `composer run -n audit:release-assets`
+- `composer run -n audit:openapi-semantics`
 - `composer run -n test:panther`
 - `composer run -n test:e2e`
 
@@ -155,11 +168,13 @@ Start with `GET /tag/_surface` to verify the public runtime catalog before creat
 
 - `composer run -n audit:surface`
 - `composer run -n audit:contract`
+- `composer run -n audit:openapi-semantics`
 - `composer run -n audit:route`
 - `composer run -n audit:bootstrap`
 - `composer run -n audit:bootstrap-runtime`
 - `composer run -n audit:config`
 - `composer run -n audit:sdk`
+- `composer run -n audit:release-assets`
 - `composer run -n audit:version`
 - `composer run -n audit:core-boundary`
 - `composer run -n audit:release-grade-portrait`

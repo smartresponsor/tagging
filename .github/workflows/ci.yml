@@ -35,6 +35,7 @@ jobs:
       - run: composer run -n audit:release-grade-portrait
       - run: composer run -n audit:version
       - run: composer run -n audit:openapi-semantics
+      - run: composer run -n audit:antora-surface
       - run: composer run -n audit:canonical-stale
       - run: composer run -n audit:canonical-structure
       - run: composer run -n audit:repo-hygiene

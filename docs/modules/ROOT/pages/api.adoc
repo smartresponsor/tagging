@@ -1,0 +1,29 @@
+= API and Reference
+
+This page is the Antora entry point for the repository's API and reference surfaces.
+
+== Canonical API sources in the repository
+
+* OpenAPI source contract: `contracts/http/tag-openapi.yaml`
+* error semantics: `docs/api/error-catalog.md`
+* HTTP narrative wiring: `docs/http/http-wiring.md`
+* SDK usage/reference: `sdk/README.md`
+* public request examples: `public/tag/examples/` and `public/tag/demo/`
+
+== Current API reading
+
+The repository already ships a maintained OpenAPI contract and related narrative material.
+This Antora page does not duplicate the OpenAPI document by hand.
+Instead, it gives the central Antora site a stable entry point into the API/reference area.
+
+== Generated artifact policy
+
+* The source contract stays in `contracts/http/tag-openapi.yaml`.
+* If a rendered/static OpenAPI artifact is introduced later, it should live under `public/tag/openapi/` or be packaged in the release bundle, not mixed into Antora narrative pages.
+* If a generated code-reference surface is introduced later, it should live under `public/tag/api-reference/` (or another explicitly generated reference root), and Antora should link to it instead of copying it.
+
+== Current repository state
+
+* no Nelmio-managed runtime documentation surface is shipped here
+* no phpDocumentor / Doctum code-reference surface is shipped here currently
+* narrative docs and generated/reference assets remain deliberately separate

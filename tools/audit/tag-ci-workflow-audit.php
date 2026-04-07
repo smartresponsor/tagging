@@ -22,6 +22,7 @@ $required = [
     'composer run -n audit:release-assets',
     'composer run -n audit:release-grade-portrait',
     'composer run -n audit:openapi-semantics',
+    'composer run -n audit:antora-surface',
     'composer run -n audit:ci-workflow',
     'composer run -n test:unit',
     'composer run -n test:integration',

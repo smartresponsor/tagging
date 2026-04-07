@@ -1,0 +1,51 @@
+= Install
+
+This page is the Antora entry point for install and local bring-up.
+The detailed operational commands remain in the repository's existing runbook and README surfaces.
+
+== Canonical install sources in the repository
+
+* `README.md`
+* `docs/ops/runbook.md`
+* `db/postgres/migrations/`
+
+== Minimal local bring-up
+
+. Install dependencies
++
+[source,bash]
+----
+composer install --no-interaction --prefer-dist
+----
+
+. Apply migrations
++
+[source,bash]
+----
+composer run -n db:migrate
+----
+
+. Optionally seed deterministic demo data
++
+[source,bash]
+----
+composer run -n demo:seed
+----
+
+. Start the shipped runtime
++
+[source,bash]
+----
+php -S 127.0.0.1:8080 host-minimal/index.php
+----
+
+== Verification
+
+* `GET /tag/_status`
+* `GET /tag/_surface`
+* `composer run -n smoke:runtime`
+
+== Note
+
+This Antora page stays intentionally concise.
+The operationally detailed startup, smoke, rollback, and troubleshooting flow remains in `docs/ops/runbook.md`.

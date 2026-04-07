@@ -1,0 +1,28 @@
+= Operations
+
+This page is the Antora entry point for runtime operations, CI gates, observability, and release posture.
+
+== Canonical operations sources in the repository
+
+* `docs/ops/runbook.md`
+* `docs/ops/ci-gates.md`
+* `docs/ops/observability.md`
+* `docs/release/rc-checklist.md`
+* `RELEASE_NOTES.md`
+
+== Current operational contour
+
+* startup / migrate / seed / rollback guidance lives in `docs/ops/runbook.md`
+* CI and evidence expectations live in `docs/ops/ci-gates.md`
+* observability posture lives in `docs/ops/observability.md`
+* RC release posture lives in `docs/release/rc-checklist.md` and `RELEASE_NOTES.md`
+
+== Important current notes
+
+* `_status` and `_surface` are the lightweight operational verification endpoints
+* `smoke:runtime` is part of the active release/readiness gate
+* there is no shipped `/tag/_metrics` route in the current public shell
+
+== Why this page exists
+
+This producer page gives Antora a stable operational entry point without moving or duplicating the detailed operational Markdown docs already maintained in the repository.

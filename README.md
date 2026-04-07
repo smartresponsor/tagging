@@ -43,6 +43,19 @@ The following trees belong to delivery, demo, release, or operational support. T
 
 These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, `tag.yaml`, or `contracts/http/`, the runnable core wins.
 
+## Release and publication assets
+
+For RC/release posture, use:
+
+- `CHANGELOG.md`
+- `RELEASE_NOTES.md`
+- `docs/public/index.md`
+- `docs/release/rc-checklist.md`
+- `docs/ops/runbook.md`
+- `.github/workflows/release-rc.yml`
+- Antora producer surface under `docs/modules/ROOT/`
+- generated Swagger/OpenAPI surface under `public/tag/openapi/`
+
 ## Quickstart (Docker)
 
 Prereqs:
@@ -100,37 +113,6 @@ Environment variables used by code:
 - `TENANT` (optional default tenant)
 - `TAG_ALLOW_ORIGIN` (optional CORS origin pinning)
 
-## Local server
-
-- `composer run -n symfony:server:start`
-
-If the Symfony CLI is installed, the wrapper uses it with `public/` as the document root. If it is not installed, the wrapper falls back to `php -S`.
-
-Host PHP extension install on Debian/Ubuntu:
-
-- `sudo apt-get update`
-- `sudo apt-get install -y php8.4-pgsql php8.4-sqlite3`
-
-## Integration tests (Postgres harness)
-
-1. Start Postgres:
-
-- `docker compose up -d db`
-- or `composer run -n db:test:start`
-
-2. Apply migrations:
-
-- `export POSTGRES_DB=app POSTGRES_USER=app POSTGRES_PASSWORD=app DB_HOST=127.0.0.1 DB_PORT=54329`
-- `for f in db/postgres/migrations/*.sql; do psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$DB_HOST:$DB_PORT/$POSTGRES_DB" -f "$f"; done`
-- or `composer run -n db:smoke:self-contained`
-
-3. Run suites:
-
-- `composer test`
-- `composer run -n test:integration`
-- `composer run -n test:all`
-- `composer run -n db:test:stop`
-
 ## QA commands
 
 - `composer run -n lint`
@@ -140,31 +122,27 @@ Host PHP extension install on Debian/Ubuntu:
 - `composer run -n cs:fix`
 - `composer run -n fixture:validate`
 - `composer run -n fixture:dry-run`
+- `composer run -n docs:openapi:publish`
 - `composer run -n smoke:runtime`
-- `composer run -n test:panther`
-- `composer run -n test:e2e`
-
-`smoke:runtime` validates the current public runtime surface, including bulk assignment endpoints, missing-tag unassign semantics, flat read payloads, and authoritative search totals.
-
-## Demo scenario
-
-See `docs/demo/tag-quick-demo.md`.
-Start with `GET /tag/_surface` to verify the public runtime catalog before create/search/bulk flows, including the explicit `404 tag_not_found` unassign contract, the flat search/suggest payload shape, and the authoritative `total` returned by search.
+- `composer run -n audit:release-assets`
+- `composer run -n audit:openapi-semantics`
+- `composer run -n audit:generated-openapi-surface`
+- `composer run -n audit:antora-surface`
 
 ## Publish gate
 
 - `composer run -n audit:surface`
 - `composer run -n audit:contract`
+- `composer run -n audit:openapi-semantics`
+- `composer run -n audit:generated-openapi-surface`
+- `composer run -n audit:antora-surface`
 - `composer run -n audit:route`
 - `composer run -n audit:bootstrap`
 - `composer run -n audit:bootstrap-runtime`
 - `composer run -n audit:config`
 - `composer run -n audit:sdk`
+- `composer run -n audit:release-assets`
 - `composer run -n audit:version`
 - `composer run -n audit:core-boundary`
 - `composer run -n audit:release-grade-portrait`
 - `composer run -n release:preflight`
-
-## Repository hygiene
-
-Run `composer run -n audit:repo-hygiene` to verify that transport-only wave metadata is not kept in the repository root. Cumulative snapshots must not contain root transport artifacts such as `MANIFEST.wave-*.json`, `ZZ_*`, duplicate tag config files, or transient workspace directories.

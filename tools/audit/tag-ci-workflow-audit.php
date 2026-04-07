@@ -14,12 +14,17 @@ if (!is_file($workflow)) {
 $content = (string) file_get_contents($workflow);
 
 $required = [
+    'composer run -n docs:openapi:publish',
     'composer run -n audit:composer-integrity',
     'composer run -n audit:bootstrap-runtime',
     'composer run -n audit:snapshot-purity',
     'composer run -n audit:repo-map-truth',
     'composer run -n audit:demo-truth-pack',
+    'composer run -n audit:release-assets',
     'composer run -n audit:release-grade-portrait',
+    'composer run -n audit:openapi-semantics',
+    'composer run -n audit:generated-openapi-surface',
+    'composer run -n audit:antora-surface',
     'composer run -n audit:ci-workflow',
     'composer run -n test:unit',
     'composer run -n test:integration',
@@ -42,5 +47,5 @@ if (preg_match('/^\s*-\s*run:\s*composer run -n audit:repo-hygiene\s*
     exit(1);
 }
 
-fwrite(STDOUT, 'CI workflow audit passed.
-');
+echo 'CI workflow audit passed.
+';

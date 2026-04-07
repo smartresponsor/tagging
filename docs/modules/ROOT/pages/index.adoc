@@ -1,0 +1,57 @@
+= Tagging
+
+This Antora surface makes the repository a documentation producer for an external central documentation aggregator.
+It does not assemble a site, ship a playbook, or replace GitHub-facing repository docs.
+
+== Documentation roles in this repository
+
+=== GitHub-facing repository docs
+
+These stay at repository root and keep their current role:
+
+* `README.md`
+* `CHANGELOG.md`
+* `RELEASE_NOTES.md`
+
+=== Hand-written narrative docs
+
+These remain in the repository under `docs/` and are the main source for architecture, operations, release, public-shell, and demo narratives.
+The Antora pages in this module are thin entry points and wrappers, not a second copy of all narrative material.
+
+=== Generated or reference surfaces
+
+These stay separate from narrative pages:
+
+* OpenAPI source contract: `contracts/http/tag-openapi.yaml`
+* generated Swagger/OpenAPI surface: `public/tag/openapi/`
+* SDK usage/reference surface: `sdk/README.md`
+* static/public request examples: `public/tag/...`
+
+== Start here
+
+* xref:architecture.adoc[Architecture]
+* xref:install.adoc[Install]
+* xref:operations.adoc[Operations]
+* xref:api.adoc[API and Reference]
+
+== Current shipped public shell
+
+* CRUD
+* assign / unassign
+* bulk assignment routes
+* assignment reads
+* search / suggest
+* `_status` / `_surface`
+
+== Current guarantees
+
+* search returns flat payloads with authoritative `total`
+* suggest returns flat payloads without nested `result`
+* unassign returns `404 tag_not_found` when the tag entity itself is absent
+* tenant header is part of the public business shell contract
+
+== Canonical source notes
+
+* This repository already has `docs/`, architecture/install/operations/API-oriented narrative docs, root Markdown docs, and a shipped OpenAPI contract.
+* No Nelmio runtime surface is shipped here.
+* No phpDocumentor / Doctum code-reference surface is shipped here at the moment.

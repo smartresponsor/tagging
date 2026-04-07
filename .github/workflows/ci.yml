@@ -19,6 +19,7 @@ jobs:
           node-version: "22"
       - run: composer validate --no-interaction --strict
       - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n docs:openapi:publish
       - run: composer run -n audit:composer-integrity
       - run: composer run -n lint
       - run: composer run -n lint:admin
@@ -31,8 +32,12 @@ jobs:
       - run: composer run -n audit:config
       - run: composer run -n audit:sdk
       - run: composer run -n audit:demo-truth-pack
+      - run: composer run -n audit:release-assets
       - run: composer run -n audit:release-grade-portrait
       - run: composer run -n audit:version
+      - run: composer run -n audit:openapi-semantics
+      - run: composer run -n audit:generated-openapi-surface
+      - run: composer run -n audit:antora-surface
       - run: composer run -n audit:canonical-stale
       - run: composer run -n audit:canonical-structure
       - run: composer run -n audit:repo-hygiene
@@ -49,6 +54,7 @@ jobs:
           php-version: "8.2"
           coverage: none
       - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n docs:openapi:publish
       - run: composer run -n audit:composer-integrity
       - run: composer run -n audit:ci-workflow
       - name: Run phpunit (unit)
@@ -84,6 +90,7 @@ jobs:
           coverage: none
           extensions: pdo, pdo_pgsql
       - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n docs:openapi:publish
       - run: composer run -n audit:composer-integrity
       - run: composer run -n audit:ci-workflow
       - name: Migrate schema
@@ -105,6 +112,7 @@ jobs:
           php-version: "8.2"
           coverage: none
       - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n docs:openapi:publish
       - run: composer run -n audit:composer-integrity
       - run: composer run -n audit:ci-workflow
       - name: Run phpstan
@@ -143,6 +151,7 @@ jobs:
           coverage: none
           extensions: curl, pdo, pdo_pgsql
       - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n docs:openapi:publish
       - run: composer run -n audit:composer-integrity
       - run: composer run -n audit:ci-workflow
       - run: composer run -n db:migrate

@@ -53,6 +53,7 @@ For RC/release posture, use:
 - `docs/release/rc-checklist.md`
 - `docs/ops/runbook.md`
 - `.github/workflows/release-rc.yml`
+- generated Swagger/OpenAPI surface under `public/tag/openapi/`
 
 ## Quickstart (Docker)
 
@@ -154,6 +155,7 @@ Host PHP extension install on Debian/Ubuntu:
 - `composer run -n smoke:runtime`
 - `composer run -n audit:release-assets`
 - `composer run -n audit:openapi-semantics`
+- `composer run -n audit:generated-openapi-surface`
 - `composer run -n test:panther`
 - `composer run -n test:e2e`
 
@@ -169,6 +171,7 @@ Start with `GET /tag/_surface` to verify the public runtime catalog before creat
 - `composer run -n audit:surface`
 - `composer run -n audit:contract`
 - `composer run -n audit:openapi-semantics`
+- `composer run -n audit:generated-openapi-surface`
 - `composer run -n audit:route`
 - `composer run -n audit:bootstrap`
 - `composer run -n audit:bootstrap-runtime`

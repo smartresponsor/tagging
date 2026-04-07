@@ -20,9 +20,11 @@ jobs:
         with:
           node-version: '22'
       - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n docs:openapi:publish
       - run: composer run -n release:preflight
       - run: composer run -n audit:release-assets
       - run: composer run -n audit:openapi-semantics
+      - run: composer run -n audit:generated-openapi-surface
       - run: composer run -n test:unit
       - name: Prepare RC bundle
         run: |
@@ -30,12 +32,15 @@ jobs:
           mkdir -p release-bundle/docs/public
           mkdir -p release-bundle/docs/release
           mkdir -p release-bundle/docs/ops
+          mkdir -p release-bundle/public/tag/openapi
           mkdir -p release-bundle/db/postgres/migrations
           cp CHANGELOG.md release-bundle/
           cp RELEASE_NOTES.md release-bundle/
           cp MANIFEST.json release-bundle/
           cp tag.yaml release-bundle/
           cp contracts/http/tag-openapi.yaml release-bundle/contracts/http/
+          cp public/tag/openapi/index.html release-bundle/public/tag/openapi/
+          cp public/tag/openapi/tag-openapi.yaml release-bundle/public/tag/openapi/
           cp docs/public/index.md release-bundle/docs/public/
           cp docs/release/rc-checklist.md release-bundle/docs/release/
           cp docs/ops/runbook.md release-bundle/docs/ops/

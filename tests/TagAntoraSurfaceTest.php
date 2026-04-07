@@ -24,7 +24,7 @@ final class TagAntoraSurfaceTest extends TestCase
         self::assertStringContainsString('Generated or reference surfaces', $index);
         self::assertStringContainsString('contracts/http/tag-openapi.yaml', $api);
         self::assertStringContainsString('public/tag/openapi/', $api);
-        self::assertStringContainsString('no phpDocumentor / Doctum code-reference surface is shipped here currently', $api);
+        self::assertStringContainsString('generated static Swagger/OpenAPI surface is shipped separately from narrative docs', $api);
     }
 
     public function testAntoraSurfaceAuditPasses(): void

@@ -41,7 +41,7 @@ $checks = [
     ['docs/modules/ROOT/pages/operations.adoc', $operations, 'docs/ops/observability.md'],
     ['docs/modules/ROOT/pages/api.adoc', $api, 'contracts/http/tag-openapi.yaml'],
     ['docs/modules/ROOT/pages/api.adoc', $api, 'public/tag/openapi/'],
-    ['docs/modules/ROOT/pages/api.adoc', $api, 'no phpDocumentor / Doctum code-reference surface is shipped here currently'],
+    ['docs/modules/ROOT/pages/api.adoc', $api, 'generated static Swagger/OpenAPI surface is shipped separately from narrative docs'],
 ];
 
 foreach ($checks as [$label, $haystack, $needle]) {

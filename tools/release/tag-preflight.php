@@ -8,6 +8,7 @@ $checks = [
     $root . '/tools/audit/tag-surface-audit.php',
     $root . '/tools/audit/tag-contract-audit.php',
     $root . '/tools/audit/tag-openapi-semantics-audit.php',
+    $root . '/tools/audit/tag-generated-openapi-surface-audit.php',
     $root . '/tools/audit/tag-antora-surface-audit.php',
     $root . '/tools/audit/tag-route-controller-audit.php',
     $root . '/tools/audit/tag-bootstrap-audit.php',

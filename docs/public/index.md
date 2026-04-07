@@ -10,7 +10,8 @@ This is the compact publication entrypoint for the current shipped Tagging compo
 - SDK usage: `sdk/README.md`
 - ops runbook: `docs/ops/runbook.md`
 - API error catalog: `docs/api/error-catalog.md`
-- HTTP contract: `contracts/http/tag-openapi.yaml`
+- OpenAPI source contract: `contracts/http/tag-openapi.yaml`
+- generated Swagger/OpenAPI surface: `public/tag/openapi/`
 - RC checklist: `docs/release/rc-checklist.md`
 
 ## Current public shell
@@ -35,5 +36,6 @@ This is the compact publication entrypoint for the current shipped Tagging compo
 composer run -n release:preflight
 composer run -n audit:release-assets
 composer run -n audit:openapi-semantics
+composer run -n audit:generated-openapi-surface
 composer run -n smoke:runtime
 ```

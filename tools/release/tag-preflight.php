@@ -1,18 +1,21 @@
 <?php
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 $root = require __DIR__ . '/../_bootstrap.php';
 $checks = [
     $root . '/tools/audit/tag-surface-audit.php',
     $root . '/tools/audit/tag-contract-audit.php',
+    $root . '/tools/audit/tag-openapi-semantics-audit.php',
+    $root . '/tools/audit/tag-generated-openapi-surface-audit.php',
+    $root . '/tools/audit/tag-antora-surface-audit.php',
     $root . '/tools/audit/tag-route-controller-audit.php',
     $root . '/tools/audit/tag-bootstrap-audit.php',
     $root . '/tools/audit/tag-bootstrap-runtime-audit.php',
     $root . '/tools/audit/tag-config-audit.php',
     $root . '/tools/audit/tag-sdk-audit.php',
     $root . '/tools/audit/tag-demo-truth-pack-audit.php',
+    $root . '/tools/audit/tag-release-assets-audit.php',
     $root . '/tools/audit/tag-release-grade-portrait-audit.php',
     $root . '/tools/audit/tag-version-audit.php',
     $root . '/tools/seed/tag-fixture-validate.php',

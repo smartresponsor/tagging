@@ -1,0 +1,28 @@
+= Architecture
+
+This page is the Antora entry point for the repository's architecture narrative.
+It intentionally wraps the existing repository material instead of duplicating it.
+
+== Canonical architecture sources in the repository
+
+* `docs/http/http-wiring.md`
+* `docs/release/tag-release-grade-portrait.md`
+* `docs/architecture/repository-production-readiness-plan.md`
+* `repo-map.md`
+
+== Current architectural reading
+
+The shipped runtime is centered on `host-minimal/` with route truth centralized in `tag.yaml`.
+The repository follows the current Symfony-oriented `App\\` layout and keeps the canonical Tag branches under:
+
+* `src/Application/Write/Tag/...`
+* `src/Http/Api/Tag/...`
+* `src/Infrastructure/Persistence/Tag/...`
+* `src/Infrastructure/ReadModel/Tag/...`
+* `src/Service/Core/Tag/...`
+
+== What this Antora page does
+
+* provides a stable architecture entry point for a central Antora aggregator
+* points to the canonical narrative sources already present in the repository
+* avoids copying large Markdown architecture documents into a second parallel tree

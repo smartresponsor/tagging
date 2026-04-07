@@ -1,0 +1,54 @@
+name: release-rc
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  rc-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          extensions: curl, pdo, pdo_pgsql
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n docs:openapi:publish
+      - run: composer run -n release:preflight
+      - run: composer run -n audit:release-assets
+      - run: composer run -n audit:openapi-semantics
+      - run: composer run -n audit:generated-openapi-surface
+      - run: composer run -n test:unit
+      - name: Prepare RC bundle
+        run: |
+          mkdir -p release-bundle/contracts/http
+          mkdir -p release-bundle/docs/public
+          mkdir -p release-bundle/docs/release
+          mkdir -p release-bundle/docs/ops
+          mkdir -p release-bundle/public/tag/openapi
+          mkdir -p release-bundle/db/postgres/migrations
+          cp CHANGELOG.md release-bundle/
+          cp RELEASE_NOTES.md release-bundle/
+          cp MANIFEST.json release-bundle/
+          cp tag.yaml release-bundle/
+          cp contracts/http/tag-openapi.yaml release-bundle/contracts/http/
+          cp public/tag/openapi/index.html release-bundle/public/tag/openapi/
+          cp public/tag/openapi/tag-openapi.yaml release-bundle/public/tag/openapi/
+          cp docs/public/index.md release-bundle/docs/public/
+          cp docs/release/rc-checklist.md release-bundle/docs/release/
+          cp docs/ops/runbook.md release-bundle/docs/ops/
+          cp docs/api/error-catalog.md release-bundle/docs/ops/error-catalog.md
+          cp db/postgres/migrations/*.sql release-bundle/db/postgres/migrations/
+      - name: Upload RC bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tagging-rc-bundle
+          path: release-bundle
+          if-no-files-found: error

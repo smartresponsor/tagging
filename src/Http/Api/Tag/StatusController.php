@@ -25,8 +25,7 @@ final class StatusController
         ?string $version = null,
         TagErrorSink|callable|null $errorSink = null,
         array $runtime = [],
-    )
-    {
+    ) {
         $this->dbProbe = null !== $dbProbe ? \Closure::fromCallable($dbProbe) : null;
         $this->version = null !== $version && '' !== $version ? $version : RuntimeVersion::read();
         $this->errorSink = TagErrorSinkFactory::from($errorSink);

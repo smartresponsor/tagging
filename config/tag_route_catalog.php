@@ -100,4 +100,4 @@ if (!function_exists('tagRouteCatalogParse')) {
     }
 }
 
-return tagRouteCatalogParse(dirname(__DIR__) . '/tag.yaml');
+return tagRouteCatalogParse(dirname(__DIR__).'/tag.yaml');

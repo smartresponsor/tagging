@@ -7,7 +7,9 @@ namespace App\Service\Core\Tag;
 
 final readonly class IdempotencyStore
 {
-    public function __construct(private readonly \PDO $pdo) {}
+    public function __construct(private readonly \PDO $pdo)
+    {
+    }
 
     /** @return array{state:string,result?:array<string,mixed>} state: fresh|duplicate */
     public function begin(string $tenant, string $key, string $op, string $checksum): array

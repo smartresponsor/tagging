@@ -22,7 +22,8 @@ final readonly class TagController
         private PatchTagInterface $patchTag,
         private DeleteTagInterface $deleteTag,
         private TagWriteResponder $responder,
-    ) {}
+    ) {
+    }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function create(array $req): array

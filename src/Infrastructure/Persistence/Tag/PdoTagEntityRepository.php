@@ -9,7 +9,9 @@ use App\Service\Core\Tag\TagEntityRepositoryInterface;
 
 final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterface
 {
-    public function __construct(private \PDO $pdo) {}
+    public function __construct(private \PDO $pdo)
+    {
+    }
 
     public function findById(string $tenant, string $id): ?array
     {
@@ -39,15 +41,15 @@ final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterf
 
         foreach (['name', 'locale', 'weight'] as $k) {
             if (array_key_exists($k, $patch)) {
-                $fields[] = $k . ' = :' . $k;
-                $params[':' . $k] = 'weight' === $k ? (int) $patch[$k] : (string) $patch[$k];
+                $fields[] = $k.' = :'.$k;
+                $params[':'.$k] = 'weight' === $k ? (int) $patch[$k] : (string) $patch[$k];
             }
         }
         if ([] === $fields) {
             return;
         }
 
-        $sql = 'UPDATE tag_entity SET ' . implode(',', $fields) . ' WHERE tenant=:t AND id=:id';
+        $sql = 'UPDATE tag_entity SET '.implode(',', $fields).' WHERE tenant=:t AND id=:id';
         $upd = $this->pdo->prepare($sql);
         $upd->execute($params);
     }

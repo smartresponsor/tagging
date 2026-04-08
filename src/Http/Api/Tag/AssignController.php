@@ -24,8 +24,7 @@ final class AssignController
         private readonly AssignOperationInterface $assign,
         private readonly UnassignOperationInterface $unassign,
         array $cfg = [],
-    )
-    {
+    ) {
         $this->responder = new TagAssignmentResponder();
         $this->allowedTypes = $this->normalizeAllowedTypes($cfg['entity_types'] ?? ['*']);
     }
@@ -212,8 +211,8 @@ final class AssignController
         return in_array($etype, $this->allowedTypes, true);
     }
 
-    /** @param mixed $types
-     *  @return list<string>
+    /**
+     * @return list<string>
      */
     private function normalizeAllowedTypes(mixed $types): array
     {
@@ -231,7 +230,7 @@ final class AssignController
 
         $normalized = array_values(array_unique($normalized));
 
-        return $normalized !== [] ? $normalized : ['*'];
+        return [] !== $normalized ? $normalized : ['*'];
     }
 
     private static function normalizeEntityType(string $etype): string
@@ -364,8 +363,7 @@ final class AssignController
         string $entityType,
         string $entityId,
         ?string $idem,
-    ): ?array
-    {
+    ): ?array {
         return match ($operation) {
             'assign' => $this->assign->assign($tenant, $tagId, $entityType, $entityId, $idem),
             'unassign' => $this->unassign->unassign($tenant, $tagId, $entityType, $entityId, $idem),

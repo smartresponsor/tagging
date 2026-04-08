@@ -22,8 +22,7 @@ final class JsonResponder
         array $payload = [],
         array $headers = [],
         bool $noStore = true,
-    ): array
-    {
+    ): array {
         return $this->respond($status, ['ok' => false, 'code' => $code] + $payload, $headers, $noStore);
     }
 

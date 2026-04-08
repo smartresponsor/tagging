@@ -13,6 +13,7 @@ This is the compact publication entrypoint for the current shipped Tagging compo
 - OpenAPI source contract: `contracts/http/tag-openapi.yaml`
 - generated Swagger/OpenAPI surface: `public/tag/openapi/`
 - RC checklist: `docs/release/rc-checklist.md`
+- Quality Atlas assessment surface: `docs/ops/quality-atlas.md`
 
 ## Current public shell
 
@@ -41,3 +42,9 @@ composer run -n audit:generated-openapi-surface
 composer run -n audit:antora-surface
 composer run -n smoke:runtime
 ```
+
+## Assessment and governance
+
+- Quality Atlas workflow: `.github/workflows/quality-atlas.yml`
+- assessment ops guide: `docs/ops/quality-atlas.md`
+- release RC workflow: `.github/workflows/release-rc.yml`

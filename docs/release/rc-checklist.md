@@ -29,6 +29,8 @@ Current candidate reference: `v0.2.8-rc1`.
 - [ ] `composer run -n smoke:runtime`
 - [ ] `composer run -n test:unit`
 - [ ] `composer run -n test:integration`
+- [ ] `composer run -n phpstan`
+- [ ] quality-atlas assessment workflow reviewed
 - [ ] demo seed path works
 - [ ] `_status` and `_surface` verified against the shipped runtime
 - [ ] tenant isolation evidence passes on shared entity coordinates

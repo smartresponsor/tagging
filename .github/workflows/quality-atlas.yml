@@ -1,0 +1,54 @@
+name: quality-atlas
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
+
+jobs:
+  assessment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          extensions: curl, pdo, pdo_pgsql
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer run -n docs:openapi:publish
+      - run: composer run -n audit:composer-integrity
+      - run: composer run -n audit:release-assets
+      - run: composer run -n audit:openapi-semantics
+      - run: composer run -n audit:generated-openapi-surface
+      - run: composer run -n audit:antora-surface
+      - run: composer run -n audit:assessment-surface
+      - run: composer run -n test:unit
+      - run: composer run -n phpstan
+      - name: Prepare assessment bundle
+        run: |
+          mkdir -p assessment-bundle/meta
+          mkdir -p assessment-bundle/docs/public
+          mkdir -p assessment-bundle/docs/release
+          mkdir -p assessment-bundle/docs/ops
+          mkdir -p assessment-bundle/public/tag/openapi
+          cp README.md assessment-bundle/
+          cp CHANGELOG.md assessment-bundle/
+          cp RELEASE_NOTES.md assessment-bundle/
+          cp docs/public/index.md assessment-bundle/docs/public/
+          cp docs/release/rc-checklist.md assessment-bundle/docs/release/
+          cp docs/ops/ci-gates.md assessment-bundle/docs/ops/
+          cp docs/ops/quality-atlas.md assessment-bundle/docs/ops/
+          cp contracts/http/tag-openapi.yaml assessment-bundle/
+          cp public/tag/openapi/index.html assessment-bundle/public/tag/openapi/
+          cp public/tag/openapi/tag-openapi.yaml assessment-bundle/public/tag/openapi/
+          printf '{"workflow":"quality-atlas","component":"tagging"}\n' > assessment-bundle/meta/assessment-metadata.json
+      - name: Upload assessment bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-atlas-assessment-bundle
+          path: assessment-bundle
+          if-no-files-found: error

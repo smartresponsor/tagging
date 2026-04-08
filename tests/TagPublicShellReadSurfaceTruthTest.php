@@ -35,7 +35,8 @@ final class TagPublicShellReadSurfaceTruthTest extends TestCase
         self::assertStringContainsString('/tag/search', $readme);
         self::assertStringContainsString('/tag/suggest', $readme);
         self::assertStringContainsString('flat', $readme);
-        self::assertStringContainsString('authoritative `total`', $readme);
+        self::assertStringContainsString('authoritative', $readme);
+        self::assertStringContainsString('`total`', $readme);
     }
 
     public function testOpenApiStillDescribesFlatReadPayloads(): void

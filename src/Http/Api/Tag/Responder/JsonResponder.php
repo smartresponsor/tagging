@@ -16,7 +16,13 @@ final class JsonResponder
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */
-    public function reject(int $status, string $code, array $payload = [], array $headers = [], bool $noStore = true): array
+    public function reject(
+        int $status,
+        string $code,
+        array $payload = [],
+        array $headers = [],
+        bool $noStore = true,
+    ): array
     {
         return $this->respond($status, ['ok' => false, 'code' => $code] + $payload, $headers, $noStore);
     }

@@ -3,7 +3,8 @@ groups:
     interval: 30s
     rules:
       - alert: TagHighLatencyP95Read
-        expr: histogram_quantile(0.95, sum(rate(tag_http_request_duration_seconds_bucket{route=~"/tag/.+",method="GET"}[5m])) by (le)) > 0.25
+        expr: >-
+          histogram_quantile(0.95, sum(rate(tag_http_request_duration_seconds_bucket{route=~"/tag/.+",method="GET"}[5m])) by (le)) > 0.25
         for: 5m
         labels: { severity: warning }
         annotations:
@@ -11,7 +12,9 @@ groups:
           description: "Read p95 latency above 250ms for 5m window."
 
       - alert: TagHighErrorRate
-        expr: (sum(rate(tag_http_requests_total{status=~"5..|4.."}[5m])) / ignoring(status) sum(rate(tag_http_requests_total[5m]))) > 0.005
+        expr: >-
+          (sum(rate(tag_http_requests_total{status=~"5..|4.."}[5m])) / ignoring(status)
+          sum(rate(tag_http_requests_total[5m]))) > 0.005
         for: 5m
         labels: { severity: critical }
         annotations:

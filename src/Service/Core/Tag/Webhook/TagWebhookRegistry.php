@@ -29,7 +29,13 @@ final readonly class TagWebhookRegistry
         if (!is_dir($dir)) {
             @mkdir($dir, 0700, true);
         }
-        file_put_contents($this->path, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        file_put_contents(
+            $this->path,
+            json_encode(
+                $items,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            ),
+        );
     }
 
     private function assertSafeUrl(string $url): void

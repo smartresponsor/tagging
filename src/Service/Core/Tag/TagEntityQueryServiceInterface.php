@@ -7,6 +7,16 @@ namespace App\Service\Core\Tag;
 
 interface TagEntityQueryServiceInterface
 {
-    /** @return array{id:string,slug:string,name:string,locale:string,weight:int,created_at?:string,updated_at?:string}|null */
+    /**
+     * @return array{
+     *     id: string,
+     *     slug: string,
+     *     name: string,
+     *     locale: string,
+     *     weight: int,
+     *     created_at?: string,
+     *     updated_at?: string
+     * }|null
+     */
     public function get(string $tenant, string $id): ?array;
 }

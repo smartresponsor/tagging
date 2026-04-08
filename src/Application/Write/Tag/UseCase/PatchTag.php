@@ -14,9 +14,9 @@ use App\Cache\Store\Tag\TagQueryCacheInvalidator;
 use App\Service\Core\Tag\TagEntityRepositoryInterface;
 use App\Service\Core\Tag\TransactionRunnerInterface;
 
-final class PatchTag implements PatchTagInterface
+final readonly class PatchTag implements PatchTagInterface
 {
-    private TagQueryCacheInvalidator $cacheInvalidator;
+    private readonly TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
         private TagEntityRepositoryInterface $repo,
@@ -25,7 +25,11 @@ final class PatchTag implements PatchTagInterface
         private ?SuggestCache $suggestCache = null,
         ?TagQueryCacheInvalidator $cacheInvalidator = null,
     ) {
-        $this->cacheInvalidator = $cacheInvalidator ?? new TagQueryCacheInvalidator($this->searchCache, $this->suggestCache);
+        $this->cacheInvalidator = $cacheInvalidator
+            ?? new TagQueryCacheInvalidator(
+                $this->searchCache,
+                $this->suggestCache,
+            );
     }
 
     public function execute(PatchTagCommand $command): TagResult

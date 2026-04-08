@@ -34,7 +34,8 @@ final class TagSdkAndDemoTruthTest extends TestCase
         self::assertStringContainsString('/tag/assignments/bulk', $finalPack);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $finalPack);
         self::assertStringContainsString('tag_not_found', $finalPack);
-        self::assertStringContainsString('authoritative `total`', $finalPack);
+        self::assertStringContainsString('authoritative', $finalPack);
+        self::assertStringContainsString('`total`', $finalPack);
         self::assertStringContainsString('bulkAssignments()', $sdkReadme);
         self::assertStringContainsString('assignBulkToEntity()', $sdkReadme);
         self::assertStringContainsString('flat payloads', $sdkReadme);

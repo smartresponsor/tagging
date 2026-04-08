@@ -28,7 +28,13 @@ final readonly class TagBulkService
         return $this->repo->getJob($tenantId, $jobId);
     }
 
-    public function merge(string $tenantId, string $from, string $to, bool $moveAssignments = true, bool $copySynonyms = true): array
+    public function merge(
+        string $tenantId,
+        string $from,
+        string $to,
+        bool $moveAssignments = true,
+        bool $copySynonyms = true,
+    ): array
     {
         return $this->repo->mergeTags($tenantId, $from, $to, $moveAssignments, $copySynonyms);
     }

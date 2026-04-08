@@ -20,7 +20,12 @@ final class StatusController
     /**
      * @param array<string,mixed> $runtime
      */
-    public function __construct(?callable $dbProbe = null, ?string $version = null, TagErrorSink|callable|null $errorSink = null, array $runtime = [])
+    public function __construct(
+        ?callable $dbProbe = null,
+        ?string $version = null,
+        TagErrorSink|callable|null $errorSink = null,
+        array $runtime = [],
+    )
     {
         $this->dbProbe = null !== $dbProbe ? \Closure::fromCallable($dbProbe) : null;
         $this->version = null !== $version && '' !== $version ? $version : RuntimeVersion::read();

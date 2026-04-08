@@ -14,9 +14,9 @@ use App\Cache\Store\Tag\TagQueryCacheInvalidator;
 use App\Service\Core\Tag\TagEntityRepositoryInterface;
 use App\Service\Core\Tag\TransactionRunnerInterface;
 
-final class DeleteTag implements DeleteTagInterface
+final readonly class DeleteTag implements DeleteTagInterface
 {
-    private TagQueryCacheInvalidator $cacheInvalidator;
+    private readonly TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
         private TagEntityRepositoryInterface $repo,
@@ -25,7 +25,11 @@ final class DeleteTag implements DeleteTagInterface
         private ?SuggestCache $suggestCache = null,
         ?TagQueryCacheInvalidator $cacheInvalidator = null,
     ) {
-        $this->cacheInvalidator = $cacheInvalidator ?? new TagQueryCacheInvalidator($this->searchCache, $this->suggestCache);
+        $this->cacheInvalidator = $cacheInvalidator
+            ?? new TagQueryCacheInvalidator(
+                $this->searchCache,
+                $this->suggestCache,
+            );
     }
 
     public function execute(DeleteTagCommand $command): TagResult

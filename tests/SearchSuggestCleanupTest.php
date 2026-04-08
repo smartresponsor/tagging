@@ -22,6 +22,11 @@ final class SearchSuggestCleanupTest extends TestCase
                 return [['id' => 't1', 'slug' => 'priority', 'name' => 'Priority', 'locale' => null, 'weight' => 100]];
             }
 
+            public function countSearch(string $tenant, string $q): int
+            {
+                return 1;
+            }
+
             public function suggest(string $tenant, string $q, int $limit = 10): array
             {
                 return [['slug' => 'priority', 'name' => 'Priority']];
@@ -55,6 +60,11 @@ final class SearchSuggestCleanupTest extends TestCase
             public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
             {
                 throw new \RuntimeException('search should not be called for blank query');
+            }
+
+            public function countSearch(string $tenant, string $q): int
+            {
+                throw new \RuntimeException('countSearch should not be called for blank query');
             }
 
             public function suggest(string $tenant, string $q, int $limit = 10): array

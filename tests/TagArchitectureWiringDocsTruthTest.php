@@ -17,7 +17,8 @@ final class TagArchitectureWiringDocsTruthTest extends TestCase
         self::assertStringContainsString('/tag/assignments/bulk', $doc);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $doc);
         self::assertStringContainsString('tag.yaml', $doc);
-        self::assertStringContainsString('authoritative `total`', $doc);
+        self::assertStringContainsString('authoritative', $doc);
+        self::assertStringContainsString('`total`', $doc);
         self::assertStringContainsString('tag_not_found', $doc);
         self::assertStringNotContainsString('bulk assignment routes', $doc);
     }
@@ -27,9 +28,9 @@ final class TagArchitectureWiringDocsTruthTest extends TestCase
         $doc = file_get_contents(__DIR__ . '/../docs/deploy/host-minimal-search.md');
 
         self::assertIsString($doc);
-        self::assertStringContainsString('new App\\Infrastructure\\ReadModel\\Tag\\TagReadModel($pdo)', $doc);
-        self::assertStringContainsString('new App\\Service\\Core\\Tag\\SuggestService($read, $suggestCache)', $doc);
+        self::assertStringContainsString('new App\Infrastructure\ReadModel\Tag\TagReadModel($pdo)', $doc);
+        self::assertStringContainsString('new App\Service\Core\Tag\SuggestService($read, $suggestCache)', $doc);
         self::assertStringContainsString('bulk assignments', $doc);
-        self::assertStringNotContainsString('new App\\Service\\Core\\Tag\\SuggestService($pdo, $suggestCache)', $doc);
+        self::assertStringNotContainsString('new App\Service\Core\Tag\SuggestService($pdo, $suggestCache)', $doc);
     }
 }

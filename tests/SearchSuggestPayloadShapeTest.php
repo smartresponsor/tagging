@@ -18,7 +18,12 @@ final class SearchSuggestPayloadShapeTest extends TestCase
 {
     public function testSearchControllerReturnsFlatPayloadWithoutNestedResult(): void
     {
-        $controller = new SearchController(new SearchService($this->readModel(), new SearchCache($this->cacheDir('search'))));
+        $controller = new SearchController(
+            new SearchService(
+                $this->readModel(),
+                new SearchCache($this->cacheDir('search')),
+            ),
+        );
 
         [$status, $headers, $body] = $controller->get([
             'headers' => ['X-Tenant-Id' => 'demo'],
@@ -38,7 +43,12 @@ final class SearchSuggestPayloadShapeTest extends TestCase
 
     public function testSuggestControllerReturnsFlatPayloadWithoutNestedResult(): void
     {
-        $controller = new SuggestController(new SuggestService($this->readModel(), new SuggestCache($this->cacheDir('suggest'))));
+        $controller = new SuggestController(
+            new SuggestService(
+                $this->readModel(),
+                new SuggestCache($this->cacheDir('suggest')),
+            ),
+        );
 
         [$status, $headers, $body] = $controller->get([
             'headers' => ['X-Tenant-Id' => 'demo'],

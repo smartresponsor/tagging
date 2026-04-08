@@ -23,7 +23,13 @@ final readonly class AssignService implements AssignOperationInterface
     }
 
     /** @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string} */
-    public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function assign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         $idempotencyDecision = $this->beginIdempotency($tenant, $tagId, $entityType, $entityId, $idemKey);
         if (null !== $idempotencyDecision) {
@@ -66,7 +72,13 @@ final readonly class AssignService implements AssignOperationInterface
     }
 
     /** @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string}|null */
-    private function beginIdempotency(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey): ?array
+    private function beginIdempotency(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey,
+    ): ?array
     {
         if (null === $idemKey || '' === $idemKey || null === $this->idem) {
             return null;

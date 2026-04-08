@@ -33,7 +33,12 @@ interface TagRepositoryInterface
     public function deleteAssignment(string $tenantId, string $assignmentId): void;
 
     /** @return TagAssignment[] */
-    public function listAssignments(string $tenantId, string $tagId, ?string $type = null, ?string $assignedId = null): array;
+    public function listAssignments(
+        string $tenantId,
+        string $tagId,
+        ?string $type = null,
+        ?string $assignedId = null,
+    ): array;
 
     public function saveSynonym(string $tenantId, TagSynonym $s): void;
 
@@ -59,7 +64,14 @@ interface TagRepositoryInterface
 
     public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void;
 
-    public function insertAudit(string $tenantId, string $id, string $action, string $entityType, string $entityId, string $detailsJson): void;
+    public function insertAudit(
+        string $tenantId,
+        string $id,
+        string $action,
+        string $entityType,
+        string $entityId,
+        string $detailsJson,
+    ): void;
 
     /** @return Tag[] */
     public function listAllTags(string $tenantId): array;
@@ -74,7 +86,14 @@ interface TagRepositoryInterface
     /** @return array<int, array{tagId:string, slug:string, label:string, cnt:int}> */
     public function tagCloud(string $tenantId, int $limit): array;
 
-    public function putClassification(string $tenantId, string $id, string $scope, string $refId, string $key, string $value): void;
+    public function putClassification(
+        string $tenantId,
+        string $id,
+        string $scope,
+        string $refId,
+        string $key,
+        string $value,
+    ): void;
 
     /** @return array<int, array{key:string,value:string}> */
     public function listClassifications(string $tenantId, string $scope, string $refId): array;

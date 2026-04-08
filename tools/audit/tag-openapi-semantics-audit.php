@@ -22,10 +22,24 @@ if (substr_count($contract, 'name: X-Tenant-Id') < count($businessPaths)) {
     $errors[] = 'OpenAPI does not document tenant header across the public business shell.';
 }
 
-foreach (['including `invalid_tenant` or `validation_failed`','including `invalid_tenant`','per-item results may include `tag_not_found`, `assign_failed`, or `validation_failed`','description: No content on successful delete','`X-Tag-Version`','`X-Tag-Surface-Version`','`Cache-Control: no-store`'] as $needle) {
+foreach ([
+    'including `invalid_tenant` or `validation_failed`',
+    'including `invalid_tenant`',
+    'description: No content on successful delete',
+    '`X-Tag-Version`',
+    '`X-Tag-Surface-Version`',
+    '`Cache-Control: no-store`',
+] as $needle) {
     if (!str_contains($contract, $needle)) {
         $errors[] = 'OpenAPI is missing semantic needle: ' . $needle;
     }
+}
+
+if (
+    !str_contains($contract, 'per-item results may include')
+    || !str_contains($contract, '`tag_not_found`, `assign_failed`, or `validation_failed`')
+) {
+    $errors[] = 'OpenAPI is missing semantic needle: per-item results may include `tag_not_found`, `assign_failed`, or `validation_failed`';
 }
 
 if ($errors !== []) {

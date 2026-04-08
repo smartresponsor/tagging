@@ -26,11 +26,10 @@ final class ProtocolAuditTest extends TestCase
 ', $output)));
     }
 
-    public function testRootDoesNotContainDuplicateTagConfigOrTransientWorkspaces(): void
+    public function testRootDoesNotContainLegacyDuplicateTagConfigOrTransientWorkspaces(): void
     {
         $root = dirname(__DIR__);
         $forbidden = [
-            'tag.yaml',
             'tag_assignment.yaml',
             'tag_quota.yaml',
             'tag_cons_patched',

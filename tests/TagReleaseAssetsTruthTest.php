@@ -25,7 +25,9 @@ final class TagReleaseAssetsTruthTest extends TestCase
         self::assertStringContainsString('0.2.8-rc1', $changelog);
         self::assertStringContainsString('prerelease / RC candidate', $notes);
         self::assertStringContainsString('docs/ops/runbook.md', $publicIndex);
+        self::assertStringContainsString('RC candidate', $checklist);
         self::assertStringContainsString('v0.2.8-rc1', $checklist);
+        self::assertStringContainsString('audit:release-assets', $checklist);
         self::assertStringContainsString('composer run -n audit:release-assets', $workflow);
     }
 

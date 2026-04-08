@@ -20,7 +20,11 @@ final class AssignController
      * @param \App\Service\Core\Tag\AssignService   $assign
      * @param \App\Service\Core\Tag\UnassignService $unassign
      */
-    public function __construct(private readonly AssignOperationInterface $assign, private readonly UnassignOperationInterface $unassign, array $cfg = [])
+    public function __construct(
+        private readonly AssignOperationInterface $assign,
+        private readonly UnassignOperationInterface $unassign,
+        array $cfg = [],
+    )
     {
         $this->responder = new TagAssignmentResponder();
         $this->allowedTypes = $this->normalizeAllowedTypes($cfg['entity_types'] ?? ['*']);
@@ -35,14 +39,22 @@ final class AssignController
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function unassign(array $req, string $tagId): array
     {
-        return $this->handleSingleOperation($req, $tagId, 'unassign', ['not_found' => false, 'duplicated' => false, 'conflict' => false]);
+        return $this->handleSingleOperation(
+            $req,
+            $tagId,
+            'unassign',
+            ['not_found' => false, 'duplicated' => false, 'conflict' => false],
+        );
     }
 
     /**
      * Bulk operations (assign/unassign per operation).
      *
      * Payload:
-     * {"operations":[{"op":"assign|unassign","tagId":"...","entityType":"...","entityId":"...","idem":"optional"}, ...]}
+     * {"operations":[
+     *   {"op":"assign|unassign","tagId":"...","entityType":"...","entityId":"...","idem":"optional"},
+     *   ...
+     * ]}
      *
      * @return array{0:int,1:array<string,string>,2:string}
      */
@@ -273,7 +285,14 @@ final class AssignController
             return $this->fail('validation_failed');
         }
 
-        $result = $this->dispatchOperation($operation, $tenant, $tagId, $entity[0], $entity[1], $this->idempotencyKey($request));
+        $result = $this->dispatchOperation(
+            $operation,
+            $tenant,
+            $tagId,
+            $entity[0],
+            $entity[1],
+            $this->idempotencyKey($request),
+        );
         if (null === $result) {
             return $this->fail('validation_failed');
         }
@@ -338,7 +357,14 @@ final class AssignController
     }
 
     /** @return array<string,mixed>|null */
-    private function dispatchOperation(string $operation, string $tenant, string $tagId, string $entityType, string $entityId, ?string $idem): ?array
+    private function dispatchOperation(
+        string $operation,
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idem,
+    ): ?array
     {
         return match ($operation) {
             'assign' => $this->assign->assign($tenant, $tagId, $entityType, $entityId, $idem),

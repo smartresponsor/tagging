@@ -75,7 +75,14 @@ idx=max(0, math.ceil(0.95*len(lat))-1)
 p95=lat[idx]
 errors=sum(1 for code,_ in rows if code < 200 or code >= 400)
 error_rate=errors/len(rows)
-out={'ok': p95 <= p95_max and error_rate <= err_max, 'samples': len(rows), 'p95': round(p95,6), 'read_p95_max': p95_max, 'error_rate': round(error_rate,6), 'error_rate_max': err_max}
+out={
+    'ok': p95 <= p95_max and error_rate <= err_max,
+    'samples': len(rows),
+    'p95': round(p95,6),
+    'read_p95_max': p95_max,
+    'error_rate': round(error_rate,6),
+    'error_rate_max': err_max,
+}
 print(json.dumps(out, ensure_ascii=False))
 sys.exit(0 if out['ok'] else 1)
 PY

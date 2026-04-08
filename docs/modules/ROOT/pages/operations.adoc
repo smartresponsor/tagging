@@ -25,4 +25,6 @@ This page is the Antora entry point for runtime operations, CI gates, observabil
 
 == Why this page exists
 
-This producer page gives Antora a stable operational entry point without moving or duplicating the detailed operational Markdown docs already maintained in the repository.
+This producer page gives Antora a stable operational entry point
+without moving or duplicating the detailed operational Markdown docs
+already maintained in the repository.

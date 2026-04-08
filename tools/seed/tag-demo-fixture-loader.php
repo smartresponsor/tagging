@@ -4,7 +4,12 @@
 declare(strict_types=1);
 
 /**
- * @return array{tenant:string,tags:array<int,array<string,mixed>>,links:array<int,array<string,mixed>>,catalog:array<string,mixed>}
+ * @return array{
+ *     tenant:string,
+ *     tags:array<int,array<string,mixed>>,
+ *     links:array<int,array<string,mixed>>,
+ *     catalog:array<string,mixed>
+ * }
  */
 return static function (string $root): array {
     $fixturePath = $root . '/fixtures/tag-demo-fixture.php';

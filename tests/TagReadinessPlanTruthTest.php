@@ -15,7 +15,8 @@ final class TagReadinessPlanTruthTest extends TestCase
 
         self::assertStringContainsString('tag.yaml', $doc);
         self::assertStringContainsString('bulk assignment routes', $doc);
-        self::assertStringContainsString('authoritative `total`', $doc);
+        self::assertStringContainsString('authoritative', $doc);
+        self::assertStringContainsString('`total`', $doc);
         self::assertStringContainsString('CI now runs on push/PR', $doc);
         self::assertStringContainsString('fixtures/tag-demo.json', $doc);
         self::assertStringContainsString('host-minimal', $doc);

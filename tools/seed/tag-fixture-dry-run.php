@@ -21,8 +21,20 @@ try {
     $tagCount = 0;
     $linkCount = 0;
 
-    $insertTag = $pdo->prepare('INSERT INTO tag_entity (id, tenant, slug, name, locale, weight) VALUES (:id,:tenant,:slug,:name,:locale,:weight) ON CONFLICT (tenant, slug) DO UPDATE SET id = EXCLUDED.id, name = EXCLUDED.name, locale = EXCLUDED.locale, weight = EXCLUDED.weight');
-    $insertLink = $pdo->prepare('INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) VALUES (:tenant,:entity_type,:entity_id,:tag_id) ON CONFLICT DO NOTHING');
+    $insertTag = $pdo->prepare(
+        'INSERT INTO tag_entity (id, tenant, slug, name, locale, weight) '
+        . 'VALUES (:id,:tenant,:slug,:name,:locale,:weight) '
+        . 'ON CONFLICT (tenant, slug) DO UPDATE SET '
+        . 'id = EXCLUDED.id, '
+        . 'name = EXCLUDED.name, '
+        . 'locale = EXCLUDED.locale, '
+        . 'weight = EXCLUDED.weight'
+    );
+    $insertLink = $pdo->prepare(
+        'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) '
+        . 'VALUES (:tenant,:entity_type,:entity_id,:tag_id) '
+        . 'ON CONFLICT DO NOTHING'
+    );
 
     foreach (($fixture['tags'] ?? []) as $tag) {
         $insertTag->execute([

@@ -31,9 +31,7 @@ final class TagAssignmentResponder
         return match ($code) {
             'tag_not_found' => 404,
             'idempotency_conflict' => 409,
-            'assign_failed', 'unassign_failed' => 500,
             'invalid_tenant', 'validation_failed' => 400,
-            null, '' => 500,
             default => 500,
         };
     }

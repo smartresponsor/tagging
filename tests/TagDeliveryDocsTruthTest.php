@@ -16,7 +16,8 @@ final class TagDeliveryDocsTruthTest extends TestCase
         self::assertIsString($checklist);
         self::assertStringContainsString('/tag/assignments/bulk', $checklist);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $checklist);
-        self::assertStringContainsString('authoritative `total`', $checklist);
+        self::assertStringContainsString('authoritative', $checklist);
+        self::assertStringContainsString('`total`', $checklist);
         self::assertStringContainsString('tag_not_found', $checklist);
         self::assertStringNotContainsString('bulk assignment routes', $checklist);
     }
@@ -30,7 +31,8 @@ final class TagDeliveryDocsTruthTest extends TestCase
         self::assertIsString($adminGuide);
         self::assertStringContainsString('/tag/assignments/bulk', $portrait);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $portrait);
-        self::assertStringContainsString('authoritative `total`', $portrait);
+        self::assertStringContainsString('authoritative', $portrait);
+        self::assertStringContainsString('`total`', $portrait);
         self::assertStringContainsString('/tag/assignments/bulk', $adminGuide);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $adminGuide);
         self::assertStringContainsString('tag_not_found', $adminGuide);

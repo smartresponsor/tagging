@@ -16,13 +16,25 @@ final class AssignControllerBulkTest extends TestCase
     {
         $controller = new AssignController(
             new class() implements AssignOperationInterface {
-                public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+                public function assign(
+                    string $tenant,
+                    string $tagId,
+                    string $entityType,
+                    string $entityId,
+                    ?string $idemKey = null,
+                ): array
                 {
                     return ['ok' => true];
                 }
             },
             new class() implements UnassignOperationInterface {
-                public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+                public function unassign(
+                    string $tenant,
+                    string $tagId,
+                    string $entityType,
+                    string $entityId,
+                    ?string $idemKey = null,
+                ): array
                 {
                     return ['ok' => false, 'code' => 'unassign_failed'];
                 }
@@ -34,8 +46,20 @@ final class AssignControllerBulkTest extends TestCase
             'headers' => ['X-Tenant-Id' => 'demo'],
             'body' => [
                 'operations' => [
-                    ['op' => 'assign', 'tagId' => 'tag-a', 'entityType' => 'product', 'entityId' => 'p-1', 'idem' => 'op-1'],
-                    ['op' => 'unassign', 'tagId' => 'tag-b', 'entityType' => 'product', 'entityId' => 'p-2', 'idem' => 'op-2'],
+                    [
+                        'op' => 'assign',
+                        'tagId' => 'tag-a',
+                        'entityType' => 'product',
+                        'entityId' => 'p-1',
+                        'idem' => 'op-1',
+                    ],
+                    [
+                        'op' => 'unassign',
+                        'tagId' => 'tag-b',
+                        'entityType' => 'product',
+                        'entityId' => 'p-2',
+                        'idem' => 'op-2',
+                    ],
                     ['op' => 'assign', 'tagId' => '', 'entityType' => 'product', 'entityId' => 'p-3'],
                 ],
             ],
@@ -59,7 +83,13 @@ final class AssignControllerBulkTest extends TestCase
     {
         $controller = new AssignController(
             new class() implements AssignOperationInterface {
-                public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+                public function assign(
+                    string $tenant,
+                    string $tagId,
+                    string $entityType,
+                    string $entityId,
+                    ?string $idemKey = null,
+                ): array
                 {
                     return match ($tagId) {
                         'tag-a' => ['ok' => true],
@@ -69,7 +99,13 @@ final class AssignControllerBulkTest extends TestCase
                 }
             },
             new class() implements UnassignOperationInterface {
-                public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+                public function unassign(
+                    string $tenant,
+                    string $tagId,
+                    string $entityType,
+                    string $entityId,
+                    ?string $idemKey = null,
+                ): array
                 {
                     return ['ok' => true];
                 }

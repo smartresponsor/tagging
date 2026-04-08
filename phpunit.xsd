@@ -33,7 +33,10 @@
                             <xs:element name="testsuite" minOccurs="1" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="directory" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                                        <xs:element name="directory"
+                                                    type="xs:string"
+                                                    minOccurs="1"
+                                                    maxOccurs="unbounded"/>
                                     </xs:sequence>
                                     <xs:attribute name="name" type="xs:string" use="optional"/>
                                 </xs:complexType>
@@ -49,14 +52,20 @@
                             <xs:element name="include" minOccurs="0">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="directory" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                                        <xs:element name="directory"
+                                                    type="xs:string"
+                                                    minOccurs="0"
+                                                    maxOccurs="unbounded"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="exclude" minOccurs="0">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="directory" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                                        <xs:element name="directory"
+                                                    type="xs:string"
+                                                    minOccurs="0"
+                                                    maxOccurs="unbounded"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>

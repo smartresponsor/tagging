@@ -38,7 +38,7 @@ The current route truth is centralized in `tag.yaml` and projected into:
 - search returns authoritative `total`
 - suggest returns flat payloads without nested `result`
 - unassign returns `404 tag_not_found` when the tag entity itself is absent
-- bulk assignment routes are part of the shipped public shell
+- bulk write endpoints are part of the shipped public shell
 
 ## Still out of scope for the shipped public shell
 

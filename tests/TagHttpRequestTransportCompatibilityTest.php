@@ -43,7 +43,11 @@ final class TagHttpRequestTransportCompatibilityTest extends TestCase
             ['ok' => true],
             ['ok' => true],
         ]);
-        $controller = new AssignController($assign, new TagRequestCompatUnassignStub([]), ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            $assign,
+            new TagRequestCompatUnassignStub([]),
+            ['entity_types' => ['product']],
+        );
 
         [$singleStatus, , $singleBody] = $controller->assign([
             'headers' => ['x-tenant-id' => 'tenant-lower'],
@@ -86,7 +90,13 @@ final class TagRequestCompatAssignStub implements \App\Service\Core\Tag\AssignOp
         $this->results = $results;
     }
 
-    public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function assign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         $this->calls[] = [$tenant, $tagId, $entityType, $entityId, $idemKey];
 
@@ -105,7 +115,13 @@ final class TagRequestCompatUnassignStub implements \App\Service\Core\Tag\Unassi
         $this->results = $results;
     }
 
-    public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function unassign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         return array_shift($this->results) ?? ['ok' => true, 'not_found' => false];
     }

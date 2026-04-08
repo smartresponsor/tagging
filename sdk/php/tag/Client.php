@@ -128,7 +128,10 @@ final readonly class Client
     /** @return array<string,mixed> */
     public function assignments(string $entityType, string $entityId): array
     {
-        return $this->req('/tag/assignments?entityType=' . rawurlencode($entityType) . '&entityId=' . rawurlencode($entityId));
+        return $this->req(
+            '/tag/assignments?entityType=' . rawurlencode($entityType)
+            . '&entityId=' . rawurlencode($entityId),
+        );
     }
 
     /** @param array<string,mixed> $body

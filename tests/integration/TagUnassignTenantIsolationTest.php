@@ -26,10 +26,22 @@ final class TagUnassignTenantIsolationTest extends IntegrationDbTestCase
         $ok = $service->unassign('tenant-a', 'tag-a', 'product', 'p-1', 'idem-unassign-tenant-a-1');
         $crossTenant = $service->unassign('tenant-a', 'tag-b', 'product', 'p-2', 'idem-unassign-tenant-a-2');
 
-        $tenantALinks = (int) $pdo->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-a'")->fetchColumn();
-        $tenantBLinks = (int) $pdo->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-b'")->fetchColumn();
-        $tenantAOutbox = (int) $pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.unassigned'")->fetchColumn();
-        $tenantBOutbox = (int) $pdo->query("SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.unassigned'")->fetchColumn();
+        $tenantALinks = (int) $pdo
+            ->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-a'")
+            ->fetchColumn();
+        $tenantBLinks = (int) $pdo
+            ->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-b'")
+            ->fetchColumn();
+        $tenantAOutbox = (int) $pdo
+            ->query(
+                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.unassigned'"
+            )
+            ->fetchColumn();
+        $tenantBOutbox = (int) $pdo
+            ->query(
+                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.unassigned'"
+            )
+            ->fetchColumn();
 
         self::assertSame(['ok' => true, 'not_found' => false], $ok);
         self::assertSame(['ok' => false, 'code' => 'tag_not_found'], $crossTenant);

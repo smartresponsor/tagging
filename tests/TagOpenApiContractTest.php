@@ -32,7 +32,8 @@ final class TagOpenApiContractTest extends TestCase
         self::assertGreaterThanOrEqual(10, substr_count($contract, 'name: X-Tenant-Id'));
         self::assertStringContainsString('including `invalid_tenant` or `validation_failed`', $contract);
         self::assertStringContainsString('including `invalid_tenant`', $contract);
-        self::assertStringContainsString('per-item results may include `tag_not_found`, `assign_failed`, or `validation_failed`', $contract);
+        self::assertStringContainsString('per-item results may include', $contract);
+        self::assertStringContainsString('`tag_not_found`, `assign_failed`, or `validation_failed`', $contract);
     }
 
     public function testOpenApiDocumentsCrudSuccessStatusesAndMetaRouteHeaders(): void

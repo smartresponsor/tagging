@@ -40,7 +40,12 @@ final class RateLimiter
         $windowSec = max(1, $windowSec);
         $now = time();
         $window = (int) floor($now / $windowSec);
-        $entry = $this->windows[$key] ?? ['window' => $window, 'count' => 0, 'limit' => $limit, 'window_sec' => $windowSec];
+        $entry = $this->windows[$key] ?? [
+            'window' => $window,
+            'count' => 0,
+            'limit' => $limit,
+            'window_sec' => $windowSec,
+        ];
 
         if ($entry['window'] !== $window) {
             $entry = ['window' => $window, 'count' => 0, 'limit' => $limit, 'window_sec' => $windowSec];

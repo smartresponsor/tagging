@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
 $targets = [
-    'tag.yaml',
     'tag_assignment.yaml',
     'tag_quota.yaml',
     'ZZ_CHANGED_FILES.txt',

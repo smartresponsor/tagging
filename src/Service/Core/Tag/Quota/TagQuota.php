@@ -33,7 +33,10 @@ final class TagQuota
         $limit *= $this->burst;
         $now = intdiv(time(), 60);
         if (!isset($this->state[$actor])) {
-            $this->state[$actor] = ['read' => ['count' => 0, 'window' => $now], 'write' => ['count' => 0, 'window' => $now]];
+            $this->state[$actor] = [
+                'read' => ['count' => 0, 'window' => $now],
+                'write' => ['count' => 0, 'window' => $now],
+            ];
         }
         if ($this->state[$actor][$op]['window'] !== $now) {
             $this->state[$actor][$op] = ['count' => 0, 'window' => $now];

@@ -51,7 +51,9 @@ final readonly class TagController
     public function patch(array $req, string $id): array
     {
         return $this->responder->respond(
-            $this->patchTag->execute(new PatchTagCommand(TagHttpRequest::tenant($req), $id, TagHttpRequest::body($req))),
+            $this->patchTag->execute(
+                new PatchTagCommand(TagHttpRequest::tenant($req), $id, TagHttpRequest::body($req)),
+            ),
         );
     }
 

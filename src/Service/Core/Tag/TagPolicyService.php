@@ -52,7 +52,12 @@ final readonly class TagPolicyService
         return $slug;
     }
 
-    public function validateBeforeCreate(string $tenantId, TagRepositoryContract $repo, string $label, ?string $slug = null): void
+    public function validateBeforeCreate(
+        string $tenantId,
+        TagRepositoryContract $repo,
+        string $label,
+        ?string $slug = null,
+    ): void
     {
         $slug = null !== $slug && '' !== $slug ? $this->normalizeSlug($slug) : $this->slugForLabel($label);
         $this->applyRules($slug);
@@ -60,7 +65,13 @@ final readonly class TagPolicyService
         $this->validator->ensureUniqueness($tenantId, $repo, $slug);
     }
 
-    public function validateBeforeUpdate(string $tenantId, TagRepositoryContract $repo, string $tagId, string $label, ?string $slug = null): void
+    public function validateBeforeUpdate(
+        string $tenantId,
+        TagRepositoryContract $repo,
+        string $tagId,
+        string $label,
+        ?string $slug = null,
+    ): void
     {
         $this->validator->validateLabel($label);
         if (null !== $slug) {

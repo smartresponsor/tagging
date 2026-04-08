@@ -36,7 +36,10 @@ return static function (array $container): callable {
         }
 
         if (str_contains($path, '{id}')) {
-            return static fn(array $norm, array $matches): array => $controller($serviceId)->{$action}($norm, $matches[1]);
+            return static fn(array $norm, array $matches): array => $controller($serviceId)->{$action}(
+                $norm,
+                $matches[1],
+            );
         }
 
         return static fn(array $norm, array $matches = []): array => $controller($serviceId)->{$action}($norm);

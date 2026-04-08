@@ -10,13 +10,18 @@ The current shipped `host-minimal/` runtime is the source of truth for what is a
 - assign / unassign
 - bulk assignment operations
 - assignment list by entity
-- search / suggest with flat read payloads
-- authoritative search `total` and stable `nextPageToken`
+- `GET /tag/search` and `GET /tag/suggest` with flat read payloads
+- authoritative `total` and stable `nextPageToken` on search
 - `GET /tag/_status`
 - `GET /tag/_surface`
 
 Runtime route truth is centralized in `tag.yaml`, then projected into the host router, public surface config, and route-controller audit.
 Canonical public route paths are further projected into contract and surface audits from `config/tag_public_route_paths.php`, so audits do not keep stale hardcoded path lists.
+
+## Current contract notes
+
+- flat search/suggest payload shape without a nested `result` envelope
+- 404 `tag_not_found` unassign contract when the tag entity itself is absent
 
 Core runtime assets:
 
@@ -42,6 +47,8 @@ The following trees belong to delivery, demo, release, or operational support. T
 - helper scripts under `tools/`
 
 These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, `tag.yaml`, or `contracts/http/`, the runnable core wins.
+
+Smoke/runtime coverage currently validates bulk assignment endpoints, missing-tag unassign semantics, flat read payloads, and authoritative search totals.
 
 ## Release and publication assets
 

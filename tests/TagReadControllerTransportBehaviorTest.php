@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use App\Cache\Store\Tag\SearchCache;
+use App\Cache\Store\Tag\SuggestCache;
 use App\Http\Api\Tag\SearchController;
 use App\Http\Api\Tag\SuggestController;
+use App\Service\Core\Tag\SearchService;
+use App\Service\Core\Tag\SuggestService;
+use App\Service\Core\Tag\TagReadModelInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagReadControllerTransportBehaviorTest extends TestCase
 {
     public function testSearchUsesFlatPayloadAndNormalizesPagingInputs(): void
     {
-        $service = new TagSearchServiceStub([
-            'items' => [['id' => 'tag-1', 'slug' => 'alpha', 'name' => 'Alpha', 'locale' => 'en', 'weight' => 10]],
-            'total' => 1,
-            'nextPageToken' => 'next-1',
-            'cacheHit' => true,
-        ]);
+        $read = new RecordingTagReadModel(
+            searchItems: [['id' => 'tag-1', 'slug' => 'alpha', 'name' => 'Alpha', 'locale' => 'en', 'weight' => 10]],
+            searchTotal: 1,
+        );
+        $service = new SearchService($read, new SearchCache($this->cacheDir('search')));
         $controller = new SearchController($service);
 
         [$status, , $body] = $controller->get([
@@ -35,20 +39,19 @@ final class TagReadControllerTransportBehaviorTest extends TestCase
         self::assertTrue($payload['ok']);
         self::assertSame([['id' => 'tag-1', 'slug' => 'alpha', 'name' => 'Alpha', 'locale' => 'en', 'weight' => 10]], $payload['items']);
         self::assertSame(1, $payload['total']);
-        self::assertSame('next-1', $payload['nextPageToken']);
-        self::assertTrue($payload['cacheHit']);
+        self::assertNull($payload['nextPageToken']);
+        self::assertFalse($payload['cacheHit']);
         self::assertArrayNotHasKey('result', $payload);
-        self::assertSame([
-            ['tenant-read', 'alpha', 100, 'next-token'],
-        ], $service->calls);
+        self::assertSame([['tenant-read', 'alpha', 100, 0]], $read->searchCalls);
+        self::assertSame([['tenant-read', 'alpha']], $read->countCalls);
     }
 
     public function testSuggestUsesFlatPayloadAndClampsLimit(): void
     {
-        $service = new TagSuggestServiceStub([
-            'items' => [['slug' => 'alpha', 'name' => 'Alpha']],
-            'cacheHit' => false,
-        ]);
+        $read = new RecordingTagReadModel(
+            suggestItems: [['slug' => 'alpha', 'name' => 'Alpha']],
+        );
+        $service = new SuggestService($read, new SuggestCache($this->cacheDir('suggest')));
         $controller = new SuggestController($service);
 
         [$status, , $body] = $controller->get([
@@ -66,15 +69,13 @@ final class TagReadControllerTransportBehaviorTest extends TestCase
         self::assertSame([['slug' => 'alpha', 'name' => 'Alpha']], $payload['items']);
         self::assertFalse($payload['cacheHit']);
         self::assertArrayNotHasKey('result', $payload);
-        self::assertSame([
-            ['tenant-read', 'al', 50],
-        ], $service->calls);
+        self::assertSame([['tenant-read', 'al', 50]], $read->suggestCalls);
     }
 
     public function testReadControllersRejectMissingTenant(): void
     {
-        $search = new SearchController(new TagSearchServiceStub(['items' => [], 'total' => 0, 'nextPageToken' => null, 'cacheHit' => false]));
-        $suggest = new SuggestController(new TagSuggestServiceStub(['items' => [], 'cacheHit' => false]));
+        $search = new SearchController(new SearchService(new RecordingTagReadModel(), new SearchCache($this->cacheDir('search-missing-tenant'))));
+        $suggest = new SuggestController(new SuggestService(new RecordingTagReadModel(), new SuggestCache($this->cacheDir('suggest-missing-tenant'))));
 
         [$searchStatus, , $searchBody] = $search->get(['headers' => [], 'query' => ['q' => 'alpha']]);
         [$suggestStatus, , $suggestBody] = $suggest->get(['headers' => [], 'query' => ['q' => 'al']]);
@@ -87,48 +88,60 @@ final class TagReadControllerTransportBehaviorTest extends TestCase
         self::assertSame(400, $suggestStatus);
         self::assertSame('invalid_tenant', $suggestPayload['code']);
     }
-}
 
-final class TagSearchServiceStub extends \App\Service\Core\Tag\SearchService
-{
-    /** @var array<string,mixed> */
-    private array $result;
-
-    /** @var list<array{0:string,1:string,2:int,3:?string}> */
-    public array $calls = [];
-
-    /** @param array<string,mixed> $result */
-    public function __construct(array $result)
+    private function cacheDir(string $suffix): string
     {
-        $this->result = $result;
-    }
-
-    public function search(string $tenant, string $query, int $pageSize = 20, ?string $pageToken = null): array
-    {
-        $this->calls[] = [$tenant, $query, $pageSize, $pageToken];
-
-        return $this->result;
+        return sys_get_temp_dir() . '/smartresponsor-tagging-' . $suffix . '-' . bin2hex(random_bytes(4));
     }
 }
 
-final class TagSuggestServiceStub extends \App\Service\Core\Tag\SuggestService
+final class RecordingTagReadModel implements TagReadModelInterface
 {
-    /** @var array<string,mixed> */
-    private array $result;
+    /** @param array<int, array{id:string,slug:string,name:string,locale:?string,weight:int}> $searchItems */
+    /** @param array<int, array{slug:string,name:string}> $suggestItems */
+    public function __construct(
+        private array $searchItems = [],
+        private int $searchTotal = 0,
+        private array $suggestItems = [],
+    ) {}
+
+    /** @var list<array{0:string,1:string,2:int,3:int}> */
+    public array $searchCalls = [];
+
+    /** @var list<array{0:string,1:string}> */
+    public array $countCalls = [];
 
     /** @var list<array{0:string,1:string,2:int}> */
-    public array $calls = [];
+    public array $suggestCalls = [];
 
-    /** @param array<string,mixed> $result */
-    public function __construct(array $result)
+    public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
     {
-        $this->result = $result;
+        $this->searchCalls[] = [$tenant, $q, $limit, $offset];
+
+        return $this->searchItems;
     }
 
-    public function suggest(string $tenant, string $query, int $limit = 10): array
+    public function countSearch(string $tenant, string $q): int
     {
-        $this->calls[] = [$tenant, $query, $limit];
+        $this->countCalls[] = [$tenant, $q];
 
-        return $this->result;
+        return $this->searchTotal;
+    }
+
+    public function suggest(string $tenant, string $q, int $limit = 10): array
+    {
+        $this->suggestCalls[] = [$tenant, $q, $limit];
+
+        return $this->suggestItems;
+    }
+
+    public function linksForTag(string $tenant, string $tagId, int $limit = 100): array
+    {
+        return [];
+    }
+
+    public function tagsForEntity(string $tenant, string $etype, string $eid, int $limit = 100): array
+    {
+        return [];
     }
 }

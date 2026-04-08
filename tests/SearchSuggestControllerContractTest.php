@@ -25,6 +25,11 @@ final class SearchSuggestControllerContractTest extends TestCase
                 return [['id' => 't1', 'slug' => 'priority', 'name' => 'Priority', 'locale' => null, 'weight' => 10]];
             }
 
+            public function countSearch(string $tenant, string $q): int
+            {
+                return 1;
+            }
+
             public function suggest(string $tenant, string $q, int $limit = 10): array
             {
                 return [];
@@ -55,8 +60,7 @@ final class SearchSuggestControllerContractTest extends TestCase
         self::assertSame('application/json', $headers['Content-Type'] ?? null);
         self::assertTrue($payload['ok']);
         self::assertSame('priority', $payload['items'][0]['slug'] ?? null);
-        self::assertArrayHasKey('result', $payload);
-        self::assertSame($payload['items'], $payload['result']['items'] ?? null);
+        self::assertArrayNotHasKey('result', $payload);
     }
 
     public function testSuggestControllerBlankQueryReturnsEmptyItemsAndNotValidationFailure(): void
@@ -65,6 +69,11 @@ final class SearchSuggestControllerContractTest extends TestCase
             public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
             {
                 return [];
+            }
+
+            public function countSearch(string $tenant, string $q): int
+            {
+                throw new \RuntimeException('countSearch must not be called for blank query');
             }
 
             public function suggest(string $tenant, string $q, int $limit = 10): array
@@ -96,7 +105,8 @@ final class SearchSuggestControllerContractTest extends TestCase
         self::assertSame(200, $status);
         self::assertTrue($payload['ok']);
         self::assertSame([], $payload['items']);
-        self::assertSame(['items' => [], 'cacheHit' => false], $payload['result']);
+        self::assertArrayNotHasKey('result', $payload);
+        self::assertFalse($payload['cacheHit']);
     }
 
     public function testAssignmentReadControllerAcceptsCanonicalTenantHeaderCasing(): void
@@ -105,6 +115,11 @@ final class SearchSuggestControllerContractTest extends TestCase
             public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
             {
                 return [];
+            }
+
+            public function countSearch(string $tenant, string $q): int
+            {
+                return 0;
             }
 
             public function suggest(string $tenant, string $q, int $limit = 10): array

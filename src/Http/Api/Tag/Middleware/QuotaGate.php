@@ -46,7 +46,10 @@ final readonly class QuotaGate
         }
         $allowed = $this->limiter->allow($tenantKey, (float) ($pt['rps'] ?? 50), (int) ($pt['burst'] ?? 100));
         if (!$allowed['ok']) {
-            $this->bumpMetric('tag_ratelimit_throttled_total', ['scope' => 'tenant', 'route' => $route, 'tenant' => $tenant]);
+            $this->bumpMetric(
+                'tag_ratelimit_throttled_total',
+                ['scope' => 'tenant', 'route' => $route, 'tenant' => $tenant],
+            );
 
             return $this->tooMany($allowed['retry_after'], 'rate_limit_tenant');
         }

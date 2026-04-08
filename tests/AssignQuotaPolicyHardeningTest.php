@@ -21,14 +21,26 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
     public function testAssignControllerUses404ForMissingTagAndSupportsHeaderCase(): void
     {
         $assign = new class implements AssignOperationInterface {
-            public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+            public function assign(
+                string $tenant,
+                string $tagId,
+                string $entityType,
+                string $entityId,
+                ?string $idemKey = null,
+            ): array
             {
                 return ['ok' => false, 'code' => 'tag_not_found'];
             }
         };
 
         $unassign = new class implements UnassignOperationInterface {
-            public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+            public function unassign(
+                string $tenant,
+                string $tagId,
+                string $entityType,
+                string $entityId,
+                ?string $idemKey = null,
+            ): array
             {
                 return ['ok' => true];
             }
@@ -47,14 +59,26 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
     public function testAssignControllerUses409ForIdempotencyConflict(): void
     {
         $assign = new class implements AssignOperationInterface {
-            public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+            public function assign(
+                string $tenant,
+                string $tagId,
+                string $entityType,
+                string $entityId,
+                ?string $idemKey = null,
+            ): array
             {
                 return ['ok' => false, 'code' => 'idempotency_conflict', 'conflict' => true];
             }
         };
 
         $unassign = new class implements UnassignOperationInterface {
-            public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+            public function unassign(
+                string $tenant,
+                string $tagId,
+                string $entityType,
+                string $entityId,
+                ?string $idemKey = null,
+            ): array
             {
                 return ['ok' => true];
             }

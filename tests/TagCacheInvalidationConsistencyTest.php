@@ -57,7 +57,14 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
                 return $this->rows[$tenant][$id] ?? null;
             }
 
-            public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
+            public function create(
+                string $tenant,
+                string $id,
+                string $slug,
+                string $name,
+                string $locale,
+                int $weight,
+            ): array
             {
                 return $this->rows[$tenant][$id] = [
                     'id' => $id,

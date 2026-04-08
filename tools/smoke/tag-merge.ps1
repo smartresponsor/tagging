@@ -1,9 +1,20 @@
 Param([string]$BaseUrl = $env:TAG_BASE_URL)
 if (-not $BaseUrl)
 {
-    Write-Error "Set TAG_BASE_URL"; exit 1
+    Write-Error "Set TAG_BASE_URL"
+    exit 1
 }
-$a = Invoke-RestMethod -Method Post -Uri "$BaseUrl/tag" -Body (@{ slug = "merge-a"; label = "Merge A" } | ConvertTo-Json) -ContentType "application/json"
-$b = Invoke-RestMethod -Method Post -Uri "$BaseUrl/tag" -Body (@{ slug = "merge-b"; label = "Merge B" } | ConvertTo-Json) -ContentType "application/json"
-Invoke-RestMethod -Method Post -Uri "$BaseUrl/tag/merge" -Body (@{ fromTagId = $a.id; toTagId = $b.id } | ConvertTo-Json) -ContentType "application/json"
+
+$createA = @{ slug = "merge-a"; label = "Merge A" } | ConvertTo-Json
+$createB = @{ slug = "merge-b"; label = "Merge B" } | ConvertTo-Json
+$mergeBody = @{
+    fromTagId = $null
+    toTagId = $null
+}
+
+$a = Invoke-RestMethod -Method Post -Uri "$BaseUrl/tag" -Body $createA -ContentType "application/json"
+$b = Invoke-RestMethod -Method Post -Uri "$BaseUrl/tag" -Body $createB -ContentType "application/json"
+$mergeBody.fromTagId = $a.id
+$mergeBody.toTagId = $b.id
+Invoke-RestMethod -Method Post -Uri "$BaseUrl/tag/merge" -Body ($mergeBody | ConvertTo-Json) -ContentType "application/json"
 Write-Host "Merged $( $a.id ) -> $( $b.id )"

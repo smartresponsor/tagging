@@ -118,7 +118,12 @@ function ZipFiles([string]$ZipPath, [string]$RootAbs, [object[]]$Files)
                 continue
             }
             # ensure directory entries not needed; zip stores full path within entry
-            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $abs, $rel, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+                $zip,
+                $abs,
+                $rel,
+                [System.IO.Compression.CompressionLevel]::Optimal
+            ) | Out-Null
         }
     }
     finally

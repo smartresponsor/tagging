@@ -4,8 +4,8 @@
 declare(strict_types=1);
 
 $root = require __DIR__ . '/../_bootstrap.php';
-$quota = file_get_contents($root . '/tag_quota.yaml') ?: '';
-$assignment = file_get_contents($root . '/tag_assignment.yaml') ?: '';
+$quota = file_get_contents($root . '/config/tag_quota.yaml') ?: '';
+$assignment = file_get_contents($root . '/config/tag_assignment.yaml') ?: '';
 $search = file_get_contents($root . '/config/tag_search.yaml') ?: '';
 $errors = [];
 if (!preg_match('/^enforce:\s+(true|false)\s*$/m', $quota)) {

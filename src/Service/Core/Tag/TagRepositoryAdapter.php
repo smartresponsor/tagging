@@ -75,7 +75,12 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
     /**
      * @return array|TagAssignment[]
      */
-    public function listAssignments(string $tenantId, string $tagId, ?string $type = null, ?string $assignedId = null): array
+    public function listAssignments(
+        string $tenantId,
+        string $tagId,
+        ?string $type = null,
+        ?string $assignedId = null,
+    ): array
     {
         return $this->tagReadRepository->listAssignments($tenantId, $tagId, $type, $assignedId);
     }
@@ -141,7 +146,14 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         $this->tagWriteRepository->updateProposalStatus($tenantId, $id, $status, $decidedBy);
     }
 
-    public function insertAudit(string $tenantId, string $id, string $action, string $entityType, string $entityId, string $detailsJson): void
+    public function insertAudit(
+        string $tenantId,
+        string $id,
+        string $action,
+        string $entityType,
+        string $entityId,
+        string $detailsJson,
+    ): void
     {
         $this->tagWriteRepository->insertAudit($tenantId, $id, $action, $entityType, $entityId, $detailsJson);
     }
@@ -180,7 +192,14 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $this->tagReadRepository->tagCloud($tenantId, $limit);
     }
 
-    public function putClassification(string $tenantId, string $id, string $scope, string $refId, string $key, string $value): void
+    public function putClassification(
+        string $tenantId,
+        string $id,
+        string $scope,
+        string $refId,
+        string $key,
+        string $value,
+    ): void
     {
         $this->tagWriteRepository->putClassification($tenantId, $id, $scope, $refId, $key, $value);
     }
@@ -193,9 +212,27 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $this->tagReadRepository->listClassifications($tenantId, $scope, $refId);
     }
 
-    public function putEffect(string $tenantId, string $id, string $assignedType, string $assignedId, string $key, string $value, string $sourceScope, string $sourceId): void
+    public function putEffect(
+        string $tenantId,
+        string $id,
+        string $assignedType,
+        string $assignedId,
+        string $key,
+        string $value,
+        string $sourceScope,
+        string $sourceId,
+    ): void
     {
-        $this->tagWriteRepository->putEffect($tenantId, $id, $assignedType, $assignedId, $key, $value, $sourceScope, $sourceId);
+        $this->tagWriteRepository->putEffect(
+            $tenantId,
+            $id,
+            $assignedType,
+            $assignedId,
+            $key,
+            $value,
+            $sourceScope,
+            $sourceId,
+        );
     }
 
     public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void

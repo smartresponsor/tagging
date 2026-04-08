@@ -18,10 +18,24 @@ try {
     fwrite(STDOUT, encodeJson($payload, $pretty) . PHP_EOL);
     exit(0);
 } catch (InvalidArgumentException $e) {
-    fwrite(STDERR, encodeJson(['ok' => false, 'code' => 'invalid_cli_arguments', 'message' => $e->getMessage()], true) . PHP_EOL);
+    fwrite(
+        STDERR,
+        encodeJson([
+            'ok' => false,
+            'code' => 'invalid_cli_arguments',
+            'message' => $e->getMessage(),
+        ], true) . PHP_EOL,
+    );
     exit(2);
 } catch (Throwable $e) {
-    fwrite(STDERR, encodeJson(['ok' => false, 'code' => 'cli_command_failed', 'message' => $e->getMessage()], true) . PHP_EOL);
+    fwrite(
+        STDERR,
+        encodeJson([
+            'ok' => false,
+            'code' => 'cli_command_failed',
+            'message' => $e->getMessage(),
+        ], true) . PHP_EOL,
+    );
     exit(1);
 }
 
@@ -82,21 +96,76 @@ function isHelpCommand(string $command): bool
     return in_array($command, ['help', '--help', '-h'], true);
 }
 
-/** @return array<string, callable(array<string, string|bool>, array<string, callable():mixed>): array<string, mixed>>> */
+/**
+ * @return array<
+ *     string,
+ *     callable(array<string, string|bool>, array<string, callable(): mixed>): array<string, mixed>
+ * >
+ */
 function commandHandlers(): array
 {
     return [
         'status' => static fn(array $options, array $container): array => callStatus($container),
         'surface' => static fn(array $options, array $container): array => callSurface($container),
-        'create' => static fn(array $options, array $container): array => invokeController($container, 'tagController', 'create', buildWriteRequest($options)),
-        'get' => static fn(array $options, array $container): array => invokeController($container, 'tagController', 'get', baseRequest($options), requireString($options, 'id')),
-        'patch' => static fn(array $options, array $container): array => invokeController($container, 'tagController', 'patch', buildWriteRequest($options), requireString($options, 'id')),
-        'delete' => static fn(array $options, array $container): array => invokeController($container, 'tagController', 'delete', baseRequest($options), requireString($options, 'id')),
-        'assign' => static fn(array $options, array $container): array => invokeController($container, 'assignController', 'assign', buildAssignRequest($options), requireString($options, 'tag')),
-        'unassign' => static fn(array $options, array $container): array => invokeController($container, 'assignController', 'unassign', buildAssignRequest($options), requireString($options, 'tag')),
-        'assignments' => static fn(array $options, array $container): array => invokeController($container, 'assignmentReadController', 'listByEntity', buildAssignmentsRequest($options)),
-        'search' => static fn(array $options, array $container): array => invokeController($container, 'searchController', 'get', buildSearchRequest($options)),
-        'suggest' => static fn(array $options, array $container): array => invokeController($container, 'suggestController', 'get', buildSuggestRequest($options)),
+        'create' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'tagController',
+            'create',
+            buildWriteRequest($options),
+        ),
+        'get' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'tagController',
+            'get',
+            baseRequest($options),
+            requireString($options, 'id'),
+        ),
+        'patch' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'tagController',
+            'patch',
+            buildWriteRequest($options),
+            requireString($options, 'id'),
+        ),
+        'delete' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'tagController',
+            'delete',
+            baseRequest($options),
+            requireString($options, 'id'),
+        ),
+        'assign' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'assignController',
+            'assign',
+            buildAssignRequest($options),
+            requireString($options, 'tag'),
+        ),
+        'unassign' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'assignController',
+            'unassign',
+            buildAssignRequest($options),
+            requireString($options, 'tag'),
+        ),
+        'assignments' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'assignmentReadController',
+            'listByEntity',
+            buildAssignmentsRequest($options),
+        ),
+        'search' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'searchController',
+            'get',
+            buildSearchRequest($options),
+        ),
+        'suggest' => static fn(array $options, array $container): array => invokeController(
+            $container,
+            'suggestController',
+            'get',
+            buildSuggestRequest($options),
+        ),
     ];
 }
 

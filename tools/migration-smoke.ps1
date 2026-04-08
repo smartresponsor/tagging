@@ -73,7 +73,8 @@ $required = @("tag_entity", "tag_relation", "tag_policy", "tag_audit_log", "outb
 foreach ($t in $required)
 {
     $env:PGPASSWORD = $PostgresPassword
-    $out = & psql -h $DbHost -p $DbPort -U $PostgresUser -d $PostgresDb -t -A -c "select count(*) from information_schema.tables where table_name='$t'" 2> $null
+    $sql = "select count(*) from information_schema.tables where table_name='$t'"
+    $out = & psql -h $DbHost -p $DbPort -U $PostgresUser -d $PostgresDb -t -A -c $sql 2> $null
     if ($out.Trim() -ne "1")
     {
         throw "Missing table: $t"

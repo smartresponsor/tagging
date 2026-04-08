@@ -41,7 +41,16 @@ final readonly class TagPropagationService
         $n = 0;
         foreach ($pairs as $p) {
             foreach ($class as $c) {
-                $this->repo->putEffect($tenantId, UlidGenerator::generate(), $p['assigned_type'], $p['assigned_id'], $c['key'], $c['value'], 'tag', $tagId);
+                $this->repo->putEffect(
+                    $tenantId,
+                    UlidGenerator::generate(),
+                    $p['assigned_type'],
+                    $p['assigned_id'],
+                    $c['key'],
+                    $c['value'],
+                    'tag',
+                    $tagId,
+                );
                 ++$n;
             }
         }
@@ -65,7 +74,16 @@ final readonly class TagPropagationService
             $pairs = $this->repo->listAssignmentsByTag($tenantId, $t['tag_id']);
             foreach ($pairs as $p) {
                 foreach ($class as $c) {
-                    $this->repo->putEffect($tenantId, UlidGenerator::generate(), $p['assigned_type'], $p['assigned_id'], $c['key'], $c['value'], 'scheme', $schemeName);
+                    $this->repo->putEffect(
+                        $tenantId,
+                        UlidGenerator::generate(),
+                        $p['assigned_type'],
+                        $p['assigned_id'],
+                        $c['key'],
+                        $c['value'],
+                        'scheme',
+                        $schemeName,
+                    );
                     ++$n;
                 }
             }

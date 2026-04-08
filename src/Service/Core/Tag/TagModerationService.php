@@ -19,7 +19,14 @@ final readonly class TagModerationService
     {
         $id = UlidGenerator::generate();
         $this->repo->insertProposal($tenantId, $id, $type, json_encode($payload, JSON_THROW_ON_ERROR));
-        $this->repo->insertAudit($tenantId, UlidGenerator::generate(), 'proposal.create', 'proposal', $id, json_encode($payload, JSON_THROW_ON_ERROR));
+        $this->repo->insertAudit(
+            $tenantId,
+            UlidGenerator::generate(),
+            'proposal.create',
+            'proposal',
+            $id,
+            json_encode($payload, JSON_THROW_ON_ERROR),
+        );
 
         return $id;
     }
@@ -37,7 +44,17 @@ final readonly class TagModerationService
     {
         $this->repo->reassignAssignments($tenantId, $fromTagId, $toTagId);
         $this->repo->deleteTag($tenantId, $fromTagId);
-        $this->repo->insertAudit($tenantId, UlidGenerator::generate(), 'tag.merge', 'tag', $toTagId, json_encode(['from' => $fromTagId, 'to' => $toTagId], JSON_THROW_ON_ERROR));
+        $this->repo->insertAudit(
+            $tenantId,
+            UlidGenerator::generate(),
+            'tag.merge',
+            'tag',
+            $toTagId,
+            json_encode([
+                'from' => $fromTagId,
+                'to' => $toTagId,
+            ], JSON_THROW_ON_ERROR),
+        );
     }
 
     /**
@@ -48,7 +65,14 @@ final readonly class TagModerationService
     {
         $slug = TagNormalizer::slugify($newLabel);
         $this->repo->renameTag($tenantId, $tagId, $newLabel, $slug);
-        $this->repo->insertAudit($tenantId, UlidGenerator::generate(), 'tag.rename', 'tag', $tagId, json_encode(['label' => $newLabel], JSON_THROW_ON_ERROR));
+        $this->repo->insertAudit(
+            $tenantId,
+            UlidGenerator::generate(),
+            'tag.rename',
+            'tag',
+            $tagId,
+            json_encode(['label' => $newLabel], JSON_THROW_ON_ERROR),
+        );
     }
 
     /**
@@ -58,6 +82,16 @@ final readonly class TagModerationService
     public function setFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void
     {
         $this->repo->setTagFlags($tenantId, $tagId, $required, $modOnly);
-        $this->repo->insertAudit($tenantId, UlidGenerator::generate(), 'tag.flags', 'tag', $tagId, json_encode(['required' => $required, 'modOnly' => $modOnly], JSON_THROW_ON_ERROR));
+        $this->repo->insertAudit(
+            $tenantId,
+            UlidGenerator::generate(),
+            'tag.flags',
+            'tag',
+            $tagId,
+            json_encode([
+                'required' => $required,
+                'modOnly' => $modOnly,
+            ], JSON_THROW_ON_ERROR),
+        );
     }
 }

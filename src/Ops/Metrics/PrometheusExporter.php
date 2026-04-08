@@ -87,7 +87,7 @@ final class PrometheusExporter
             $out[] = '# HELP ' . $name . ' ' . $this->esc($meta['help']);
             $out[] = '# TYPE ' . $name . ' counter';
             foreach (($this->counterValues[$name] ?? []) as $key => $val) {
-                $labels = $this->labelsFromKey($key);
+                $labels = $this->labelsFromKey((string) $key);
                 $out[] = $name . $this->fmtLabels($labels) . ' ' . $val;
             }
         }
@@ -95,7 +95,7 @@ final class PrometheusExporter
             $out[] = '# HELP ' . $name . ' ' . $this->esc($meta['help']);
             $out[] = '# TYPE ' . $name . ' histogram';
             foreach (($this->histValues[$name]['series'] ?? []) as $seriesKey => $series) {
-                $labels = $this->labelsFromKey($seriesKey);
+                $labels = $this->labelsFromKey((string) $seriesKey);
                 $cumulative = 0;
                 foreach ($meta['buckets'] as $i => $bucket) {
                     $cumulative += $series['buckets'][$i] ?? 0;

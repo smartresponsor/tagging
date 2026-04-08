@@ -19,7 +19,13 @@ interface TagBulkRepositoryInterface
 
     public function resolveRedirect(string $tenantId, string $fromTagId): ?string;
 
-    public function mergeTags(string $tenantId, string $from, string $to, bool $moveAssignments = true, bool $copySynonyms = true): array;
+    public function mergeTags(
+        string $tenantId,
+        string $from,
+        string $to,
+        bool $moveAssignments = true,
+        bool $copySynonyms = true,
+    ): array;
 
     public function splitTag(string $tenantId, string $id, array $newTags): array;
 }

@@ -41,6 +41,10 @@ final class SnapshotPurityAuditTest extends TestCase
         sort($violations);
         $violations = array_values(array_unique($violations));
 
-        self::assertSame([], $violations, 'Repository root contains transport artifacts or transient workspaces: ' . implode(', ', $violations));
+        self::assertSame(
+            [],
+            $violations,
+            'Repository root contains transport artifacts or transient workspaces: ' . implode(', ', $violations),
+        );
     }
 }

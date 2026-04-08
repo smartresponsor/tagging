@@ -27,7 +27,14 @@ function tag_cors_headers(?string $requestOrigin, ?string $configuredOrigin): ar
     return [
         'Access-Control-Allow-Origin' => $allowOrigin,
         'Access-Control-Allow-Methods' => 'GET,POST,PATCH,DELETE,OPTIONS',
-        'Access-Control-Allow-Headers' => 'Content-Type,X-Tenant-Id,X-Idempotency-Key,X-SR-Timestamp,X-SR-Nonce,X-SR-Signature',
+        'Access-Control-Allow-Headers' => implode(',', [
+            'Content-Type',
+            'X-Tenant-Id',
+            'X-Idempotency-Key',
+            'X-SR-Timestamp',
+            'X-SR-Nonce',
+            'X-SR-Signature',
+        ]),
         'Access-Control-Max-Age' => '600',
         'Vary' => 'Origin',
     ];

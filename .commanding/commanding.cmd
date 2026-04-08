@@ -42,7 +42,11 @@ REM --- Command inside bash: start a single interactive bash that runs the menu 
 REM Notes:
 REM  - "bash -i <script>" runs the script and then stays interactive in the SAME process
 REM  - This removes the "first shell then exec bash" double-hop
-set "BASH_CMD=if [ -f %COMMANDING_SH% ]; then exec bash -i %COMMANDING_SH%; else exec bash -i; fi"
+set "BASH_CMD=if [ -f %COMMANDING_SH% ]; then ^
+  exec bash -i %COMMANDING_SH%; ^
+else ^
+  exec bash -i; ^
+fi"
 
 REM =========================
 REM 1) Git Bash path found
@@ -63,7 +67,8 @@ REM 2) WSL fallback
 REM =========================
 if "%WSL%"=="1" (
   if "%WT%"=="1" (
-    start "" /min wt -w 0 new-tab --title "%REPO_NAME%" wsl.exe -- bash -lc "cd \"$(wslpath -a '%REPO_DIR%')\"; %BASH_CMD%"
+    start "" /min wt -w 0 new-tab --title "%REPO_NAME%" ^
+      wsl.exe -- bash -lc "cd \"$(wslpath -a '%REPO_DIR%')\"; %BASH_CMD%"
     exit /b 0
   ) else (
     start "" wsl.exe -- bash -lc "cd \"$(wslpath -a '%REPO_DIR%')\"; %BASH_CMD%"

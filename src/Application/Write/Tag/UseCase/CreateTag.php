@@ -15,9 +15,9 @@ use App\Service\Core\Tag\Slug\SlugPolicy;
 use App\Service\Core\Tag\TagEntityRepositoryInterface;
 use App\Service\Core\Tag\TransactionRunnerInterface;
 
-final class CreateTag implements CreateTagInterface
+final readonly class CreateTag implements CreateTagInterface
 {
-    private TagQueryCacheInvalidator $cacheInvalidator;
+    private readonly TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
         private TagEntityRepositoryInterface $repo,
@@ -27,7 +27,11 @@ final class CreateTag implements CreateTagInterface
         private ?SuggestCache $suggestCache = null,
         ?TagQueryCacheInvalidator $cacheInvalidator = null,
     ) {
-        $this->cacheInvalidator = $cacheInvalidator ?? new TagQueryCacheInvalidator($this->searchCache, $this->suggestCache);
+        $this->cacheInvalidator = $cacheInvalidator
+            ?? new TagQueryCacheInvalidator(
+                $this->searchCache,
+                $this->suggestCache,
+            );
     }
 
     public function execute(CreateTagCommand $command): TagResult

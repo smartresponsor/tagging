@@ -49,7 +49,12 @@ final class TagValidator
      * Check uniqueness via repository lookups.
      * Repository must provide 'existsSlug' and 'i18nSlugExists' checks.
      */
-    public function ensureUniqueness(string $tenantId, TagRepositoryContract $repo, string $slug, ?string $tagId = null): void
+    public function ensureUniqueness(
+        string $tenantId,
+        TagRepositoryContract $repo,
+        string $slug,
+        ?string $tagId = null,
+    ): void
     {
         if ($repo->existsSlug($tenantId, $slug, $tagId)) {
             throw new \RuntimeException('slug_conflict');

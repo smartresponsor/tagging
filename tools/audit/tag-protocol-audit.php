@@ -19,7 +19,6 @@ $forbidden = [
     'test/Tagging',
     'tests/Tag',
     'tests/Tagging',
-    'tag.yaml',
     'tag_assignment.yaml',
     'tag_quota.yaml',
     'tag_cons_patched',

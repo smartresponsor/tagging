@@ -38,6 +38,9 @@ final class TagSmokeOpsScriptsTest extends TestCase
         $readme = file_get_contents(__DIR__ . '/../README.md');
         self::assertIsString($readme);
         self::assertStringContainsString('composer run -n smoke:runtime', $readme);
-        self::assertStringContainsString('bulk assignment endpoints, missing-tag unassign semantics, flat read payloads, and authoritative search totals', $readme);
+        self::assertStringContainsString(
+            'bulk assignment endpoints, missing-tag unassign semantics, flat read payloads, and authoritative search totals',
+            $readme,
+        );
     }
 }

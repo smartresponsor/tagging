@@ -23,7 +23,12 @@ final class RepoMapTruthAuditTest extends TestCase
         self::assertStringNotContainsString('src/ServiceInterface/', $repoMap);
         self::assertStringNotContainsString('src/Domain/', $repoMap);
         self::assertStringNotContainsString('src/Infra/', $repoMap);
-        self::assertStringNotContainsString('fixtures/tag-demo.json', $repoMap);
+        $treeSection = explode('Snapshot policy:', $repoMap, 2)[0] ?? $repoMap;
+        self::assertStringNotContainsString('fixtures/tag-demo.json', $treeSection);
+        self::assertStringContainsString(
+            'Retired legacy artifacts such as `fixtures/tag-demo.json` must not remain in the repository',
+            $repoMap,
+        );
         self::assertStringContainsString('docs/public/', $repoMap);
         self::assertStringContainsString('docs/release/', $repoMap);
     }

@@ -21,7 +21,12 @@ interface TagReadRepositoryInterface
     public function search(string $tenantId, ?string $query, int $limit, int $offset): array;
 
     /** @return TagAssignment[] */
-    public function listAssignments(string $tenantId, string $tagId, ?string $type = null, ?string $assignedId = null): array;
+    public function listAssignments(
+        string $tenantId,
+        string $tagId,
+        ?string $type = null,
+        ?string $assignedId = null,
+    ): array;
 
     /** @return TagSynonym[] */
     public function listSynonyms(string $tenantId, string $tagId): array;

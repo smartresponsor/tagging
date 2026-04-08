@@ -12,7 +12,10 @@ if (-not (Test-Path $testsRoot))
 $fixedByName = @(
     @{ Pattern = '^.*FactoryTest\.php$'; Dest = 'Factory' },
     @{ Pattern = '^(FactorySmokeTest|FactoriesIntegrationTest)\.php$'; Dest = 'Integration' },
-    @{ Pattern = '^(VerificationControllerTest|RouteCode200Test|OrderEmailManagerTest|EntityAttachmentTest)\.php$'; Dest = 'Functional' },
+    @{
+        Pattern = '^(VerificationControllerTest|RouteCode200Test|OrderEmailManagerTest|EntityAttachmentTest)\.php$'
+        Dest = 'Functional'
+    },
     @{ Pattern = '^formAuthTest\.php$'; Dest = 'Unit' },
     @{ Pattern = '^(BaseWebTestCase|BaseTestCase|BootKernelTest)\.php$'; Dest = 'Base' },
     @{ Pattern = '^bootstrap\.php$'; Dest = 'Base' } # bootstrap не неймспейсим
@@ -78,7 +81,12 @@ function Update-Namespace($filePath, $ns, $skip = $false)
     $hasNs = $content -match '^\s*namespace\s+[A-Za-z0-9_\\]+;\s*$' -im
     if ($hasNs)
     {
-        $content = [regex]::Replace($content, '^\s*namespace\s+[A-Za-z0-9_\\]+;\s*$', "namespace $ns;", 'IgnoreCase, Multiline')
+        $content = [regex]::Replace(
+            $content,
+            '^\s*namespace\s+[A-Za-z0-9_\\]+;\s*$',
+            "namespace $ns;",
+            'IgnoreCase, Multiline'
+        )
     }
     else
     {
@@ -191,7 +199,8 @@ foreach ($f in $files)
         continue
     }
 
-    # 4) Иначе — оставляем текущую относительную папку, но если файл лежит прямо в корне tests — НЕ трогаем путь
+    # 4) Иначе — оставляем текущую относительную папку.
+    #    Если файл лежит прямо в корне tests, путь не трогаем.
     $dirRel = Split-Path $rel -Parent
     if ($dirRel -eq '')
     {
@@ -200,7 +209,8 @@ foreach ($f in $files)
     }
     else
     {
-        # перенесём на верхний уровень tests\<TopLevel>\<File>, если это было tests\temp\* или tests\test\*
+        # Перенесём на верхний уровень tests\<TopLevel>\<File>,
+        # если это было tests\temp\* или tests\test\*.
         $top = $dirRel.Split('\', '/')[0]
         if ( $normalizeDirs.ContainsValue($top))
         {
@@ -212,7 +222,8 @@ foreach ($f in $files)
         }
         else
         {
-            # в прочих нестандартных подпапках — просто нормализуем NS по пути
+            # В прочих нестандартных подпапках
+            # просто нормализуем NS по пути.
             $ns = Rel-To-Namespace $rel
             Update-Namespace $f.FullName $ns
         }

@@ -12,8 +12,20 @@ $user = (string) (getenv('DB_USER') ?: 'app');
 $pass = (string) (getenv('DB_PASS') ?: 'app');
 $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
-$insertTag = $pdo->prepare('INSERT INTO tag_entity (id, tenant, slug, name, locale, weight) VALUES (:id,:tenant,:slug,:name,:locale,:weight) ON CONFLICT (tenant, slug) DO UPDATE SET id = EXCLUDED.id, name = EXCLUDED.name, locale = EXCLUDED.locale, weight = EXCLUDED.weight');
-$insertLink = $pdo->prepare('INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) VALUES (:tenant,:entity_type,:entity_id,:tag_id) ON CONFLICT DO NOTHING');
+$insertTag = $pdo->prepare(
+    'INSERT INTO tag_entity (id, tenant, slug, name, locale, weight) '
+    . 'VALUES (:id,:tenant,:slug,:name,:locale,:weight) '
+    . 'ON CONFLICT (tenant, slug) DO UPDATE SET '
+    . 'id = EXCLUDED.id, '
+    . 'name = EXCLUDED.name, '
+    . 'locale = EXCLUDED.locale, '
+    . 'weight = EXCLUDED.weight'
+);
+$insertLink = $pdo->prepare(
+    'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) '
+    . 'VALUES (:tenant,:entity_type,:entity_id,:tag_id) '
+    . 'ON CONFLICT DO NOTHING'
+);
 
 foreach (($data['tags'] ?? []) as $tag) {
     $insertTag->execute([

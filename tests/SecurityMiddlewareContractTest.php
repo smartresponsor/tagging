@@ -18,19 +18,30 @@ final class SecurityMiddlewareContractTest extends TestCase
         $store = new NonceStore(sys_get_temp_dir() . '/tag-nonce-' . uniqid('', true), 300, 1000);
         $middleware = new VerifySignature(
             new HmacV2Verifier('secret', 120, $store),
-            ['enforce' => true, 'secret' => 'secret', 'apply' => ['include' => ['/tag/**'], 'exclude' => ['/tag/_status']]],
+            [
+                'enforce' => true,
+                'secret' => 'secret',
+                'apply' => ['include' => ['/tag/**'], 'exclude' => ['/tag/_status']],
+            ],
         );
 
         [$status, $headers, $body] = $middleware->handle(
             ['method' => 'POST', 'path' => '/tag', 'headers' => [], 'body' => '{}'],
-            static fn(array $request): array => [200, ['Content-Type' => 'application/json'], json_encode(['ok' => true])],
+            static fn(array $request): array => [
+                200,
+                ['Content-Type' => 'application/json'],
+                json_encode(['ok' => true]),
+            ],
         );
 
         self::assertSame(401, $status);
         self::assertSame('application/json', $headers['Content-Type'] ?? null);
         self::assertSame('no-store', $headers['Cache-Control'] ?? null);
         self::assertSame('HMAC-SHA256', $headers['WWW-Authenticate'] ?? null);
-        self::assertSame(['ok' => false, 'code' => 'signature_missing'], json_decode($body, true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame(
+            ['ok' => false, 'code' => 'signature_missing'],
+            json_decode($body, true, 512, JSON_THROW_ON_ERROR),
+        );
     }
 
     public function testVerifySignatureSkipsExcludedMetaRoutes(): void
@@ -38,12 +49,20 @@ final class SecurityMiddlewareContractTest extends TestCase
         $store = new NonceStore(sys_get_temp_dir() . '/tag-nonce-' . uniqid('', true), 300, 1000);
         $middleware = new VerifySignature(
             new HmacV2Verifier('secret', 120, $store),
-            ['enforce' => true, 'secret' => 'secret', 'apply' => ['include' => ['/tag/**'], 'exclude' => ['/tag/_status']]],
+            [
+                'enforce' => true,
+                'secret' => 'secret',
+                'apply' => ['include' => ['/tag/**'], 'exclude' => ['/tag/_status']],
+            ],
         );
 
         [$status, , $body] = $middleware->handle(
             ['method' => 'GET', 'path' => '/tag/_status', 'headers' => [], 'body' => ''],
-            static fn(array $request): array => [200, ['Content-Type' => 'application/json'], json_encode(['ok' => true])],
+            static fn(array $request): array => [
+                200,
+                ['Content-Type' => 'application/json'],
+                json_encode(['ok' => true]),
+            ],
         );
 
         self::assertSame(200, $status);
@@ -84,13 +103,19 @@ final class SecurityMiddlewareContractTest extends TestCase
         };
 
         $pipeline = new TagMiddlewarePipeline([$middlewareA, $middlewareB]);
-        $response = $pipeline->handle(['method' => 'GET', 'path' => '/tag/_status'], function (array $request) use ($trace): array {
+        $response = $pipeline->handle(
+            ['method' => 'GET', 'path' => '/tag/_status'],
+            function (array $request) use ($trace): array {
             $trace->events[] = 'destination';
 
             return [200, ['Content-Type' => 'application/json'], json_encode(['ok' => true])];
-        });
+            },
+        );
 
-        self::assertSame(['a:before', 'b:before', 'destination', 'b:after', 'a:after'], $trace->events);
+        self::assertSame(
+            ['a:before', 'b:before', 'destination', 'b:after', 'a:after'],
+            $trace->events,
+        );
         self::assertSame(200, $response[0]);
     }
 }

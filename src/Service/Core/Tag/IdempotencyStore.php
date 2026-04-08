@@ -13,7 +13,9 @@ final readonly class IdempotencyStore
     public function begin(string $tenant, string $key, string $op, string $checksum): array
     {
         // Check existing record
-        $sel = $this->pdo->prepare('SELECT status, checksum, result_json FROM idempotency_store WHERE tenant=:t AND key=:k');
+        $sel = $this->pdo->prepare(
+            'SELECT status, checksum, result_json FROM idempotency_store WHERE tenant=:t AND key=:k',
+        );
         $sel->execute([':t' => $tenant, ':k' => $key]);
         $row = $sel->fetch(\PDO::FETCH_ASSOC);
         if ($row) {
@@ -31,7 +33,12 @@ final readonly class IdempotencyStore
              VALUES (:t,:k,:op,:c,:st,CAST(:res AS jsonb))',
         );
         $ins->execute([
-            ':t' => $tenant, ':k' => $key, ':op' => $op, ':c' => $checksum, ':st' => 'pending', ':res' => json_encode([]),
+            ':t' => $tenant,
+            ':k' => $key,
+            ':op' => $op,
+            ':c' => $checksum,
+            ':st' => 'pending',
+            ':res' => json_encode([]),
         ]);
 
         return ['state' => 'fresh'];

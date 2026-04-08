@@ -13,10 +13,28 @@ use App\Service\Core\Tag\UnassignService;
 
 abstract class TagIntegrationEvidenceTestCase extends IntegrationDbTestCase
 {
-    protected function insertTag(\PDO $pdo, string $tenant, string $id, string $slug, string $name, int $weight = 0, string $locale = 'en'): void
-    {
-        $stmt = $pdo->prepare('INSERT INTO tag_entity (id, tenant, slug, name, locale, weight) VALUES (:id, :tenant, :slug, :name, :locale, :weight)');
-        $stmt->execute([':id' => $id, ':tenant' => $tenant, ':slug' => $slug, ':name' => $name, ':locale' => $locale, ':weight' => $weight]);
+    protected function insertTag(
+        \PDO $pdo,
+        string $tenant,
+        string $id,
+        string $slug,
+        string $name,
+        int $weight = 0,
+        string $locale = 'en',
+    ): void {
+        $stmt = $pdo->prepare(
+            'INSERT INTO tag_entity '
+            . '(id, tenant, slug, name, locale, weight) '
+            . 'VALUES (:id, :tenant, :slug, :name, :locale, :weight)'
+        );
+        $stmt->execute([
+            ':id' => $id,
+            ':tenant' => $tenant,
+            ':slug' => $slug,
+            ':name' => $name,
+            ':locale' => $locale,
+            ':weight' => $weight,
+        ]);
     }
 
     protected function readModel(\PDO $pdo): TagReadModel
@@ -36,13 +54,18 @@ abstract class TagIntegrationEvidenceTestCase extends IntegrationDbTestCase
 
     protected function assignController(\PDO $pdo): AssignController
     {
-        return new AssignController($this->assignService($pdo), $this->unassignService($pdo), ['entity_types' => ['*']]);
+        return new AssignController(
+            $this->assignService($pdo),
+            $this->unassignService($pdo),
+            ['entity_types' => ['*']],
+        );
     }
 
     protected function decodeBody(string $body): array
     {
         $decoded = json_decode($body, true);
         self::assertIsArray($decoded);
+
         return $decoded;
     }
 }

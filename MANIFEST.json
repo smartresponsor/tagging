@@ -15,6 +15,7 @@
     "copyright header"
   ],
   "version": "tagging-wave-16-structural-canon-cleanup",
+  "runtime_version": "p118-route-catalog-truth",
   "notes": [
     "wave 14 removes transient root workspaces from the cumulative snapshot",
     "wave 14 extends repo hygiene guards to forbid transport workspace directories in repository root",
@@ -162,8 +163,7 @@
       "src/Service/Webhook",
       "src/Service/Metric"
     ]
-  }
-,
+  },
   "wave_21": {
     "focus": "security signature + middleware contract hardening",
     "changes": [

@@ -13,5 +13,11 @@ interface UnassignOperationInterface
      *
      * @return array{ok:bool, duplicated?:bool, not_found?:bool, conflict?:bool, code?:string}
      */
-    public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array;
+    public function unassign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array;
 }

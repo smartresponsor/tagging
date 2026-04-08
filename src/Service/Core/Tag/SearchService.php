@@ -9,12 +9,12 @@ use App\Cache\Store\Tag\SearchCache;
 
 final readonly class SearchService
 {
-    /**
-     * @param \App\Infrastructure\ReadModel\Tag\TagReadModelInterface $read
-     */
-    public function __construct(private TagReadModelInterface $read, private SearchCache $cache) {}
+    public function __construct(
+        private TagReadModelInterface $read,
+        private SearchCache $cache,
+    ) {}
 
-    /** @return array{items:array<int,array<string,mixed>>, total:int, nextPageToken: ?string, cacheHit:bool} */
+    /** @return array{items: array<int, array<string, mixed>>, total: int, nextPageToken: ?string, cacheHit: bool} */
     public function search(string $tenant, string $q, int $pageSize = 20, ?string $pageToken = null): array
     {
         $q = trim($q);
@@ -68,7 +68,7 @@ final readonly class SearchService
         return max(0, (int) $decoded);
     }
 
-    /** @return array{items:array<int,array<string,mixed>>, total:int, nextPageToken:?string, cacheHit:bool} */
+    /** @return array{items: array<int, array<string, mixed>>, total: int, nextPageToken: ?string, cacheHit: bool} */
     private function emptyResult(): array
     {
         return ['items' => [], 'total' => 0, 'nextPageToken' => null, 'cacheHit' => false];

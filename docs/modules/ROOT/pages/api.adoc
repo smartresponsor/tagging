@@ -21,8 +21,11 @@ Instead, it gives the central Antora site a stable entry point into the API/refe
 
 * The source contract stays in `contracts/http/tag-openapi.yaml`.
 * The generated static Swagger/OpenAPI viewer lives under `public/tag/openapi/`.
-* Generated/reference assets remain separate from narrative pages and are linked, not copied into Antora narrative content.
-* If a generated code-reference surface is introduced later, it should live under `public/tag/api-reference/` (or another explicitly generated reference root), and Antora should link to it instead of copying it.
+* Generated/reference assets remain separate from narrative pages and are linked,
+  not copied into Antora narrative content.
+* If a generated code-reference surface is introduced later, it should live under
+  `public/tag/api-reference/` (or another explicitly generated reference root),
+  and Antora should link to it instead of copying it.
 
 == Current repository state
 

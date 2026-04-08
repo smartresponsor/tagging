@@ -125,7 +125,12 @@ dot_folder() {
     [ -f "$f" ] || return 1
     # Extract list items "- <value>" ignoring comments.
     # Keep only entries that start with a dot.
-    sed 's/\r$//' "$f" 2>/dev/null |       sed 's/#.*$//' |       sed 's/^[[:space:]]*-[[:space:]]*//p;d' |       sed 's/[[:space:]]*$//' |       sed '/^\./!d' |       sed '/^$/d'
+    sed 's/\r$//' "$f" 2>/dev/null |
+      sed 's/#.*$//' |
+      sed 's/^[[:space:]]*-[[:space:]]*//p;d' |
+      sed 's/[[:space:]]*$//' |
+      sed '/^\./!d' |
+      sed '/^$/d'
   }
 
   if [ -z "${DOT_ACCEPT:-}" ]; then

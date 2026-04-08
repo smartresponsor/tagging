@@ -2,6 +2,8 @@
 
 Use this checklist before tagging or publishing an RC candidate.
 
+Current candidate reference: `v0.2.8-rc1`.
+
 ## Contract and runtime truth
 
 - [ ] `composer run -n audit:surface`

@@ -19,7 +19,7 @@
     "phpstan/phpstan": "^1.12",
     "phpunit/phpunit": "^10.5",
     "symfony/panther": "^2.2"
-    },
+  },
   "autoload": {
     "psr-4": {
       "App\\": "src/"
@@ -62,18 +62,49 @@
     "smoke:runtime": "php tools/smoke/tag-smoke.php",
     "audit:canonical-stale": "php tools/audit/tag-canonical-stale-reference-audit.php",
     "audit:canonical-structure": "php tools/audit/tag-canonical-structure-audit.php",
-    "audit:ci": "composer run -n docs:openapi:publish && composer run -n audit:composer-integrity && composer run -n audit:surface && composer run -n audit:contract && composer run -n audit:route && composer run -n audit:bootstrap && composer run -n audit:bootstrap-runtime && composer run -n audit:config && composer run -n audit:sdk && composer run -n audit:version && composer run -n audit:release-assets && composer run -n audit:openapi-semantics && composer run -n audit:generated-openapi-surface && composer run -n audit:antora-surface && composer run -n audit:core-boundary && composer run -n audit:canonical-stale && composer run -n audit:canonical-structure && composer run -n audit:repo-hygiene && composer run -n audit:snapshot-purity && composer run -n audit:repo-map-truth && composer run -n audit:ci-workflow && composer run -n audit:demo-truth-pack && composer run -n audit:release-grade-portrait && composer run -n test:unit",
+    "audit:ci": [
+      "@docs:openapi:publish",
+      "@audit:composer-integrity",
+      "@audit:surface",
+      "@audit:contract",
+      "@audit:route",
+      "@audit:bootstrap",
+      "@audit:bootstrap-runtime",
+      "@audit:config",
+      "@audit:sdk",
+      "@audit:version",
+      "@audit:release-assets",
+      "@audit:openapi-semantics",
+      "@audit:generated-openapi-surface",
+      "@audit:antora-surface",
+      "@audit:core-boundary",
+      "@audit:canonical-stale",
+      "@audit:canonical-structure",
+      "@audit:repo-hygiene",
+      "@audit:snapshot-purity",
+      "@audit:repo-map-truth",
+      "@audit:ci-workflow",
+      "@audit:demo-truth-pack",
+      "@audit:release-grade-portrait",
+      "@test:unit"
+    ],
     "audit:composer-integrity": "php tools/audit/tag-composer-integrity-audit.php",
     "test": "vendor/bin/phpunit --testsuite unit",
     "test:unit": "vendor/bin/phpunit --testsuite unit",
     "test:integration": "vendor/bin/phpunit --testsuite integration",
-    "test:panther": "sh -lc 'if command -v chromium >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v chromium); elif command -v chromium-browser >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v chromium-browser); elif command -v google-chrome >/dev/null 2>&1; then export PANTHER_CHROME_BINARY=$(command -v google-chrome); fi; export PANTHER_CHROME_ARGUMENTS=\"--headless=new --disable-dev-shm-usage --no-sandbox\"; vendor/bin/phpunit --testsuite panther'",
+    "test:panther": [
+      "tools/local/panther-test.sh"
+    ],
     "test:e2e": "npx playwright test",
     "test:e2e:install": "npx playwright install chromium",
     "doctor:php-ext": "bash tools/local/php-extension-doctor.sh",
     "symfony:server:start": "bash tools/local/symfony-server-start.sh",
     "host:test-db:serve": "bash tools/local/tag-serve-test-db.sh",
-    "gate:install-test": "composer validate --no-interaction --strict && composer run -n audit:composer-integrity && composer run -n test:unit",
+    "gate:install-test": [
+      "composer validate --no-interaction --strict",
+      "@audit:composer-integrity",
+      "@test:unit"
+    ],
     "audit:repo-hygiene": "php tools/audit/tag-repo-hygiene-audit.php",
     "audit:snapshot-purity": "php tools/audit/tag-snapshot-purity-audit.php",
     "audit:repo-map-truth": "php tools/audit/tag-repo-map-truth-audit.php",

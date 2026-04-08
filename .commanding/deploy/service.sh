@@ -38,12 +38,15 @@ while true; do
   4)
     echo ''
     read -p "    Enter part of Route Name: " partialRouteName
-    php bin/console debug:router --format=md --show-controllers | grep -E "($partialRouteName)|(^ --------------)|(^ Name)"
+    php bin/console debug:router --format=md --show-controllers \
+      | grep -E "($partialRouteName)|(^ --------------)|(^ Name)"
     ;;
   5)
     echo -e "Search Route by exact name..."
     read -p "Enter exact Route Name: " exactRouteName
-    php bin/console debug:router --format=md --show-controllers | grep -E "($exactRouteName)|(^ --------------)|(^ Name)" | awk '{if (/^ /) {print "\t" $0} else if (/^ -/) {print "\n\t" $0} else {print}}'
+    php bin/console debug:router --format=md --show-controllers \
+      | grep -E "($exactRouteName)|(^ --------------)|(^ Name)" \
+      | awk '{if (/^ /) {print "\t" $0} else if (/^ -/) {print "\n\t" $0} else {print}}'
     ;;
   0)
     echo -e "Go back to main menu"

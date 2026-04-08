@@ -35,9 +35,23 @@ interface TagWriteRepositoryInterface
 
     public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void;
 
-    public function insertAudit(string $tenantId, string $id, string $action, string $entityType, string $entityId, string $detailsJson): void;
+    public function insertAudit(
+        string $tenantId,
+        string $id,
+        string $action,
+        string $entityType,
+        string $entityId,
+        string $detailsJson,
+    ): void;
 
-    public function putClassification(string $tenantId, string $id, string $scope, string $refId, string $key, string $value): void;
+    public function putClassification(
+        string $tenantId,
+        string $id,
+        string $scope,
+        string $refId,
+        string $key,
+        string $value,
+    ): void;
 
     public function putEffect(
         string $tenantId,

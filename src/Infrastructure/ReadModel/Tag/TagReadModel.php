@@ -11,11 +11,11 @@ final readonly class TagReadModel implements TagReadModelInterface
 {
     public function __construct(private \PDO $pdo) {}
 
-    /** @return array<int, array{id:string,slug:string,name:string,locale:?string,weight:int}> */
+    /** @return array<int, array{id: string, slug: string, name: string, locale: ?string, weight: int}> */
     public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
     {
         $query = self::normalizedQuery($q);
-        if ('' == $query) {
+        if ('' === $query) {
             return [];
         }
 
@@ -60,11 +60,11 @@ final readonly class TagReadModel implements TagReadModelInterface
         return (int) ($stmt->fetchColumn() ?: 0);
     }
 
-    /** @return array<int, array{slug:string,name:string}> */
+    /** @return array<int, array{slug: string, name: string}> */
     public function suggest(string $tenant, string $q, int $limit = 10): array
     {
         $query = self::normalizedQuery($q);
-        if ('' == $query) {
+        if ('' === $query) {
             return [];
         }
 
@@ -87,7 +87,7 @@ final readonly class TagReadModel implements TagReadModelInterface
         return array_map(self::mapSuggestItem(...), $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: []);
     }
 
-    /** @return array{slug:string,name:string} */
+    /** @return array{slug: string, name: string} */
     private static function mapSuggestItem(array $row): array
     {
         return [
@@ -96,7 +96,7 @@ final readonly class TagReadModel implements TagReadModelInterface
         ];
     }
 
-    /** @return array{id:string,slug:string,name:string,locale:?string,weight:int} */
+    /** @return array{id: string, slug: string, name: string, locale: ?string, weight: int} */
     private static function mapTagSummary(array $row): array
     {
         return [
@@ -113,7 +113,7 @@ final readonly class TagReadModel implements TagReadModelInterface
         return mb_strtolower(trim($query));
     }
 
-    /** @return array<int, array{entity_type:string,entity_id:string}> */
+    /** @return array<int, array{entity_type: string, entity_id: string}> */
     public function linksForTag(string $tenant, string $tagId, int $limit = 100): array
     {
         $stmt = $this->pdo->prepare(
@@ -131,7 +131,7 @@ final readonly class TagReadModel implements TagReadModelInterface
         return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
     }
 
-    /** @return array<int, array{id:string,slug:string,name:string}> */
+    /** @return array<int, array{id: string, slug: string, name: string}> */
     public function tagsForEntity(string $tenant, string $etype, string $eid, int $limit = 100): array
     {
         $stmt = $this->pdo->prepare(

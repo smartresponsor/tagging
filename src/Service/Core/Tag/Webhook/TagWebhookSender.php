@@ -147,7 +147,10 @@ final readonly class TagWebhookSender
 
     private function deliver(array $j): bool
     {
-        $body = json_encode(['ts' => gmdate('c'), 'type' => $j['type'], 'payload' => $j['payload']], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $body = json_encode(
+            ['ts' => gmdate('c'), 'type' => $j['type'], 'payload' => $j['payload']],
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+        );
         if (false === $body) {
             TagMetrics::inc('tag_webhook_failed_total', 1.0, ['url' => $j['url'], 'type' => $j['type']]);
 

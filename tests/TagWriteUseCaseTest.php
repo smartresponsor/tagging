@@ -32,7 +32,14 @@ final class TagWriteUseCaseTest extends TestCase
                 return null;
             }
 
-            public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
+            public function create(
+                string $tenant,
+                string $id,
+                string $slug,
+                string $name,
+                string $locale,
+                int $weight,
+            ): array
             {
                 $exception = new \PDOException('duplicate');
                 $property = new \ReflectionProperty(\PDOException::class, 'code');
@@ -55,7 +62,9 @@ final class TagWriteUseCaseTest extends TestCase
         $policy = new SlugPolicy(new \PDO('sqlite::memory:'), new Slugifier());
         $useCase = new CreateTag($repo, $policy, $tx);
 
-        $result = $useCase->execute(new CreateTagCommand('tenant-a', ['name' => 'Alpha', 'slug' => 'alpha']));
+        $result = $useCase->execute(
+            new CreateTagCommand('tenant-a', ['name' => 'Alpha', 'slug' => 'alpha']),
+        );
         $response = (new TagWriteResponder())->respond($result);
 
         self::assertSame(409, $response[0]);
@@ -70,7 +79,14 @@ final class TagWriteUseCaseTest extends TestCase
                 return null;
             }
 
-            public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
+            public function create(
+                string $tenant,
+                string $id,
+                string $slug,
+                string $name,
+                string $locale,
+                int $weight,
+            ): array
             {
                 return [];
             }
@@ -88,7 +104,9 @@ final class TagWriteUseCaseTest extends TestCase
         };
 
         $useCase = new PatchTag($repo, $tx);
-        $result = $useCase->execute(new PatchTagCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV', ['name' => 'Beta']));
+        $result = $useCase->execute(
+            new PatchTagCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV', ['name' => 'Beta']),
+        );
         $response = (new TagWriteResponder())->respond($result);
 
         self::assertSame(404, $response[0]);
@@ -105,7 +123,14 @@ final class TagWriteUseCaseTest extends TestCase
                 return ['id' => $id, 'slug' => 'x', 'name' => 'x', 'locale' => 'en', 'weight' => 0];
             }
 
-            public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
+            public function create(
+                string $tenant,
+                string $id,
+                string $slug,
+                string $name,
+                string $locale,
+                int $weight,
+            ): array
             {
                 return [];
             }
@@ -126,7 +151,9 @@ final class TagWriteUseCaseTest extends TestCase
         };
 
         $useCase = new DeleteTag($repo, $tx);
-        $result = $useCase->execute(new DeleteTagCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV'));
+        $result = $useCase->execute(
+            new DeleteTagCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV'),
+        );
         $response = (new TagWriteResponder())->respond($result);
 
         self::assertSame(204, $response[0]);

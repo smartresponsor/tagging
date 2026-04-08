@@ -13,7 +13,9 @@ final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterf
 
     public function findById(string $tenant, string $id): ?array
     {
-        $sel = $this->pdo->prepare('SELECT id,slug,name,locale,weight,created_at,updated_at FROM tag_entity WHERE tenant=:t AND id=:id');
+        $sel = $this->pdo->prepare(
+            'SELECT id,slug,name,locale,weight,created_at,updated_at FROM tag_entity WHERE tenant=:t AND id=:id'
+        );
         $sel->execute([':t' => $tenant, ':id' => $id]);
         $row = $sel->fetch(\PDO::FETCH_ASSOC);
 
@@ -22,7 +24,9 @@ final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterf
 
     public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
     {
-        $stmt = $this->pdo->prepare('INSERT INTO tag_entity (id,tenant,slug,name,locale,weight) VALUES (:id,:t,:s,:n,:l,:w)');
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO tag_entity (id,tenant,slug,name,locale,weight) VALUES (:id,:t,:s,:n,:l,:w)'
+        );
         $stmt->execute([':id' => $id, ':t' => $tenant, ':s' => $slug, ':n' => $name, ':l' => $locale, ':w' => $weight]);
 
         return ['id' => $id, 'slug' => $slug, 'name' => $name, 'locale' => $locale, 'weight' => $weight];

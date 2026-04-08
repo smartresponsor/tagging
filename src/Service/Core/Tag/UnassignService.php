@@ -23,7 +23,13 @@ final readonly class UnassignService implements UnassignOperationInterface
     }
 
     /** @return array{ok:bool, not_found?:bool, duplicated?:bool, conflict?:bool, code?:string} */
-    public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function unassign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         $idempotencyDecision = $this->beginIdempotency($tenant, $tagId, $entityType, $entityId, $idemKey);
         if (null !== $idempotencyDecision) {
@@ -78,7 +84,13 @@ final readonly class UnassignService implements UnassignOperationInterface
     }
 
     /** @return array{ok:bool, not_found?:bool, duplicated?:bool, conflict?:bool, code?:string}|null */
-    private function beginIdempotency(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey): ?array
+    private function beginIdempotency(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey,
+    ): ?array
     {
         if (null === $idemKey || '' === $idemKey || null === $this->idem) {
             return null;

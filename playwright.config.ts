@@ -10,5 +10,7 @@ export default defineConfig({
     browserName: 'chromium',
     headless: true,
   },
-  reporter: [['list']],
+  reporter: [
+    ['list'],
+  ],
 });

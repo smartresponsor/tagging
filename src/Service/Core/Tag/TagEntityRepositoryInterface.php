@@ -7,7 +7,17 @@ namespace App\Service\Core\Tag;
 
 interface TagEntityRepositoryInterface
 {
-    /** @return array{id:string,slug:string,name:string,locale:string,weight:int,created_at?:string,updated_at?:string}|null */
+    /**
+     * @return array{
+     *     id: string,
+     *     slug: string,
+     *     name: string,
+     *     locale: string,
+     *     weight: int,
+     *     created_at?: string,
+     *     updated_at?: string
+     * }|null
+     */
     public function findById(string $tenant, string $id): ?array;
 
     /** @return array{id:string,slug:string,name:string,locale:string,weight:int} */

@@ -24,9 +24,27 @@ final class TagBulkControllerBehaviorTest extends TestCase
             'headers' => ['X-Tenant-Id' => 'tenant-bulk'],
             'body' => [
                 'operations' => [
-                    ['op' => 'assign', 'tagId' => 'tag-1', 'entityType' => 'product', 'entityId' => 'p-1', 'idem' => 'idem-1'],
-                    ['op' => 'assign', 'tagId' => 'tag-2', 'entityType' => 'product', 'entityId' => 'p-2', 'idem' => 'idem-2'],
-                    ['op' => 'unassign', 'tagId' => 'tag-3', 'entityType' => 'product', 'entityId' => 'p-3', 'idem' => 'idem-3'],
+                    [
+                        'op' => 'assign',
+                        'tagId' => 'tag-1',
+                        'entityType' => 'product',
+                        'entityId' => 'p-1',
+                        'idem' => 'idem-1',
+                    ],
+                    [
+                        'op' => 'assign',
+                        'tagId' => 'tag-2',
+                        'entityType' => 'product',
+                        'entityId' => 'p-2',
+                        'idem' => 'idem-2',
+                    ],
+                    [
+                        'op' => 'unassign',
+                        'tagId' => 'tag-3',
+                        'entityType' => 'product',
+                        'entityId' => 'p-3',
+                        'idem' => 'idem-3',
+                    ],
                 ],
             ],
         ]);
@@ -48,7 +66,11 @@ final class TagBulkControllerBehaviorTest extends TestCase
 
     public function testBulkMarksMalformedItemsAsValidationFailures(): void
     {
-        $controller = new AssignController(new TagBulkAssignOperationStub([]), new TagBulkUnassignOperationStub([]), ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            new TagBulkAssignOperationStub([]),
+            new TagBulkUnassignOperationStub([]),
+            ['entity_types' => ['product']],
+        );
         [$status, , $body] = $controller->bulk([
             'headers' => ['X-Tenant-Id' => 'tenant-bulk'],
             'body' => [
@@ -79,7 +101,11 @@ final class TagBulkControllerBehaviorTest extends TestCase
             ['ok' => true, 'duplicated' => true],
             ['ok' => false, 'code' => 'tag_not_found'],
         ]);
-        $controller = new AssignController($assign, new TagBulkUnassignOperationStub([]), ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            $assign,
+            new TagBulkUnassignOperationStub([]),
+            ['entity_types' => ['product']],
+        );
 
         [$status, , $body] = $controller->assignBulkToEntity([
             'headers' => ['X-Tenant-Id' => 'tenant-bulk'],
@@ -105,7 +131,11 @@ final class TagBulkControllerBehaviorTest extends TestCase
 
     public function testBulkEndpointsRejectInvalidTenantAndDisallowedEntityType(): void
     {
-        $controller = new AssignController(new TagBulkAssignOperationStub([]), new TagBulkUnassignOperationStub([]), ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            new TagBulkAssignOperationStub([]),
+            new TagBulkUnassignOperationStub([]),
+            ['entity_types' => ['product']],
+        );
 
         [$bulkStatus, , $bulkBody] = $controller->bulk([
             'headers' => [],
@@ -140,7 +170,13 @@ final class TagBulkAssignOperationStub implements \App\Service\Core\Tag\AssignOp
         $this->results = $results;
     }
 
-    public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function assign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         return array_shift($this->results) ?? ['ok' => true];
     }
@@ -157,7 +193,13 @@ final class TagBulkUnassignOperationStub implements \App\Service\Core\Tag\Unassi
         $this->results = $results;
     }
 
-    public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function unassign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         return array_shift($this->results) ?? ['ok' => true, 'not_found' => false];
     }

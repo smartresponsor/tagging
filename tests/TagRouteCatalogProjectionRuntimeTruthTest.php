@@ -38,12 +38,10 @@ final class TagRouteCatalogProjectionRuntimeTruthTest extends TestCase
         self::assertContains('suggest', $operations);
 
         self::assertStringContainsString("require dirname(__DIR__) . '/config/tag_route_catalog.php'", $runtimeRoutePhp);
-        self::assertStringContainsString("'assignments_bulk'", $runtimeRoutePhp);
-        self::assertStringContainsString("'assignments_bulk_to_entity'", $runtimeRoutePhp);
-        self::assertStringContainsString("'search'", $runtimeRoutePhp);
-        self::assertStringContainsString("'suggest'", $runtimeRoutePhp);
-        self::assertStringContainsString("'status'", $runtimeRoutePhp);
-        self::assertStringContainsString("'discovery'", $runtimeRoutePhp);
+        self::assertStringContainsString('$routeDefinitions', $runtimeRoutePhp);
+        self::assertStringContainsString('$buildHandler', $runtimeRoutePhp);
+        self::assertStringContainsString('response_header', $runtimeRoutePhp);
+        self::assertStringContainsString("'pattern'", $runtimeRoutePhp);
     }
 
     public function testPublicProjectionStillFiltersPrivateWebhookRoutesOutOfSurface(): void

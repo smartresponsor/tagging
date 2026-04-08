@@ -25,7 +25,9 @@ final readonly class TagService
     public function create(string $tenantId, ?string $slugOrNull, string $label): Tag
     {
         $label = TagNormalizer::normalizeLabel($label);
-        $slug = ('' === $slugOrNull || null === $slugOrNull) ? TagNormalizer::slugify($label) : TagNormalizer::slugify($slugOrNull);
+        $slug = ('' === $slugOrNull || null === $slugOrNull)
+            ? TagNormalizer::slugify($label)
+            : TagNormalizer::slugify($slugOrNull);
         $this->validateLengths($slug, $label);
         if ($this->repo->getBySlug($tenantId, $slug)) {
             throw new \InvalidArgumentException('Slug already exists');

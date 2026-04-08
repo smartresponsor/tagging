@@ -70,7 +70,10 @@ return (static function (): array {
         $container->share('txRunner', static fn(): PdoTransactionRunner => new PdoTransactionRunner($get('pdo')));
         $container->share('outboxPublisher', static fn(): OutboxPublisher => new OutboxPublisher($get('pdo')));
         $container->share('idempotencyStore', static fn(): IdempotencyStore => new IdempotencyStore($get('pdo')));
-        $container->share('tagEntityService', static fn(): TagEntityService => new TagEntityService($get('tagRepo'), $get('slugPolicy')));
+        $container->share(
+            'tagEntityService',
+            static fn(): TagEntityService => new TagEntityService($get('tagRepo'), $get('slugPolicy')),
+        );
         $container->share('tagReadModel', static fn(): TagReadModel => new TagReadModel($get('pdo')));
     };
     $shareMiddleware = static function () use ($container, $get): void {
@@ -107,9 +110,28 @@ return (static function (): array {
         $container->share('tagController', static function () use ($get, $tagWriteResponder): TagController {
             return new TagController(
                 $get('tagEntityService'),
-                new CreateTag($get('tagRepo'), $get('slugPolicy'), $get('txRunner'), $get('searchCache'), $get('suggestCache'), $get('queryCacheInvalidator')),
-                new PatchTag($get('tagRepo'), $get('txRunner'), $get('searchCache'), $get('suggestCache'), $get('queryCacheInvalidator')),
-                new DeleteTag($get('tagRepo'), $get('txRunner'), $get('searchCache'), $get('suggestCache'), $get('queryCacheInvalidator')),
+                new CreateTag(
+                    $get('tagRepo'),
+                    $get('slugPolicy'),
+                    $get('txRunner'),
+                    $get('searchCache'),
+                    $get('suggestCache'),
+                    $get('queryCacheInvalidator'),
+                ),
+                new PatchTag(
+                    $get('tagRepo'),
+                    $get('txRunner'),
+                    $get('searchCache'),
+                    $get('suggestCache'),
+                    $get('queryCacheInvalidator'),
+                ),
+                new DeleteTag(
+                    $get('tagRepo'),
+                    $get('txRunner'),
+                    $get('searchCache'),
+                    $get('suggestCache'),
+                    $get('queryCacheInvalidator'),
+                ),
                 $tagWriteResponder(),
             );
         });
@@ -126,12 +148,26 @@ return (static function (): array {
         $container->share('suggestController', static fn(): SuggestController => new SuggestController(
             new SuggestService($get('tagReadModel'), $get('suggestCache')),
         ));
-        $container->share('assignmentReadController', static fn(): AssignmentReadController => new AssignmentReadController($get('tagReadModel')));
+        $container->share(
+            'assignmentReadController',
+            static fn(): AssignmentReadController => new AssignmentReadController($get('tagReadModel')),
+        );
     };
     $shareWebhookServices = static function () use ($container, $get): void {
-        $container->share('webhookRegistry', static fn(): TagWebhookRegistry => new TagWebhookRegistry((string) ($get('webhookConfig')['registry_path'] ?? 'report/webhook/registry.json')));
-        $container->share('webhookSender', static fn(): TagWebhookSender => new TagWebhookSender($get('webhookConfig')));
-        $container->share('auditEmitter', static fn(): TagAuditEmitter => new TagAuditEmitter($get('webhookConfig'), $get('webhookSender')));
+        $container->share(
+            'webhookRegistry',
+            static fn(): TagWebhookRegistry => new TagWebhookRegistry(
+                (string) ($get('webhookConfig')['registry_path'] ?? 'report/webhook/registry.json')
+            ),
+        );
+        $container->share(
+            'webhookSender',
+            static fn(): TagWebhookSender => new TagWebhookSender($get('webhookConfig')),
+        );
+        $container->share(
+            'auditEmitter',
+            static fn(): TagAuditEmitter => new TagAuditEmitter($get('webhookConfig'), $get('webhookSender')),
+        );
         $container->share('webhookController', static fn(): TagWebhookController => new TagWebhookController(
             $get('webhookRegistry'),
             $get('auditEmitter'),

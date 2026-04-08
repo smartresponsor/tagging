@@ -27,7 +27,9 @@ function call(string $method, string $url, string $tenant, ?array $body = null, 
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST => $method,
         CURLOPT_HTTPHEADER => $headers,
-        CURLOPT_POSTFIELDS => $body !== null ? json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : null,
+        CURLOPT_POSTFIELDS => $body !== null
+            ? json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+            : null,
     ]);
     $raw = curl_exec($ch);
     $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
@@ -60,7 +62,15 @@ function expectResponse(string $failureCode, array $allowedCodes, int $code, arr
 }
 
 /** @return array<string, mixed> */
-function expectTuple(string $failureCode, string $method, string $path, string $tenant, ?array $body = null, array $extraHeaders = [], array $allowedCodes = [200]): array
+function expectTuple(
+    string $failureCode,
+    string $method,
+    string $path,
+    string $tenant,
+    ?array $body = null,
+    array $extraHeaders = [],
+    array $allowedCodes = [200],
+): array
 {
     [$code, $payload] = request($method, $path, $tenant, $body, $extraHeaders);
 
@@ -122,7 +132,10 @@ if (($surface['surface']['assignments_bulk_to_entity'] ?? '') !== 'POST /tag/ass
     throw new RuntimeException('surface_bulk_to_entity_missing');
 }
 $publicPaths = publicSurfacePaths($surface);
-if (!in_array('/tag/assignments/bulk', $publicPaths, true) || !in_array('/tag/assignments/bulk-to-entity', $publicPaths, true)) {
+if (
+    !in_array('/tag/assignments/bulk', $publicPaths, true)
+    || !in_array('/tag/assignments/bulk-to-entity', $publicPaths, true)
+) {
     throw new RuntimeException('public_surface_paths_missing');
 }
 
@@ -162,8 +175,22 @@ $patchResult = expectTuple(
 $entityId = uniqueToken('smoke-product');
 $assignPayload = ['entityType' => 'product', 'entityId' => $entityId];
 $assignIdem = uniqueToken('smoke-assign');
-expectTuple('assign_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
-$assignRepeat = expectTuple('assign_repeat_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/assign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . $assignIdem]);
+expectTuple(
+    'assign_failed',
+    'POST',
+    '/tag/' . rawurlencode($tagId) . '/assign',
+    $tenant,
+    $assignPayload,
+    ['X-Idempotency-Key: ' . $assignIdem],
+);
+$assignRepeat = expectTuple(
+    'assign_repeat_failed',
+    'POST',
+    '/tag/' . rawurlencode($tagId) . '/assign',
+    $tenant,
+    $assignPayload,
+    ['X-Idempotency-Key: ' . $assignIdem],
+);
 if (!(($assignRepeat['duplicated'] ?? false) || ($assignRepeat['ok'] ?? false))) {
     throw new RuntimeException('assign_repeat_failed');
 }
@@ -176,8 +203,20 @@ $bulk = expectTuple(
     $tenant,
     [
         'operations' => [
-            ['op' => 'assign', 'tagId' => $tagId, 'entityType' => 'product', 'entityId' => $bulkEntityId, 'idem' => uniqueToken('bulk-assign')],
-            ['op' => 'unassign', 'tagId' => $tagId, 'entityType' => 'product', 'entityId' => $bulkEntityId, 'idem' => uniqueToken('bulk-unassign')],
+            [
+                'op' => 'assign',
+                'tagId' => $tagId,
+                'entityType' => 'product',
+                'entityId' => $bulkEntityId,
+                'idem' => uniqueToken('bulk-assign'),
+            ],
+            [
+                'op' => 'unassign',
+                'tagId' => $tagId,
+                'entityType' => 'product',
+                'entityId' => $bulkEntityId,
+                'idem' => uniqueToken('bulk-unassign'),
+            ],
         ],
     ],
 );
@@ -222,7 +261,14 @@ if (($missingPayload['code'] ?? '') !== 'tag_not_found') {
     throw new RuntimeException('missing_tag_payload_failed');
 }
 
-expectTuple('unassign_failed', 'POST', '/tag/' . rawurlencode($tagId) . '/unassign', $tenant, $assignPayload, ['X-Idempotency-Key: ' . uniqueToken('smoke-unassign')]);
+expectTuple(
+    'unassign_failed',
+    'POST',
+    '/tag/' . rawurlencode($tagId) . '/unassign',
+    $tenant,
+    $assignPayload,
+    ['X-Idempotency-Key: ' . uniqueToken('smoke-unassign')],
+);
 expectTuple('delete_failed', 'DELETE', '/tag/' . rawurlencode($tagId), $tenant, null, [], [200, 204]);
 
 fwrite(STDOUT, json_encode([

@@ -60,6 +60,19 @@ if (!function_exists('tagRouteCatalogParse')) {
                 continue;
             }
 
+            if (1 === preg_match('/^[^\s].*:\s*.+$/', $line)) {
+                if (is_array($currentRoute)) {
+                    $catalog['routes'][] = $currentRoute;
+                    $currentRoute = null;
+                }
+
+                $insideRoutes = false;
+                if (1 === preg_match('/^([a-z_]+):\s*(.+)$/', $trimmed, $matches)) {
+                    $assign($catalog, $matches[1], $matches[2]);
+                }
+                continue;
+            }
+
             if (1 === preg_match('/^\s{2}-\s([a-z_]+):\s*(.+)$/', $line, $matches)) {
                 if (is_array($currentRoute)) {
                     $catalog['routes'][] = $currentRoute;

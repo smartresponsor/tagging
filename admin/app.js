@@ -8,8 +8,12 @@
     tenant: localStorage.getItem('tag.tenant') || 'demo',
   };
 
-  $('#apiBase').value = cfg.apiBase;
-  $('#tenant').value = cfg.tenant;
+  const apiBaseInput = $('#apiBase');
+  const tenantInput = $('#tenant');
+  const pingOut = $('#pingOut');
+
+  apiBaseInput.value = cfg.apiBase;
+  tenantInput.value = cfg.tenant;
 
   const tabs = ['tour', 'search', 'create', 'assign', 'bulk'];
   function activate(name) {
@@ -33,12 +37,14 @@
   }
 
   $('#saveCfg').addEventListener('click', () => {
-    cfg.apiBase = $('#apiBase').value.trim() || 'http://127.0.0.1:8080';
-    cfg.tenant = $('#tenant').value.trim() || 'demo';
+    cfg.apiBase = apiBaseInput.value.trim() || 'http://127.0.0.1:8080';
+    cfg.tenant = tenantInput.value.trim() || 'demo';
     localStorage.setItem('tag.apiBase', cfg.apiBase);
     localStorage.setItem('tag.tenant', cfg.tenant);
-    $('#pingOut').textContent = 'saved';
-    setTimeout(() => $('#pingOut').textContent = '', 1200);
+    pingOut.textContent = 'saved';
+    setTimeout(() => {
+      pingOut.textContent = '';
+    }, 1200);
   });
 
   async function call(method, path, body) {
@@ -69,8 +75,10 @@
 
   $('#ping').addEventListener('click', async () => {
     const result = await call('GET', '/tag/_status');
-    $('#pingOut').textContent = result.status === 200 ? 'ok' : ('HTTP ' + result.status);
-    setTimeout(() => $('#pingOut').textContent = '', 2000);
+    pingOut.textContent = result.status === 200 ? 'ok' : ('HTTP ' + result.status);
+    setTimeout(() => {
+      pingOut.textContent = '';
+    }, 2000);
   });
 
   $('#btnLoadStatus').addEventListener('click', async () => {
@@ -180,7 +188,12 @@
   $('#btnListAssignments').addEventListener('click', async () => {
     const entityType = $('#entityType').value.trim();
     const entityId = $('#entityId').value.trim();
-    show('#assignOut', await call('GET', '/tag/assignments?entityType=' + encodeURIComponent(entityType) + '&entityId=' + encodeURIComponent(entityId) + '&limit=10'));
+    const assignmentsPath =
+      '/tag/assignments?entityType=' + encodeURIComponent(entityType)
+      + '&entityId=' + encodeURIComponent(entityId)
+      + '&limit=10';
+
+    show('#assignOut', await call('GET', assignmentsPath));
   });
 
   $('#btnBulkAssignments').addEventListener('click', async () => {

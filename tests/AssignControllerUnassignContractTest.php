@@ -16,13 +16,25 @@ final class AssignControllerUnassignContractTest extends TestCase
     {
         $controller = new AssignController(
             new class() implements AssignOperationInterface {
-                public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+                public function assign(
+                    string $tenant,
+                    string $tagId,
+                    string $entityType,
+                    string $entityId,
+                    ?string $idemKey = null,
+                ): array
                 {
                     return ['ok' => true];
                 }
             },
             new class() implements UnassignOperationInterface {
-                public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+                public function unassign(
+                    string $tenant,
+                    string $tagId,
+                    string $entityType,
+                    string $entityId,
+                    ?string $idemKey = null,
+                ): array
                 {
                     return ['ok' => false, 'code' => 'tag_not_found'];
                 }

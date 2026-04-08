@@ -64,6 +64,8 @@ php -S 127.0.0.1:8080 host-minimal/index.php
 
 ## 6. Basic health check
 
+`GET /tag/_status`
+
 ```
 curl http://127.0.0.1:8080/tag/_status
 ```
@@ -77,6 +79,8 @@ HTTP 200
 ---
 
 ## 7. Surface check (VERY IMPORTANT)
+
+`GET /tag/_surface`
 
 ```
 curl http://127.0.0.1:8080/tag/_surface

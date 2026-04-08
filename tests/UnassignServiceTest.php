@@ -40,8 +40,22 @@ final class UnassignServiceTest extends TestCase
         $pdo = new \PDO('sqlite::memory:');
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-        $pdo->exec('CREATE TABLE tag_entity (tenant TEXT NOT NULL, id TEXT NOT NULL, PRIMARY KEY (tenant, id))');
-        $pdo->exec('CREATE TABLE tag_link (tenant TEXT NOT NULL, entity_type TEXT NOT NULL, entity_id TEXT NOT NULL, tag_id TEXT NOT NULL, PRIMARY KEY (tenant, entity_type, entity_id, tag_id))');
+        $pdo->exec(
+            'CREATE TABLE tag_entity ('
+            . 'tenant TEXT NOT NULL, '
+            . 'id TEXT NOT NULL, '
+            . 'PRIMARY KEY (tenant, id)'
+            . ')'
+        );
+        $pdo->exec(
+            'CREATE TABLE tag_link ('
+            . 'tenant TEXT NOT NULL, '
+            . 'entity_type TEXT NOT NULL, '
+            . 'entity_id TEXT NOT NULL, '
+            . 'tag_id TEXT NOT NULL, '
+            . 'PRIMARY KEY (tenant, entity_type, entity_id, tag_id)'
+            . ')'
+        );
 
         return $pdo;
     }

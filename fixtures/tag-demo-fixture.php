@@ -5,13 +5,49 @@ declare(strict_types=1);
 
 return [
     'tags' => [
-        ['id' => '01K3TAGDEMO00000000000001', 'slug' => 'electronics', 'name' => 'Electronics', 'locale' => 'en', 'weight' => 100],
-        ['id' => '01K3TAGDEMO00000000000002', 'slug' => 'kitchen', 'name' => 'Kitchen', 'locale' => 'en', 'weight' => 80],
-        ['id' => '01K3TAGDEMO00000000000003', 'slug' => 'premium', 'name' => 'Premium', 'locale' => 'en', 'weight' => 60],
-        ['id' => '01K3TAGDEMO00000000000004', 'slug' => 'featured', 'name' => 'Featured', 'locale' => 'en', 'weight' => 55],
+        [
+            'id' => '01K3TAGDEMO00000000000001',
+            'slug' => 'electronics',
+            'name' => 'Electronics',
+            'locale' => 'en',
+            'weight' => 100,
+        ],
+        [
+            'id' => '01K3TAGDEMO00000000000002',
+            'slug' => 'kitchen',
+            'name' => 'Kitchen',
+            'locale' => 'en',
+            'weight' => 80,
+        ],
+        [
+            'id' => '01K3TAGDEMO00000000000003',
+            'slug' => 'premium',
+            'name' => 'Premium',
+            'locale' => 'en',
+            'weight' => 60,
+        ],
+        [
+            'id' => '01K3TAGDEMO00000000000004',
+            'slug' => 'featured',
+            'name' => 'Featured',
+            'locale' => 'en',
+            'weight' => 55,
+        ],
         ['id' => '01K3TAGDEMO00000000000005', 'slug' => 'sale', 'name' => 'Sale', 'locale' => 'en', 'weight' => 40],
-        ['id' => '01K3TAGDEMO00000000000006', 'slug' => 'new-arrival', 'name' => 'New Arrival', 'locale' => 'en', 'weight' => 35],
-        ['id' => '01K3TAGDEMO00000000000007', 'slug' => 'gift-idea', 'name' => 'Gift Idea', 'locale' => 'en', 'weight' => 25],
+        [
+            'id' => '01K3TAGDEMO00000000000006',
+            'slug' => 'new-arrival',
+            'name' => 'New Arrival',
+            'locale' => 'en',
+            'weight' => 35,
+        ],
+        [
+            'id' => '01K3TAGDEMO00000000000007',
+            'slug' => 'gift-idea',
+            'name' => 'Gift Idea',
+            'locale' => 'en',
+            'weight' => 25,
+        ],
     ],
     'links' => [
         ['entity_type' => 'product', 'entity_id' => 'demo-product-1', 'tag_id' => '01K3TAGDEMO00000000000001'],

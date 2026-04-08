@@ -71,7 +71,11 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         $all = array_values($this->tags[$tenantId] ?? []);
         if ($query) {
             $q = mb_strtolower($query);
-            $all = array_filter($all, fn($t) => str_contains(mb_strtolower($t->slug()), $q) || str_contains(mb_strtolower($t->label()), $q));
+            $all = array_filter(
+                $all,
+                fn($t) => str_contains(mb_strtolower($t->slug()), $q)
+                    || str_contains(mb_strtolower($t->label()), $q),
+            );
         }
 
         return array_slice(array_values($all), $offset, $limit);
@@ -95,9 +99,16 @@ final class InMemoryTagRepository implements TagRepositoryInterface
     /**
      * @return array|TagAssignment[]
      */
-    public function listAssignments(string $tenantId, string $tagId, ?string $type = null, ?string $assignedId = null): array
+    public function listAssignments(
+        string $tenantId,
+        string $tagId,
+        ?string $type = null,
+        ?string $assignedId = null,
+    ): array
     {
-        return array_values(array_filter($this->assignments[$tenantId] ?? [], function (TagAssignment $x) use ($tagId, $type, $assignedId) {
+        return array_values(array_filter(
+            $this->assignments[$tenantId] ?? [],
+            function (TagAssignment $x) use ($tagId, $type, $assignedId) {
             if ($x->tagId() !== $tagId) {
                 return false;
             }
@@ -109,7 +120,8 @@ final class InMemoryTagRepository implements TagRepositoryInterface
             }
 
             return true;
-        }));
+            },
+        ));
     }
 
     public function saveSynonym(string $tenantId, TagSynonym $s): void {}
@@ -143,7 +155,13 @@ final class InMemoryTagRepository implements TagRepositoryInterface
     {
         foreach (($this->assignments[$tenantId] ?? []) as $k => $a) {
             if ($a->tagId() === $fromTagId) {
-                $this->assignments[$tenantId][$k] = new TagAssignment($a->id(), $toTagId, $a->assignedType(), $a->assignedId(), $a->createdAt());
+                $this->assignments[$tenantId][$k] = new TagAssignment(
+                    $a->id(),
+                    $toTagId,
+                    $a->assignedType(),
+                    $a->assignedId(),
+                    $a->createdAt(),
+                );
             }
         }
     }
@@ -163,7 +181,14 @@ final class InMemoryTagRepository implements TagRepositoryInterface
 
     public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void {}
 
-    public function insertAudit(string $tenantId, string $id, string $action, string $entityType, string $entityId, string $detailsJson): void {}
+    public function insertAudit(
+        string $tenantId,
+        string $id,
+        string $action,
+        string $entityType,
+        string $entityId,
+        string $detailsJson,
+    ): void {}
 
     /**
      * @return array|Tag[]
@@ -232,7 +257,14 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         return $out;
     }
 
-    public function putClassification(string $tenantId, string $id, string $scope, string $refId, string $key, string $value): void
+    public function putClassification(
+        string $tenantId,
+        string $id,
+        string $scope,
+        string $refId,
+        string $key,
+        string $value,
+    ): void
     {
         $k = $tenantId . '|' . $scope . '|' . $refId;
         $this->class[$k] = $this->class[$k] ?? [];
@@ -247,11 +279,25 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         return $this->class[$tenantId . '|' . $scope . '|' . $refId] ?? [];
     }
 
-    public function putEffect(string $tenantId, string $id, string $assignedType, string $assignedId, string $key, string $value, string $sourceScope, string $sourceId): void
+    public function putEffect(
+        string $tenantId,
+        string $id,
+        string $assignedType,
+        string $assignedId,
+        string $key,
+        string $value,
+        string $sourceScope,
+        string $sourceId,
+    ): void
     {
         $k = $tenantId . '|' . $sourceScope . '|' . $sourceId;
         $this->effects[$k] = $this->effects[$k] ?? [];
-        $this->effects[$k][] = ['assigned_type' => $assignedType, 'assigned_id' => $assignedId, 'key' => $key, 'value' => $value];
+        $this->effects[$k][] = [
+            'assigned_type' => $assignedType,
+            'assigned_id' => $assignedId,
+            'key' => $key,
+            'value' => $value,
+        ];
     }
 
     public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void

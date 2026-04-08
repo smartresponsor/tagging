@@ -15,14 +15,30 @@ final class TagBulkControllerPayloadCompatibilityTest extends TestCase
             ['ok' => true],
             ['ok' => true, 'duplicated' => true],
         ]);
-        $controller = new AssignController($assign, new TagBulkCompatUnassignOperationStub([]), ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            $assign,
+            new TagBulkCompatUnassignOperationStub([]),
+            ['entity_types' => ['product']],
+        );
 
         [$status, , $body] = $controller->bulk([
             'headers' => ['X-Tenant-Id' => 'tenant-compat'],
             'body' => [
                 'operations' => [
-                    ['op' => 'assign', 'tag_id' => 'tag-1', 'entity_type' => 'product', 'entity_id' => 'p-1', 'idemKey' => 'idem-1'],
-                    ['op' => 'assign', 'tagId' => 'tag-2', 'entityType' => 'product', 'entityId' => 'p-2', 'idem' => 'idem-2'],
+                    [
+                        'op' => 'assign',
+                        'tag_id' => 'tag-1',
+                        'entity_type' => 'product',
+                        'entity_id' => 'p-1',
+                        'idemKey' => 'idem-1',
+                    ],
+                    [
+                        'op' => 'assign',
+                        'tagId' => 'tag-2',
+                        'entityType' => 'product',
+                        'entityId' => 'p-2',
+                        'idem' => 'idem-2',
+                    ],
                 ],
             ],
         ]);
@@ -46,7 +62,11 @@ final class TagBulkControllerPayloadCompatibilityTest extends TestCase
             ['ok' => true],
             ['ok' => true],
         ]);
-        $controller = new AssignController($assign, new TagBulkCompatUnassignOperationStub([]), ['entity_types' => ['*']]);
+        $controller = new AssignController(
+            $assign,
+            new TagBulkCompatUnassignOperationStub([]),
+            ['entity_types' => ['*']],
+        );
 
         [$statusA, , $bodyA] = $controller->assignBulkToEntity([
             'headers' => ['X-Tenant-Id' => 'tenant-compat'],
@@ -80,7 +100,11 @@ final class TagBulkControllerPayloadCompatibilityTest extends TestCase
 
     public function testAssignBulkToEntityRejectsEmptyTagListAndBlankTagItems(): void
     {
-        $controller = new AssignController(new TagBulkCompatAssignOperationStub([]), new TagBulkCompatUnassignOperationStub([]), ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            new TagBulkCompatAssignOperationStub([]),
+            new TagBulkCompatUnassignOperationStub([]),
+            ['entity_types' => ['product']],
+        );
 
         [$emptyStatus, , $emptyBody] = $controller->assignBulkToEntity([
             'headers' => ['X-Tenant-Id' => 'tenant-compat'],
@@ -127,7 +151,13 @@ final class TagBulkCompatAssignOperationStub implements \App\Service\Core\Tag\As
         $this->results = $results;
     }
 
-    public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function assign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         $this->calls[] = [$tenant, $tagId, $entityType, $entityId, $idemKey];
 
@@ -146,7 +176,13 @@ final class TagBulkCompatUnassignOperationStub implements \App\Service\Core\Tag\
         $this->results = $results;
     }
 
-    public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function unassign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         return array_shift($this->results) ?? ['ok' => true, 'not_found' => false];
     }

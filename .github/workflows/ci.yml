@@ -96,9 +96,9 @@ jobs:
       - name: Migrate schema
         run: |
           sudo apt-get update && sudo apt-get install -y --no-install-recommends postgresql-client
-          export PSQL_URL="postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$DB_HOST:$DB_PORT/$POSTGRES_DB"
+          export PGPASSWORD="$POSTGRES_PASSWORD"
           for f in db/postgres/migrations/*.sql; do
-            psql "$PSQL_URL" -v ON_ERROR_STOP=1 -f "$f"
+            psql -h "$DB_HOST" -p "$DB_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -f "$f"
           done
       - name: Run phpunit (integration)
         run: composer run -n test:integration

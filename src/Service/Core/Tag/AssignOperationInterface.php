@@ -8,5 +8,11 @@ namespace App\Service\Core\Tag;
 interface AssignOperationInterface
 {
     /** @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string} */
-    public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array;
+    public function assign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array;
 }

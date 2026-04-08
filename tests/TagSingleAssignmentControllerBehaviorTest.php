@@ -15,7 +15,11 @@ final class TagSingleAssignmentControllerBehaviorTest extends TestCase
             ['ok' => true],
             ['ok' => false, 'conflict' => true, 'code' => 'idempotency_conflict'],
         ]);
-        $controller = new AssignController($assign, new TagSingleUnassignOperationStub([]), ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            $assign,
+            new TagSingleUnassignOperationStub([]),
+            ['entity_types' => ['product']],
+        );
 
         [$okStatus, , $okBody] = $controller->assign([
             'headers' => ['X-Tenant-Id' => 'tenant-single'],
@@ -47,7 +51,11 @@ final class TagSingleAssignmentControllerBehaviorTest extends TestCase
             ['ok' => true, 'not_found' => true],
             ['ok' => false, 'code' => 'tag_not_found'],
         ]);
-        $controller = new AssignController(new TagSingleAssignOperationStub([]), $unassign, ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            new TagSingleAssignOperationStub([]),
+            $unassign,
+            ['entity_types' => ['product']],
+        );
 
         [$okStatus, , $okBody] = $controller->unassign([
             'headers' => ['X-Tenant-Id' => 'tenant-single'],
@@ -77,7 +85,11 @@ final class TagSingleAssignmentControllerBehaviorTest extends TestCase
 
     public function testSingleOperationsRejectInvalidTenantAndDisallowedEntityType(): void
     {
-        $controller = new AssignController(new TagSingleAssignOperationStub([]), new TagSingleUnassignOperationStub([]), ['entity_types' => ['product']]);
+        $controller = new AssignController(
+            new TagSingleAssignOperationStub([]),
+            new TagSingleUnassignOperationStub([]),
+            ['entity_types' => ['product']],
+        );
 
         [$tenantStatus, , $tenantBody] = $controller->assign([
             'headers' => [],
@@ -108,7 +120,13 @@ final class TagSingleAssignOperationStub implements \App\Service\Core\Tag\Assign
         $this->results = $results;
     }
 
-    public function assign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function assign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         return array_shift($this->results) ?? ['ok' => true];
     }
@@ -125,7 +143,13 @@ final class TagSingleUnassignOperationStub implements \App\Service\Core\Tag\Unas
         $this->results = $results;
     }
 
-    public function unassign(string $tenant, string $tagId, string $entityType, string $entityId, ?string $idemKey = null): array
+    public function unassign(
+        string $tenant,
+        string $tagId,
+        string $entityType,
+        string $entityId,
+        ?string $idemKey = null,
+    ): array
     {
         return array_shift($this->results) ?? ['ok' => true, 'not_found' => false];
     }

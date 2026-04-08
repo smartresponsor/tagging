@@ -41,8 +41,12 @@ RUN apt-get update \
         xdg-utils \
         zip \
     && mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+        | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && NODE_SOURCE_LINE="deb [signed-by=/etc/apt/keyrings/nodesource.gpg]" \
+    && NODE_SOURCE_LINE="$NODE_SOURCE_LINE https://deb.nodesource.com/node_${NODE_MAJOR}.x" \
+    && NODE_SOURCE_LINE="$NODE_SOURCE_LINE nodistro main" \
+    && printf "%s\n" "$NODE_SOURCE_LINE" > /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends nodejs \
     && docker-php-ext-install intl pdo_pgsql pdo_sqlite zip \

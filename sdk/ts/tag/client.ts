@@ -84,7 +84,12 @@ export class TagClient {
   }
 
   assignments(entityType: string, entityId: string): Promise<unknown> {
-    return this.req(`/tag/assignments?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`);
+    const params = new URLSearchParams({
+      entityType: entityType,
+      entityId: entityId,
+    });
+
+    return this.req(`/tag/assignments?${params.toString()}`);
   }
 
   bulkAssignments(body: BulkAssignmentsBody): Promise<unknown> {

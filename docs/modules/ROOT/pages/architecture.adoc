@@ -5,21 +5,30 @@ It intentionally wraps the existing repository material instead of duplicating i
 
 == Canonical architecture sources in the repository
 
+* `docs/architecture/tag-core-boundary.md`
 * `docs/http/http-wiring.md`
-* `docs/release/tag-release-grade-portrait.md`
 * `docs/architecture/repository-production-readiness-plan.md`
+* `docs/architecture/migration-policy.md`
+* `docs/architecture/decisions/`
 * `repo-map.md`
 
 == Current architectural reading
 
 The shipped runtime is centered on `host-minimal/` with route truth centralized in `tag.yaml`.
-The repository follows the current Symfony-oriented `App\\` layout and keeps the canonical Tag branches under:
+The repository follows the current Symfony-oriented `App\` layout and keeps the canonical Tag branches under:
 
 * `src/Application/Write/Tag/...`
 * `src/Http/Api/Tag/...`
 * `src/Infrastructure/Persistence/Tag/...`
 * `src/Infrastructure/ReadModel/Tag/...`
 * `src/Service/Core/Tag/...`
+
+== Architectural boundary notes
+
+* `README.md` remains the repository-facing overview.
+* `repo-map.md` remains the structural inventory.
+* hand-written architecture narratives remain in `docs/architecture/` and `docs/http/`.
+* generated/reference artifacts stay outside the hand-written architecture narrative tree.
 
 == What this Antora page does
 

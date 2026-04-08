@@ -3,20 +3,34 @@
 This Antora surface makes the repository a documentation producer for an external central documentation aggregator.
 It does not assemble a site, ship a playbook, or replace GitHub-facing repository docs.
 
+== Producer boundary
+
+This repository provides:
+
+* a discoverable Antora component descriptor
+* a stable module navigation surface
+* thin entry pages that point to canonical repository documentation
+
+This repository does not provide:
+
+* central Antora site assembly
+* central playbook configuration
+* custom publishing UI or aggregator logic
+
 == Documentation roles in this repository
 
 === GitHub-facing repository docs
 
-These stay at repository root and keep their current role:
+These stay at repository root and keep their repository-facing role:
 
 * `README.md`
 * `CHANGELOG.md`
 * `RELEASE_NOTES.md`
+* `repo-map.md`
 
 === Hand-written narrative docs
 
-These remain in the repository under `docs/` and are the main source for
-architecture, operations, release, public-shell, and demo narratives.
+These remain in the repository under `docs/` and are the main source for architecture, operations, release, policy, public-shell, and demo narratives.
 The Antora pages in this module are thin entry points and wrappers, not a second copy of all narrative material.
 
 === Generated or reference surfaces
@@ -26,6 +40,7 @@ These stay separate from narrative pages:
 * OpenAPI source contract: `contracts/http/tag-openapi.yaml`
 * generated Swagger/OpenAPI surface: `public/tag/openapi/`
 * SDK usage/reference surface: `sdk/README.md`
+* release-frozen reference artifacts: `release/tag-rc5/docs/`
 * static/public request examples: `public/tag/...`
 
 == Start here
@@ -53,7 +68,7 @@ These stay separate from narrative pages:
 
 == Canonical source notes
 
-* This repository already has `docs/`, architecture/install/operations/API-oriented
-  narrative docs, root Markdown docs, and a shipped OpenAPI contract.
+* This repository already has `docs/`, architecture/install/operations/API-oriented narrative docs, root Markdown docs, and a shipped OpenAPI contract.
 * No Nelmio runtime surface is shipped here.
 * No phpDocumentor / Doctum code-reference surface is shipped here at the moment.
+* `docs/README.md` is the documentation surface map for maintainers.

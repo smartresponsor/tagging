@@ -7,7 +7,9 @@ The detailed operational commands remain in the repository's existing runbook an
 
 * `README.md`
 * `docs/ops/runbook.md`
+* `docs/ops/install-test-gates.md`
 * `db/postgres/migrations/`
+* `docker-compose.yml`
 
 == Minimal local bring-up
 
@@ -44,8 +46,15 @@ php -S 127.0.0.1:8080 host-minimal/index.php
 * `GET /tag/_status`
 * `GET /tag/_surface`
 * `composer run -n smoke:runtime`
+* `composer run -n gate:install-test`
+
+== Install boundary notes
+
+* quickstart and repository onboarding stay in `README.md`
+* operationally detailed startup, smoke, rollback, and troubleshooting remain in `docs/ops/runbook.md`
+* install-test expectations stay in `docs/ops/install-test-gates.md`
 
 == Note
 
 This Antora page stays intentionally concise.
-The operationally detailed startup, smoke, rollback, and troubleshooting flow remains in `docs/ops/runbook.md`.
+It exists to give the central documentation ecosystem a stable install entry point without duplicating the detailed Markdown install material.

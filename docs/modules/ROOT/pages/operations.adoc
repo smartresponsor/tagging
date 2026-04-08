@@ -7,6 +7,7 @@ This page is the Antora entry point for runtime operations, CI gates, observabil
 * `docs/ops/runbook.md`
 * `docs/ops/ci-gates.md`
 * `docs/ops/observability.md`
+* `docs/ops/metrics.md`
 * `docs/release/rc-checklist.md`
 * `RELEASE_NOTES.md`
 
@@ -15,6 +16,7 @@ This page is the Antora entry point for runtime operations, CI gates, observabil
 * startup / migrate / seed / rollback guidance lives in `docs/ops/runbook.md`
 * CI and evidence expectations live in `docs/ops/ci-gates.md`
 * observability posture lives in `docs/ops/observability.md`
+* metrics notes live in `docs/ops/metrics.md`
 * RC release posture lives in `docs/release/rc-checklist.md` and `RELEASE_NOTES.md`
 
 == Important current notes
@@ -23,8 +25,12 @@ This page is the Antora entry point for runtime operations, CI gates, observabil
 * `smoke:runtime` is part of the active release/readiness gate
 * there is no shipped `/tag/_metrics` route in the current public shell
 
+== Operations boundary notes
+
+* hand-written runbooks remain under `docs/ops/`
+* release-facing repository notes remain at root and in `docs/release/`
+* generated API/reference assets stay outside the narrative operations tree
+
 == Why this page exists
 
-This producer page gives Antora a stable operational entry point
-without moving or duplicating the detailed operational Markdown docs
-already maintained in the repository.
+This producer page gives Antora a stable operational entry point without moving or duplicating the detailed operational Markdown docs already maintained in the repository.

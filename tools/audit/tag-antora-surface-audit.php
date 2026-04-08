@@ -36,12 +36,14 @@ $checks = [
     ['docs/modules/ROOT/pages/index.adoc', $index, 'GitHub-facing repository docs'],
     ['docs/modules/ROOT/pages/index.adoc', $index, 'contracts/http/tag-openapi.yaml'],
     ['docs/modules/ROOT/pages/index.adoc', $index, 'No Nelmio runtime surface is shipped here.'],
+    ['docs/modules/ROOT/pages/index.adoc', $index, 'docs/README.md'],
     ['docs/modules/ROOT/pages/architecture.adoc', $architecture, 'docs/http/http-wiring.md'],
     ['docs/modules/ROOT/pages/install.adoc', $install, 'docs/ops/runbook.md'],
     ['docs/modules/ROOT/pages/operations.adoc', $operations, 'docs/ops/observability.md'],
     ['docs/modules/ROOT/pages/api.adoc', $api, 'contracts/http/tag-openapi.yaml'],
     ['docs/modules/ROOT/pages/api.adoc', $api, 'public/tag/openapi/'],
     ['docs/modules/ROOT/pages/api.adoc', $api, 'generated static Swagger/OpenAPI surface is shipped separately from narrative docs'],
+    ['docs/modules/ROOT/pages/api.adoc', $api, 'release/tag-rc5/docs/'],
 ];
 
 foreach ($checks as [$label, $haystack, $needle]) {

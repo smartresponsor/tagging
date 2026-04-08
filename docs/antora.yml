@@ -8,3 +8,4 @@ nav:
 asciidoc:
   attributes:
     page-pagination: '@'
+    page-toctitle: Contents

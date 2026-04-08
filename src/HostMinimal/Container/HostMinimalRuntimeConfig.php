@@ -25,14 +25,15 @@ final readonly class HostMinimalRuntimeConfig
         public array $webhook,
         public array $observability,
         public array $security,
-    ) {}
+    ) {
+    }
 
     public static function fromGlobals(): self
     {
-        $runtime = require dirname(__DIR__, 3) . '/config/tag_runtime.php';
+        $runtime = require dirname(__DIR__, 3).'/config/tag_runtime.php';
         $entityTypes = array_values(array_filter(
             array_map('trim', explode(',', self::env('TAG_ENTITY_TYPES', '*'))),
-            static fn(string $value): bool => '' !== $value,
+            static fn (string $value): bool => '' !== $value,
         ));
 
         if ([] === $entityTypes) {

@@ -24,7 +24,7 @@ final class TagCache
     {
         ksort($params);
 
-        return $kind . ':' . sha1(json_encode($params, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        return $kind.':'.sha1(json_encode($params, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
     /**

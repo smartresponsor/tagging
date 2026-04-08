@@ -46,8 +46,8 @@ final class SearchSuggestControllerContractTest extends TestCase
             }
         };
 
-        $baseDir = sys_get_temp_dir() . '/tagging-search-contract-' . bin2hex(random_bytes(4));
-        $controller = new SearchController(new SearchService($read, new SearchCache($baseDir . '/search', 60)));
+        $baseDir = sys_get_temp_dir().'/tagging-search-contract-'.bin2hex(random_bytes(4));
+        $controller = new SearchController(new SearchService($read, new SearchCache($baseDir.'/search', 60)));
 
         [$status, $headers, $body] = $controller->get([
             'headers' => ['X-Tenant-Id' => 'demo'],
@@ -92,8 +92,8 @@ final class SearchSuggestControllerContractTest extends TestCase
             }
         };
 
-        $baseDir = sys_get_temp_dir() . '/tagging-suggest-contract-' . bin2hex(random_bytes(4));
-        $controller = new SuggestController(new SuggestService($read, new SuggestCache($baseDir . '/suggest', 60)));
+        $baseDir = sys_get_temp_dir().'/tagging-suggest-contract-'.bin2hex(random_bytes(4));
+        $controller = new SuggestController(new SuggestService($read, new SuggestCache($baseDir.'/suggest', 60)));
 
         [$status, , $body] = $controller->get([
             'headers' => ['x-tenant-id' => 'demo'],

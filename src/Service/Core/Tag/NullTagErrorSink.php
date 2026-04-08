@@ -7,5 +7,7 @@ namespace App\Service\Core\Tag;
 
 final class NullTagErrorSink implements TagErrorSink
 {
-    public function report(array $error): void {}
+    public function report(array $error): void
+    {
+    }
 }

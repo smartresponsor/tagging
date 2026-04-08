@@ -13,5 +13,6 @@ final readonly class TagUnassigned
         public string $entityType,
         public string $entityId,
         public \DateTimeImmutable $at,
-    ) {}
+    ) {
+    }
 }

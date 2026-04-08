@@ -10,7 +10,7 @@ final class TagPublicShellReadSurfaceTruthTest extends TestCase
 {
     public function testPublicSurfaceKeepsReadRoutesVisibleAsShippedShell(): void
     {
-        $surface = require __DIR__ . '/../config/tag_public_surface.php';
+        $surface = require __DIR__.'/../config/tag_public_surface.php';
         self::assertIsArray($surface);
 
         $route = $surface['route'] ?? null;
@@ -24,8 +24,8 @@ final class TagPublicShellReadSurfaceTruthTest extends TestCase
 
     public function testRunbookAndReadmeContinueToAdvertiseSearchAndSuggestAsPublicShell(): void
     {
-        $runbook = file_get_contents(__DIR__ . '/../docs/ops/runbook.md');
-        $readme = file_get_contents(__DIR__ . '/../README.md');
+        $runbook = file_get_contents(__DIR__.'/../docs/ops/runbook.md');
+        $readme = file_get_contents(__DIR__.'/../README.md');
 
         self::assertIsString($runbook);
         self::assertIsString($readme);
@@ -41,7 +41,7 @@ final class TagPublicShellReadSurfaceTruthTest extends TestCase
 
     public function testOpenApiStillDescribesFlatReadPayloads(): void
     {
-        $openApi = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
+        $openApi = file_get_contents(__DIR__.'/../contracts/http/tag-openapi.yaml');
         self::assertIsString($openApi);
 
         self::assertStringContainsString('/tag/search:', $openApi);

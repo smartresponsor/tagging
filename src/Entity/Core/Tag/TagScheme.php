@@ -12,7 +12,8 @@ final readonly class TagScheme
         private string $name,
         private ?string $locale,
         private \DateTimeImmutable $createdAt,
-    ) {}
+    ) {
+    }
 
     public static function create(string $id, string $name, ?string $locale): self
     {

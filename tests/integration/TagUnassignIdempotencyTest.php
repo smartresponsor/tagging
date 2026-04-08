@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-require_once __DIR__ . '/IntegrationDbTestCase.php';
+require_once __DIR__.'/IntegrationDbTestCase.php';
 
 use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 use App\Service\Core\Tag\IdempotencyStore;
@@ -17,12 +17,12 @@ final class TagUnassignIdempotencyTest extends IntegrationDbTestCase
     {
         $pdo = $this->pdo();
         $pdo->exec(
-            "INSERT INTO tag_entity (id, tenant, slug, name) "
-            . "VALUES ('tag-unassign-idem', 'tenant-unassign-idem', 'idem', 'Idem')",
+            'INSERT INTO tag_entity (id, tenant, slug, name) '
+            ."VALUES ('tag-unassign-idem', 'tenant-unassign-idem', 'idem', 'Idem')",
         );
         $pdo->exec(
-            "INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) "
-            . "VALUES ('tenant-unassign-idem', 'product', 'p-1001', 'tag-unassign-idem')",
+            'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) '
+            ."VALUES ('tenant-unassign-idem', 'product', 'p-1001', 'tag-unassign-idem')",
         );
 
         $service = new UnassignService($pdo, new OutboxPublisher($pdo), new IdempotencyStore($pdo));
@@ -47,14 +47,14 @@ final class TagUnassignIdempotencyTest extends IntegrationDbTestCase
             ->fetchColumn();
         $outboxCount = (int) $pdo
             ->query(
-                "SELECT COUNT(*) FROM outbox_event "
-                . "WHERE tenant='tenant-unassign-idem' AND topic='tag.unassigned'",
+                'SELECT COUNT(*) FROM outbox_event '
+                ."WHERE tenant='tenant-unassign-idem' AND topic='tag.unassigned'",
             )
             ->fetchColumn();
         $status = $pdo
             ->query(
-                "SELECT status FROM idempotency_store "
-                . "WHERE tenant='tenant-unassign-idem' AND key='idem-unassign-1'",
+                'SELECT status FROM idempotency_store '
+                ."WHERE tenant='tenant-unassign-idem' AND key='idem-unassign-1'",
             )
             ->fetchColumn();
 
@@ -69,12 +69,12 @@ final class TagUnassignIdempotencyTest extends IntegrationDbTestCase
     {
         $pdo = $this->pdo();
         $pdo->exec(
-            "INSERT INTO tag_entity (id, tenant, slug, name) VALUES ("
-            . "'tag-unassign-conflict', 'tenant-unassign-conflict', 'idem-conflict', 'Idem Conflict')",
+            'INSERT INTO tag_entity (id, tenant, slug, name) VALUES ('
+            ."'tag-unassign-conflict', 'tenant-unassign-conflict', 'idem-conflict', 'Idem Conflict')",
         );
         $pdo->exec(
-            "INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) VALUES ("
-            . "'tenant-unassign-conflict', 'product', 'p-1001', 'tag-unassign-conflict')",
+            'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) VALUES ('
+            ."'tenant-unassign-conflict', 'product', 'p-1001', 'tag-unassign-conflict')",
         );
 
         $service = new UnassignService($pdo, new OutboxPublisher($pdo), new IdempotencyStore($pdo));

@@ -36,7 +36,7 @@ final class RuntimePantherTest extends TestCase
 
         $client->request('GET', '/tag/_status');
         $raw = trim((string) $client->executeScript('return document.body ? document.body.innerText : "";'));
-        if ($raw === '') {
+        if ('' === $raw) {
             $raw = trim($client->getPageSource());
         }
         $payload = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
@@ -50,7 +50,7 @@ final class RuntimePantherTest extends TestCase
     {
         $candidates = [];
         $envCandidate = getenv('PANTHER_CHROMEDRIVER_BINARY');
-        if (is_string($envCandidate) && $envCandidate !== '') {
+        if (is_string($envCandidate) && '' !== $envCandidate) {
             $candidates[] = $envCandidate;
         }
 
@@ -59,7 +59,7 @@ final class RuntimePantherTest extends TestCase
             : ['chromedriver'];
 
         foreach ($binaryNames as $binaryName) {
-            if ($this->resolveBinaryOnPath($binaryName) !== null) {
+            if (null !== $this->resolveBinaryOnPath($binaryName)) {
                 return true;
             }
         }
@@ -76,16 +76,16 @@ final class RuntimePantherTest extends TestCase
     private function resolveBinaryOnPath(string $binaryName): ?string
     {
         $path = getenv('PATH');
-        if (!is_string($path) || $path === '') {
+        if (!is_string($path) || '' === $path) {
             return null;
         }
 
         foreach (explode(PATH_SEPARATOR, $path) as $directory) {
-            if ($directory === '') {
+            if ('' === $directory) {
                 continue;
             }
 
-            $candidate = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $binaryName;
+            $candidate = rtrim($directory, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$binaryName;
             if (is_file($candidate) && is_executable($candidate)) {
                 return $candidate;
             }

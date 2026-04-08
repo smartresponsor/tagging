@@ -11,7 +11,7 @@ final class BootstrapMiddlewareExportTruthTest extends TestCase
 {
     public function testBootstrapExportsCurrentMiddlewareEntries(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
+        $container = require dirname(__DIR__).'/host-minimal/bootstrap.php';
 
         foreach (['idempotencyMiddleware', 'observeMiddleware', 'verifySignatureMiddleware', 'httpPipeline'] as $key) {
             self::assertArrayHasKey($key, $container);

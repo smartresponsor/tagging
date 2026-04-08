@@ -25,11 +25,11 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
 
     public function testSearchAndSuggestCachesUseSameFileStorePattern(): void
     {
-        $baseDir = sys_get_temp_dir() . '/tag-cache-' . bin2hex(random_bytes(4));
+        $baseDir = sys_get_temp_dir().'/tag-cache-'.bin2hex(random_bytes(4));
         mkdir($baseDir, 0777, true);
 
-        $search = new SearchCache($baseDir . '/search', 60);
-        $suggest = new SuggestCache($baseDir . '/suggest', 60);
+        $search = new SearchCache($baseDir.'/search', 60);
+        $suggest = new SuggestCache($baseDir.'/suggest', 60);
 
         $search->set('tenant-a', 'Priority', 10, 0, ['items' => [['slug' => 'priority']]]);
         $suggest->set('tenant-a', 'Priority', 10, ['items' => [['slug' => 'priority', 'name' => 'Priority']]]);
@@ -37,15 +37,15 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
         self::assertTrue($search->get('tenant-a', 'priority', 10, 0)['hit']);
         self::assertTrue($suggest->get('tenant-a', 'priority', 10)['hit']);
 
-        self::assertCount(1, glob($baseDir . '/search/search__tenant-a__*.json') ?: []);
-        self::assertCount(1, glob($baseDir . '/suggest/suggest__tenant-a__*.json') ?: []);
+        self::assertCount(1, glob($baseDir.'/search/search__tenant-a__*.json') ?: []);
+        self::assertCount(1, glob($baseDir.'/suggest/suggest__tenant-a__*.json') ?: []);
     }
 
     public function testCreatePatchAndDeleteInvalidateBothQueryCachesForTenant(): void
     {
         $this->requireSqlite();
 
-        $baseDir = sys_get_temp_dir() . '/tag-invalidation-' . bin2hex(random_bytes(4));
+        $baseDir = sys_get_temp_dir().'/tag-invalidation-'.bin2hex(random_bytes(4));
         mkdir($baseDir, 0777, true);
 
         $repo = new class implements TagEntityRepositoryInterface {
@@ -64,8 +64,7 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
                 string $name,
                 string $locale,
                 int $weight,
-            ): array
-            {
+            ): array {
                 return $this->rows[$tenant][$id] = [
                     'id' => $id,
                     'slug' => $slug,
@@ -100,8 +99,8 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
         $pdo->exec('CREATE TABLE tag_entity (tenant TEXT NOT NULL, slug TEXT NOT NULL)');
         $policy = new SlugPolicy($pdo, new Slugifier());
 
-        $search = new SearchCache($baseDir . '/search', 60);
-        $suggest = new SuggestCache($baseDir . '/suggest', 60);
+        $search = new SearchCache($baseDir.'/search', 60);
+        $suggest = new SuggestCache($baseDir.'/suggest', 60);
         $search->set('tenant-a', 'alpha', 10, 0, ['items' => [['slug' => 'alpha']]]);
         $suggest->set('tenant-a', 'alpha', 10, ['items' => [['slug' => 'alpha', 'name' => 'Alpha']]]);
 
@@ -130,6 +129,6 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
 
     public function testLegacyServiceCacheTreeIsGone(): void
     {
-        self::assertDirectoryDoesNotExist(dirname(__DIR__) . '/src/Service/Cache');
+        self::assertDirectoryDoesNotExist(dirname(__DIR__).'/src/Service/Cache');
     }
 }

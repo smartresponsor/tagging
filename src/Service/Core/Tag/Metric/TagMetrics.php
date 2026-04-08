@@ -42,7 +42,7 @@ final class TagMetrics
             $out[] = sprintf('%s_sum%s %.6f', $name, $lbl, $s['sum']);
         }
 
-        return implode("\n", $out) . "\n";
+        return implode("\n", $out)."\n";
     }
 
     private static function key(string $name, array $labels): string
@@ -53,10 +53,10 @@ final class TagMetrics
         ksort($labels);
         $pairs = [];
         foreach ($labels as $k => $v) {
-            $pairs[] = $k . '="' . str_replace('"', '\"', (string) $v) . '"';
+            $pairs[] = $k.'="'.str_replace('"', '\"', (string) $v).'"';
         }
 
-        return $name . '{' . implode(',', $pairs) . '}';
+        return $name.'{'.implode(',', $pairs).'}';
     }
 
     /**

@@ -15,27 +15,25 @@ final class AssignControllerBulkTest extends TestCase
     public function testBulkReturnsDetailedBatchResults(): void
     {
         $controller = new AssignController(
-            new class() implements AssignOperationInterface {
+            new class implements AssignOperationInterface {
                 public function assign(
                     string $tenant,
                     string $tagId,
                     string $entityType,
                     string $entityId,
                     ?string $idemKey = null,
-                ): array
-                {
+                ): array {
                     return ['ok' => true];
                 }
             },
-            new class() implements UnassignOperationInterface {
+            new class implements UnassignOperationInterface {
                 public function unassign(
                     string $tenant,
                     string $tagId,
                     string $entityType,
                     string $entityId,
                     ?string $idemKey = null,
-                ): array
-                {
+                ): array {
                     return ['ok' => false, 'code' => 'unassign_failed'];
                 }
             },
@@ -82,15 +80,14 @@ final class AssignControllerBulkTest extends TestCase
     public function testAssignBulkToEntityReturnsAssignmentCounters(): void
     {
         $controller = new AssignController(
-            new class() implements AssignOperationInterface {
+            new class implements AssignOperationInterface {
                 public function assign(
                     string $tenant,
                     string $tagId,
                     string $entityType,
                     string $entityId,
                     ?string $idemKey = null,
-                ): array
-                {
+                ): array {
                     return match ($tagId) {
                         'tag-a' => ['ok' => true],
                         'tag-b' => ['ok' => true, 'duplicated' => true],
@@ -98,15 +95,14 @@ final class AssignControllerBulkTest extends TestCase
                     };
                 }
             },
-            new class() implements UnassignOperationInterface {
+            new class implements UnassignOperationInterface {
                 public function unassign(
                     string $tenant,
                     string $tagId,
                     string $entityType,
                     string $entityId,
                     ?string $idemKey = null,
-                ): array
-                {
+                ): array {
                     return ['ok' => true];
                 }
             },

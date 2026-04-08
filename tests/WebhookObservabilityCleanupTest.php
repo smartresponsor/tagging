@@ -26,9 +26,9 @@ final class WebhookObservabilityCleanupTest extends TestCase
 
     public function testWebhookControllerSubscribeAndListUseStableContract(): void
     {
-        $dir = sys_get_temp_dir() . '/tagging-webhooks-' . bin2hex(random_bytes(4));
-        $registryPath = $dir . '/registry.json';
-        $auditPath = $dir . '/audit.ndjson';
+        $dir = sys_get_temp_dir().'/tagging-webhooks-'.bin2hex(random_bytes(4));
+        $registryPath = $dir.'/registry.json';
+        $auditPath = $dir.'/audit.ndjson';
         $controller = new TagWebhookController(
             new TagWebhookRegistry($registryPath),
             new TagAuditEmitter(['events_allow' => ['tag.created'], 'audit_path' => $auditPath, 'registry_path' => $registryPath]),
@@ -49,8 +49,8 @@ final class WebhookObservabilityCleanupTest extends TestCase
 
     public function testObserveMiddlewareWritesSlowlogForSlowRequests(): void
     {
-        $dir = sys_get_temp_dir() . '/tagging-observe-' . bin2hex(random_bytes(4));
-        $path = $dir . '/slowlog.ndjson';
+        $dir = sys_get_temp_dir().'/tagging-observe-'.bin2hex(random_bytes(4));
+        $path = $dir.'/slowlog.ndjson';
         $middleware = new Observe(['slowlog_path' => $path, 'threshold_ms' => ['read' => 0, 'write' => 0]]);
 
         $response = $middleware->handle(['method' => 'GET', 'path' => '/tag/search'], static function (): array {
@@ -68,7 +68,7 @@ final class WebhookObservabilityCleanupTest extends TestCase
 
     public function testHostMinimalBootstrapExportsWebhookAndObserveEntries(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
+        $container = require dirname(__DIR__).'/host-minimal/bootstrap.php';
         self::assertArrayHasKey('webhookController', $container);
         self::assertArrayHasKey('observeMiddleware', $container);
     }

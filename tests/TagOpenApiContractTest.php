@@ -10,7 +10,7 @@ final class TagOpenApiContractTest extends TestCase
 {
     public function testUnassignContractDistinguishesMissingTagFromMissingLink(): void
     {
-        $contract = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
+        $contract = file_get_contents(__DIR__.'/../contracts/http/tag-openapi.yaml');
         self::assertIsString($contract);
         self::assertStringContainsString('/tag/{id}/unassign:', $contract);
         self::assertStringContainsString("'404':", $contract);
@@ -20,7 +20,7 @@ final class TagOpenApiContractTest extends TestCase
 
     public function testOpenApiDocumentsTenantHeaderAnd400SemanticsAcrossPublicBusinessRoutes(): void
     {
-        $contract = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
+        $contract = file_get_contents(__DIR__.'/../contracts/http/tag-openapi.yaml');
         self::assertIsString($contract);
 
         self::assertStringContainsString('/tag/{id}/assign:', $contract);
@@ -38,7 +38,7 @@ final class TagOpenApiContractTest extends TestCase
 
     public function testOpenApiDocumentsCrudSuccessStatusesAndMetaRouteHeaders(): void
     {
-        $contract = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
+        $contract = file_get_contents(__DIR__.'/../contracts/http/tag-openapi.yaml');
         self::assertIsString($contract);
 
         self::assertStringContainsString("/tag:\n    post:", $contract);

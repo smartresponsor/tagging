@@ -20,7 +20,7 @@ final class SnapshotPurityAuditTest extends TestCase
         $violations = [];
 
         foreach ($patterns as $pattern) {
-            $matches = glob($root . DIRECTORY_SEPARATOR . $pattern, GLOB_NOSORT) ?: [];
+            $matches = glob($root.DIRECTORY_SEPARATOR.$pattern, GLOB_NOSORT) ?: [];
             foreach ($matches as $match) {
                 $violations[] = basename($match);
             }
@@ -33,8 +33,8 @@ final class SnapshotPurityAuditTest extends TestCase
         ];
 
         foreach ($forbiddenDirectories as $directory) {
-            if (is_dir($root . DIRECTORY_SEPARATOR . $directory)) {
-                $violations[] = $directory . '/';
+            if (is_dir($root.DIRECTORY_SEPARATOR.$directory)) {
+                $violations[] = $directory.'/';
             }
         }
 
@@ -44,7 +44,7 @@ final class SnapshotPurityAuditTest extends TestCase
         self::assertSame(
             [],
             $violations,
-            'Repository root contains transport artifacts or transient workspaces: ' . implode(', ', $violations),
+            'Repository root contains transport artifacts or transient workspaces: '.implode(', ', $violations),
         );
     }
 }

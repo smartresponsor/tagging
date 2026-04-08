@@ -3,7 +3,7 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$catalog = require __DIR__ . '/tag_route_catalog.php';
+$catalog = require __DIR__.'/tag_route_catalog.php';
 $routes = is_array($catalog['routes'] ?? null) ? $catalog['routes'] : [];
 $operations = [];
 $paths = [];

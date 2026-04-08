@@ -7,7 +7,9 @@ namespace App\Service\Core\Tag;
 
 final readonly class PdoTransactionRunner implements TransactionRunnerInterface
 {
-    public function __construct(private \PDO $pdo) {}
+    public function __construct(private \PDO $pdo)
+    {
+    }
 
     /**
      * @throws \Throwable

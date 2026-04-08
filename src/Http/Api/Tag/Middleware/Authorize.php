@@ -14,7 +14,8 @@ final readonly class Authorize
         private TagAuthorizer $auth,
         private array $cfg,
         private JsonResponder $responder = new JsonResponder(),
-    ) {}
+    ) {
+    }
 
     /**
      * Framework-agnostic example:

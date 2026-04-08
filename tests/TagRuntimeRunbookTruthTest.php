@@ -10,7 +10,7 @@ final class TagRuntimeRunbookTruthTest extends TestCase
 {
     public function testRunbookReflectsCurrentPublicShellAndOperationalPosture(): void
     {
-        $doc = file_get_contents(__DIR__ . '/../docs/ops/runbook.md');
+        $doc = file_get_contents(__DIR__.'/../docs/ops/runbook.md');
         self::assertIsString($doc);
 
         self::assertStringContainsString('GET /tag/_status', $doc);

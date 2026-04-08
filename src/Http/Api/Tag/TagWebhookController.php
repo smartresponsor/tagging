@@ -15,7 +15,8 @@ final readonly class TagWebhookController
         private TagWebhookRegistry $registry,
         private TagAuditEmitter $audit,
         private ?TagWebhookResponder $responder = null,
-    ) {}
+    ) {
+    }
 
     /** @param array<string,mixed> $request */
     public function subscribe(array $request): array

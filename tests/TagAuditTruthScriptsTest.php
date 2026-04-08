@@ -11,7 +11,7 @@ final class TagAuditTruthScriptsTest extends TestCase
 {
     public function testPublicRoutePathsAreProjectedFromCanonicalCatalog(): void
     {
-        $projection = require __DIR__ . '/../config/tag_public_route_paths.php';
+        $projection = require __DIR__.'/../config/tag_public_route_paths.php';
 
         self::assertSame('/tag/assignments/bulk', $projection['operations']['assignments_bulk'] ?? null);
         self::assertSame('/tag/search', $projection['operations']['search'] ?? null);
@@ -38,7 +38,7 @@ final class TagAuditTruthScriptsTest extends TestCase
     /** @return array{exit:int,stdout:string,stderr:string} */
     private function runAudit(string $script): array
     {
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/audit/' . $script);
+        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/audit/'.$script);
         $descriptorSpec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

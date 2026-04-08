@@ -17,7 +17,8 @@ final readonly class VerifySignature
         private HmacV2Verifier $verifier,
         private array $cfg = [],
         private TagMiddlewareResponder $responder = new TagMiddlewareResponder(),
-    ) {}
+    ) {
+    }
 
     /** @param array{method:string,path:string,headers:array,body:string} $req */
     public function handle(array $req, callable $next): array
@@ -91,12 +92,12 @@ final readonly class VerifySignature
         if (str_ends_with($pat, '/**')) {
             $base = substr($pat, 0, -3);
 
-            return $path === $base || str_starts_with($path, $base . '/');
+            return $path === $base || str_starts_with($path, $base.'/');
         }
 
         $re = preg_quote($pat, '#');
         $re = str_replace(['\*\*', '\*'], ['.*', '[^/]*'], $re);
-        $re = '#^' . $re . '$#';
+        $re = '#^'.$re.'$#';
 
         return (bool) preg_match($re, $path);
     }

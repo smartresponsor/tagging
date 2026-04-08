@@ -11,7 +11,7 @@ final class TagDemoSurfaceExamplesTest extends TestCase
 {
     public function testDemoCatalogCarriesCurrentSurfaceTourMetadata(): void
     {
-        $catalog = require __DIR__ . '/../fixtures/tag-demo-catalog.php';
+        $catalog = require __DIR__.'/../fixtures/tag-demo-catalog.php';
 
         self::assertIsArray($catalog);
         self::assertSame('01HMISSINGTAG0000000000000', $catalog['missing_tag_id'] ?? null);
@@ -25,8 +25,8 @@ final class TagDemoSurfaceExamplesTest extends TestCase
 
     public function testDemoHttpExamplesIncludeBulkAndMissingTagFlows(): void
     {
-        $tour = file_get_contents(__DIR__ . '/../public/tag/examples/tour.http');
-        $requests = file_get_contents(__DIR__ . '/../public/tag/demo/requests.http');
+        $tour = file_get_contents(__DIR__.'/../public/tag/examples/tour.http');
+        $requests = file_get_contents(__DIR__.'/../public/tag/demo/requests.http');
 
         self::assertIsString($tour);
         self::assertIsString($requests);

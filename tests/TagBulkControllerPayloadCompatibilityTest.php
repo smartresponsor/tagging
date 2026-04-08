@@ -157,8 +157,7 @@ final class TagBulkCompatAssignOperationStub implements \App\Service\Core\Tag\As
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         $this->calls[] = [$tenant, $tagId, $entityType, $entityId, $idemKey];
 
         return array_shift($this->results) ?? ['ok' => true];
@@ -182,8 +181,7 @@ final class TagBulkCompatUnassignOperationStub implements \App\Service\Core\Tag\
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         return array_shift($this->results) ?? ['ok' => true, 'not_found' => false];
     }
 }

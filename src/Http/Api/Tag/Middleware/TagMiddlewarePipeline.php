@@ -10,7 +10,9 @@ final readonly class TagMiddlewarePipeline
     /**
      * @param list<object> $middlewares
      */
-    public function __construct(private array $middlewares) {}
+    public function __construct(private array $middlewares)
+    {
+    }
 
     /** @param callable(array<string,mixed>):array{0:int,1:array<string,string>,2:string} $destination */
     public function handle(array $request, callable $destination): array

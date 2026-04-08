@@ -54,8 +54,7 @@ final class TagValidator
         TagRepositoryContract $repo,
         string $slug,
         ?string $tagId = null,
-    ): void
-    {
+    ): void {
         if ($repo->existsSlug($tenantId, $slug, $tagId)) {
             throw new \RuntimeException('slug_conflict');
         }

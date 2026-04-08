@@ -15,27 +15,25 @@ final class AssignControllerUnassignContractTest extends TestCase
     public function testUnassignMapsMissingTagToHttp404(): void
     {
         $controller = new AssignController(
-            new class() implements AssignOperationInterface {
+            new class implements AssignOperationInterface {
                 public function assign(
                     string $tenant,
                     string $tagId,
                     string $entityType,
                     string $entityId,
                     ?string $idemKey = null,
-                ): array
-                {
+                ): array {
                     return ['ok' => true];
                 }
             },
-            new class() implements UnassignOperationInterface {
+            new class implements UnassignOperationInterface {
                 public function unassign(
                     string $tenant,
                     string $tagId,
                     string $entityType,
                     string $entityId,
                     ?string $idemKey = null,
-                ): array
-                {
+                ): array {
                     return ['ok' => false, 'code' => 'tag_not_found'];
                 }
             },

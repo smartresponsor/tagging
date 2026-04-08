@@ -11,8 +11,8 @@ final class DemoTruthPackAuditTest extends TestCase
 {
     public function testDemoTruthPackAuditPasses(): void
     {
-        $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(dirname(__DIR__) . '/tools/audit/tag-demo-truth-pack-audit.php');
-        exec($cmd . ' 2>&1', $output, $code);
+        $cmd = escapeshellarg(PHP_BINARY).' '.escapeshellarg(dirname(__DIR__).'/tools/audit/tag-demo-truth-pack-audit.php');
+        exec($cmd.' 2>&1', $output, $code);
 
         self::assertSame(0, $code, implode(PHP_EOL, $output));
     }

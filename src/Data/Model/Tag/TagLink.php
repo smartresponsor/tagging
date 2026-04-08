@@ -13,7 +13,8 @@ final readonly class TagLink
         private string $entityId,
         private string $tagId,        // ULID (26)
         private ?\DateTimeImmutable $createdAt = null,
-    ) {}
+    ) {
+    }
 
     public function tenant(): string
     {

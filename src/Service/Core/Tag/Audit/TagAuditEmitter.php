@@ -9,7 +9,9 @@ use App\Service\Core\Tag\Webhook\TagWebhookSender;
 
 final readonly class TagAuditEmitter
 {
-    public function __construct(private array $cfg, private ?TagWebhookSender $sender = null) {}
+    public function __construct(private array $cfg, private ?TagWebhookSender $sender = null)
+    {
+    }
 
     public function emit(string $type, array $payload): void
     {
@@ -29,7 +31,7 @@ final readonly class TagAuditEmitter
         if (!is_dir($dir)) {
             @mkdir($dir, 0777, true);
         }
-        file_put_contents($path, $line . "\n", FILE_APPEND);
+        file_put_contents($path, $line."\n", FILE_APPEND);
 
         $this->fanout($type, $payload);
     }

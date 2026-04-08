@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-require_once __DIR__ . '/IntegrationDbTestCase.php';
+require_once __DIR__.'/IntegrationDbTestCase.php';
 
 use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 use App\Service\Core\Tag\AssignService;
@@ -17,8 +17,8 @@ final class TagAssignmentIdempotencyTest extends IntegrationDbTestCase
     {
         $pdo = $this->pdo();
         $pdo->exec(
-            "INSERT INTO tag_entity (id, tenant, slug, name) "
-            . "VALUES ('tag-idem', 'tenant-idem', 'idem', 'Idem')",
+            'INSERT INTO tag_entity (id, tenant, slug, name) '
+            ."VALUES ('tag-idem', 'tenant-idem', 'idem', 'Idem')",
         );
         $service = new AssignService($pdo, new OutboxPublisher($pdo), new IdempotencyStore($pdo));
         $first = $service->assign('tenant-idem', 'tag-idem', 'product', 'p-1001', 'idem-key-1');
@@ -28,14 +28,14 @@ final class TagAssignmentIdempotencyTest extends IntegrationDbTestCase
             ->fetchColumn();
         $outboxCount = (int) $pdo
             ->query(
-                "SELECT COUNT(*) FROM outbox_event "
-                . "WHERE tenant='tenant-idem' AND topic='tag.assigned'",
+                'SELECT COUNT(*) FROM outbox_event '
+                ."WHERE tenant='tenant-idem' AND topic='tag.assigned'",
             )
             ->fetchColumn();
         $status = $pdo
             ->query(
-                "SELECT status FROM idempotency_store "
-                . "WHERE tenant='tenant-idem' AND key='idem-key-1'",
+                'SELECT status FROM idempotency_store '
+                ."WHERE tenant='tenant-idem' AND key='idem-key-1'",
             )
             ->fetchColumn();
 
@@ -50,8 +50,8 @@ final class TagAssignmentIdempotencyTest extends IntegrationDbTestCase
     {
         $pdo = $this->pdo();
         $pdo->exec(
-            "INSERT INTO tag_entity (id, tenant, slug, name) VALUES ("
-            . "'tag-idem-conflict', 'tenant-idem-conflict', 'idem-conflict', 'Idem Conflict')",
+            'INSERT INTO tag_entity (id, tenant, slug, name) VALUES ('
+            ."'tag-idem-conflict', 'tenant-idem-conflict', 'idem-conflict', 'Idem Conflict')",
         );
 
         $service = new AssignService($pdo, new OutboxPublisher($pdo), new IdempotencyStore($pdo));

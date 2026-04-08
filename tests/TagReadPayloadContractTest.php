@@ -11,7 +11,7 @@ final class TagReadPayloadContractTest extends TestCase
 {
     public function testOpenApiDescribesFlatSearchAndSuggestPayloads(): void
     {
-        $contract = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
+        $contract = file_get_contents(__DIR__.'/../contracts/http/tag-openapi.yaml');
 
         self::assertIsString($contract);
         self::assertStringContainsString('/tag/search:', $contract);

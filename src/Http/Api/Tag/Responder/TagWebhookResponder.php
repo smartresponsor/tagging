@@ -33,5 +33,4 @@ final class TagWebhookResponder
     {
         return $this->ok(['items' => $items, 'total' => count($items)]);
     }
-
 }

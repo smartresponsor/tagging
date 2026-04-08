@@ -32,7 +32,8 @@ final class Slugifier
     public function __construct(
         private readonly bool $lowercase = true,
         private readonly int $maxLen = 64,
-    ) {}
+    ) {
+    }
 
     public function slugify(string $s): string
     {

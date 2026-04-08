@@ -11,8 +11,8 @@ final class HostMinimalSurfaceTest extends TestCase
 {
     public function testStatusRouteIsReachableWithoutComposerAutoload(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
-        $routerFactory = require dirname(__DIR__) . '/host-minimal/route.php';
+        $container = require dirname(__DIR__).'/host-minimal/bootstrap.php';
+        $routerFactory = require dirname(__DIR__).'/host-minimal/route.php';
         $dispatch = $routerFactory($container);
 
         [$code, $headers, $body] = $dispatch('GET', '/tag/_status', ['headers' => [], 'query' => [], 'body' => null]);
@@ -32,7 +32,7 @@ final class HostMinimalSurfaceTest extends TestCase
 
     public function testContractOnlyDocumentsRunnableMinimalHostSurface(): void
     {
-        $contract = file_get_contents(dirname(__DIR__) . '/contracts/http/tag-openapi.yaml');
+        $contract = file_get_contents(dirname(__DIR__).'/contracts/http/tag-openapi.yaml');
         self::assertIsString($contract);
         self::assertStringContainsString('/tag/_status', $contract);
         self::assertStringContainsString('/tag/_surface', $contract);

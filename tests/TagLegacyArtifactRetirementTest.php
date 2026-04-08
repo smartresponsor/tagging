@@ -11,12 +11,12 @@ final class TagLegacyArtifactRetirementTest extends TestCase
 {
     public function testLegacyJsonFixtureIsRemoved(): void
     {
-        self::assertFileDoesNotExist(__DIR__ . '/../fixtures/tag-demo.json');
+        self::assertFileDoesNotExist(__DIR__.'/../fixtures/tag-demo.json');
     }
 
     public function testRepoHygieneDocsDescribeRetiredLegacyFixture(): void
     {
-        $doc = file_get_contents(__DIR__ . '/../docs/ops/repo-hygiene.md');
+        $doc = file_get_contents(__DIR__.'/../docs/ops/repo-hygiene.md');
 
         self::assertIsString($doc);
         self::assertStringContainsString('fixtures/tag-demo.json', $doc);
@@ -25,7 +25,7 @@ final class TagLegacyArtifactRetirementTest extends TestCase
 
     public function testRepoHygieneAuditPassesWithoutLegacyFixture(): void
     {
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/audit/tag-repo-hygiene-audit.php');
+        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/audit/tag-repo-hygiene-audit.php');
         $descriptorSpec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

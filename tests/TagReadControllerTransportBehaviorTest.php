@@ -91,7 +91,7 @@ final class TagReadControllerTransportBehaviorTest extends TestCase
 
     private function cacheDir(string $suffix): string
     {
-        return sys_get_temp_dir() . '/smartresponsor-tagging-' . $suffix . '-' . bin2hex(random_bytes(4));
+        return sys_get_temp_dir().'/smartresponsor-tagging-'.$suffix.'-'.bin2hex(random_bytes(4));
     }
 }
 
@@ -103,7 +103,8 @@ final class RecordingTagReadModel implements TagReadModelInterface
         private array $searchItems = [],
         private int $searchTotal = 0,
         private array $suggestItems = [],
-    ) {}
+    ) {
+    }
 
     /** @var list<array{0:string,1:string,2:int,3:int}> */
     public array $searchCalls = [];

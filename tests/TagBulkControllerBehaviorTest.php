@@ -176,8 +176,7 @@ final class TagBulkAssignOperationStub implements \App\Service\Core\Tag\AssignOp
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         return array_shift($this->results) ?? ['ok' => true];
     }
 }
@@ -199,8 +198,7 @@ final class TagBulkUnassignOperationStub implements \App\Service\Core\Tag\Unassi
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         return array_shift($this->results) ?? ['ok' => true, 'not_found' => false];
     }
 }

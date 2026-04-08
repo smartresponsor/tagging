@@ -24,8 +24,8 @@ abstract class TagIntegrationEvidenceTestCase extends IntegrationDbTestCase
     ): void {
         $stmt = $pdo->prepare(
             'INSERT INTO tag_entity '
-            . '(id, tenant, slug, name, locale, weight) '
-            . 'VALUES (:id, :tenant, :slug, :name, :locale, :weight)'
+            .'(id, tenant, slug, name, locale, weight) '
+            .'VALUES (:id, :tenant, :slug, :name, :locale, :weight)'
         );
         $stmt->execute([
             ':id' => $id,

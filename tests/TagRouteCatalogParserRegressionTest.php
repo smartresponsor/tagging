@@ -10,7 +10,7 @@ final class TagRouteCatalogParserRegressionTest extends TestCase
 {
     public function testParserIgnoresMalformedTopLevelRouteLikeLines(): void
     {
-        $fixture = sys_get_temp_dir() . '/tag-route-parser-' . bin2hex(random_bytes(6)) . '.yaml';
+        $fixture = sys_get_temp_dir().'/tag-route-parser-'.bin2hex(random_bytes(6)).'.yaml';
         file_put_contents($fixture, <<<'YAML'
 service: tag
 runtime: host-minimal
@@ -27,10 +27,10 @@ operation: fake-top-level-route
     path: /tag/_surface
     response_header: X-Tag-Surface-Version
 YAML
-);
+        );
 
-        $catalog = require __DIR__ . '/../config/tag_route_catalog.php';
-        require_once __DIR__ . '/../config/tag_route_catalog.php';
+        $catalog = require __DIR__.'/../config/tag_route_catalog.php';
+        require_once __DIR__.'/../config/tag_route_catalog.php';
         $parsed = \tagRouteCatalogParse($fixture);
         @unlink($fixture);
 
@@ -43,7 +43,7 @@ YAML
 
     public function testParserPreservesQuotedValuesAndBooleanFlags(): void
     {
-        $fixture = sys_get_temp_dir() . '/tag-route-parser-' . bin2hex(random_bytes(6)) . '.yaml';
+        $fixture = sys_get_temp_dir().'/tag-route-parser-'.bin2hex(random_bytes(6)).'.yaml';
         file_put_contents($fixture, <<<'YAML'
 service: 'tag'
 runtime: "host-minimal"
@@ -59,9 +59,9 @@ routes:
     method: GET
     path: '/tag/_webhooks'
 YAML
-);
+        );
 
-        require_once __DIR__ . '/../config/tag_route_catalog.php';
+        require_once __DIR__.'/../config/tag_route_catalog.php';
         $parsed = \tagRouteCatalogParse($fixture);
         @unlink($fixture);
 
@@ -77,7 +77,7 @@ YAML
 
     public function testParserReturnsDefaultCatalogWhenFileIsMissing(): void
     {
-        require_once __DIR__ . '/../config/tag_route_catalog.php';
+        require_once __DIR__.'/../config/tag_route_catalog.php';
         $parsed = \tagRouteCatalogParse('/definitely/missing/tag.yaml');
 
         self::assertSame('tag', $parsed['service']);

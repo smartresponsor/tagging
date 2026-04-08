@@ -11,7 +11,7 @@ final class TagArchitectureWiringDocsTruthTest extends TestCase
 {
     public function testHttpWiringDocReflectsCurrentBulkSurfaceAndRouteTruth(): void
     {
-        $doc = file_get_contents(__DIR__ . '/../docs/http/http-wiring.md');
+        $doc = file_get_contents(__DIR__.'/../docs/http/http-wiring.md');
 
         self::assertIsString($doc);
         self::assertStringContainsString('/tag/assignments/bulk', $doc);
@@ -25,7 +25,7 @@ final class TagArchitectureWiringDocsTruthTest extends TestCase
 
     public function testHostMinimalDeployExampleUsesSharedReadModelForSuggest(): void
     {
-        $doc = file_get_contents(__DIR__ . '/../docs/deploy/host-minimal-search.md');
+        $doc = file_get_contents(__DIR__.'/../docs/deploy/host-minimal-search.md');
 
         self::assertIsString($doc);
         self::assertStringContainsString('new App\Infrastructure\ReadModel\Tag\TagReadModel($pdo)', $doc);

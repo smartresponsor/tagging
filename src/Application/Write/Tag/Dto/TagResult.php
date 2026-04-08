@@ -13,7 +13,8 @@ final readonly class TagResult
         public int $status,
         public array $payload = [],
         public ?TagError $error = null,
-    ) {}
+    ) {
+    }
 
     /** @param array<string,mixed> $payload */
     public static function success(int $status, array $payload = []): self

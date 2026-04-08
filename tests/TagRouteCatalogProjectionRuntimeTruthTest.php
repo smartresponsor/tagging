@@ -10,8 +10,8 @@ final class TagRouteCatalogProjectionRuntimeTruthTest extends TestCase
 {
     public function testCatalogRoutesRemainAlignedWithRuntimeRouteDispatchSource(): void
     {
-        $catalog = require __DIR__ . '/../config/tag_route_catalog.php';
-        $runtimeRoutePhp = file_get_contents(__DIR__ . '/../host-minimal/route.php');
+        $catalog = require __DIR__.'/../config/tag_route_catalog.php';
+        $runtimeRoutePhp = file_get_contents(__DIR__.'/../host-minimal/route.php');
 
         self::assertIsArray($catalog);
         self::assertIsString($runtimeRoutePhp);
@@ -46,8 +46,8 @@ final class TagRouteCatalogProjectionRuntimeTruthTest extends TestCase
 
     public function testPublicProjectionStillFiltersPrivateWebhookRoutesOutOfSurface(): void
     {
-        $catalog = require __DIR__ . '/../config/tag_route_catalog.php';
-        $surface = require __DIR__ . '/../config/tag_public_surface.php';
+        $catalog = require __DIR__.'/../config/tag_route_catalog.php';
+        $surface = require __DIR__.'/../config/tag_public_surface.php';
 
         self::assertIsArray($catalog);
         self::assertIsArray($surface);

@@ -12,13 +12,13 @@ final class ProtocolAuditTest extends TestCase
     public function testProtocolAuditPassesOnCurrentRepository(): void
     {
         $root = dirname(__DIR__);
-        $script = $root . '/tools/audit/tag-protocol-audit.php';
+        $script = $root.'/tools/audit/tag-protocol-audit.php';
 
         self::assertFileExists($script);
 
         $output = [];
         $code = 0;
-        exec('php ' . escapeshellarg($script) . ' 2>&1', $output, $code);
+        exec('php '.escapeshellarg($script).' 2>&1', $output, $code);
 
         self::assertSame(0, $code, implode('
 ', $output));
@@ -38,7 +38,7 @@ final class ProtocolAuditTest extends TestCase
         ];
 
         foreach ($forbidden as $path) {
-            self::assertFalse(file_exists($root . DIRECTORY_SEPARATOR . $path), 'Forbidden protocol residue exists: ' . $path);
+            self::assertFalse(file_exists($root.DIRECTORY_SEPARATOR.$path), 'Forbidden protocol residue exists: '.$path);
         }
     }
 }

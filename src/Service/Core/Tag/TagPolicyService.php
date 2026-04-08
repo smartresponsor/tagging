@@ -57,8 +57,7 @@ final readonly class TagPolicyService
         TagRepositoryContract $repo,
         string $label,
         ?string $slug = null,
-    ): void
-    {
+    ): void {
         $slug = null !== $slug && '' !== $slug ? $this->normalizeSlug($slug) : $this->slugForLabel($label);
         $this->applyRules($slug);
         $this->validator->validateSlug($slug);
@@ -71,8 +70,7 @@ final readonly class TagPolicyService
         string $tagId,
         string $label,
         ?string $slug = null,
-    ): void
-    {
+    ): void {
         $this->validator->validateLabel($label);
         if (null !== $slug) {
             $slug = $this->normalizeSlug($slug);
@@ -137,7 +135,7 @@ final readonly class TagPolicyService
             return false;
         }
 
-        $match = @preg_match('/' . $pattern . '/', $slug);
+        $match = @preg_match('/'.$pattern.'/', $slug);
 
         return 1 === $match;
     }

@@ -33,7 +33,7 @@ final class TagHttpRequest
     {
         $query = self::query($req);
 
-        return trim((string) ($query[$name] ?? ($fallback !== '' ? ($query[$fallback] ?? '') : '')));
+        return trim((string) ($query[$name] ?? ('' !== $fallback ? ($query[$fallback] ?? '') : '')));
     }
 
     public static function queryInt(array $req, string $name, int $default, int $min, int $max): int
@@ -47,7 +47,7 @@ final class TagHttpRequest
     {
         $body = self::body($req);
 
-        return trim((string) ($body[$name] ?? ($fallback !== '' ? ($body[$fallback] ?? '') : '')));
+        return trim((string) ($body[$name] ?? ('' !== $fallback ? ($body[$fallback] ?? '') : '')));
     }
 
     public static function tenantOrNull(array $req): ?string

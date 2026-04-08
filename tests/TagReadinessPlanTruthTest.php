@@ -10,7 +10,7 @@ final class TagReadinessPlanTruthTest extends TestCase
 {
     public function testReadinessPlanReflectsCurrentRuntimeAndDeliveryReality(): void
     {
-        $doc = file_get_contents(__DIR__ . '/../docs/architecture/repository-production-readiness-plan.md');
+        $doc = file_get_contents(__DIR__.'/../docs/architecture/repository-production-readiness-plan.md');
         self::assertIsString($doc);
 
         self::assertStringContainsString('tag.yaml', $doc);

@@ -7,7 +7,9 @@ namespace App\Service\Core\Tag;
 
 final readonly class TenantGuard
 {
-    public function __construct(private array $cfg = []) {}
+    public function __construct(private array $cfg = [])
+    {
+    }
 
     /** @param array<string,string> $headers */
     public function requireTenant(array $headers): string

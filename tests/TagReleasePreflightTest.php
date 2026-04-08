@@ -11,7 +11,7 @@ final class TagReleasePreflightTest extends TestCase
 {
     public function testPreflightIncludesCurrentCanonicalAudits(): void
     {
-        $script = file_get_contents(__DIR__ . '/../tools/release/tag-preflight.php');
+        $script = file_get_contents(__DIR__.'/../tools/release/tag-preflight.php');
 
         self::assertIsString($script);
         self::assertStringContainsString('tag-surface-audit.php', $script);
@@ -29,7 +29,7 @@ final class TagReleasePreflightTest extends TestCase
 
     public function testPreflightRunsSuccessfullyWithCurrentRepoState(): void
     {
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/release/tag-preflight.php');
+        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/release/tag-preflight.php');
         $descriptorSpec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

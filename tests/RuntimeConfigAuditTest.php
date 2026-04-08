@@ -11,8 +11,8 @@ final class RuntimeConfigAuditTest extends TestCase
 {
     public function testQuotaConfigUsesBoolAndAssignmentConfigUsesPdo(): void
     {
-        $quota = (string) file_get_contents(dirname(__DIR__) . '/config/tag_quota.yaml');
-        $assignment = (string) file_get_contents(dirname(__DIR__) . '/config/tag_assignment.yaml');
+        $quota = (string) file_get_contents(dirname(__DIR__).'/config/tag_quota.yaml');
+        $assignment = (string) file_get_contents(dirname(__DIR__).'/config/tag_assignment.yaml');
 
         self::assertMatchesRegularExpression('/^enforce:\s*(true|false)\s*$/m', $quota);
         self::assertStringNotContainsString('\\n', $quota);

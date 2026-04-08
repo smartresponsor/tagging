@@ -17,7 +17,8 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         private TagWriteRepositoryInterface $tagWriteRepository,
         private TagReadRepositoryInterface $tagReadRepository,
         private TagPolicyRepositoryInterface $tagPolicyRepository,
-    ) {}
+    ) {
+    }
 
     public function saveTag(string $tenantId, Tag $tag): void
     {
@@ -80,8 +81,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         string $tagId,
         ?string $type = null,
         ?string $assignedId = null,
-    ): array
-    {
+    ): array {
         return $this->tagReadRepository->listAssignments($tenantId, $tagId, $type, $assignedId);
     }
 
@@ -153,8 +153,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         string $entityType,
         string $entityId,
         string $detailsJson,
-    ): void
-    {
+    ): void {
         $this->tagWriteRepository->insertAudit($tenantId, $id, $action, $entityType, $entityId, $detailsJson);
     }
 
@@ -199,8 +198,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         string $refId,
         string $key,
         string $value,
-    ): void
-    {
+    ): void {
         $this->tagWriteRepository->putClassification($tenantId, $id, $scope, $refId, $key, $value);
     }
 
@@ -221,8 +219,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         string $value,
         string $sourceScope,
         string $sourceId,
-    ): void
-    {
+    ): void {
         $this->tagWriteRepository->putEffect(
             $tenantId,
             $id,

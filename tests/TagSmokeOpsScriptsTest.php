@@ -11,7 +11,7 @@ final class TagSmokeOpsScriptsTest extends TestCase
 {
     public function testSmokeRuntimeScriptValidatesCurrentPublicSurface(): void
     {
-        $script = file_get_contents(__DIR__ . '/../tools/smoke/tag-smoke.php');
+        $script = file_get_contents(__DIR__.'/../tools/smoke/tag-smoke.php');
         self::assertIsString($script);
         self::assertStringContainsString('/tag/assignments/bulk', $script);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $script);
@@ -22,8 +22,8 @@ final class TagSmokeOpsScriptsTest extends TestCase
 
     public function testSyntheticScriptsProbeStatusSurfaceSearchAndSuggest(): void
     {
-        $gate = file_get_contents(__DIR__ . '/../tools/synthetic/tag-slo-gate.sh');
-        $smoke = file_get_contents(__DIR__ . '/../tools/synthetic/slo.sh');
+        $gate = file_get_contents(__DIR__.'/../tools/synthetic/tag-slo-gate.sh');
+        $smoke = file_get_contents(__DIR__.'/../tools/synthetic/slo.sh');
 
         self::assertIsString($gate);
         self::assertIsString($smoke);
@@ -35,7 +35,7 @@ final class TagSmokeOpsScriptsTest extends TestCase
 
     public function testReadmeDocumentsSmokeRuntimeCoverage(): void
     {
-        $readme = file_get_contents(__DIR__ . '/../README.md');
+        $readme = file_get_contents(__DIR__.'/../README.md');
         self::assertIsString($readme);
         self::assertStringContainsString('composer run -n smoke:runtime', $readme);
         self::assertStringContainsString(

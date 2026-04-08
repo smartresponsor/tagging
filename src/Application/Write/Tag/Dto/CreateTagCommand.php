@@ -11,5 +11,6 @@ final readonly class CreateTagCommand
     public function __construct(
         public string $tenant,
         public array $payload,
-    ) {}
+    ) {
+    }
 }

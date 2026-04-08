@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-require_once __DIR__ . '/IntegrationDbTestCase.php';
+require_once __DIR__.'/IntegrationDbTestCase.php';
 
 use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 use App\Service\Core\Tag\IdempotencyStore;

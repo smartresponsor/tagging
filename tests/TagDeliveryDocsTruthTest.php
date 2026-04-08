@@ -11,7 +11,7 @@ final class TagDeliveryDocsTruthTest extends TestCase
 {
     public function testPublicReadyChecklistMatchesCurrentPublicShell(): void
     {
-        $checklist = file_get_contents(__DIR__ . '/../docs/public/tag-public-ready-checklist.md');
+        $checklist = file_get_contents(__DIR__.'/../docs/public/tag-public-ready-checklist.md');
 
         self::assertIsString($checklist);
         self::assertStringContainsString('/tag/assignments/bulk', $checklist);
@@ -24,8 +24,8 @@ final class TagDeliveryDocsTruthTest extends TestCase
 
     public function testReleasePortraitAndAdminGuideDescribeCurrentSurface(): void
     {
-        $portrait = file_get_contents(__DIR__ . '/../docs/release/tag-release-grade-portrait.md');
-        $adminGuide = file_get_contents(__DIR__ . '/../docs/admin/user-guide.md');
+        $portrait = file_get_contents(__DIR__.'/../docs/release/tag-release-grade-portrait.md');
+        $adminGuide = file_get_contents(__DIR__.'/../docs/admin/user-guide.md');
 
         self::assertIsString($portrait);
         self::assertIsString($adminGuide);
@@ -40,7 +40,7 @@ final class TagDeliveryDocsTruthTest extends TestCase
 
     public function testReleaseGradePortraitAuditPassesForCurrentDocs(): void
     {
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/audit/tag-release-grade-portrait-audit.php');
+        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/audit/tag-release-grade-portrait-audit.php');
         $descriptorSpec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

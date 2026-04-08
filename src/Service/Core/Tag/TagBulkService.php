@@ -7,7 +7,9 @@ namespace App\Service\Core\Tag;
 
 final readonly class TagBulkService
 {
-    public function __construct(private TagBulkRepositoryInterface $repo) {}
+    public function __construct(private TagBulkRepositoryInterface $repo)
+    {
+    }
 
     /**
      * @throws \Random\RandomException
@@ -34,8 +36,7 @@ final readonly class TagBulkService
         string $to,
         bool $moveAssignments = true,
         bool $copySynonyms = true,
-    ): array
-    {
+    ): array {
         return $this->repo->mergeTags($tenantId, $from, $to, $moveAssignments, $copySynonyms);
     }
 

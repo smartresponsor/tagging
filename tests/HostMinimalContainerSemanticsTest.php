@@ -32,7 +32,7 @@ final class HostMinimalContainerSemanticsTest extends TestCase
     {
         $container = new HostMinimalContainer();
         $container->value('runtime', ['service' => 'tag']);
-        $container->share('statusController', static fn(): string => 'status-controller');
+        $container->share('statusController', static fn (): string => 'status-controller');
 
         $export = $container->export(['runtime', 'statusController']);
 

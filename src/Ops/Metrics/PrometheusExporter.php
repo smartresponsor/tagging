@@ -74,7 +74,7 @@ final class PrometheusExporter
         ksort($labels);
         $pairs = [];
         foreach ($labels as $k => $v) {
-            $pairs[] = $k . '=' . (string) $v;
+            $pairs[] = $k.'='.(string) $v;
         }
 
         return implode(',', $pairs);
@@ -84,30 +84,30 @@ final class PrometheusExporter
     {
         $out = [];
         foreach ($this->counters as $name => $meta) {
-            $out[] = '# HELP ' . $name . ' ' . $this->esc($meta['help']);
-            $out[] = '# TYPE ' . $name . ' counter';
+            $out[] = '# HELP '.$name.' '.$this->esc($meta['help']);
+            $out[] = '# TYPE '.$name.' counter';
             foreach (($this->counterValues[$name] ?? []) as $key => $val) {
                 $labels = $this->labelsFromKey((string) $key);
-                $out[] = $name . $this->fmtLabels($labels) . ' ' . $val;
+                $out[] = $name.$this->fmtLabels($labels).' '.$val;
             }
         }
         foreach ($this->histograms as $name => $meta) {
-            $out[] = '# HELP ' . $name . ' ' . $this->esc($meta['help']);
-            $out[] = '# TYPE ' . $name . ' histogram';
+            $out[] = '# HELP '.$name.' '.$this->esc($meta['help']);
+            $out[] = '# TYPE '.$name.' histogram';
             foreach (($this->histValues[$name]['series'] ?? []) as $seriesKey => $series) {
                 $labels = $this->labelsFromKey((string) $seriesKey);
                 $cumulative = 0;
                 foreach ($meta['buckets'] as $i => $bucket) {
                     $cumulative += $series['buckets'][$i] ?? 0;
                     $le = is_infinite($bucket) ? '+Inf' : (string) $bucket;
-                    $out[] = $name . '_bucket' . $this->fmtLabels(array_merge($labels, ['le' => $le])) . ' ' . $cumulative;
+                    $out[] = $name.'_bucket'.$this->fmtLabels(array_merge($labels, ['le' => $le])).' '.$cumulative;
                 }
-                $out[] = $name . '_count' . $this->fmtLabels($labels) . ' ' . $series['count'];
-                $out[] = $name . '_sum' . $this->fmtLabels($labels) . ' ' . $series['sum'];
+                $out[] = $name.'_count'.$this->fmtLabels($labels).' '.$series['count'];
+                $out[] = $name.'_sum'.$this->fmtLabels($labels).' '.$series['sum'];
             }
         }
 
-        return implode("\n", $out) . "\n";
+        return implode("\n", $out)."\n";
     }
 
     private function esc(string $s): string
@@ -139,9 +139,9 @@ final class PrometheusExporter
         }
         $pairs = [];
         foreach ($labels as $k => $v) {
-            $pairs[] = (string) $k . '="' . str_replace('"', '\\"', (string) $v) . '"';
+            $pairs[] = (string) $k.'="'.str_replace('"', '\\"', (string) $v).'"';
         }
 
-        return '{' . implode(',', $pairs) . '}';
+        return '{'.implode(',', $pairs).'}';
     }
 }

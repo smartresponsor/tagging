@@ -1,28 +1,16 @@
 <?php
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace App\Ops\Security;
 
-/**
- *
- */
-
-/**
- *
- */
 final class NonceStore
 {
     private string $dir;
     private int $ttl;
     private int $max;
 
-    /**
-     * @param string $dir
-     * @param int $ttlSec
-     * @param int $max
-     */
     public function __construct(string $dir = 'var/cache/nonce', int $ttlSec = 300, int $max = 100000)
     {
         $this->dir = rtrim($dir, '/');
@@ -38,11 +26,11 @@ final class NonceStore
     public function putIfNew(string $nonce, int $ts): bool
     {
         $key = $this->key($nonce, $ts);
-        $path = $this->dir . '/' . $key;
+        $path = $this->dir.'/'.$key;
         $now = time();
 
         // GC occasionally
-        if (mt_rand(0, 99) === 0) {
+        if (0 === mt_rand(0, 99)) {
             $this->gc($now);
         }
 
@@ -57,23 +45,15 @@ final class NonceStore
 
         // write new expiry
         file_put_contents($path, (string) ($ts + $this->ttl), LOCK_EX);
+
         return true;
     }
 
-    /**
-     * @param string $nonce
-     * @param int $ts
-     * @return string
-     */
     private function key(string $nonce, int $ts): string
     {
-        return substr(hash('sha256', $nonce . '|' . $ts), 0, 40);
+        return substr(hash('sha256', $nonce.'|'.$ts), 0, 40);
     }
 
-    /**
-     * @param int $now
-     * @return void
-     */
     private function gc(int $now): void
     {
         if (!is_dir($this->dir)) {
@@ -87,16 +67,16 @@ final class NonceStore
 
         $n = 0;
         foreach ($files as $f) {
-            if ($f === '.' || $f === '..') {
+            if ('.' === $f || '..' === $f) {
                 continue;
             }
 
-            $p = $this->dir . '/' . $f;
+            $p = $this->dir.'/'.$f;
             if (!is_file($p)) {
                 continue;
             }
 
-            $n++;
+            ++$n;
             $raw = file_get_contents($p);
             $exp = is_string($raw) ? (int) trim($raw) : 0;
             if ($exp <= $now) {
@@ -116,11 +96,11 @@ final class NonceStore
         }
 
         foreach ($files2 as $f) {
-            if ($f === '.' || $f === '..') {
+            if ('.' === $f || '..' === $f) {
                 continue;
             }
 
-            $p = $this->dir . '/' . $f;
+            $p = $this->dir.'/'.$f;
             if (!is_file($p)) {
                 continue;
             }
@@ -131,7 +111,7 @@ final class NonceStore
 
         asort($pairs);
         $toDel = $n - $this->max;
-        for ($i = 0; $i < $toDel; $i++) {
+        for ($i = 0; $i < $toDel; ++$i) {
             $p = array_key_first($pairs);
             if (!$p) {
                 break;

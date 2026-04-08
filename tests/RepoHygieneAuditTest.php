@@ -23,7 +23,7 @@ final class RepoHygieneAuditTest extends TestCase
         ];
 
         foreach ($forbidden as $relativePath) {
-            self::assertFileDoesNotExist(__DIR__ . '/../' . $relativePath);
+            self::assertFileDoesNotExist(__DIR__.'/../'.$relativePath);
         }
     }
 
@@ -36,12 +36,12 @@ final class RepoHygieneAuditTest extends TestCase
         ];
 
         foreach ($forbidden as $relativePath) {
-            self::assertDirectoryDoesNotExist(__DIR__ . '/../' . $relativePath);
+            self::assertDirectoryDoesNotExist(__DIR__.'/../'.$relativePath);
         }
     }
 
     public function testOpsRepoHygieneDocumentExists(): void
     {
-        self::assertFileExists(__DIR__ . '/../docs/ops/repo-hygiene.md');
+        self::assertFileExists(__DIR__.'/../docs/ops/repo-hygiene.md');
     }
 }

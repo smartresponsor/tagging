@@ -12,5 +12,6 @@ final readonly class PatchTagCommand
         public string $tenant,
         public string $id,
         public array $payload,
-    ) {}
+    ) {
+    }
 }

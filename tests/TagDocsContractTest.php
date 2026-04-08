@@ -11,9 +11,9 @@ final class TagDocsContractTest extends TestCase
 {
     public function testDocsAndExamplesDescribeBulkSurfaceAndMissingTagUnassign(): void
     {
-        $readme = file_get_contents(__DIR__ . '/../README.md');
-        $quickDemo = file_get_contents(__DIR__ . '/../docs/demo/tag-quick-demo.md');
-        $httpExample = file_get_contents(__DIR__ . '/../public/tag/examples/http.http');
+        $readme = file_get_contents(__DIR__.'/../README.md');
+        $quickDemo = file_get_contents(__DIR__.'/../docs/demo/tag-quick-demo.md');
+        $httpExample = file_get_contents(__DIR__.'/../public/tag/examples/http.http');
 
         self::assertIsString($readme);
         self::assertIsString($quickDemo);

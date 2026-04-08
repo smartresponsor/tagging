@@ -27,8 +27,7 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
                 string $entityType,
                 string $entityId,
                 ?string $idemKey = null,
-            ): array
-            {
+            ): array {
                 return ['ok' => false, 'code' => 'tag_not_found'];
             }
         };
@@ -40,8 +39,7 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
                 string $entityType,
                 string $entityId,
                 ?string $idemKey = null,
-            ): array
-            {
+            ): array {
                 return ['ok' => true];
             }
         };
@@ -65,8 +63,7 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
                 string $entityType,
                 string $entityId,
                 ?string $idemKey = null,
-            ): array
-            {
+            ): array {
                 return ['ok' => false, 'code' => 'idempotency_conflict', 'conflict' => true];
             }
         };
@@ -78,8 +75,7 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
                 string $entityType,
                 string $entityId,
                 ?string $idemKey = null,
-            ): array
-            {
+            ): array {
                 return ['ok' => true];
             }
         };
@@ -141,6 +137,6 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
 
     public function testLegacyQuotaTreeIsRemoved(): void
     {
-        self::assertFileDoesNotExist(dirname(__DIR__) . '/src/Service/Quota/Tag/TagQuota.php');
+        self::assertFileDoesNotExist(dirname(__DIR__).'/src/Service/Quota/Tag/TagQuota.php');
     }
 }

@@ -29,8 +29,7 @@ final readonly class AssignService implements AssignOperationInterface
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         $idempotencyDecision = $this->beginIdempotency($tenant, $tagId, $entityType, $entityId, $idemKey);
         if (null !== $idempotencyDecision) {
             return $idempotencyDecision;
@@ -78,8 +77,7 @@ final readonly class AssignService implements AssignOperationInterface
         string $entityType,
         string $entityId,
         ?string $idemKey,
-    ): ?array
-    {
+    ): ?array {
         if (null === $idemKey || '' === $idemKey || null === $this->idem) {
             return null;
         }
@@ -95,7 +93,7 @@ final readonly class AssignService implements AssignOperationInterface
     }
 
     /** @param array<string, mixed> $state
-     *  @return array{ok:bool, duplicated:bool, conflict?:bool, code?:string}
+     * @return array{ok:bool, duplicated:bool, conflict?:bool, code?:string}
      */
     private function duplicateResult(array $state): array
     {

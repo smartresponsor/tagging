@@ -13,7 +13,8 @@ final readonly class TagAssignment
         private string $assignedType,
         private string $assignedId,
         private \DateTimeImmutable $createdAt,
-    ) {}
+    ) {
+    }
 
     public static function create(string $id, string $tagId, string $assignedType, string $assignedId): self
     {

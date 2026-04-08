@@ -7,7 +7,7 @@ namespace Tests;
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../host-minimal/cors.php';
+require_once __DIR__.'/../host-minimal/cors.php';
 
 final class CorsHeadersTest extends TestCase
 {

@@ -16,7 +16,8 @@ final readonly class TagEntity
         private int $weight = 0,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null,
-    ) {}
+    ) {
+    }
 
     public function tenant(): string
     {

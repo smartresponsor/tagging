@@ -52,7 +52,7 @@ final class CliCommandLayerTest extends TestCase
     /** @return array{exit:int,stdout:string,stderr:string} */
     private function runCli(string $args): array
     {
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/cli/tag.php') . ' ' . $args;
+        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/cli/tag.php').' '.$args;
         $descriptorSpec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

@@ -96,8 +96,7 @@ final class TagRequestCompatAssignStub implements \App\Service\Core\Tag\AssignOp
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         $this->calls[] = [$tenant, $tagId, $entityType, $entityId, $idemKey];
 
         return array_shift($this->results) ?? ['ok' => true];
@@ -121,8 +120,7 @@ final class TagRequestCompatUnassignStub implements \App\Service\Core\Tag\Unassi
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         return array_shift($this->results) ?? ['ok' => true, 'not_found' => false];
     }
 }

@@ -42,7 +42,7 @@ final class SearchServiceTotalTest extends TestCase
 
     private function readModel(): TagReadModelInterface
     {
-        return new class() implements TagReadModelInterface {
+        return new class implements TagReadModelInterface {
             public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
             {
                 $items = [
@@ -89,6 +89,6 @@ final class SearchServiceTotalTest extends TestCase
 
     private function cacheDir(string $suffix): string
     {
-        return sys_get_temp_dir() . '/smartresponsor-tagging-search-' . $suffix . '-' . bin2hex(random_bytes(4));
+        return sys_get_temp_dir().'/smartresponsor-tagging-search-'.$suffix.'-'.bin2hex(random_bytes(4));
     }
 }

@@ -11,7 +11,7 @@ final class TagCiWorkflowTruthTest extends TestCase
 {
     public function testWorkflowIncludesCurrentDeliveryAndReleaseAudits(): void
     {
-        $workflow = file_get_contents(__DIR__ . '/../.github/workflows/ci.yml');
+        $workflow = file_get_contents(__DIR__.'/../.github/workflows/ci.yml');
 
         self::assertIsString($workflow);
         self::assertStringContainsString('composer run -n audit:demo-truth-pack', $workflow);
@@ -22,7 +22,7 @@ final class TagCiWorkflowTruthTest extends TestCase
 
     public function testCiWorkflowAuditPassesAgainstCurrentWorkflow(): void
     {
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/audit/tag-ci-workflow-audit.php');
+        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/audit/tag-ci-workflow-audit.php');
         $descriptorSpec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

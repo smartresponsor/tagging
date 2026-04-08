@@ -10,9 +10,9 @@ final class TagAntoraSurfaceTest extends TestCase
 {
     public function testAntoraProducerSurfaceExistsAndSeparatesDocRoles(): void
     {
-        $antora = file_get_contents(__DIR__ . '/../docs/antora.yml');
-        $index = file_get_contents(__DIR__ . '/../docs/modules/ROOT/pages/index.adoc');
-        $api = file_get_contents(__DIR__ . '/../docs/modules/ROOT/pages/api.adoc');
+        $antora = file_get_contents(__DIR__.'/../docs/antora.yml');
+        $index = file_get_contents(__DIR__.'/../docs/modules/ROOT/pages/index.adoc');
+        $api = file_get_contents(__DIR__.'/../docs/modules/ROOT/pages/api.adoc');
 
         self::assertIsString($antora);
         self::assertIsString($index);
@@ -29,7 +29,7 @@ final class TagAntoraSurfaceTest extends TestCase
 
     public function testAntoraSurfaceAuditPasses(): void
     {
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/audit/tag-antora-surface-audit.php');
+        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/audit/tag-antora-surface-audit.php');
         $descriptorSpec = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
         $process = proc_open($command, $descriptorSpec, $pipes, dirname(__DIR__));
         self::assertIsResource($process);

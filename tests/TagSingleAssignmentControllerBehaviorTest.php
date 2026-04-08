@@ -126,8 +126,7 @@ final class TagSingleAssignOperationStub implements \App\Service\Core\Tag\Assign
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         return array_shift($this->results) ?? ['ok' => true];
     }
 }
@@ -149,8 +148,7 @@ final class TagSingleUnassignOperationStub implements \App\Service\Core\Tag\Unas
         string $entityType,
         string $entityId,
         ?string $idemKey = null,
-    ): array
-    {
+    ): array {
         return array_shift($this->results) ?? ['ok' => true, 'not_found' => false];
     }
 }

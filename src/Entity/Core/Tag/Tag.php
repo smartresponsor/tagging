@@ -12,7 +12,8 @@ final class Tag
         private string $slug,
         private string $label,
         private readonly \DateTimeImmutable $createdAt,
-    ) {}
+    ) {
+    }
 
     public static function create(string $id, string $slug, string $label): self
     {

@@ -3,9 +3,17 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 $root = require __DIR__ . '/../_bootstrap.php';
-$dsn = getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app';
-$user = getenv('DB_USER') ?: 'app';
-$pass = getenv('DB_PASS') ?: 'app';
+
+/**
+ * Prefer explicit DB env, but fall back to the docker-backed test DB state file
+ * so `composer db:test:start` followed by `composer db:smoke` works without eval.
+ */
+$testDbPortStateFile = (getenv('TMPDIR') ?: '/tmp') . '/smartresponsor-tag-test-db-port';
+$testDbPort = is_file($testDbPortStateFile) ? trim((string) file_get_contents($testDbPortStateFile)) : '';
+
+$dsn = getenv('DB_DSN') ?: ($testDbPort !== '' ? sprintf('pgsql:host=127.0.0.1;port=%s;dbname=tag_test', $testDbPort) : 'pgsql:host=localhost;port=5432;dbname=app');
+$user = getenv('DB_USER') ?: ($testDbPort !== '' ? 'tag' : 'app');
+$pass = getenv('DB_PASS') ?: ($testDbPort !== '' ? 'tag' : 'app');
 $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 $files = glob($root . '/db/postgres/migrations/*.sql') ?: [];
 

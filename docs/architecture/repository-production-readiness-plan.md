@@ -35,7 +35,7 @@
 
 ### Current strengths
 
-- Canonical structure audits protect against reintroduction of `src/Domain/`, `src/Infra/`, and other non-canonical trees.
+- Canonical structure audits protect against reintroduction of retired legacy source-tree layouts and other non-canonical trees.
 - Repo-map, route truth, public surface, contract, SDK, demo pack, release portrait, and CI workflow each have dedicated truth checks.
 - Legacy demo fixture ambiguity was reduced by retiring `fixtures/tag-demo.json` and moving validation/seed/dry-run onto the canonical PHP fixture path.
 

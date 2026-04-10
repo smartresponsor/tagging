@@ -13,6 +13,5 @@ final readonly class TagIdempotencyRequest
         public string $entityType,
         public string $entityId,
         public ?string $idempotencyKey,
-    ) {
-    }
+    ) {}
 }

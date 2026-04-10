@@ -10,7 +10,7 @@ final class BootstrapRuntimeCompositionTruthTest extends TestCase
 {
     public function testBootstrapExposesCurrentCallableEntriesIncludingWebhookController(): void
     {
-        $container = require dirname(__DIR__).'/host-minimal/bootstrap.php';
+        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
 
         $required = [
             'runtime',
@@ -37,7 +37,7 @@ final class BootstrapRuntimeCompositionTruthTest extends TestCase
 
     public function testBootstrapRuntimeAndDefaultTenantEntriesResolveToExpectedShapes(): void
     {
-        $container = require dirname(__DIR__).'/host-minimal/bootstrap.php';
+        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
 
         $runtime = $container['runtime']();
         $defaultTenant = $container['defaultTenant']();
@@ -51,7 +51,7 @@ final class BootstrapRuntimeCompositionTruthTest extends TestCase
 
     public function testBootstrapSourceStillUsesCompositionSegmentsAndRuntimeConfig(): void
     {
-        $bootstrap = file_get_contents(__DIR__.'/../host-minimal/bootstrap.php');
+        $bootstrap = file_get_contents(__DIR__ . '/../host-minimal/bootstrap.php');
         self::assertIsString($bootstrap);
 
         self::assertStringContainsString('HostMinimalRuntimeConfig::fromGlobals()', $bootstrap);

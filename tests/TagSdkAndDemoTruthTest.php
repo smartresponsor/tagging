@@ -11,8 +11,8 @@ final class TagSdkAndDemoTruthTest extends TestCase
 {
     public function testSdkClientsExposeBulkOperations(): void
     {
-        $phpSdk = file_get_contents(__DIR__.'/../sdk/php/tag/Client.php');
-        $tsSdk = file_get_contents(__DIR__.'/../sdk/ts/tag/client.ts');
+        $phpSdk = file_get_contents(__DIR__ . '/../sdk/php/tag/Client.php');
+        $tsSdk = file_get_contents(__DIR__ . '/../sdk/ts/tag/client.ts');
 
         self::assertIsString($phpSdk);
         self::assertIsString($tsSdk);
@@ -26,8 +26,8 @@ final class TagSdkAndDemoTruthTest extends TestCase
 
     public function testFinalDemoPackAndSdkReadmeDescribeCurrentSurface(): void
     {
-        $finalPack = file_get_contents(__DIR__.'/../docs/demo/tag-final-demo-pack.md');
-        $sdkReadme = file_get_contents(__DIR__.'/../sdk/README.md');
+        $finalPack = file_get_contents(__DIR__ . '/../docs/demo/tag-final-demo-pack.md');
+        $sdkReadme = file_get_contents(__DIR__ . '/../sdk/README.md');
 
         self::assertIsString($finalPack);
         self::assertIsString($sdkReadme);
@@ -55,7 +55,7 @@ final class TagSdkAndDemoTruthTest extends TestCase
     /** @return array{exit:int,stdout:string,stderr:string} */
     private function runAudit(string $script): array
     {
-        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/audit/'.$script);
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/audit/' . $script);
         $descriptorSpec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

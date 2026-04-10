@@ -17,8 +17,7 @@ final readonly class VerifySignature
         private HmacV2Verifier $verifier,
         private array $cfg = [],
         private TagMiddlewareResponder $responder = new TagMiddlewareResponder(),
-    ) {
-    }
+    ) {}
 
     /** @param array{method:string,path:string,headers:array,body:string} $req */
     public function handle(array $req, callable $next): array
@@ -49,11 +48,11 @@ final readonly class VerifySignature
 
     private function shouldApply(string $path): bool
     {
-        if (array_any($this->excludePatterns(), fn ($pat) => $this->match($pat, $path))) {
+        if (array_any($this->excludePatterns(), fn($pat) => $this->match($pat, $path))) {
             return false;
         }
 
-        return array_any($this->includePatterns(), fn ($pat) => $this->match($pat, $path));
+        return array_any($this->includePatterns(), fn($pat) => $this->match($pat, $path));
     }
 
     /** @return list<string> */
@@ -85,12 +84,12 @@ final readonly class VerifySignature
         if (str_ends_with($pat, '/**')) {
             $base = substr($pat, 0, -3);
 
-            return $path === $base || str_starts_with($path, $base.'/');
+            return $path === $base || str_starts_with($path, $base . '/');
         }
 
         $re = preg_quote($pat, '#');
         $re = str_replace(['\*\*', '\*'], ['.*', '[^/]*'], $re);
-        $re = '#^'.$re.'$#';
+        $re = '#^' . $re . '$#';
 
         return (bool) preg_match($re, $path);
     }

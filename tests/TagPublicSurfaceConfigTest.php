@@ -11,7 +11,7 @@ final class TagPublicSurfaceConfigTest extends TestCase
 {
     public function testRuntimeSurfaceIncludesBulkAssignmentRoutes(): void
     {
-        $runtime = require __DIR__.'/../config/tag_runtime.php';
+        $runtime = require __DIR__ . '/../config/tag_runtime.php';
 
         self::assertIsArray($runtime);
         self::assertSame('POST /tag/assignments/bulk', $runtime['route']['assignments_bulk'] ?? null);

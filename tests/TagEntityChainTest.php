@@ -97,13 +97,13 @@ final class TagEntityChainTest extends TestCase
         $pdo = new \PDO('sqlite::memory:');
         $pdo->exec(
             'CREATE TABLE tag_entity ('
-            .'id TEXT PRIMARY KEY, '
-            .'tenant TEXT NOT NULL, '
-            .'slug TEXT NOT NULL, '
-            .'name TEXT NOT NULL, '
-            .'locale TEXT NOT NULL DEFAULT "en", '
-            .'weight INTEGER NOT NULL DEFAULT 0'
-            .')',
+            . 'id TEXT PRIMARY KEY, '
+            . 'tenant TEXT NOT NULL, '
+            . 'slug TEXT NOT NULL, '
+            . 'name TEXT NOT NULL, '
+            . 'locale TEXT NOT NULL DEFAULT "en", '
+            . 'weight INTEGER NOT NULL DEFAULT 0'
+            . ')',
         );
         $repo = new PdoTagEntityRepository($pdo);
         $service = new TagEntityService($repo, new SlugPolicy($pdo, new Slugifier()), new TagEntityPayloadNormalizer());

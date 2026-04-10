@@ -13,8 +13,7 @@ final readonly class SlugPolicy
         private Slugifier $slugifier,
         private array $reserved = [],
         private int $maxLen = 64,
-    ) {
-    }
+    ) {}
 
     public function make(string $tenant, string $source): string
     {
@@ -49,7 +48,7 @@ final readonly class SlugPolicy
             $slug = 'tag';
         }
 
-        return $this->isReserved($slug) ? $slug.'-x' : $slug;
+        return $this->isReserved($slug) ? $slug . '-x' : $slug;
     }
 
     private function nextAvailableSlug(string $tenant, string $base): string
@@ -68,7 +67,7 @@ final readonly class SlugPolicy
     {
         $cut = max(1, $this->maxLen - (1 + strlen($suffix)));
 
-        return substr($base, 0, $cut).'-'.$suffix;
+        return substr($base, 0, $cut) . '-' . $suffix;
     }
 
     private function exists(string $tenant, string $slug): bool

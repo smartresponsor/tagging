@@ -17,9 +17,7 @@ use App\Service\Core\Tag\TagRepositoryInterface;
 
 final readonly class PdoTagRepository implements TagRepositoryInterface
 {
-    public function __construct(private \PDO $pdo)
-    {
-    }
+    public function __construct(private \PDO $pdo) {}
 
     /** @param array<string, mixed> $params */
     private function execute(string $sql, array $params = []): \PDOStatement
@@ -139,7 +137,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
             $params[':exclude'] = $excludeTagId;
         }
 
-        $stmt = $this->execute($sql.' LIMIT 1', $params);
+        $stmt = $this->execute($sql . ' LIMIT 1', $params);
 
         return false !== $stmt->fetchColumn();
     }
@@ -154,7 +152,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
             $params[':exclude'] = $excludeTagId;
         }
 
-        $stmt = $this->execute($sql.' LIMIT 1', $params);
+        $stmt = $this->execute($sql . ' LIMIT 1', $params);
 
         return false !== $stmt->fetchColumn();
     }
@@ -170,10 +168,10 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         if ($hasQuery) {
             $stmt = $this->pdo->prepare(
                 'SELECT * FROM tag WHERE tenant=:tenant '
-                .'AND (slug ILIKE :q OR label ILIKE :q) '
-                .'ORDER BY created_at DESC LIMIT :l OFFSET :o',
+                . 'AND (slug ILIKE :q OR label ILIKE :q) '
+                . 'ORDER BY created_at DESC LIMIT :l OFFSET :o',
             );
-            $stmt->bindValue(':q', '%'.$query.'%');
+            $stmt->bindValue(':q', '%' . $query . '%');
         } else {
             $stmt = $this->pdo->prepare(
                 'SELECT * FROM tag WHERE tenant=:tenant ORDER BY created_at DESC LIMIT :l OFFSET :o',
@@ -199,8 +197,8 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     public function saveAssignment(string $tenantId, TagAssignment $a): void
     {
         $sql = 'INSERT INTO tag_assignment(tenant,id,tag_id,assigned_type,assigned_id,created_at) '
-            .'VALUES (:tenant,:id,:tag_id,:type,:aid,:created_at) '
-            .'ON CONFLICT (tenant,id) DO NOTHING';
+            . 'VALUES (:tenant,:id,:tag_id,:type,:aid,:created_at) '
+            . 'ON CONFLICT (tenant,id) DO NOTHING';
         $this->execute(
             $sql,
             [
@@ -252,7 +250,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     {
         $this->execute(
             'INSERT INTO tag_synonym(tenant,id,tag_id,label) VALUES (:tenant,:id,:tid,:label) '
-            .'ON CONFLICT (tenant,id) DO NOTHING',
+            . 'ON CONFLICT (tenant,id) DO NOTHING',
             [':tenant' => $tenantId, ':id' => $s->id(), ':tid' => $s->tagId(), ':label' => $s->label()],
         );
     }
@@ -274,7 +272,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     {
         $this->execute(
             'INSERT INTO tag_relation(tenant,id,from_tag_id,to_tag_id,type) VALUES (:tenant,:id,:f,:t,:type) '
-            .'ON CONFLICT (tenant,id) DO NOTHING',
+            . 'ON CONFLICT (tenant,id) DO NOTHING',
             [
                 ':tenant' => $tenantId,
                 ':id' => $r->id(),
@@ -378,7 +376,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     {
         $this->execute(
             'INSERT INTO tag_audit_log(tenant,id,action,entity_type,entity_id,details) '
-            .'VALUES (:tenant,:id,:a,:et,:eid,:d)',
+            . 'VALUES (:tenant,:id,:a,:et,:eid,:d)',
             [
                 ':tenant' => $tenantId,
                 ':id' => $record->id,
@@ -419,7 +417,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     {
         $this->execute(
             'INSERT INTO tag_policy(tenant,policy) VALUES (:tenant,:p) '
-            .'ON CONFLICT (tenant) DO UPDATE SET policy=EXCLUDED.policy',
+            . 'ON CONFLICT (tenant) DO UPDATE SET policy=EXCLUDED.policy',
             [':tenant' => $tenantId, ':p' => json_encode($policy, JSON_THROW_ON_ERROR)],
         );
     }
@@ -430,10 +428,10 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     public function facetTop(string $tenantId, string $assignedType, int $limit): array
     {
         $sql = 'SELECT t.id as "tagId", t.slug, t.label, v.cnt::int as cnt '
-            .'FROM tag_stats_view v '
-            .'JOIN tag t ON t.tenant=v.tenant AND t.id=v.tag_id '
-            .'WHERE v.tenant=:tenant AND v.assigned_type=:t '
-            .'ORDER BY v.cnt DESC, t.slug ASC LIMIT :l';
+            . 'FROM tag_stats_view v '
+            . 'JOIN tag t ON t.tenant=v.tenant AND t.id=v.tag_id '
+            . 'WHERE v.tenant=:tenant AND v.assigned_type=:t '
+            . 'ORDER BY v.cnt DESC, t.slug ASC LIMIT :l';
         $st = $this->pdo->prepare($sql);
         $st->bindValue(':tenant', $tenantId);
         $st->bindValue(':t', $assignedType);
@@ -449,11 +447,11 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     public function tagCloud(string $tenantId, int $limit): array
     {
         $sql = 'SELECT t.id as "tagId", t.slug, t.label, SUM(v.cnt)::int as cnt '
-            .'FROM tag_stats_view v '
-            .'JOIN tag t ON t.tenant=v.tenant AND t.id=v.tag_id '
-            .'WHERE v.tenant=:tenant '
-            .'GROUP BY t.id, t.slug, t.label '
-            .'ORDER BY SUM(v.cnt) DESC LIMIT :l';
+            . 'FROM tag_stats_view v '
+            . 'JOIN tag t ON t.tenant=v.tenant AND t.id=v.tag_id '
+            . 'WHERE v.tenant=:tenant '
+            . 'GROUP BY t.id, t.slug, t.label '
+            . 'ORDER BY SUM(v.cnt) DESC LIMIT :l';
         $st = $this->pdo->prepare($sql);
         $st->bindValue(':tenant', $tenantId);
         $st->bindValue(':l', $limit, \PDO::PARAM_INT);
@@ -466,7 +464,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     {
         $this->execute(
             'INSERT INTO tag_classification(tenant,id,scope,ref_id,key,value) VALUES (:tenant,:id,:scope,:ref,:k,:v) '
-            .'ON CONFLICT (tenant,id) DO UPDATE SET key=EXCLUDED.key, value=EXCLUDED.value',
+            . 'ON CONFLICT (tenant,id) DO UPDATE SET key=EXCLUDED.key, value=EXCLUDED.value',
             [
                 ':tenant' => $tenantId,
                 ':id' => $record->id,
@@ -493,7 +491,7 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     {
         $this->execute(
             'INSERT INTO tag_assignment_effect(tenant,id,assigned_type,assigned_id,key,value,source_scope,source_id) '
-            .'VALUES (:tenant,:id,:t,:a,:k,:v,:ss,:sid) ON CONFLICT (tenant,id) DO NOTHING',
+            . 'VALUES (:tenant,:id,:t,:a,:k,:v,:ss,:sid) ON CONFLICT (tenant,id) DO NOTHING',
             [
                 ':tenant' => $tenantId,
                 ':id' => $record->id,
@@ -533,8 +531,8 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
     {
         return $this->fetchAllAssoc(
             'SELECT t.id as tag_id FROM tag t '
-            .'JOIN tag_scheme s ON s.tenant=t.tenant '
-            .'WHERE t.tenant=:tenant AND s.name=:n',
+            . 'JOIN tag_scheme s ON s.tenant=t.tenant '
+            . 'WHERE t.tenant=:tenant AND s.name=:n',
             [':tenant' => $tenantId, ':n' => $schemeName],
         );
     }

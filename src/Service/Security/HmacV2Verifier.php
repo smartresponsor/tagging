@@ -13,8 +13,7 @@ final readonly class HmacV2Verifier
         private string $secret,
         private int $skewSec = 120,
         private NonceStore $nonce = new NonceStore(),
-    ) {
-    }
+    ) {}
 
     /** @param array<string,string> $headers */
     public function verify(string $method, string $path, string $body, array $headers): array
@@ -34,7 +33,7 @@ final readonly class HmacV2Verifier
             return ['ok' => false, 'code' => 401, 'msg' => 'timestamp_skew'];
         }
         $hash = hash('sha256', $body);
-        $payload = $ts."\n".$nonce."\n".strtoupper($method)."\n".$path."\n".$hash;
+        $payload = $ts . "\n" . $nonce . "\n" . strtoupper($method) . "\n" . $path . "\n" . $hash;
         $calc = hash_hmac('sha256', $payload, $this->secret);
         if (!hash_equals($calc, strtolower($sig))) {
             return ['ok' => false, 'code' => 403, 'msg' => 'signature_mismatch'];

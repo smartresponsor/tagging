@@ -11,10 +11,10 @@ final class TagFixtureTruthUnificationTest extends TestCase
 {
     public function testFixtureScriptsUseCanonicalPhpFixtureAndCatalog(): void
     {
-        $validate = file_get_contents(__DIR__.'/../tools/seed/tag-fixture-validate.php');
-        $seed = file_get_contents(__DIR__.'/../tools/seed/tag-seed.php');
-        $dryRun = file_get_contents(__DIR__.'/../tools/seed/tag-fixture-dry-run.php');
-        $loader = file_get_contents(__DIR__.'/../tools/seed/tag-demo-fixture-loader.php');
+        $validate = file_get_contents(__DIR__ . '/../tools/seed/tag-fixture-validate.php');
+        $seed = file_get_contents(__DIR__ . '/../tools/seed/tag-seed.php');
+        $dryRun = file_get_contents(__DIR__ . '/../tools/seed/tag-fixture-dry-run.php');
+        $loader = file_get_contents(__DIR__ . '/../tools/seed/tag-demo-fixture-loader.php');
 
         self::assertIsString($validate);
         self::assertIsString($seed);
@@ -33,7 +33,7 @@ final class TagFixtureTruthUnificationTest extends TestCase
 
     public function testFixtureValidateStillPassesAgainstCurrentCanonicalFixture(): void
     {
-        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../tools/seed/tag-fixture-validate.php');
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../tools/seed/tag-fixture-validate.php');
         $descriptorSpec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

@@ -10,7 +10,7 @@ final class TagObservabilityDocsTruthTest extends TestCase
 {
     public function testObservabilityDocDoesNotPromiseNonexistentMetricsRoute(): void
     {
-        $doc = file_get_contents(__DIR__.'/../docs/ops/observability.md');
+        $doc = file_get_contents(__DIR__ . '/../docs/ops/observability.md');
         self::assertIsString($doc);
 
         self::assertStringContainsString('there is **no shipped `/tag/_metrics` route**', $doc);

@@ -38,7 +38,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
 
     public function getBySlug(string $tenantId, string $slug): ?Tag
     {
-        return array_find($this->tags[$tenantId] ?? [], fn ($t) => $t->slug() === $slug);
+        return array_find($this->tags[$tenantId] ?? [], fn($t) => $t->slug() === $slug);
     }
 
     public function existsSlug(string $tenantId, string $slug, ?string $excludeTagId = null): bool
@@ -70,7 +70,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
             $q = mb_strtolower($query);
             $all = array_filter(
                 $all,
-                fn ($t) => str_contains(mb_strtolower($t->slug()), $q)
+                fn($t) => str_contains(mb_strtolower($t->slug()), $q)
                     || str_contains(mb_strtolower($t->label()), $q),
             );
         }
@@ -120,9 +120,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         ));
     }
 
-    public function saveSynonym(string $tenantId, TagSynonym $s): void
-    {
-    }
+    public function saveSynonym(string $tenantId, TagSynonym $s): void {}
 
     /**
      * @return array|TagSynonym[]
@@ -132,9 +130,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         return [];
     }
 
-    public function saveRelation(string $tenantId, TagRelation $r): void
-    {
-    }
+    public function saveRelation(string $tenantId, TagRelation $r): void {}
 
     /**
      * @return array|TagRelation[]
@@ -144,9 +140,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         return [];
     }
 
-    public function saveScheme(string $tenantId, TagScheme $s): void
-    {
-    }
+    public function saveScheme(string $tenantId, TagScheme $s): void {}
 
     public function getSchemeByName(string $tenantId, string $name): ?TagScheme
     {
@@ -168,9 +162,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         }
     }
 
-    public function setTagFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void
-    {
-    }
+    public function setTagFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void {}
 
     public function renameTag(string $tenantId, string $tagId, string $newLabel, string $newSlug): void
     {
@@ -181,17 +173,11 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         $this->tags[$tenantId][$tagId] = new Tag($t->id(), $newSlug, $newLabel, $t->createdAt());
     }
 
-    public function insertProposal(string $tenantId, string $id, string $type, string $payloadJson): void
-    {
-    }
+    public function insertProposal(string $tenantId, string $id, string $type, string $payloadJson): void {}
 
-    public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void
-    {
-    }
+    public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void {}
 
-    public function insertAudit(string $tenantId, TagAuditRecord $record): void
-    {
-    }
+    public function insertAudit(string $tenantId, TagAuditRecord $record): void {}
 
     /**
      * @return array|Tag[]
@@ -261,7 +247,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
 
     public function putClassification(string $tenantId, TagClassificationRecord $record): void
     {
-        $k = $tenantId.'|'.$record->scope.'|'.$record->refId;
+        $k = $tenantId . '|' . $record->scope . '|' . $record->refId;
         $this->class[$k] = $this->class[$k] ?? [];
         $this->class[$k][] = ['key' => $record->key, 'value' => $record->value];
     }
@@ -271,12 +257,12 @@ final class InMemoryTagRepository implements TagRepositoryInterface
      */
     public function listClassifications(string $tenantId, string $scope, string $refId): array
     {
-        return $this->class[$tenantId.'|'.$scope.'|'.$refId] ?? [];
+        return $this->class[$tenantId . '|' . $scope . '|' . $refId] ?? [];
     }
 
     public function putEffect(string $tenantId, TagEffectRecord $record): void
     {
-        $k = $tenantId.'|'.$record->sourceScope.'|'.$record->sourceId;
+        $k = $tenantId . '|' . $record->sourceScope . '|' . $record->sourceId;
         $this->effects[$k] = $this->effects[$k] ?? [];
         $this->effects[$k][] = [
             'assigned_type' => $record->assignedType,
@@ -288,7 +274,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
 
     public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void
     {
-        unset($this->effects[$tenantId.'|'.$sourceScope.'|'.$sourceId]);
+        unset($this->effects[$tenantId . '|' . $sourceScope . '|' . $sourceId]);
     }
 
     /**

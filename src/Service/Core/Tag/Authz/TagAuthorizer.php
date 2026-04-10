@@ -29,7 +29,7 @@ final class TagAuthorizer
             return true;
         } // unknown op => allow by default
 
-        return array_any($actorRoles, fn ($r) => in_array($r, $need, true));
+        return array_any($actorRoles, fn($r) => in_array($r, $need, true));
     }
 
     public function detectOp(string $method, string $path): string

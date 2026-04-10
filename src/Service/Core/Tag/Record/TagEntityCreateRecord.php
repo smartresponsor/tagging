@@ -12,8 +12,7 @@ final readonly class TagEntityCreateRecord
         public string $name,
         public string $locale,
         public int $weight,
-    ) {
-    }
+    ) {}
 
     /** @return array{id:string,slug:string,name:string,locale:string,weight:int} */
     public function toArray(): array

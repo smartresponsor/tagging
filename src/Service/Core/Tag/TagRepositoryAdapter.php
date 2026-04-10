@@ -20,8 +20,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         private TagWriteRepositoryInterface $tagWriteRepository,
         private TagReadRepositoryInterface $tagReadRepository,
         private TagPolicyRepositoryInterface $tagPolicyRepository,
-    ) {
-    }
+    ) {}
 
     public function saveTag(string $tenantId, Tag $tag): void
     {

@@ -10,7 +10,7 @@ final class RepoMapTruthAuditTest extends TestCase
 {
     public function testRepoMapReflectsCurrentCanonicalLayout(): void
     {
-        $repoMap = file_get_contents(__DIR__.'/../repo-map.md');
+        $repoMap = file_get_contents(__DIR__ . '/../repo-map.md');
         self::assertIsString($repoMap);
 
         self::assertStringContainsString('MANIFEST.json', $repoMap);

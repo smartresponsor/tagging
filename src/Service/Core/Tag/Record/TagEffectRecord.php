@@ -14,6 +14,5 @@ final readonly class TagEffectRecord
         public string $value,
         public string $sourceScope,
         public string $sourceId,
-    ) {
-    }
+    ) {}
 }

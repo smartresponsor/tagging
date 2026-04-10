@@ -12,6 +12,5 @@ class AssignmentRecord
         public string $entityType,
         public string $entityId,
         public string $createdAt,
-    ) {
-    }
+    ) {}
 }

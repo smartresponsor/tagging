@@ -7,9 +7,7 @@ namespace App\Http\Api\Tag;
 
 final readonly class SurfaceController
 {
-    public function __construct(private array $runtime = [])
-    {
-    }
+    public function __construct(private array $runtime = []) {}
 
     /** @return array<string,mixed> */
     public function surface(): array

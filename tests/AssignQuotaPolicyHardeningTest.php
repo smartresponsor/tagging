@@ -137,6 +137,6 @@ final class AssignQuotaPolicyHardeningTest extends TestCase
 
     public function testLegacyQuotaTreeIsRemoved(): void
     {
-        self::assertFileDoesNotExist(dirname(__DIR__).'/src/Service/Quota/Tag/TagQuota.php');
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/src/Service/Quota/Tag/TagQuota.php');
     }
 }

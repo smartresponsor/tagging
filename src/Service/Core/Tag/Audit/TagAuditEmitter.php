@@ -10,9 +10,7 @@ use Random\RandomException;
 
 final readonly class TagAuditEmitter
 {
-    public function __construct(private array $cfg, private ?TagWebhookSender $sender = null)
-    {
-    }
+    public function __construct(private array $cfg, private ?TagWebhookSender $sender = null) {}
 
     /**
      * @throws RandomException
@@ -36,7 +34,7 @@ final readonly class TagAuditEmitter
             $this->createDirectory($dir);
         }
         if (false !== $line) {
-            file_put_contents($path, $line."\n", FILE_APPEND);
+            file_put_contents($path, $line . "\n", FILE_APPEND);
         }
 
         $this->fanout($type, $payload);
@@ -69,7 +67,7 @@ final readonly class TagAuditEmitter
             return;
         }
 
-        set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn(): bool => true);
         try {
             mkdir($dir, 0777, true);
         } finally {

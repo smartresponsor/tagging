@@ -89,6 +89,6 @@ final class SearchServiceTotalTest extends TestCase
 
     private function cacheDir(string $suffix): string
     {
-        return sys_get_temp_dir().'/smartresponsor-tagging-search-'.$suffix.'-'.bin2hex(random_bytes(4));
+        return sys_get_temp_dir() . '/smartresponsor-tagging-search-' . $suffix . '-' . bin2hex(random_bytes(4));
     }
 }

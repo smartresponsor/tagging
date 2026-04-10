@@ -9,9 +9,7 @@ use Random\RandomException;
 
 final readonly class TagBulkService
 {
-    public function __construct(private TagBulkRepositoryInterface $repo)
-    {
-    }
+    public function __construct(private TagBulkRepositoryInterface $repo) {}
 
     /**
      * @throws RandomException

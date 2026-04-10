@@ -12,9 +12,7 @@ use Random\RandomException;
 
 final readonly class TagPropagationService
 {
-    public function __construct(private TagRepositoryContract $repo)
-    {
-    }
+    public function __construct(private TagRepositoryContract $repo) {}
 
     /**
      * @throws RandomException
@@ -114,7 +112,7 @@ final readonly class TagPropagationService
         $out = [];
         foreach ($pairs as $p) {
             foreach ($class as $c) {
-                $out[] = $p['assigned_type'].':'.$p['assigned_id'].' -> '.$c['key'].'='.$c['value'];
+                $out[] = $p['assigned_type'] . ':' . $p['assigned_id'] . ' -> ' . $c['key'] . '=' . $c['value'];
             }
         }
 

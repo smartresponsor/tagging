@@ -10,7 +10,7 @@ final class TagRouteCatalogContractInvariantTest extends TestCase
 {
     public function testCatalogPreservesExpectedReadAndWritePatterns(): void
     {
-        $catalog = require __DIR__.'/../config/tag_route_catalog.php';
+        $catalog = require __DIR__ . '/../config/tag_route_catalog.php';
         self::assertIsArray($catalog);
 
         $routes = [];
@@ -36,7 +36,7 @@ final class TagRouteCatalogContractInvariantTest extends TestCase
 
     public function testCatalogKeepsOperationalResponseHeadersVisible(): void
     {
-        $catalog = require __DIR__.'/../config/tag_route_catalog.php';
+        $catalog = require __DIR__ . '/../config/tag_route_catalog.php';
         self::assertIsArray($catalog);
 
         $routes = [];

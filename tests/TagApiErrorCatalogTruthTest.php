@@ -10,7 +10,7 @@ final class TagApiErrorCatalogTruthTest extends TestCase
 {
     public function testErrorCatalogDocumentsCurrentAssignmentTransportCodes(): void
     {
-        $doc = file_get_contents(__DIR__.'/../docs/api/error-catalog.md');
+        $doc = file_get_contents(__DIR__ . '/../docs/api/error-catalog.md');
         self::assertIsString($doc);
 
         self::assertStringContainsString('`invalid_tenant`', $doc);

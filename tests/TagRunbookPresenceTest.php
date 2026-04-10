@@ -10,7 +10,7 @@ final class TagRunbookPresenceTest extends TestCase
 {
     public function testRunbookExistsAndCoversCriticalOpsSteps(): void
     {
-        $doc = file_get_contents(__DIR__.'/../docs/ops/runbook.md');
+        $doc = file_get_contents(__DIR__ . '/../docs/ops/runbook.md');
 
         self::assertIsString($doc);
         self::assertStringContainsString('db:migrate', $doc);

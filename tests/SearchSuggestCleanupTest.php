@@ -43,9 +43,9 @@ final class SearchSuggestCleanupTest extends TestCase
             }
         };
 
-        $baseDir = sys_get_temp_dir().'/tagging-search-suggest-'.bin2hex(random_bytes(4));
-        $search = new SearchService($read, new SearchCache($baseDir.'/search', 60));
-        $suggest = new SuggestService($read, new SuggestCache($baseDir.'/suggest', 60));
+        $baseDir = sys_get_temp_dir() . '/tagging-search-suggest-' . bin2hex(random_bytes(4));
+        $search = new SearchService($read, new SearchCache($baseDir . '/search', 60));
+        $suggest = new SuggestService($read, new SuggestCache($baseDir . '/suggest', 60));
 
         $searchPayload = $search->search('demo', ' priority ', 10);
         $suggestPayload = $suggest->suggest('demo', ' pri ', 5);
@@ -83,9 +83,9 @@ final class SearchSuggestCleanupTest extends TestCase
             }
         };
 
-        $baseDir = sys_get_temp_dir().'/tagging-search-suggest-empty-'.bin2hex(random_bytes(4));
-        $search = new SearchService($read, new SearchCache($baseDir.'/search', 60));
-        $suggest = new SuggestService($read, new SuggestCache($baseDir.'/suggest', 60));
+        $baseDir = sys_get_temp_dir() . '/tagging-search-suggest-empty-' . bin2hex(random_bytes(4));
+        $search = new SearchService($read, new SearchCache($baseDir . '/search', 60));
+        $suggest = new SuggestService($read, new SuggestCache($baseDir . '/suggest', 60));
 
         self::assertSame(['items' => [], 'total' => 0, 'nextPageToken' => null, 'cacheHit' => false], $search->search('demo', '   ', 10));
         self::assertSame(['items' => [], 'cacheHit' => false], $suggest->suggest('demo', '   ', 5));
@@ -93,6 +93,6 @@ final class SearchSuggestCleanupTest extends TestCase
 
     public function testLegacySearchCacheTreeIsGone(): void
     {
-        self::assertDirectoryDoesNotExist(dirname(__DIR__).'/src/Cache/Search');
+        self::assertDirectoryDoesNotExist(dirname(__DIR__) . '/src/Cache/Search');
     }
 }

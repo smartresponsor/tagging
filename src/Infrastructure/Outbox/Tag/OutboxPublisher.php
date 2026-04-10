@@ -7,9 +7,7 @@ namespace App\Infrastructure\Outbox\Tag;
 
 final readonly class OutboxPublisher
 {
-    public function __construct(private \PDO $pdo)
-    {
-    }
+    public function __construct(private \PDO $pdo) {}
 
     /** @param array<string,mixed> $payload */
     public function publish(string $tenant, string $topic, array $payload): void

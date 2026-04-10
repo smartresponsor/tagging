@@ -12,8 +12,7 @@ final readonly class SearchService
     public function __construct(
         private TagReadModelInterface $read,
         private SearchCache $cache,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{items: array<int, array<string, mixed>>, total: int, nextPageToken: ?string, cacheHit: bool}

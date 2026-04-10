@@ -71,11 +71,11 @@ final class TagFileCacheStore
     private function key(string $namespace, string $tenant, array $segments): string
     {
         $normalizedSegments = array_map(
-            static fn (string|int $value): string => strtolower(trim((string) $value)),
+            static fn(string|int $value): string => strtolower(trim((string) $value)),
             $segments,
         );
 
-        $hash = sha1($namespace.'|'.$tenant.'|'.implode('|', $normalizedSegments));
+        $hash = sha1($namespace . '|' . $tenant . '|' . implode('|', $normalizedSegments));
         $slug = implode('__', array_map($this->safeSegment(...), $normalizedSegments));
         if ('' === $slug) {
             $slug = 'entry';

@@ -15,8 +15,7 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
         private TagEntityRepositoryInterface $repo,
         private SlugPolicy $slugPolicy,
         private TagEntityPayloadNormalizer $normalizer = new TagEntityPayloadNormalizer(),
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string,mixed> $payload
@@ -31,7 +30,7 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
 
         $normalized = $this->normalizer->normalizeCreate(
             $payload,
-            fn (string $name): string => $this->slugPolicy->make($tenant, $name),
+            fn(string $name): string => $this->slugPolicy->make($tenant, $name),
         );
         if (!$this->slugPolicy->validate($normalized['slug'])) {
             throw new \InvalidArgumentException('validation_failed');

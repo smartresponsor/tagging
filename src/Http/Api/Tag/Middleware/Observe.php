@@ -11,9 +11,7 @@ final readonly class Observe
 {
     private const array READ_METHODS = ['GET', 'HEAD', 'OPTIONS'];
 
-    public function __construct(private array $cfg)
-    {
-    }
+    public function __construct(private array $cfg) {}
 
     public function handle(array $request, callable $next): array
     {
@@ -72,7 +70,7 @@ final readonly class Observe
             return;
         }
 
-        file_put_contents($pathFile, $line."\n", FILE_APPEND | LOCK_EX);
+        file_put_contents($pathFile, $line . "\n", FILE_APPEND | LOCK_EX);
     }
 
     private function thresholdFor(string $op): int

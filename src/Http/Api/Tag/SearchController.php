@@ -13,8 +13,7 @@ final readonly class SearchController
     public function __construct(
         private SearchService $svc,
         private TagReadResponder $responder = new TagReadResponder(),
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{0:int,1:array<string,string>,2:string}

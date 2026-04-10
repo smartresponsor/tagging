@@ -11,7 +11,7 @@ final class RouteContractHardeningTest extends TestCase
 {
     public function testRuntimePublicSurfaceMatchesHostMinimalMetaRoutes(): void
     {
-        $runtime = require dirname(__DIR__).'/config/tag_runtime.php';
+        $runtime = require dirname(__DIR__) . '/config/tag_runtime.php';
         $surface = $runtime['public_surface'] ?? [];
 
         self::assertSame(['method' => 'GET', 'path' => '/tag/_status', 'name' => 'status'], $surface[0] ?? null);
@@ -20,7 +20,7 @@ final class RouteContractHardeningTest extends TestCase
 
     public function testSymfonyRouteConfigUsesCurrentControllerClasses(): void
     {
-        $route = (string) file_get_contents(__DIR__.'/../config/routes/tag.yaml');
+        $route = (string) file_get_contents(__DIR__ . '/../config/routes/tag.yaml');
 
         self::assertStringContainsString('App\\Http\\Api\\Tag\\StatusController::status', $route);
         self::assertStringContainsString('App\\Http\\Api\\Tag\\SurfaceController::surface', $route);

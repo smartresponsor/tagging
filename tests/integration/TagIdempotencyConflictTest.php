@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-require_once __DIR__.'/IntegrationDbTestCase.php';
+require_once __DIR__ . '/IntegrationDbTestCase.php';
 
 use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 use App\Service\Core\Tag\AssignService;
@@ -18,7 +18,7 @@ final class TagIdempotencyConflictTest extends IntegrationDbTestCase
         $pdo = $this->pdo();
         $pdo->exec(
             'INSERT INTO tag_entity (id, tenant, slug, name) VALUES ('
-            ."'tag-idem-conflict', 'tenant-idem-conflict', 'idem-conflict', 'Idem Conflict')",
+            . "'tag-idem-conflict', 'tenant-idem-conflict', 'idem-conflict', 'Idem Conflict')",
         );
 
         $service = new AssignService($pdo, new OutboxPublisher($pdo), new IdempotencyStore($pdo));
@@ -44,7 +44,7 @@ final class TagIdempotencyConflictTest extends IntegrationDbTestCase
         $outboxCount = (int) $pdo
             ->query(
                 'SELECT COUNT(*) FROM outbox_event '
-                ."WHERE tenant='tenant-idem-conflict' AND topic='tag.assigned'",
+                . "WHERE tenant='tenant-idem-conflict' AND topic='tag.assigned'",
             )
             ->fetchColumn();
 

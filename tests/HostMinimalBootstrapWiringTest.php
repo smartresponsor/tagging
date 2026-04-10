@@ -11,7 +11,7 @@ final class HostMinimalBootstrapWiringTest extends TestCase
 {
     public function testBootstrapResolvesSuggestControllerFactory(): void
     {
-        $container = require dirname(__DIR__).'/host-minimal/bootstrap.php';
+        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
 
         self::assertIsArray($container);
         self::assertArrayHasKey('suggestController', $container);

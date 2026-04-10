@@ -12,9 +12,9 @@ final class SdkSurfaceAuditTest extends TestCase
     public function testSdkTargetsPublicSurfaceOnly(): void
     {
         foreach ([
-            __DIR__.'/../sdk/README.md',
-            __DIR__.'/../sdk/php/tag/Client.php',
-            __DIR__.'/../sdk/ts/tag/client.ts',
+            __DIR__ . '/../sdk/README.md',
+            __DIR__ . '/../sdk/php/tag/Client.php',
+            __DIR__ . '/../sdk/ts/tag/client.ts',
         ] as $file) {
             $text = (string) file_get_contents($file);
             self::assertStringContainsString('/tag/_surface', $text);

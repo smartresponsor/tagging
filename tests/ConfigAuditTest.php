@@ -11,8 +11,8 @@ final class ConfigAuditTest extends TestCase
 {
     public function testRuntimeConfigSemantics(): void
     {
-        $quota = trim((string) file_get_contents(__DIR__.'/../config/tag_quota.yaml'));
-        $assignment = (string) file_get_contents(__DIR__.'/../config/tag_assignment.yaml');
+        $quota = trim((string) file_get_contents(__DIR__ . '/../config/tag_quota.yaml'));
+        $assignment = (string) file_get_contents(__DIR__ . '/../config/tag_assignment.yaml');
 
         self::assertSame('enforce: true', $quota);
         self::assertStringContainsString('driver: pdo', $assignment);

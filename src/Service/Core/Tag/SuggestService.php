@@ -12,9 +12,7 @@ use App\Cache\Store\Tag\SuggestCache;
  */
 final readonly class SuggestService
 {
-    public function __construct(private TagReadModelInterface $read, private SuggestCache $cache)
-    {
-    }
+    public function __construct(private TagReadModelInterface $read, private SuggestCache $cache) {}
 
     /**
      * @return array{items:array<int,array{slug:string,name:string}>, cacheHit:bool}

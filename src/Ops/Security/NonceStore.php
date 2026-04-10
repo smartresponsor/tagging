@@ -26,7 +26,7 @@ final class NonceStore
     public function putIfNew(string $nonce, int $ts): bool
     {
         $key = $this->key($nonce, $ts);
-        $path = $this->dir.'/'.$key;
+        $path = $this->dir . '/' . $key;
         $now = time();
 
         // GC occasionally
@@ -51,7 +51,7 @@ final class NonceStore
 
     private function key(string $nonce, int $ts): string
     {
-        return substr(hash('sha256', $nonce.'|'.$ts), 0, 40);
+        return substr(hash('sha256', $nonce . '|' . $ts), 0, 40);
     }
 
     private function gc(int $now): void
@@ -71,7 +71,7 @@ final class NonceStore
                 continue;
             }
 
-            $p = $this->dir.'/'.$f;
+            $p = $this->dir . '/' . $f;
             if (!is_file($p)) {
                 continue;
             }
@@ -100,7 +100,7 @@ final class NonceStore
                 continue;
             }
 
-            $p = $this->dir.'/'.$f;
+            $p = $this->dir . '/' . $f;
             if (!is_file($p)) {
                 continue;
             }

@@ -12,6 +12,5 @@ final readonly class TagClassificationRecord
         public string $refId,
         public string $key,
         public string $value,
-    ) {
-    }
+    ) {}
 }

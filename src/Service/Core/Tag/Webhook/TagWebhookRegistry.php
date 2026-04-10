@@ -7,9 +7,7 @@ namespace App\Service\Core\Tag\Webhook;
 
 final readonly class TagWebhookRegistry
 {
-    public function __construct(private string $path)
-    {
-    }
+    public function __construct(private string $path) {}
 
     /** @return array<int, array{url:string,secret?:string}> */
     public function list(): array
@@ -66,7 +64,7 @@ final readonly class TagWebhookRegistry
             return;
         }
 
-        set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn(): bool => true);
         try {
             mkdir($dir, 0700, true);
         } finally {

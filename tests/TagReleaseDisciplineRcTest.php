@@ -10,10 +10,10 @@ final class TagReleaseDisciplineRcTest extends TestCase
 {
     public function testCiAndPreflightIncludeReleaseAssetAndOpenApiSemanticsAudits(): void
     {
-        $composer = file_get_contents(__DIR__.'/../composer.json');
-        $preflight = file_get_contents(__DIR__.'/../tools/release/tag-preflight.php');
-        $ci = file_get_contents(__DIR__.'/../.github/workflows/ci.yml');
-        $ciAudit = file_get_contents(__DIR__.'/../tools/audit/tag-ci-workflow-audit.php');
+        $composer = file_get_contents(__DIR__ . '/../composer.json');
+        $preflight = file_get_contents(__DIR__ . '/../tools/release/tag-preflight.php');
+        $ci = file_get_contents(__DIR__ . '/../.github/workflows/ci.yml');
+        $ciAudit = file_get_contents(__DIR__ . '/../tools/audit/tag-ci-workflow-audit.php');
 
         self::assertIsString($composer);
         self::assertIsString($preflight);
@@ -38,7 +38,7 @@ final class TagReleaseDisciplineRcTest extends TestCase
 
     public function testReleaseWorkflowExistsAndPackagesRcBundle(): void
     {
-        $workflow = file_get_contents(__DIR__.'/../.github/workflows/release-rc.yml');
+        $workflow = file_get_contents(__DIR__ . '/../.github/workflows/release-rc.yml');
         self::assertIsString($workflow);
 
         self::assertStringContainsString("push:\n    tags:", $workflow);

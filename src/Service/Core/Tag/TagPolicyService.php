@@ -109,12 +109,12 @@ final readonly class TagPolicyService
 
     private function matchesAllowedPrefix(string $slug): bool
     {
-        return array_any($this->allowedPrefixes, fn ($prefix) => '' === $prefix || str_starts_with($slug, $prefix));
+        return array_any($this->allowedPrefixes, fn($prefix) => '' === $prefix || str_starts_with($slug, $prefix));
     }
 
     private function matchesAllowedRegex(string $slug): bool
     {
-        return array_any($this->allowedRegex, fn ($pattern) => $this->matchesPattern($pattern, $slug));
+        return array_any($this->allowedRegex, fn($pattern) => $this->matchesPattern($pattern, $slug));
     }
 
     private function matchesPattern(string $pattern, string $slug): bool
@@ -123,9 +123,9 @@ final readonly class TagPolicyService
             return false;
         }
 
-        set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn(): bool => true);
         try {
-            $match = preg_match('/'.$pattern.'/', $slug);
+            $match = preg_match('/' . $pattern . '/', $slug);
         } finally {
             restore_error_handler();
         }

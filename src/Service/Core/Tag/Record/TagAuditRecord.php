@@ -12,6 +12,5 @@ final readonly class TagAuditRecord
         public string $entityType,
         public string $entityId,
         public string $detailsJson,
-    ) {
-    }
+    ) {}
 }

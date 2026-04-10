@@ -6,9 +6,7 @@ namespace App\Service\Core\Tag;
 
 final class TagIdempotencyHelper
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string, not_found?:bool}|null

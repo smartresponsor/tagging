@@ -27,7 +27,7 @@ final class StatusControllerTest extends TestCase
 
     public function testStatusCanProbeDatabase(): void
     {
-        $payload = (new StatusController(static fn (): bool => true, 'test-version'))->status();
+        $payload = (new StatusController(static fn(): bool => true, 'test-version'))->status();
         self::assertSame('test-version', $payload['version']);
         self::assertSame(['available' => true, 'ok' => true], $payload['db']);
     }

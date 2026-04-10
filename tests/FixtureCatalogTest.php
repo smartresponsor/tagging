@@ -11,8 +11,8 @@ final class FixtureCatalogTest extends TestCase
 {
     public function testCatalogReferencesKnownFixtureIds(): void
     {
-        $fixture = require dirname(__DIR__).'/fixtures/tag-demo-fixture.php';
-        $catalog = require dirname(__DIR__).'/fixtures/tag-demo-catalog.php';
+        $fixture = require dirname(__DIR__) . '/fixtures/tag-demo-fixture.php';
+        $catalog = require dirname(__DIR__) . '/fixtures/tag-demo-catalog.php';
         $ids = array_column($fixture['tags'] ?? [], 'id');
 
         self::assertContains($catalog['primary_tag_id'], $ids);

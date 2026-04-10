@@ -85,7 +85,7 @@ final class RuntimePantherTest extends TestCase
                 continue;
             }
 
-            $candidate = rtrim($directory, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$binaryName;
+            $candidate = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $binaryName;
             if (is_file($candidate) && is_executable($candidate)) {
                 return $candidate;
             }

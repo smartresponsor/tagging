@@ -11,9 +11,7 @@ use Random\RandomException;
 
 final readonly class TagModerationService
 {
-    public function __construct(private TagRepositoryContract $repo)
-    {
-    }
+    public function __construct(private TagRepositoryContract $repo) {}
 
     /**
      * @throws \JsonException

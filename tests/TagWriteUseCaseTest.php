@@ -41,13 +41,9 @@ final class TagWriteUseCaseTest extends TestCase
                 throw $exception;
             }
 
-            public function patch(string $tenant, string $id, array $patch): void
-            {
-            }
+            public function patch(string $tenant, string $id, array $patch): void {}
 
-            public function delete(string $tenant, string $id): void
-            {
-            }
+            public function delete(string $tenant, string $id): void {}
         };
 
         $tx = new class implements TransactionRunnerInterface {
@@ -82,13 +78,9 @@ final class TagWriteUseCaseTest extends TestCase
                 return [];
             }
 
-            public function patch(string $tenant, string $id, array $patch): void
-            {
-            }
+            public function patch(string $tenant, string $id, array $patch): void {}
 
-            public function delete(string $tenant, string $id): void
-            {
-            }
+            public function delete(string $tenant, string $id): void {}
         };
 
         $tx = new class implements TransactionRunnerInterface {
@@ -123,9 +115,7 @@ final class TagWriteUseCaseTest extends TestCase
                 return [];
             }
 
-            public function patch(string $tenant, string $id, array $patch): void
-            {
-            }
+            public function patch(string $tenant, string $id, array $patch): void {}
 
             public function delete(string $tenant, string $id): void
             {

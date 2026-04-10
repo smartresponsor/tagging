@@ -10,7 +10,7 @@ final class TagRouteCatalogProjectionStrictnessTest extends TestCase
 {
     public function testCanonicalCatalogPreservesPublicFlagsAndResponseHeaders(): void
     {
-        $catalog = require __DIR__.'/../config/tag_route_catalog.php';
+        $catalog = require __DIR__ . '/../config/tag_route_catalog.php';
         self::assertIsArray($catalog);
 
         $routes = [];
@@ -40,7 +40,7 @@ final class TagRouteCatalogProjectionStrictnessTest extends TestCase
 
     public function testPublicSurfaceProjectionContainsOnlyPublicOperations(): void
     {
-        $surface = require __DIR__.'/../config/tag_public_surface.php';
+        $surface = require __DIR__ . '/../config/tag_public_surface.php';
         self::assertIsArray($surface);
 
         $routeMap = $surface['route'] ?? null;

@@ -11,8 +11,8 @@ final class TagRouteCatalogTruthTest extends TestCase
 {
     public function testPublicSurfaceIsProjectedFromCanonicalRouteCatalog(): void
     {
-        $catalog = require __DIR__.'/../config/tag_route_catalog.php';
-        $surface = require __DIR__.'/../config/tag_public_surface.php';
+        $catalog = require __DIR__ . '/../config/tag_route_catalog.php';
+        $surface = require __DIR__ . '/../config/tag_public_surface.php';
 
         self::assertIsArray($catalog);
         self::assertIsArray($surface);
@@ -25,18 +25,18 @@ final class TagRouteCatalogTruthTest extends TestCase
 
     public function testHostMinimalRouterDispatchesUsingCanonicalRouteCatalog(): void
     {
-        $routeFactory = require __DIR__.'/../host-minimal/route.php';
+        $routeFactory = require __DIR__ . '/../host-minimal/route.php';
         $calls = new \ArrayObject();
         $container = [
-            'runtime' => static fn (): array => ['version' => 'route-catalog-test'],
-            'tagController' => static fn (): object => new RouteCatalogSpyController($calls, 'tag'),
-            'assignController' => static fn (): object => new RouteCatalogSpyController($calls, 'assign'),
-            'assignmentReadController' => static fn (): object => new RouteCatalogSpyController($calls, 'assignment-read'),
-            'searchController' => static fn (): object => new RouteCatalogSpyController($calls, 'search'),
-            'suggestController' => static fn (): object => new RouteCatalogSpyController($calls, 'suggest'),
-            'webhookController' => static fn (): object => new RouteCatalogSpyController($calls, 'webhook'),
-            'statusController' => static fn (): object => new RouteCatalogStatusSpyController('status'),
-            'surfaceController' => static fn (): object => new RouteCatalogStatusSpyController('surface'),
+            'runtime' => static fn(): array => ['version' => 'route-catalog-test'],
+            'tagController' => static fn(): object => new RouteCatalogSpyController($calls, 'tag'),
+            'assignController' => static fn(): object => new RouteCatalogSpyController($calls, 'assign'),
+            'assignmentReadController' => static fn(): object => new RouteCatalogSpyController($calls, 'assignment-read'),
+            'searchController' => static fn(): object => new RouteCatalogSpyController($calls, 'search'),
+            'suggestController' => static fn(): object => new RouteCatalogSpyController($calls, 'suggest'),
+            'webhookController' => static fn(): object => new RouteCatalogSpyController($calls, 'webhook'),
+            'statusController' => static fn(): object => new RouteCatalogStatusSpyController('status'),
+            'surfaceController' => static fn(): object => new RouteCatalogStatusSpyController('surface'),
         ];
 
         $dispatch = $routeFactory($container);
@@ -48,7 +48,7 @@ final class TagRouteCatalogTruthTest extends TestCase
         self::assertSame('status', $statusPayload['marker']);
 
         $id = str_repeat('A', 26);
-        [$readCode, , $readBody] = $dispatch('GET', '/tag/'.$id, ['headers' => ['X-Tenant-Id' => 'demo']]);
+        [$readCode, , $readBody] = $dispatch('GET', '/tag/' . $id, ['headers' => ['X-Tenant-Id' => 'demo']]);
         $readPayload = json_decode($readBody, true, 512, JSON_THROW_ON_ERROR);
         self::assertSame(200, $readCode);
         self::assertSame('get', $readPayload['action']);
@@ -64,9 +64,7 @@ final class TagRouteCatalogTruthTest extends TestCase
 
 final readonly class RouteCatalogSpyController
 {
-    public function __construct(private \ArrayObject $calls, private string $name)
-    {
-    }
+    public function __construct(private \ArrayObject $calls, private string $name) {}
 
     public function create(array $request): array
     {
@@ -142,9 +140,7 @@ final readonly class RouteCatalogSpyController
 
 final readonly class RouteCatalogStatusSpyController
 {
-    public function __construct(private string $marker)
-    {
-    }
+    public function __construct(private string $marker) {}
 
     public function status(): array
     {

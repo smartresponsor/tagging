@@ -11,7 +11,7 @@ final class TagAdminShellSurfaceTest extends TestCase
 {
     public function testAdminShellExposesBulkSurfaceInMarkup(): void
     {
-        $html = file_get_contents(__DIR__.'/../admin/index.html');
+        $html = file_get_contents(__DIR__ . '/../admin/index.html');
 
         self::assertIsString($html);
         self::assertStringContainsString('data-tab="bulk"', $html);
@@ -23,7 +23,7 @@ final class TagAdminShellSurfaceTest extends TestCase
 
     public function testAdminShellScriptUsesFlatPayloadAssumptionAndBulkRoutes(): void
     {
-        $script = file_get_contents(__DIR__.'/../admin/app.js');
+        $script = file_get_contents(__DIR__ . '/../admin/app.js');
 
         self::assertIsString($script);
         self::assertStringContainsString("'/tag/assignments/bulk'", $script);

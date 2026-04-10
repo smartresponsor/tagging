@@ -31,7 +31,7 @@
         }
     },
     "scripts": {
-        "lint": "find src tests host-minimal tools -name \"*.php\" -print0 | xargs -0 -n1 php -l",
+        "lint": "php tools/lint.php",
         "lint:admin": "node --check admin/app.js",
         "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon.dist --memory-limit=512M",
         "cs:check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --using-cache=no",
@@ -117,6 +117,7 @@
         "cli:tag": "php tools/cli/tag.php help",
         "cli:tag:status": "php tools/cli/tag.php status --pretty",
         "cli:tag:surface": "php tools/cli/tag.php surface --pretty",
-        "test:cli": "vendor/bin/phpunit --filter CliCommandLayerTest"
+        "test:cli": "vendor/bin/phpunit --filter CliCommandLayerTest",
+        "hook:install": "php tools/git/install-hooks.php"
     }
 }

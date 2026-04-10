@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           coverage: none
       - uses: actions/setup-node@v4
         with:
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           coverage: none
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: composer run -n docs:openapi:publish
@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           coverage: none
           extensions: pdo, pdo_pgsql
       - run: composer install --no-interaction --no-progress --prefer-dist
@@ -109,7 +109,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           coverage: none
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: composer run -n docs:openapi:publish
@@ -147,7 +147,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           coverage: none
           extensions: curl, pdo, pdo_pgsql
       - run: composer install --no-interaction --no-progress --prefer-dist

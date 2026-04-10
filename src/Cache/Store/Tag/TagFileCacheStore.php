@@ -141,21 +141,6 @@ final class TagFileCacheStore
         return $preferredDir;
     }
 
-
-    private function createDirectory(string $dir): bool
-    {
-        if (is_dir($dir)) {
-            return true;
-        }
-
-        set_error_handler(static fn (): bool => true);
-        try {
-            return mkdir($dir, 0777, true) || is_dir($dir);
-        } finally {
-            restore_error_handler();
-        }
-    }
-
     private function ensureWritableDirectory(string $dir): bool
     {
         if (!is_dir($dir) && !$this->createDirectory($dir) && !is_dir($dir)) {
@@ -164,4 +149,14 @@ final class TagFileCacheStore
 
         return is_writable($dir);
     }
+
+    private function createDirectory(string $dir): bool
+    {
+        if (is_dir($dir)) {
+            return true;
+        }
+
+        return mkdir($dir, 0777, true) || is_dir($dir);
+    }
 }
+

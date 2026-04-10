@@ -82,25 +82,15 @@ final readonly class AssignService implements AssignOperationInterface
             return null;
         }
 
-        $checksum = hash('sha256', implode('|', [$tenant, $tagId, $entityType, $entityId]));
-        $state = $this->idem->begin($tenant, $idemKey, self::ACTION, $checksum);
-
-        return match ($state['state'] ?? null) {
-            'duplicate' => $this->duplicateResult($state),
-            'conflict' => ['ok' => false, 'conflict' => true, 'code' => 'idempotency_conflict'],
-            default => null,
-        };
-    }
-
-    /** @param array<string, mixed> $state
-     * @return array{ok:bool, duplicated:bool, conflict?:bool, code?:string}
-     */
-    private function duplicateResult(array $state): array
-    {
-        $result = is_array($state['result'] ?? null) ? $state['result'] : ['ok' => true];
-        $result['duplicated'] = true;
-
-        return $result;
+        return TagIdempotencyHelper::begin(
+            $this->idem,
+            $tenant,
+            self::ACTION,
+            $tagId,
+            $entityType,
+            $entityId,
+            $idemKey,
+        );
     }
 
     private function tagExists(string $tenant, string $tagId): bool

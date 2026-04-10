@@ -16,6 +16,7 @@
 /.idea/
 *.zip
 /var/
+/var/.php-cs-fixer.cache
 /tmp/*
 
 

@@ -70,8 +70,7 @@ function expectTuple(
     ?array $body = null,
     array $extraHeaders = [],
     array $allowedCodes = [200],
-): array
-{
+): array {
     [$code, $payload] = request($method, $path, $tenant, $body, $extraHeaders);
 
     return expectResponse($failureCode, $allowedCodes, $code, $payload);

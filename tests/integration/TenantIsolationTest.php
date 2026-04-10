@@ -29,12 +29,12 @@ final class TenantIsolationTest extends IntegrationDbTestCase
             ->fetchColumn();
         $tenantAOutbox = (int) $pdo
             ->query(
-                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.assigned'"
+                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.assigned'",
             )
             ->fetchColumn();
         $tenantBOutbox = (int) $pdo
             ->query(
-                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.assigned'"
+                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.assigned'",
             )
             ->fetchColumn();
 

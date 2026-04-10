@@ -9,7 +9,7 @@ use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 
 final readonly class AssignService implements AssignOperationInterface
 {
-    private const string ACTION = 'tag.assign';
+    private const ACTION = 'tag.assign';
 
     private TagErrorSink $errorSink;
 
@@ -128,7 +128,7 @@ final readonly class AssignService implements AssignOperationInterface
             'tag_id' => $tagId,
             'entity_type' => $entityType,
             'entity_id' => $entityId,
-            'at' => new \DateTimeImmutable()->format(DATE_ATOM),
+            'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
         ]);
     }
 

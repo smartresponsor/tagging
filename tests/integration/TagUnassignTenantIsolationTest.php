@@ -34,12 +34,12 @@ final class TagUnassignTenantIsolationTest extends IntegrationDbTestCase
             ->fetchColumn();
         $tenantAOutbox = (int) $pdo
             ->query(
-                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.unassigned'"
+                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-a' AND topic='tag.unassigned'",
             )
             ->fetchColumn();
         $tenantBOutbox = (int) $pdo
             ->query(
-                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.unassigned'"
+                "SELECT COUNT(*) FROM outbox_event WHERE tenant='tenant-b' AND topic='tag.unassigned'",
             )
             ->fetchColumn();
 

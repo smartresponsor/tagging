@@ -9,7 +9,7 @@ use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 
 final readonly class UnassignService implements UnassignOperationInterface
 {
-    private const string ACTION = 'tag.unassign';
+    private const ACTION = 'tag.unassign';
 
     private TagErrorSink $errorSink;
 
@@ -57,7 +57,7 @@ final readonly class UnassignService implements UnassignOperationInterface
                     'tag_id' => $tagId,
                     'entity_type' => $entityType,
                     'entity_id' => $entityId,
-                    'at' => new \DateTimeImmutable()->format(DATE_ATOM),
+                    'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
                 ]);
             }
 

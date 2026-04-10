@@ -45,7 +45,7 @@ final class UnassignServiceTest extends TestCase
             .'tenant TEXT NOT NULL, '
             .'id TEXT NOT NULL, '
             .'PRIMARY KEY (tenant, id)'
-            .')'
+            .')',
         );
         $pdo->exec(
             'CREATE TABLE tag_link ('
@@ -54,7 +54,7 @@ final class UnassignServiceTest extends TestCase
             .'entity_id TEXT NOT NULL, '
             .'tag_id TEXT NOT NULL, '
             .'PRIMARY KEY (tenant, entity_type, entity_id, tag_id)'
-            .')'
+            .')',
         );
 
         return $pdo;

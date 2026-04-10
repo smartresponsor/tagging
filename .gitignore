@@ -16,7 +16,7 @@
 /.idea/
 *.zip
 /var/
-/tmp/
+/tmp/*
 
 
 

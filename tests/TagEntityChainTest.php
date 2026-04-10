@@ -103,7 +103,7 @@ final class TagEntityChainTest extends TestCase
             .'name TEXT NOT NULL, '
             .'locale TEXT NOT NULL DEFAULT "en", '
             .'weight INTEGER NOT NULL DEFAULT 0'
-            .')'
+            .')',
         );
         $repo = new PdoTagEntityRepository($pdo);
         $service = new TagEntityService($repo, new SlugPolicy($pdo, new Slugifier()), new TagEntityPayloadNormalizer());

@@ -30,7 +30,7 @@ abstract class IntegrationDbTestCase extends TestCase
             .'tag_entity, '
             .'outbox_event, '
             .'idempotency_store '
-            .'RESTART IDENTITY CASCADE'
+            .'RESTART IDENTITY CASCADE',
         );
     }
 

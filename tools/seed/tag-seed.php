@@ -19,12 +19,12 @@ $insertTag = $pdo->prepare(
     . 'id = EXCLUDED.id, '
     . 'name = EXCLUDED.name, '
     . 'locale = EXCLUDED.locale, '
-    . 'weight = EXCLUDED.weight'
+    . 'weight = EXCLUDED.weight',
 );
 $insertLink = $pdo->prepare(
     'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) '
     . 'VALUES (:tenant,:entity_type,:entity_id,:tag_id) '
-    . 'ON CONFLICT DO NOTHING'
+    . 'ON CONFLICT DO NOTHING',
 );
 
 foreach (($data['tags'] ?? []) as $tag) {

@@ -11,7 +11,9 @@ final class TagRouteCatalogParserRegressionTest extends TestCase
     public function testParserIgnoresMalformedTopLevelRouteLikeLines(): void
     {
         $fixture = sys_get_temp_dir().'/tag-route-parser-'.bin2hex(random_bytes(6)).'.yaml';
-        file_put_contents($fixture, <<<'YAML'
+        file_put_contents(
+            $fixture,
+            <<<'YAML'
 service: tag
 runtime: host-minimal
 version: parser-regression
@@ -26,7 +28,7 @@ operation: fake-top-level-route
     method: GET
     path: /tag/_surface
     response_header: X-Tag-Surface-Version
-YAML
+YAML,
         );
 
         $catalog = require __DIR__.'/../config/tag_route_catalog.php';
@@ -44,7 +46,9 @@ YAML
     public function testParserPreservesQuotedValuesAndBooleanFlags(): void
     {
         $fixture = sys_get_temp_dir().'/tag-route-parser-'.bin2hex(random_bytes(6)).'.yaml';
-        file_put_contents($fixture, <<<'YAML'
+        file_put_contents(
+            $fixture,
+            <<<'YAML'
 service: 'tag'
 runtime: "host-minimal"
 version: quoted-values
@@ -58,7 +62,7 @@ routes:
     public: false
     method: GET
     path: '/tag/_webhooks'
-YAML
+YAML,
         );
 
         require_once __DIR__.'/../config/tag_route_catalog.php';

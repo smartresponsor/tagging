@@ -157,7 +157,7 @@ return (static function (): array {
         $container->share(
             'webhookRegistry',
             static fn(): TagWebhookRegistry => new TagWebhookRegistry(
-                $get('webhookConfig')['registry_path'] ?? 'report/webhook/registry.json'
+                $get('webhookConfig')['registry_path'] ?? 'report/webhook/registry.json',
             ),
         );
         $container->share(

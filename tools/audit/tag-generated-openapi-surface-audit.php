@@ -19,8 +19,8 @@ $generatedText = file_get_contents($generated) ?: '';
 $indexText = file_get_contents($index) ?: '';
 
 if ($sourceText !== $generatedText) {
-    fwrite(STDERR, "Generated OpenAPI artifact is out of sync with source contract.
-");
+    fwrite(STDERR, 'Generated OpenAPI artifact is out of sync with source contract.
+');
     exit(1);
 }
 

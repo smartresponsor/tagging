@@ -171,12 +171,12 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
             $stmt = $this->pdo->prepare(
                 'SELECT * FROM tag WHERE tenant=:tenant '
                 .'AND (slug ILIKE :q OR label ILIKE :q) '
-                .'ORDER BY created_at DESC LIMIT :l OFFSET :o'
+                .'ORDER BY created_at DESC LIMIT :l OFFSET :o',
             );
             $stmt->bindValue(':q', '%'.$query.'%');
         } else {
             $stmt = $this->pdo->prepare(
-                'SELECT * FROM tag WHERE tenant=:tenant ORDER BY created_at DESC LIMIT :l OFFSET :o'
+                'SELECT * FROM tag WHERE tenant=:tenant ORDER BY created_at DESC LIMIT :l OFFSET :o',
             );
         }
         $stmt->bindValue(':tenant', $tenantId);

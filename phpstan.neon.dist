@@ -5,4 +5,4 @@ parameters:
         - tests
     bootstrapFiles:
         - phpstan.bootstrap.php
-    tmpDir: /tmp/smartresponsor-tagging/phpstan
+    tmpDir: var/smartresponsor-tagging/phpstan

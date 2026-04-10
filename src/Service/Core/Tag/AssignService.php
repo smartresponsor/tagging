@@ -9,7 +9,7 @@ use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 
 final readonly class AssignService implements AssignOperationInterface
 {
-    private const ACTION = 'tag.assign';
+    private const string ACTION = 'tag.assign';
 
     private TagErrorSink $errorSink;
 

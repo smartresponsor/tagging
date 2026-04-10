@@ -9,7 +9,7 @@ use App\Infrastructure\Outbox\Tag\OutboxPublisher;
 
 final readonly class UnassignService implements UnassignOperationInterface
 {
-    private const ACTION = 'tag.unassign';
+    private const string ACTION = 'tag.unassign';
 
     private TagErrorSink $errorSink;
 

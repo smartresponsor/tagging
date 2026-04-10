@@ -88,7 +88,7 @@ final readonly class TagWebhookSender
             if ($n >= $limit) {
                 break;
             }
-            $fp = $this->openFile($f, 'c+');
+            $fp = $this->openFile($f);
             if (!is_resource($fp)) {
                 continue;
             }

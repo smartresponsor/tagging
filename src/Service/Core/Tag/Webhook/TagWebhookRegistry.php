@@ -29,7 +29,7 @@ final readonly class TagWebhookRegistry
         $items[] = ['url' => $url] + ($secret ? ['secret' => $secret] : []);
         $dir = dirname($this->path);
         if (!is_dir($dir)) {
-            @mkdir($dir, 0700, true);
+            $this->createDirectory($dir);
         }
         file_put_contents(
             $this->path,
@@ -57,6 +57,20 @@ final readonly class TagWebhookRegistry
             if (!filter_var($host, FILTER_VALIDATE_IP, $flags)) {
                 throw new \InvalidArgumentException('webhook_url_forbidden');
             }
+        }
+    }
+
+    private function createDirectory(string $dir): void
+    {
+        if (is_dir($dir)) {
+            return;
+        }
+
+        $previous = set_error_handler(static fn (): bool => true);
+        try {
+            mkdir($dir, 0700, true);
+        } finally {
+            restore_error_handler();
         }
     }
 }

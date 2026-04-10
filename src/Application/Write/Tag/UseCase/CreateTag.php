@@ -11,13 +11,15 @@ use App\Application\Write\Tag\Dto\TagResult;
 use App\Cache\Store\Tag\SearchCache;
 use App\Cache\Store\Tag\SuggestCache;
 use App\Cache\Store\Tag\TagQueryCacheInvalidator;
+use App\Service\Core\Tag\Record\TagEntityCreateRecord;
 use App\Service\Core\Tag\Slug\SlugPolicy;
 use App\Service\Core\Tag\TagEntityRepositoryInterface;
 use App\Service\Core\Tag\TransactionRunnerInterface;
+use Random\RandomException;
 
 final readonly class CreateTag implements CreateTagInterface
 {
-    private readonly TagQueryCacheInvalidator $cacheInvalidator;
+    private TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
         private TagEntityRepositoryInterface $repo,
@@ -67,7 +69,10 @@ final readonly class CreateTag implements CreateTagInterface
         try {
             /** @var array<string,mixed> $created */
             $created = $this->transaction->run(function () use ($command, $slug, $name, $locale, $weight): array {
-                return $this->repo->create($command->tenant, $this->ulid(), $slug, $name, $locale, $weight);
+                return $this->repo->create(
+                    $command->tenant,
+                    new TagEntityCreateRecord($this->ulid(), $slug, $name, $locale, $weight),
+                );
             });
 
             $this->cacheInvalidator->clearTenant($command->tenant);
@@ -82,7 +87,7 @@ final readonly class CreateTag implements CreateTagInterface
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     private function ulid(): string
     {

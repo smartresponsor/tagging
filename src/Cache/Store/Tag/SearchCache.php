@@ -24,7 +24,11 @@ final readonly class SearchCache
         $this->store->clearTenant('search', $tenant);
     }
 
-    /** @param array<string,mixed> $data */
+    /**
+     * @param array<string,mixed> $data
+     *
+     * @throws \JsonException
+     */
     public function set(string $tenant, string $q, int $limit, int $offset, array $data): void
     {
         $this->store->set('search', $tenant, [$q, $limit, $offset], $data);

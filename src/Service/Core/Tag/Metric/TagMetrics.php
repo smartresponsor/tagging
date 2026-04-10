@@ -64,7 +64,7 @@ final class TagMetrics
      */
     private static function split(string $key): array
     {
-        if (preg_match('/^([^{]+)(\{.*\})$/', $key, $m)) {
+        if (preg_match('/^([^{]+)(\{.*})$/', $key, $m)) {
             return [$m[1], $m[2]];
         }
 

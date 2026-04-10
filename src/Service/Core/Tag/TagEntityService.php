@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
+use App\Service\Core\Tag\Record\TagEntityCreateRecord;
 use App\Service\Core\Tag\Slug\SlugPolicy;
 
 final readonly class TagEntityService implements TagEntityQueryServiceInterface
@@ -33,11 +34,13 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
 
         return $this->repo->create(
             $tenant,
-            $this->ulid(),
-            $normalized['slug'],
-            $normalized['name'],
-            $normalized['locale'],
-            $normalized['weight'],
+            new TagEntityCreateRecord(
+                $this->ulid(),
+                $normalized['slug'],
+                $normalized['name'],
+                $normalized['locale'],
+                $normalized['weight'],
+            ),
         );
     }
 

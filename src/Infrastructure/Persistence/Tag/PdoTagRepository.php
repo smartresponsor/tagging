@@ -10,6 +10,9 @@ use App\Entity\Core\Tag\TagAssignment;
 use App\Entity\Core\Tag\TagRelation;
 use App\Entity\Core\Tag\TagScheme;
 use App\Entity\Core\Tag\TagSynonym;
+use App\Service\Core\Tag\Record\TagAuditRecord;
+use App\Service\Core\Tag\Record\TagClassificationRecord;
+use App\Service\Core\Tag\Record\TagEffectRecord;
 use App\Service\Core\Tag\TagRepositoryInterface;
 
 final readonly class PdoTagRepository implements TagRepositoryInterface
@@ -49,7 +52,11 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         return new Tag($row['id'], $row['slug'], $row['label'], new \DateTimeImmutable($row['created_at']));
     }
 
-    /** @param array<string, mixed> $row */
+    /**
+     * @param array<string, mixed> $row
+     *
+     * @throws \DateMalformedStringException
+     */
     private function hydrateAssignment(array $row): TagAssignment
     {
         return new TagAssignment(
@@ -367,24 +374,18 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         );
     }
 
-    public function insertAudit(
-        string $tenantId,
-        string $id,
-        string $action,
-        string $entityType,
-        string $entityId,
-        string $detailsJson,
-    ): void {
+    public function insertAudit(string $tenantId, TagAuditRecord $record): void
+    {
         $this->execute(
             'INSERT INTO tag_audit_log(tenant,id,action,entity_type,entity_id,details) '
             .'VALUES (:tenant,:id,:a,:et,:eid,:d)',
             [
                 ':tenant' => $tenantId,
-                ':id' => $id,
-                ':a' => $action,
-                ':et' => $entityType,
-                ':eid' => $entityId,
-                ':d' => $detailsJson,
+                ':id' => $record->id,
+                ':a' => $record->action,
+                ':et' => $record->entityType,
+                ':eid' => $record->entityId,
+                ':d' => $record->detailsJson,
             ],
         );
     }
@@ -461,24 +462,18 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         return $st->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function putClassification(
-        string $tenantId,
-        string $id,
-        string $scope,
-        string $refId,
-        string $key,
-        string $value,
-    ): void {
+    public function putClassification(string $tenantId, TagClassificationRecord $record): void
+    {
         $this->execute(
             'INSERT INTO tag_classification(tenant,id,scope,ref_id,key,value) VALUES (:tenant,:id,:scope,:ref,:k,:v) '
             .'ON CONFLICT (tenant,id) DO UPDATE SET key=EXCLUDED.key, value=EXCLUDED.value',
             [
                 ':tenant' => $tenantId,
-                ':id' => $id,
-                ':scope' => $scope,
-                ':ref' => $refId,
-                ':k' => $key,
-                ':v' => $value,
+                ':id' => $record->id,
+                ':scope' => $record->scope,
+                ':ref' => $record->refId,
+                ':k' => $record->key,
+                ':v' => $record->value,
             ],
         );
     }
@@ -494,28 +489,20 @@ final readonly class PdoTagRepository implements TagRepositoryInterface
         );
     }
 
-    public function putEffect(
-        string $tenantId,
-        string $id,
-        string $assignedType,
-        string $assignedId,
-        string $key,
-        string $value,
-        string $sourceScope,
-        string $sourceId,
-    ): void {
+    public function putEffect(string $tenantId, TagEffectRecord $record): void
+    {
         $this->execute(
             'INSERT INTO tag_assignment_effect(tenant,id,assigned_type,assigned_id,key,value,source_scope,source_id) '
             .'VALUES (:tenant,:id,:t,:a,:k,:v,:ss,:sid) ON CONFLICT (tenant,id) DO NOTHING',
             [
                 ':tenant' => $tenantId,
-                ':id' => $id,
-                ':t' => $assignedType,
-                ':a' => $assignedId,
-                ':k' => $key,
-                ':v' => $value,
-                ':ss' => $sourceScope,
-                ':sid' => $sourceId,
+                ':id' => $record->id,
+                ':t' => $record->assignedType,
+                ':a' => $record->assignedId,
+                ':k' => $record->key,
+                ':v' => $record->value,
+                ':ss' => $record->sourceScope,
+                ':sid' => $record->sourceId,
             ],
         );
     }

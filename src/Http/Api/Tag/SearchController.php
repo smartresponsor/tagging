@@ -16,7 +16,11 @@ final readonly class SearchController
     ) {
     }
 
-    /** @return array{0:int,1:array<string,string>,2:string} */
+    /**
+     * @return array{0:int,1:array<string,string>,2:string}
+     *
+     * @throws \JsonException
+     */
     public function get(array $req): array
     {
         $tenant = TagHttpRequest::tenantOrNull($req);

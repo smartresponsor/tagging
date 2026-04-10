@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Service\Core\Tag\Webhook;
 
 use App\Service\Core\Tag\Metric\TagMetrics;
+use Random\RandomException;
 
 final readonly class TagWebhookSender
 {
@@ -49,7 +50,7 @@ final readonly class TagWebhookSender
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function enqueue(string $url, string $secret, string $type, array $payload): void
     {
@@ -65,7 +66,7 @@ final readonly class TagWebhookSender
         ];
         $dir = $this->dir();
         if (!is_dir($dir)) {
-            @mkdir($dir, $this->dirMode(), true);
+            $this->createDirectory($dir);
         }
         $this->writeJsonFile($dir.'/'.$job['id'].'.json', $job);
     }
@@ -87,7 +88,7 @@ final readonly class TagWebhookSender
             if ($n >= $limit) {
                 break;
             }
-            $fp = @fopen($f, 'c+');
+            $fp = $this->openFile($f, 'c+');
             if (!is_resource($fp)) {
                 continue;
             }
@@ -98,7 +99,7 @@ final readonly class TagWebhookSender
             $contents = stream_get_contents($fp);
             $j = json_decode((string) $contents, true);
             if (!is_array($j)) {
-                @unlink($f);
+                $this->deleteFile($f);
                 fclose($fp);
                 continue;
             }
@@ -109,7 +110,7 @@ final readonly class TagWebhookSender
 
             $ok = $this->deliver($j);
             if ($ok) {
-                @unlink($f);
+                $this->deleteFile($f);
                 fclose($fp);
                 ++$n;
                 continue;
@@ -117,7 +118,7 @@ final readonly class TagWebhookSender
             $j['attempt'] = (int) ($j['attempt'] ?? 0) + 1;
             if ($j['attempt'] > $this->retries()) {
                 $this->toDlq($j);
-                @unlink($f);
+                $this->deleteFile($f);
                 fclose($fp);
                 TagMetrics::inc('tag_webhook_dlq_total', 1.0, ['url' => $j['url'], 'type' => $j['type']]);
             } else {
@@ -185,7 +186,7 @@ final readonly class TagWebhookSender
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     private function writeJsonFile(string $path, array $payload): void
     {
@@ -212,5 +213,40 @@ final readonly class TagWebhookSender
         rewind($fp);
         fwrite($fp, $json);
         fflush($fp);
+    }
+
+    private function createDirectory(string $dir): void
+    {
+        if (is_dir($dir)) {
+            return;
+        }
+
+        $previous = set_error_handler(static fn (): bool => true);
+        try {
+            mkdir($dir, $this->dirMode(), true);
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    /** @return resource|false */
+    private function openFile(string $path, string $mode)
+    {
+        $previous = set_error_handler(static fn (): bool => true);
+        try {
+            return fopen($path, $mode);
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    private function deleteFile(string $path): void
+    {
+        $previous = set_error_handler(static fn (): bool => true);
+        try {
+            unlink($path);
+        } finally {
+            restore_error_handler();
+        }
     }
 }

@@ -10,6 +10,9 @@ use App\Entity\Core\Tag\TagAssignment;
 use App\Entity\Core\Tag\TagRelation;
 use App\Entity\Core\Tag\TagScheme;
 use App\Entity\Core\Tag\TagSynonym;
+use App\Service\Core\Tag\Record\TagAuditRecord;
+use App\Service\Core\Tag\Record\TagClassificationRecord;
+use App\Service\Core\Tag\Record\TagEffectRecord;
 
 interface TagRepositoryInterface
 {
@@ -64,14 +67,7 @@ interface TagRepositoryInterface
 
     public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void;
 
-    public function insertAudit(
-        string $tenantId,
-        string $id,
-        string $action,
-        string $entityType,
-        string $entityId,
-        string $detailsJson,
-    ): void;
+    public function insertAudit(string $tenantId, TagAuditRecord $record): void;
 
     /** @return Tag[] */
     public function listAllTags(string $tenantId): array;
@@ -86,28 +82,12 @@ interface TagRepositoryInterface
     /** @return array<int, array{tagId:string, slug:string, label:string, cnt:int}> */
     public function tagCloud(string $tenantId, int $limit): array;
 
-    public function putClassification(
-        string $tenantId,
-        string $id,
-        string $scope,
-        string $refId,
-        string $key,
-        string $value,
-    ): void;
+    public function putClassification(string $tenantId, TagClassificationRecord $record): void;
 
     /** @return array<int, array{key:string,value:string}> */
     public function listClassifications(string $tenantId, string $scope, string $refId): array;
 
-    public function putEffect(
-        string $tenantId,
-        string $id,
-        string $assignedType,
-        string $assignedId,
-        string $key,
-        string $value,
-        string $sourceScope,
-        string $sourceId,
-    ): void;
+    public function putEffect(string $tenantId, TagEffectRecord $record): void;
 
     public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void;
 

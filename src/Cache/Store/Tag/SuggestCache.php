@@ -24,7 +24,11 @@ final readonly class SuggestCache
         $this->store->clearTenant('suggest', $tenant);
     }
 
-    /** @param array<string,mixed> $data */
+    /**
+     * @param array<string,mixed> $data
+     *
+     * @throws \JsonException
+     */
     public function set(string $tenant, string $q, int $limit, array $data): void
     {
         $this->store->set('suggest', $tenant, [$q, $limit], $data);

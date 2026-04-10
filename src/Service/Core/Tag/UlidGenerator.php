@@ -7,10 +7,12 @@ namespace App\Service\Core\Tag;
 
 // Minimal ULID generator compatible with PHP 8.2 (no external deps).
 
+use Random\RandomException;
+
 final class UlidGenerator
 {
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public static function generate(): string
     {

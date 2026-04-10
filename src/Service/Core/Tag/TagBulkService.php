@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
+use Random\RandomException;
+
 final readonly class TagBulkService
 {
     public function __construct(private TagBulkRepositoryInterface $repo)
@@ -12,7 +14,7 @@ final readonly class TagBulkService
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function bulkImport(string $tenantId, array $items): string
     {

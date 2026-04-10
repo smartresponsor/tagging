@@ -7,7 +7,7 @@ namespace App\Service\Core\Tag;
 
 final readonly class IdempotencyStore
 {
-    public function __construct(private readonly \PDO $pdo)
+    public function __construct(private \PDO $pdo)
     {
     }
 

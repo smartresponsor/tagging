@@ -13,7 +13,7 @@ return static function (array $container): callable {
     $json = new JsonResponder();
     $catalog = require dirname(__DIR__) . '/config/tag_route_catalog.php';
     $controller = static fn(string $id): object => $container[$id]();
-    $runtimeVersion = static fn(): string => (string) (($container['runtime']()['version'] ?? 'dev'));
+    $runtimeVersion = static fn(): string => $container['runtime']()['version'] ?? 'dev';
     $routeDefinitions = is_array($catalog['routes'] ?? null) ? $catalog['routes'] : [];
     $buildHandler = static function (array $definition) use ($json, $controller, $runtimeVersion): callable {
         $serviceId = (string) ($definition['service_id'] ?? '');
@@ -21,7 +21,7 @@ return static function (array $container): callable {
         $path = (string) ($definition['path'] ?? '');
         $responseHeader = (string) ($definition['response_header'] ?? '');
         if ('' === $serviceId || '' === $action) {
-            throw new \LogicException('invalid_route_catalog_entry');
+            throw new LogicException('invalid_route_catalog_entry');
         }
 
         if ('' !== $responseHeader) {

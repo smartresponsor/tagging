@@ -74,7 +74,7 @@ final class PrometheusExporter
         ksort($labels);
         $pairs = [];
         foreach ($labels as $k => $v) {
-            $pairs[] = $k.'='.(string) $v;
+            $pairs[] = $k.'='.$v;
         }
 
         return implode(',', $pairs);
@@ -139,7 +139,7 @@ final class PrometheusExporter
         }
         $pairs = [];
         foreach ($labels as $k => $v) {
-            $pairs[] = (string) $k.'="'.str_replace('"', '\\"', (string) $v).'"';
+            $pairs[] = $k.'="'.str_replace('"', '\\"', (string) $v).'"';
         }
 
         return '{'.implode(',', $pairs).'}';

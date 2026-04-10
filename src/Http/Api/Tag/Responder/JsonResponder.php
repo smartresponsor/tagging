@@ -7,7 +7,7 @@ namespace App\Http\Api\Tag\Responder;
 
 final class JsonResponder
 {
-    private const JSON_FLAGS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+    private const int JSON_FLAGS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function respond(int $status, array $payload, array $headers = [], bool $noStore = true): array

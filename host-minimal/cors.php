@@ -8,8 +8,8 @@ declare(strict_types=1);
  */
 function tag_cors_headers(?string $requestOrigin, ?string $configuredOrigin): array
 {
-    $configured = trim((string) ($configuredOrigin ?? '*'));
-    $origin = trim((string) ($requestOrigin ?? ''));
+    $configured = trim($configuredOrigin ?? '*');
+    $origin = trim($requestOrigin ?? '');
 
     if ($configured === '') {
         $configured = '*';

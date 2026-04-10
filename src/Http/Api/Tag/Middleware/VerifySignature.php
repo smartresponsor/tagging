@@ -10,8 +10,8 @@ use App\Service\Security\HmacV2Verifier;
 
 final readonly class VerifySignature
 {
-    private const DEFAULT_INCLUDE = ['/tag/**'];
-    private const DEFAULT_EXCLUDE = ['/tag/_status', '/tag/_surface', '/tag/_metrics'];
+    private const array DEFAULT_INCLUDE = ['/tag/**'];
+    private const array DEFAULT_EXCLUDE = ['/tag/_status', '/tag/_surface', '/tag/_metrics'];
 
     public function __construct(
         private HmacV2Verifier $verifier,
@@ -44,23 +44,16 @@ final readonly class VerifySignature
 
     private function isEnabled(): bool
     {
-        return (bool) ($this->cfg['enforce'] ?? false) && '' !== trim((string) ($this->cfg['secret'] ?? ''));
+        return ($this->cfg['enforce'] ?? false) && '' !== trim((string) ($this->cfg['secret'] ?? ''));
     }
 
     private function shouldApply(string $path): bool
     {
-        foreach ($this->excludePatterns() as $pat) {
-            if ($this->match((string) $pat, $path)) {
-                return false;
-            }
-        }
-        foreach ($this->includePatterns() as $pat) {
-            if ($this->match((string) $pat, $path)) {
-                return true;
-            }
+        if (array_any($this->excludePatterns(), fn ($pat) => $this->match($pat, $path))) {
+            return false;
         }
 
-        return false;
+        return array_any($this->includePatterns(), fn ($pat) => $this->match($pat, $path));
     }
 
     /** @return list<string> */

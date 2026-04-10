@@ -16,7 +16,7 @@ use App\Service\Core\Tag\TransactionRunnerInterface;
 
 final readonly class DeleteTag implements DeleteTagInterface
 {
-    private readonly TagQueryCacheInvalidator $cacheInvalidator;
+    private TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
         private TagEntityRepositoryInterface $repo,

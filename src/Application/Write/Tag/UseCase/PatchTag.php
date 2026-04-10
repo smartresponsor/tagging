@@ -16,7 +16,7 @@ use App\Service\Core\Tag\TransactionRunnerInterface;
 
 final readonly class PatchTag implements PatchTagInterface
 {
-    private readonly TagQueryCacheInvalidator $cacheInvalidator;
+    private TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
         private TagEntityRepositoryInterface $repo,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Tag;
 
+use App\Service\Core\Tag\Record\TagEntityCreateRecord;
 use App\Service\Core\Tag\TagEntityRepositoryInterface;
 
 final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterface
@@ -24,14 +25,21 @@ final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterf
         return is_array($row) ? $row : null;
     }
 
-    public function create(string $tenant, string $id, string $slug, string $name, string $locale, int $weight): array
+    public function create(string $tenant, TagEntityCreateRecord $record): array
     {
         $stmt = $this->pdo->prepare(
             'INSERT INTO tag_entity (id,tenant,slug,name,locale,weight) VALUES (:id,:t,:s,:n,:l,:w)'
         );
-        $stmt->execute([':id' => $id, ':t' => $tenant, ':s' => $slug, ':n' => $name, ':l' => $locale, ':w' => $weight]);
+        $stmt->execute([
+            ':id' => $record->id,
+            ':t' => $tenant,
+            ':s' => $record->slug,
+            ':n' => $record->name,
+            ':l' => $record->locale,
+            ':w' => $record->weight,
+        ]);
 
-        return ['id' => $id, 'slug' => $slug, 'name' => $name, 'locale' => $locale, 'weight' => $weight];
+        return $record->toArray();
     }
 
     public function patch(string $tenant, string $id, array $patch): void

@@ -8,7 +8,7 @@ require_once __DIR__ . '/cors.php';
 /** @var array<string, callable():mixed> $container */
 $container = require __DIR__ . '/bootstrap.php';
 /**
- * @var callable(array<string, callable():mixed>): callable(
+ * @var callable(array<string, callable():mixed>): callable $routerFactory (
  *     string,
  *     string,
  *     array<string, mixed>

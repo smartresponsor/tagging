@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Service\Core\Tag\Audit;
 
 use App\Service\Core\Tag\Webhook\TagWebhookSender;
+use Random\RandomException;
 
 final readonly class TagAuditEmitter
 {
@@ -29,15 +30,17 @@ final readonly class TagAuditEmitter
         $path = $this->cfg['audit_path'] ?? 'report/tag/audit.ndjson';
         $dir = dirname($path);
         if (!is_dir($dir)) {
-            @mkdir($dir, 0777, true);
+            $this->createDirectory($dir);
         }
-        file_put_contents($path, $line."\n", FILE_APPEND);
+        if (false !== $line) {
+            file_put_contents($path, $line."\n", FILE_APPEND);
+        }
 
         $this->fanout($type, $payload);
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     private function fanout(string $type, array $payload): void
     {
@@ -54,6 +57,20 @@ final readonly class TagAuditEmitter
             }
             $secret = $sub['secret'] ?? ($this->cfg['secret_fallback'] ?? '');
             $this->sender?->enqueue($url, $secret, $type, $payload);
+        }
+    }
+
+    private function createDirectory(string $dir): void
+    {
+        if (is_dir($dir)) {
+            return;
+        }
+
+        $previous = set_error_handler(static fn (): bool => true);
+        try {
+            mkdir($dir, 0777, true);
+        } finally {
+            restore_error_handler();
         }
     }
 }

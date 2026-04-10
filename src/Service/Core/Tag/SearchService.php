@@ -15,7 +15,11 @@ final readonly class SearchService
     ) {
     }
 
-    /** @return array{items: array<int, array<string, mixed>>, total: int, nextPageToken: ?string, cacheHit: bool} */
+    /**
+     * @return array{items: array<int, array<string, mixed>>, total: int, nextPageToken: ?string, cacheHit: bool}
+     *
+     * @throws \JsonException
+     */
     public function search(string $tenant, string $q, int $pageSize = 20, ?string $pageToken = null): array
     {
         $q = trim($q);

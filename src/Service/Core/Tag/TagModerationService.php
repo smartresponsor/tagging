@@ -5,7 +5,9 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
+use App\Service\Core\Tag\Record\TagAuditRecord;
 use App\Service\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
+use Random\RandomException;
 
 final readonly class TagModerationService
 {
@@ -15,7 +17,7 @@ final readonly class TagModerationService
 
     /**
      * @throws \JsonException
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function propose(string $tenantId, string $type, array $payload): string
     {
@@ -23,11 +25,13 @@ final readonly class TagModerationService
         $this->repo->insertProposal($tenantId, $id, $type, json_encode($payload, JSON_THROW_ON_ERROR));
         $this->repo->insertAudit(
             $tenantId,
-            UlidGenerator::generate(),
-            'proposal.create',
-            'proposal',
-            $id,
-            json_encode($payload, JSON_THROW_ON_ERROR),
+            new TagAuditRecord(
+                UlidGenerator::generate(),
+                'proposal.create',
+                'proposal',
+                $id,
+                json_encode($payload, JSON_THROW_ON_ERROR),
+            ),
         );
 
         return $id;
@@ -40,7 +44,7 @@ final readonly class TagModerationService
 
     /**
      * @throws \JsonException
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function mergeTags(string $tenantId, string $fromTagId, string $toTagId): void
     {
@@ -48,20 +52,22 @@ final readonly class TagModerationService
         $this->repo->deleteTag($tenantId, $fromTagId);
         $this->repo->insertAudit(
             $tenantId,
-            UlidGenerator::generate(),
-            'tag.merge',
-            'tag',
-            $toTagId,
-            json_encode([
-                'from' => $fromTagId,
-                'to' => $toTagId,
-            ], JSON_THROW_ON_ERROR),
+            new TagAuditRecord(
+                UlidGenerator::generate(),
+                'tag.merge',
+                'tag',
+                $toTagId,
+                json_encode([
+                    'from' => $fromTagId,
+                    'to' => $toTagId,
+                ], JSON_THROW_ON_ERROR),
+            ),
         );
     }
 
     /**
      * @throws \JsonException
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function renameTag(string $tenantId, string $tagId, string $newLabel): void
     {
@@ -69,31 +75,35 @@ final readonly class TagModerationService
         $this->repo->renameTag($tenantId, $tagId, $newLabel, $slug);
         $this->repo->insertAudit(
             $tenantId,
-            UlidGenerator::generate(),
-            'tag.rename',
-            'tag',
-            $tagId,
-            json_encode(['label' => $newLabel], JSON_THROW_ON_ERROR),
+            new TagAuditRecord(
+                UlidGenerator::generate(),
+                'tag.rename',
+                'tag',
+                $tagId,
+                json_encode(['label' => $newLabel], JSON_THROW_ON_ERROR),
+            ),
         );
     }
 
     /**
      * @throws \JsonException
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function setFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void
     {
         $this->repo->setTagFlags($tenantId, $tagId, $required, $modOnly);
         $this->repo->insertAudit(
             $tenantId,
-            UlidGenerator::generate(),
-            'tag.flags',
-            'tag',
-            $tagId,
-            json_encode([
-                'required' => $required,
-                'modOnly' => $modOnly,
-            ], JSON_THROW_ON_ERROR),
+            new TagAuditRecord(
+                UlidGenerator::generate(),
+                'tag.flags',
+                'tag',
+                $tagId,
+                json_encode([
+                    'required' => $required,
+                    'modOnly' => $modOnly,
+                ], JSON_THROW_ON_ERROR),
+            ),
         );
     }
 }

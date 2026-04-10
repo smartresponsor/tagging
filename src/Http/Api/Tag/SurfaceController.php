@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 namespace App\Http\Api\Tag;
 
-final class SurfaceController
+final readonly class SurfaceController
 {
-    public function __construct(private readonly array $runtime = [])
+    public function __construct(private array $runtime = [])
     {
     }
 

@@ -11,6 +11,7 @@ use App\Entity\Core\Tag\TagRelation;
 use App\Entity\Core\Tag\TagScheme;
 use App\Entity\Core\Tag\TagSynonym;
 use App\Service\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
+use Random\RandomException;
 
 final readonly class TagService
 {
@@ -21,7 +22,7 @@ final readonly class TagService
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function create(string $tenantId, ?string $slugOrNull, string $label): Tag
     {
@@ -50,7 +51,7 @@ final readonly class TagService
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function assign(string $tenantId, string $tagId, string $type, string $assignedId): TagAssignment
     {
@@ -62,7 +63,7 @@ final readonly class TagService
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function addSynonym(string $tenantId, string $tagId, string $label): TagSynonym
     {
@@ -74,7 +75,7 @@ final readonly class TagService
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function addRelation(string $tenantId, string $fromTagId, string $toTagId, string $type): TagRelation
     {
@@ -93,7 +94,7 @@ final readonly class TagService
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function createScheme(string $tenantId, string $name, ?string $locale): TagScheme
     {

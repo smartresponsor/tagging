@@ -45,7 +45,6 @@ require_once __DIR__ . '/autoload.php';
 return (static function (): array {
     $cfg = HostMinimalRuntimeConfig::fromGlobals();
     $container = new HostMinimalContainer();
-    $pdoOptions = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC];
     $get = static fn(string $id): mixed => $container->get($id);
     $queryCacheInvalidator = static fn(): TagQueryCacheInvalidator => new TagQueryCacheInvalidator(
         $get('searchCache'),
@@ -59,8 +58,9 @@ return (static function (): array {
         $container->value('observabilityConfig', $cfg->observability);
         $container->value('securityConfig', $cfg->security);
     };
-    $shareInfrastructure = static function () use ($container, $cfg, $pdoOptions, $get, $queryCacheInvalidator): void {
-        $container->share('pdo', static fn(): \PDO => new \PDO($cfg->dbDsn, $cfg->dbUser, $cfg->dbPass, $pdoOptions));
+    $shareInfrastructure = static function () use ($container, $cfg, $get, $queryCacheInvalidator): void {
+        $pdoOptions = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC];
+        $container->share('pdo', static fn(): PDO => new PDO($cfg->dbDsn, $cfg->dbUser, $cfg->dbPass, $pdoOptions));
         $container->share('searchCache', static fn(): SearchCache => new SearchCache());
         $container->share('suggestCache', static fn(): SuggestCache => new SuggestCache());
         $container->share('queryCacheInvalidator', $queryCacheInvalidator);
@@ -80,13 +80,13 @@ return (static function (): array {
         $container->share('idempotencyMiddleware', static fn(): IdempotencyMiddleware => new IdempotencyMiddleware());
         $container->share('observeMiddleware', static fn(): Observe => new Observe($get('observabilityConfig')));
         $container->share('nonceStore', static fn(): NonceStore => new NonceStore(
-            (string) ($get('securityConfig')['nonce_dir'] ?? 'var/cache/nonce'),
-            (int) ($get('securityConfig')['nonce_ttl_sec'] ?? 300),
-            (int) ($get('securityConfig')['max_entries'] ?? 100000),
+            $get('securityConfig')['nonce_dir'] ?? 'var/cache/nonce',
+            $get('securityConfig')['nonce_ttl_sec'] ?? 300,
+            $get('securityConfig')['max_entries'] ?? 100000,
         ));
         $container->share('signatureVerifier', static fn(): HmacV2Verifier => new HmacV2Verifier(
-            (string) ($get('securityConfig')['secret'] ?? ''),
-            (int) ($get('securityConfig')['skew_sec'] ?? 120),
+            $get('securityConfig')['secret'] ?? '',
+            $get('securityConfig')['skew_sec'] ?? 120,
             $get('nonceStore'),
         ));
         $container->share('verifySignatureMiddleware', static fn(): VerifySignature => new VerifySignature(
@@ -101,7 +101,7 @@ return (static function (): array {
     };
     $shareControllers = static function () use ($container, $cfg, $get, $tagWriteResponder): void {
         $container->share('statusController', static fn(): StatusController => new StatusController(
-            static fn(): bool => (bool) $get('pdo')->query('SELECT 1')->fetchColumn(),
+            static fn(): bool => false !== $get('pdo')->query('SELECT 1')->fetchColumn(),
             $cfg->runtimeVersion,
             null,
             $cfg->runtime,
@@ -157,7 +157,7 @@ return (static function (): array {
         $container->share(
             'webhookRegistry',
             static fn(): TagWebhookRegistry => new TagWebhookRegistry(
-                (string) ($get('webhookConfig')['registry_path'] ?? 'report/webhook/registry.json')
+                $get('webhookConfig')['registry_path'] ?? 'report/webhook/registry.json'
             ),
         );
         $container->share(

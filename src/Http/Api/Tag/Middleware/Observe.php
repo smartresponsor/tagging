@@ -9,7 +9,7 @@ use App\Service\Core\Tag\Metric\TagMetrics;
 
 final readonly class Observe
 {
-    private const READ_METHODS = ['GET', 'HEAD', 'OPTIONS'];
+    private const array READ_METHODS = ['GET', 'HEAD', 'OPTIONS'];
 
     public function __construct(private array $cfg)
     {

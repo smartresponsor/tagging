@@ -9,7 +9,7 @@ use App\Service\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
 
 final class TagValidator
 {
-    private const MAX_LEN = 255;
+    private const int MAX_LEN = 255;
     /** @var string[] */
     private array $reserved = [];
 

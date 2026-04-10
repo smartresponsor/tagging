@@ -7,7 +7,9 @@ namespace App\Http\Api\Tag;
 
 use App\Http\Api\Tag\Responder\TagAssignmentResponder;
 use App\Service\Core\Tag\AssignOperationInterface;
+use App\Service\Core\Tag\AssignService;
 use App\Service\Core\Tag\UnassignOperationInterface;
+use App\Service\Core\Tag\UnassignService;
 
 final class AssignController
 {
@@ -17,8 +19,8 @@ final class AssignController
     private TagAssignmentResponder $responder;
 
     /**
-     * @param \App\Service\Core\Tag\AssignService   $assign
-     * @param \App\Service\Core\Tag\UnassignService $unassign
+     * @param AssignService   $assign
+     * @param UnassignService $unassign
      */
     public function __construct(
         private readonly AssignOperationInterface $assign,
@@ -93,7 +95,7 @@ final class AssignController
 
                 continue;
             }
-            $r = $this->dispatchOperation($optype, $tenant, $tagId, $entity[0], $entity[1], $this->idempotencyKey($op));
+            $r = $this->dispatchOperation($optype, $tenant, $tagId, $entity, $this->idempotencyKey($op));
             if (null === $r) {
                 ++$errors;
                 $results[] = [
@@ -109,7 +111,7 @@ final class AssignController
                 continue;
             }
 
-            if ((bool) ($r['ok'] ?? false)) {
+            if ($r['ok'] ?? false) {
                 ++$done;
             } else {
                 ++$errors;
@@ -174,8 +176,8 @@ final class AssignController
             }
 
             $result = $this->assign->assign($tenant, $tagId, $entity[0], $entity[1]);
-            if ((bool) ($result['ok'] ?? false)) {
-                if ((bool) ($result['duplicated'] ?? false)) {
+            if ($result['ok'] ?? false) {
+                if ($result['duplicated'] ?? false) {
                     ++$duplicated;
                 } else {
                     ++$assigned;
@@ -288,9 +290,8 @@ final class AssignController
             $operation,
             $tenant,
             $tagId,
-            $entity[0],
-            $entity[1],
-            $this->idempotencyKey($request),
+            $entity,
+            $this->idempotencyKey(TagHttpRequest::body($request)),
         );
         if (null === $result) {
             return $this->fail('validation_failed');
@@ -360,13 +361,12 @@ final class AssignController
         string $operation,
         string $tenant,
         string $tagId,
-        string $entityType,
-        string $entityId,
+        array $entity,
         ?string $idem,
     ): ?array {
         return match ($operation) {
-            'assign' => $this->assign->assign($tenant, $tagId, $entityType, $entityId, $idem),
-            'unassign' => $this->unassign->unassign($tenant, $tagId, $entityType, $entityId, $idem),
+            'assign' => $this->assign->assign($tenant, $tagId, $entity[0], $entity[1], $idem),
+            'unassign' => $this->unassign->unassign($tenant, $tagId, $entity[0], $entity[1], $idem),
             default => null,
         };
     }

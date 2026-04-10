@@ -7,7 +7,7 @@ namespace App\Cache\Store\Tag;
 
 final class TagFileCacheStore
 {
-    private const JSON_FLAGS = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+    private const int JSON_FLAGS = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
 
     private string $dir;
     private int $ttl;
@@ -38,8 +38,11 @@ final class TagFileCacheStore
         return ['hit' => true, 'data' => $this->decodePayload(file_get_contents($file))];
     }
 
-    /** @param list<string|int> $segments
+    /**
+     * @param list<string|int>    $segments
      * @param array<string,mixed> $data
+     *
+     * @throws \JsonException
      */
     public function set(string $namespace, string $tenant, array $segments, array $data): void
     {
@@ -140,7 +143,7 @@ final class TagFileCacheStore
 
     private function ensureWritableDirectory(string $dir): bool
     {
-        if (!is_dir($dir) && !@mkdir($dir, 0777, true) && !is_dir($dir)) {
+        if (!is_dir($dir) && !$this->createDirectory($dir) && !is_dir($dir)) {
             return false;
         }
 

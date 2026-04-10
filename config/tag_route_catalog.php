@@ -18,7 +18,7 @@ if (!function_exists('tagRouteCatalogParse')) {
             return $catalog;
         }
 
-        $parseValue = static function (string $raw): mixed {
+        $parseValue = static function (string $raw): string|bool {
             $value = trim($raw);
             if (
                 (str_starts_with($value, "'") && str_ends_with($value, "'"))
@@ -60,7 +60,7 @@ if (!function_exists('tagRouteCatalogParse')) {
                 continue;
             }
 
-            if (1 === preg_match('/^[^\s].*:\s*.+$/', $line)) {
+            if (1 === preg_match('/^\S.*:\s*.+$/', $line)) {
                 if (is_array($currentRoute)) {
                     $catalog['routes'][] = $currentRoute;
                     $currentRoute = null;

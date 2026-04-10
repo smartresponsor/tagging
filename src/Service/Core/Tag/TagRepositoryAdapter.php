@@ -10,6 +10,9 @@ use App\Entity\Core\Tag\TagAssignment;
 use App\Entity\Core\Tag\TagRelation;
 use App\Entity\Core\Tag\TagScheme;
 use App\Entity\Core\Tag\TagSynonym;
+use App\Service\Core\Tag\Record\TagAuditRecord;
+use App\Service\Core\Tag\Record\TagClassificationRecord;
+use App\Service\Core\Tag\Record\TagEffectRecord;
 
 final readonly class TagRepositoryAdapter implements TagRepositoryInterface
 {
@@ -42,7 +45,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
             return false;
         }
 
-        return null === $excludeTagId || $existing->id() !== $excludeTagId;
+        return $existing->id() !== $excludeTagId;
     }
 
     public function i18nSlugExists(string $tenantId, string $locale, string $slug, ?string $excludeTagId = null): bool
@@ -146,15 +149,9 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         $this->tagWriteRepository->updateProposalStatus($tenantId, $id, $status, $decidedBy);
     }
 
-    public function insertAudit(
-        string $tenantId,
-        string $id,
-        string $action,
-        string $entityType,
-        string $entityId,
-        string $detailsJson,
-    ): void {
-        $this->tagWriteRepository->insertAudit($tenantId, $id, $action, $entityType, $entityId, $detailsJson);
+    public function insertAudit(string $tenantId, TagAuditRecord $record): void
+    {
+        $this->tagWriteRepository->insertAudit($tenantId, $record);
     }
 
     /**
@@ -191,15 +188,9 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $this->tagReadRepository->tagCloud($tenantId, $limit);
     }
 
-    public function putClassification(
-        string $tenantId,
-        string $id,
-        string $scope,
-        string $refId,
-        string $key,
-        string $value,
-    ): void {
-        $this->tagWriteRepository->putClassification($tenantId, $id, $scope, $refId, $key, $value);
+    public function putClassification(string $tenantId, TagClassificationRecord $record): void
+    {
+        $this->tagWriteRepository->putClassification($tenantId, $record);
     }
 
     /**
@@ -210,26 +201,9 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $this->tagReadRepository->listClassifications($tenantId, $scope, $refId);
     }
 
-    public function putEffect(
-        string $tenantId,
-        string $id,
-        string $assignedType,
-        string $assignedId,
-        string $key,
-        string $value,
-        string $sourceScope,
-        string $sourceId,
-    ): void {
-        $this->tagWriteRepository->putEffect(
-            $tenantId,
-            $id,
-            $assignedType,
-            $assignedId,
-            $key,
-            $value,
-            $sourceScope,
-            $sourceId,
-        );
+    public function putEffect(string $tenantId, TagEffectRecord $record): void
+    {
+        $this->tagWriteRepository->putEffect($tenantId, $record);
     }
 
     public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void

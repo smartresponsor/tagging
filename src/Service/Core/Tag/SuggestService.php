@@ -16,7 +16,11 @@ final readonly class SuggestService
     {
     }
 
-    /** @return array{items:array<int,array{slug:string,name:string}>, cacheHit:bool} */
+    /**
+     * @return array{items:array<int,array{slug:string,name:string}>, cacheHit:bool}
+     *
+     * @throws \JsonException
+     */
     public function suggest(string $tenant, string $q, int $limit = 10): array
     {
         $q = trim($q);

@@ -11,7 +11,7 @@ final class CallableTagErrorSink implements TagErrorSink
 
     public function __construct(callable $callback)
     {
-        $this->callback = \Closure::fromCallable($callback);
+        $this->callback = $callback(...);
     }
 
     public function report(array $error): void

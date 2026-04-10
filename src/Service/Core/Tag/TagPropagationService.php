@@ -5,7 +5,10 @@ declare(strict_types=1);
 
 namespace App\Service\Core\Tag;
 
+use App\Service\Core\Tag\Record\TagClassificationRecord;
+use App\Service\Core\Tag\Record\TagEffectRecord;
 use App\Service\Core\Tag\TagRepositoryInterface as TagRepositoryContract;
+use Random\RandomException;
 
 final readonly class TagPropagationService
 {
@@ -14,23 +17,29 @@ final readonly class TagPropagationService
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function putClassificationForTag(string $tenantId, string $tagId, string $key, string $value): void
     {
-        $this->repo->putClassification($tenantId, UlidGenerator::generate(), 'tag', $tagId, $key, $value);
+        $this->repo->putClassification(
+            $tenantId,
+            new TagClassificationRecord(UlidGenerator::generate(), 'tag', $tagId, $key, $value),
+        );
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function putClassificationForScheme(string $tenantId, string $schemeName, string $key, string $value): void
     {
-        $this->repo->putClassification($tenantId, UlidGenerator::generate(), 'scheme', $schemeName, $key, $value);
+        $this->repo->putClassification(
+            $tenantId,
+            new TagClassificationRecord(UlidGenerator::generate(), 'scheme', $schemeName, $key, $value),
+        );
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function replayForTag(string $tenantId, string $tagId): int
     {
@@ -45,13 +54,15 @@ final readonly class TagPropagationService
             foreach ($class as $c) {
                 $this->repo->putEffect(
                     $tenantId,
-                    UlidGenerator::generate(),
-                    $p['assigned_type'],
-                    $p['assigned_id'],
-                    $c['key'],
-                    $c['value'],
-                    'tag',
-                    $tagId,
+                    new TagEffectRecord(
+                        UlidGenerator::generate(),
+                        $p['assigned_type'],
+                        $p['assigned_id'],
+                        $c['key'],
+                        $c['value'],
+                        'tag',
+                        $tagId,
+                    ),
                 );
                 ++$n;
             }
@@ -61,7 +72,7 @@ final readonly class TagPropagationService
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     public function replayForScheme(string $tenantId, string $schemeName): int
     {
@@ -78,13 +89,15 @@ final readonly class TagPropagationService
                 foreach ($class as $c) {
                     $this->repo->putEffect(
                         $tenantId,
-                        UlidGenerator::generate(),
-                        $p['assigned_type'],
-                        $p['assigned_id'],
-                        $c['key'],
-                        $c['value'],
-                        'scheme',
-                        $schemeName,
+                        new TagEffectRecord(
+                            UlidGenerator::generate(),
+                            $p['assigned_type'],
+                            $p['assigned_id'],
+                            $c['key'],
+                            $c['value'],
+                            'scheme',
+                            $schemeName,
+                        ),
                     );
                     ++$n;
                 }

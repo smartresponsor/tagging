@@ -32,7 +32,7 @@ final readonly class TagWebhookController
         try {
             $this->registry->add($url, $secret);
         } catch (\InvalidArgumentException $e) {
-            return $this->responder()->bad((string) $e->getMessage());
+            return $this->responder()->bad($e->getMessage());
         }
 
         return $this->responder()->ok(['url' => $url], 201);

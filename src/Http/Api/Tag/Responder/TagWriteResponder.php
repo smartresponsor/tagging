@@ -22,7 +22,7 @@ final class TagWriteResponder
     {
         if ($result->ok) {
             if (204 === $result->status) {
-                return $this->json->empty(204);
+                return $this->json->empty();
             }
 
             return $this->json->respond($result->status, $result->payload);

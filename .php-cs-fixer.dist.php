@@ -11,7 +11,7 @@ $finder = PhpCsFixer\Finder::create()
     ])
     ->name('*.php');
 
-return (new PhpCsFixer\Config())
+return new PhpCsFixer\Config()
     ->setRiskyAllowed(true)
     ->setRules([
         '@PER-CS' => true,

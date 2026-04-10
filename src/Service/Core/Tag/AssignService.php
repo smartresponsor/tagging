@@ -84,7 +84,12 @@ final readonly class AssignService implements AssignOperationInterface
 
         return TagIdempotencyHelper::begin(
             $this->idem,
-            new TagIdempotencyRequest($tenant, self::ACTION, $tagId, $entityType, $entityId, $idemKey),
+            $tenant,
+            self::ACTION,
+            $tagId,
+            $entityType,
+            $entityId,
+            $idemKey,
         );
     }
 
@@ -121,7 +126,7 @@ final readonly class AssignService implements AssignOperationInterface
             'tag_id' => $tagId,
             'entity_type' => $entityType,
             'entity_id' => $entityId,
-            'at' => new \DateTimeImmutable()->format(DATE_ATOM),
+            'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
         ]);
     }
 

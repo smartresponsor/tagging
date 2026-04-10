@@ -222,6 +222,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
                 $cnt[$a->tagId()] = ($cnt[$a->tagId()] ?? 0) + 1;
             }
         }
+
         return $this->topTagEntries($tenantId, $cnt, $limit);
     }
 
@@ -240,6 +241,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
 
     /**
      * @param array<string,int> $counts
+     *
      * @return array<int,array<string,int|string>>
      */
     private function topTagEntries(string $tenantId, array $counts, int $limit): array

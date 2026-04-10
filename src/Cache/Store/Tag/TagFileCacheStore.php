@@ -159,4 +159,3 @@ final class TagFileCacheStore
         return mkdir($dir, 0777, true) || is_dir($dir);
     }
 }
-

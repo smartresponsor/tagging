@@ -5,6 +5,59 @@ declare(strict_types=1);
 
 namespace App\Service\Slug\Tag;
 
-final class Slugifier extends \App\Service\Core\Tag\Slug\Slugifier
+final class Slugifier
 {
+    /** @var array<string,string> */
+    private array $map = [
+        'А' => 'A', 'Б' => 'B', 'В' => 'V', 'Г' => 'H', 'Ґ' => 'G', 'Д' => 'D',
+        'Е' => 'E', 'Є' => 'Ye', 'Ж' => 'Zh', 'З' => 'Z', 'И' => 'Y', 'І' => 'I',
+        'Ї' => 'Yi', 'Й' => 'Y', 'К' => 'K', 'Л' => 'L', 'М' => 'M', 'Н' => 'N',
+        'О' => 'O', 'П' => 'P', 'Р' => 'R', 'С' => 'S', 'Т' => 'T', 'У' => 'U',
+        'Ф' => 'F', 'Х' => 'Kh', 'Ц' => 'Ts', 'Ч' => 'Ch', 'Ш' => 'Sh',
+        'Щ' => 'Shch', 'Ь' => '', 'Ю' => 'Yu', 'Я' => 'Ya',
+        'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'h', 'ґ' => 'g', 'д' => 'd',
+        'е' => 'e', 'є' => 'ie', 'ж' => 'zh', 'з' => 'z', 'и' => 'y', 'і' => 'i',
+        'ї' => 'i', 'й' => 'i', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n',
+        'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u',
+        'ф' => 'f', 'х' => 'kh', 'ц' => 'ts', 'ч' => 'ch', 'ш' => 'sh',
+        'щ' => 'shch', 'ь' => '', 'ю' => 'iu', 'я' => 'ia',
+        'Ё' => 'Yo', 'ё' => 'yo', 'Ъ' => '', 'ъ' => '', 'Ы' => 'y', 'ы' => 'y',
+        'Э' => 'e', 'э' => 'e',
+        '’' => "'", 'ʼ' => "'", '`' => "'", '´' => "'", '“' => '"', '”' => '"',
+        '«' => '"', '»' => '"',
+    ];
+
+    public function __construct(
+        private readonly bool $lowercase = true,
+        private readonly int $maxLen = 64,
+    ) {
+    }
+
+    public function slugify(string $s): string
+    {
+        $slug = $this->normalize($s);
+        if ($this->lowercase) {
+            $slug = strtolower($slug);
+        }
+
+        return $this->truncate($slug);
+    }
+
+    private function normalize(string $value): string
+    {
+        $value = strtr($value, $this->map);
+        $value = preg_replace('/[^A-Za-z0-9]+/u', '-', $value) ?? '';
+        $value = preg_replace('/-+/', '-', $value) ?? '';
+
+        return trim($value, '-');
+    }
+
+    private function truncate(string $value): string
+    {
+        if ($this->maxLen <= 0 || strlen($value) <= $this->maxLen) {
+            return $value;
+        }
+
+        return substr($value, 0, $this->maxLen);
+    }
 }

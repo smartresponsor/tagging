@@ -36,6 +36,7 @@ final class TagIdempotencyHelper
 
     /**
      * @param array<string,mixed> $state
+     *
      * @return array{ok:bool, duplicated:bool, conflict?:bool, code?:string, not_found?:bool}
      */
     public static function duplicateResult(array $state): array

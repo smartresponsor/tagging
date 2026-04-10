@@ -12,6 +12,7 @@ use App\Application\Write\Tag\UseCase\CreateTag;
 use App\Application\Write\Tag\UseCase\DeleteTag;
 use App\Application\Write\Tag\UseCase\PatchTag;
 use App\Http\Api\Tag\Responder\TagWriteResponder;
+use App\Service\Core\Tag\Record\TagEntityCreateRecord;
 use App\Service\Core\Tag\Slug\Slugifier;
 use App\Service\Core\Tag\Slug\SlugPolicy;
 use App\Service\Core\Tag\TagEntityRepositoryInterface;
@@ -32,14 +33,8 @@ final class TagWriteUseCaseTest extends TestCase
                 return null;
             }
 
-            public function create(
-                string $tenant,
-                string $id,
-                string $slug,
-                string $name,
-                string $locale,
-                int $weight,
-            ): array {
+            public function create(string $tenant, TagEntityCreateRecord $record): array
+            {
                 $exception = new \PDOException('duplicate');
                 $property = new \ReflectionProperty(\PDOException::class, 'code');
                 $property->setValue($exception, '23505');
@@ -82,14 +77,8 @@ final class TagWriteUseCaseTest extends TestCase
                 return null;
             }
 
-            public function create(
-                string $tenant,
-                string $id,
-                string $slug,
-                string $name,
-                string $locale,
-                int $weight,
-            ): array {
+            public function create(string $tenant, TagEntityCreateRecord $record): array
+            {
                 return [];
             }
 
@@ -129,14 +118,8 @@ final class TagWriteUseCaseTest extends TestCase
                 return ['id' => $id, 'slug' => 'x', 'name' => 'x', 'locale' => 'en', 'weight' => 0];
             }
 
-            public function create(
-                string $tenant,
-                string $id,
-                string $slug,
-                string $name,
-                string $locale,
-                int $weight,
-            ): array {
+            public function create(string $tenant, TagEntityCreateRecord $record): array
+            {
                 return [];
             }
 

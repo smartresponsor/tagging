@@ -19,9 +19,8 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
     }
 
     /**
-     * @param string $tenant
      * @param array<string,mixed> $payload
-     * @return array
+     *
      * @throws RandomException
      */
     public function create(string $tenant, array $payload): array

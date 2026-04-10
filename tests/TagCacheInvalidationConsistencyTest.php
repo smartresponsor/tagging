@@ -13,6 +13,7 @@ use App\Application\Write\Tag\UseCase\DeleteTag;
 use App\Application\Write\Tag\UseCase\PatchTag;
 use App\Cache\Store\Tag\SearchCache;
 use App\Cache\Store\Tag\SuggestCache;
+use App\Service\Core\Tag\Record\TagEntityCreateRecord;
 use App\Service\Core\Tag\Slug\Slugifier;
 use App\Service\Core\Tag\Slug\SlugPolicy;
 use App\Service\Core\Tag\TagEntityRepositoryInterface;
@@ -57,20 +58,14 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
                 return $this->rows[$tenant][$id] ?? null;
             }
 
-            public function create(
-                string $tenant,
-                string $id,
-                string $slug,
-                string $name,
-                string $locale,
-                int $weight,
-            ): array {
-                return $this->rows[$tenant][$id] = [
-                    'id' => $id,
-                    'slug' => $slug,
-                    'name' => $name,
-                    'locale' => $locale,
-                    'weight' => $weight,
+            public function create(string $tenant, TagEntityCreateRecord $record): array
+            {
+                return $this->rows[$tenant][$record->id] = [
+                    'id' => $record->id,
+                    'slug' => $record->slug,
+                    'name' => $record->name,
+                    'locale' => $record->locale,
+                    'weight' => $record->weight,
                 ];
             }
 

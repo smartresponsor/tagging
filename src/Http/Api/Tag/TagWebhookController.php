@@ -49,7 +49,7 @@ final readonly class TagWebhookController
 
     /**
      * @param array<string,mixed> $request
-     * @return array
+     *
      * @throws RandomException
      */
     public function test(array $request = []): array

@@ -57,7 +57,7 @@ final readonly class UnassignService implements UnassignOperationInterface
                     'tag_id' => $tagId,
                     'entity_type' => $entityType,
                     'entity_id' => $entityId,
-                    'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
+                    'at' => new \DateTimeImmutable()->format(DATE_ATOM),
                 ]);
             }
 
@@ -96,12 +96,14 @@ final readonly class UnassignService implements UnassignOperationInterface
 
         return TagIdempotencyHelper::begin(
             $this->idem,
-            $tenant,
-            self::ACTION,
-            $tagId,
-            $entityType,
-            $entityId,
-            $idemKey,
+            new TagIdempotencyRequest(
+                $tenant,
+                self::ACTION,
+                $tagId,
+                $entityType,
+                $entityId,
+                $idemKey,
+            ),
         );
     }
 

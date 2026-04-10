@@ -5,65 +5,32 @@ declare(strict_types=1);
 
 namespace App\Service\Slug\Tag;
 
-final readonly class SlugPolicy
+use App\Service\Core\Tag\Slug\SlugPolicy as CoreSlugPolicy;
+
+/**
+ * Backward-compatible facade over the canonical core slug policy.
+ */
+final class SlugPolicy
 {
+    private CoreSlugPolicy $inner;
+
     /** @param list<string> $reserved */
     public function __construct(
-        private \PDO $pdo,
-        private Slugifier $slugifier,
-        private array $reserved = [],
-        private int $maxLen = 64,
+        \PDO $pdo,
+        Slugifier $slugifier,
+        array $reserved = [],
+        int $maxLen = 64,
     ) {
+        $this->inner = new CoreSlugPolicy($pdo, $slugifier->core(), $reserved, $maxLen);
     }
 
     public function make(string $tenant, string $source): string
     {
-        $base = $this->slugifier->slugify($source);
-        if ('' === $base) {
-            $base = 'tag';
-        }
-        if ($this->isReserved($base)) {
-            $base .= '-x';
-        }
-
-        $slug = $base;
-        $i = 1;
-        while ($this->exists($tenant, $slug)) {
-            ++$i;
-            $suffix = (string) $i;
-            $cut = max(1, $this->maxLen - (1 + strlen($suffix)));
-            $slug = substr($base, 0, $cut).'-'.$suffix;
-        }
-
-        return $slug;
+        return $this->inner->make($tenant, $source);
     }
 
     public function validate(string $slug): bool
     {
-        $len = strlen($slug);
-        if ($len < 2 || $len > $this->maxLen) {
-            return false;
-        }
-        if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
-            return false;
-        }
-        if ($this->isReserved($slug)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function isReserved(string $slug): bool
-    {
-        return in_array($slug, $this->reserved, true);
-    }
-
-    private function exists(string $tenant, string $slug): bool
-    {
-        $stmt = $this->pdo->prepare('SELECT 1 FROM tag_entity WHERE tenant=:t AND slug=:s');
-        $stmt->execute([':t' => $tenant, ':s' => $slug]);
-
-        return (bool) $stmt->fetchColumn();
+        return $this->inner->validate($slug);
     }
 }

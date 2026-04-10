@@ -15,7 +15,6 @@ function tag_cors_headers(?string $requestOrigin, ?string $configuredOrigin): ar
         $configured = '*';
     }
 
-    $allowOrigin = '*';
     if ($configured === '*') {
         $allowOrigin = '*';
     } elseif ($origin !== '' && $origin !== 'null' && $origin === $configured) {

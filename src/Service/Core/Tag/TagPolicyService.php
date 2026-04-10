@@ -123,7 +123,7 @@ final readonly class TagPolicyService
             return false;
         }
 
-        $previous = set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn (): bool => true);
         try {
             $match = preg_match('/'.$pattern.'/', $slug);
         } finally {

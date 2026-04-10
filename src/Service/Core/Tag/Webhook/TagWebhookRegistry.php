@@ -66,7 +66,7 @@ final readonly class TagWebhookRegistry
             return;
         }
 
-        $previous = set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn (): bool => true);
         try {
             mkdir($dir, 0700, true);
         } finally {

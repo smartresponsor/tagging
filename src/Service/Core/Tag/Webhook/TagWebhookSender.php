@@ -221,7 +221,7 @@ final readonly class TagWebhookSender
             return;
         }
 
-        $previous = set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn (): bool => true);
         try {
             mkdir($dir, $this->dirMode(), true);
         } finally {
@@ -230,11 +230,11 @@ final readonly class TagWebhookSender
     }
 
     /** @return resource|false */
-    private function openFile(string $path, string $mode)
+    private function openFile(string $path)
     {
-        $previous = set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn (): bool => true);
         try {
-            return fopen($path, $mode);
+            return fopen($path, 'c+');
         } finally {
             restore_error_handler();
         }
@@ -242,7 +242,7 @@ final readonly class TagWebhookSender
 
     private function deleteFile(string $path): void
     {
-        $previous = set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn (): bool => true);
         try {
             unlink($path);
         } finally {

@@ -14,6 +14,9 @@ final readonly class TagAuditEmitter
     {
     }
 
+    /**
+     * @throws RandomException
+     */
     public function emit(string $type, array $payload): void
     {
         $allow = $this->cfg['events_allow'] ?? [];
@@ -66,7 +69,7 @@ final readonly class TagAuditEmitter
             return;
         }
 
-        $previous = set_error_handler(static fn (): bool => true);
+        set_error_handler(static fn (): bool => true);
         try {
             mkdir($dir, 0777, true);
         } finally {

@@ -77,6 +77,9 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
         $this->repo->delete($tenant, $id);
     }
 
+    /**
+     * @throws \Random\RandomException
+     */
     private function ulid(): string
     {
         return substr(strtoupper(bin2hex(random_bytes(13))), 0, 26);

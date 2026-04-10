@@ -37,21 +37,29 @@ final class Slugifier
 
     public function slugify(string $s): string
     {
-        // Transliterate basic
-        $t = strtr($s, $this->map);
-        // Replace non-word with dash
-        $t = preg_replace('/[^A-Za-z0-9]+/u', '-', $t) ?? '';
-        // Collapse dashes
-        $t = preg_replace('/-+/', '-', $t) ?? '';
-        // Trim dashes
-        $t = trim($t, '-');
+        $slug = $this->normalize($s);
         if ($this->lowercase) {
-            $t = strtolower($t);
-        }
-        if ($this->maxLen > 0 && strlen($t) > $this->maxLen) {
-            $t = substr($t, 0, $this->maxLen);
+            $slug = strtolower($slug);
         }
 
-        return $t;
+        return $this->truncate($slug);
+    }
+
+    private function normalize(string $value): string
+    {
+        $value = strtr($value, $this->map);
+        $value = preg_replace('/[^A-Za-z0-9]+/u', '-', $value) ?? '';
+        $value = preg_replace('/-+/', '-', $value) ?? '';
+
+        return trim($value, '-');
+    }
+
+    private function truncate(string $value): string
+    {
+        if ($this->maxLen <= 0 || strlen($value) <= $this->maxLen) {
+            return $value;
+        }
+
+        return substr($value, 0, $this->maxLen);
     }
 }

@@ -149,4 +149,14 @@ final class TagFileCacheStore
 
         return is_writable($dir);
     }
+
+    private function createDirectory(string $dir): bool
+    {
+        if (is_dir($dir)) {
+            return true;
+        }
+
+        return @mkdir($dir, 0777, true) || is_dir($dir);
+    }
 }
+

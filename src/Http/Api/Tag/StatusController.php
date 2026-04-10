@@ -42,7 +42,7 @@ final class StatusController
             } catch (\Throwable $e) {
                 $db['ok'] = false;
                 $db['error'] = 'db_unavailable';
-                $this->report('status.db_probe_failed', $e, ['surface' => 'status']);
+                $this->report($e, ['surface' => 'status']);
             }
         }
 
@@ -84,10 +84,10 @@ final class StatusController
         return is_string($value) && '' !== $value ? $value : $fallback;
     }
 
-    private function report(string $code, \Throwable $e, array $context = []): void
+    private function report(\Throwable $e, array $context = []): void
     {
         $this->errorSink->report([
-            'code' => $code,
+            'code' => 'status.db_probe_failed',
             'message' => $e->getMessage(),
             'exception' => $e::class,
             'context' => $context,

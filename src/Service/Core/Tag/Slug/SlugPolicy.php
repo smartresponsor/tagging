@@ -18,45 +18,57 @@ final readonly class SlugPolicy
 
     public function make(string $tenant, string $source): string
     {
-        $base = $this->slugifier->slugify($source);
-        if ('' === $base) {
-            $base = 'tag';
-        }
-        if ($this->isReserved($base)) {
-            $base .= '-x';
-        }
+        $base = $this->baseSlug($source);
 
-        $slug = $base;
-        $i = 1;
-        while ($this->exists($tenant, $slug)) {
-            ++$i;
-            $suffix = (string) $i;
-            $cut = max(1, $this->maxLen - (1 + strlen($suffix)));
-            $slug = substr($base, 0, $cut).'-'.$suffix;
-        }
-
-        return $slug;
+        return $this->nextAvailableSlug($tenant, $base);
     }
 
     public function validate(string $slug): bool
     {
-        $len = strlen($slug);
-        if ($len < 2 || $len > $this->maxLen) {
-            return false;
-        }
-        if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
-            return false;
-        }
-        if ($this->isReserved($slug)) {
-            return false;
-        }
-
-        return true;
+        return $this->hasValidLength($slug)
+            && 1 === preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)
+            && !$this->isReserved($slug);
     }
 
     private function isReserved(string $slug): bool
     {
         return in_array($slug, $this->reserved, true);
+    }
+
+    private function hasValidLength(string $slug): bool
+    {
+        $length = strlen($slug);
+
+        return $length >= 2 && $length <= $this->maxLen;
+    }
+
+    private function baseSlug(string $source): string
+    {
+        $slug = $this->slugifier->slugify($source);
+        if ('' === $slug) {
+            $slug = 'tag';
+        }
+
+        return $this->isReserved($slug) ? $slug.'-x' : $slug;
+    }
+
+    private function nextAvailableSlug(string $tenant, string $base): string
+    {
+        $slug = $base;
+        $counter = 1;
+        while ($this->exists($tenant, $slug)) {
+            ++$counter;
+            $slug = $this->suffixSlug($base, (string) $counter);
+        }
+
+        return $slug;
+    }
+
+    private function suffixSlug(string $base, string $suffix): string
+    {
+        $cut = max(1, $this->maxLen - (1 + strlen($suffix)));
+
+        return substr($base, 0, $cut).'-'.$suffix;
     }
 
     private function exists(string $tenant, string $slug): bool

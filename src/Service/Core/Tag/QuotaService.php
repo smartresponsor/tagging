@@ -86,16 +86,16 @@ final readonly class QuotaService
 
             return (int) $st->fetchColumn();
         } catch (\Throwable $e) {
-            $this->report('quota.count_failed', $e, ['tenant' => $tenantId]);
+            $this->report($e, ['tenant' => $tenantId]);
 
             return 0;
         }
     }
 
-    private function report(string $code, \Throwable $e, array $context = []): void
+    private function report(\Throwable $e, array $context = []): void
     {
         $this->errorSink->report([
-            'code' => $code,
+            'code' => 'quota.count_failed',
             'message' => $e->getMessage(),
             'exception' => $e::class,
             'context' => $context,

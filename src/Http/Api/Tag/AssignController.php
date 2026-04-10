@@ -270,6 +270,12 @@ final class AssignController
     /** @return array{0:int,1:array<string,string>,2:string} */
     private function fail(string $code, array $body = []): array
     {
+        return $this->failureForCode($code, $body);
+    }
+
+    /** @return array{0:int,1:array<string,string>,2:string} */
+    private function failureForCode(string $code, array $body): array
+    {
         return $this->responder->failure($code, $this->responder->statusForCode($code), $body);
     }
 

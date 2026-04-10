@@ -59,7 +59,7 @@ final readonly class AssignService implements AssignOperationInterface
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
-            $this->report('tag.assign_failed', $e, [
+            $this->report($e, [
                 'tenant' => $tenant,
                 'tag_id' => $tagId,
                 'entity_type' => $entityType,
@@ -156,10 +156,10 @@ final readonly class AssignService implements AssignOperationInterface
         $this->idem->complete($tenant, $idemKey, $result);
     }
 
-    private function report(string $code, \Throwable $e, array $context = []): void
+    private function report(\Throwable $e, array $context = []): void
     {
         $this->errorSink->report([
-            'code' => $code,
+            'code' => 'tag.assign_failed',
             'message' => $e->getMessage(),
             'exception' => $e::class,
             'context' => $context,

@@ -41,12 +41,15 @@ final readonly class TagWebhookController
     /** @param array<string,mixed> $request */
     public function list(array $request = []): array
     {
+        TagHttpRequest::query($request);
+
         return $this->responder()->list($this->registry->list());
     }
 
     /** @param array<string,mixed> $request */
     public function test(array $request = []): array
     {
+        TagHttpRequest::query($request);
         $this->audit->emit('tag.created', ['id' => 'test', 'label' => '_test_']);
 
         return $this->responder()->ok(['event' => 'tag.created']);

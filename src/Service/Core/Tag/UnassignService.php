@@ -71,7 +71,7 @@ final readonly class UnassignService implements UnassignOperationInterface
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
-            $this->report('tag.unassign_failed', $e, [
+            $this->report($e, [
                 'tenant' => $tenant,
                 'tag_id' => $tagId,
                 'entity_type' => $entityType,
@@ -133,10 +133,10 @@ final readonly class UnassignService implements UnassignOperationInterface
         $this->idem->complete($tenant, $idemKey, $result);
     }
 
-    private function report(string $code, \Throwable $e, array $context = []): void
+    private function report(\Throwable $e, array $context = []): void
     {
         $this->errorSink->report([
-            'code' => $code,
+            'code' => 'tag.unassign_failed',
             'message' => $e->getMessage(),
             'exception' => $e::class,
             'context' => $context,

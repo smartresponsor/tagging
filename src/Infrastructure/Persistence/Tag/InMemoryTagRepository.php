@@ -222,17 +222,7 @@ final class InMemoryTagRepository implements TagRepositoryInterface
                 $cnt[$a->tagId()] = ($cnt[$a->tagId()] ?? 0) + 1;
             }
         }
-        arsort($cnt);
-        $out = [];
-        foreach (array_slice(array_keys($cnt), 0, $limit) as $tagId) {
-            $t = $this->tags[$tenantId][$tagId] ?? null;
-            if (!$t) {
-                continue;
-            }
-            $out[] = ['tagId' => $tagId, 'slug' => $t->slug(), 'label' => $t->label(), 'cnt' => $cnt[$tagId]];
-        }
-
-        return $out;
+        return $this->topTagEntries($tenantId, $cnt, $limit);
     }
 
     /**
@@ -244,14 +234,24 @@ final class InMemoryTagRepository implements TagRepositoryInterface
         foreach (($this->assignments[$tenantId] ?? []) as $a) {
             $cnt[$a->tagId()] = ($cnt[$a->tagId()] ?? 0) + 1;
         }
-        arsort($cnt);
+
+        return $this->topTagEntries($tenantId, $cnt, $limit);
+    }
+
+    /**
+     * @param array<string,int> $counts
+     * @return array<int,array<string,int|string>>
+     */
+    private function topTagEntries(string $tenantId, array $counts, int $limit): array
+    {
+        arsort($counts);
         $out = [];
-        foreach (array_slice(array_keys($cnt), 0, $limit) as $tagId) {
-            $t = $this->tags[$tenantId][$tagId] ?? null;
-            if (!$t) {
+        foreach (array_slice(array_keys($counts), 0, $limit) as $tagId) {
+            $tag = $this->tags[$tenantId][$tagId] ?? null;
+            if (!$tag) {
                 continue;
             }
-            $out[] = ['tagId' => $tagId, 'slug' => $t->slug(), 'label' => $t->label(), 'cnt' => $cnt[$tagId]];
+            $out[] = ['tagId' => $tagId, 'slug' => $tag->slug(), 'label' => $tag->label(), 'cnt' => $counts[$tagId]];
         }
 
         return $out;

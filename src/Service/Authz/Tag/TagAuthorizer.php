@@ -35,10 +35,10 @@ final class TagAuthorizer
     public function detectOp(string $method, string $path): string
     {
         // Explicit overrides first
-        foreach ((array) ($this->cfg['path_overrides'] ?? []) as $ov) {
-            $pref = (string) ($ov['prefix'] ?? '');
-            if ('' !== $pref && str_starts_with($path, $pref)) {
-                return (string) ($ov['op'] ?? 'read');
+        foreach ((array) ($this->cfg['path_overrides'] ?? []) as $override) {
+            $prefix = $this->nonEmptyString($override['prefix'] ?? null);
+            if (null !== $prefix && str_starts_with($path, $prefix)) {
+                return $this->stringOrDefault($override['op'] ?? null, 'read');
             }
         }
         // Basic inference: GET=read, HEAD=read, others=write
@@ -50,17 +50,35 @@ final class TagAuthorizer
     /** @return string[] */
     public function parseRolesFromHeader(?string $csv): array
     {
-        if (null === $csv || '' === $csv) {
+        $value = $this->nonEmptyString($csv);
+        if (null === $value) {
             return [];
         }
+
         $out = [];
-        foreach (explode(',', $csv) as $p) {
-            $r = trim($p);
-            if ('' !== $r) {
-                $out[] = $r;
+        foreach (explode(',', $value) as $part) {
+            $role = $this->nonEmptyString($part);
+            if (null !== $role) {
+                $out[] = $role;
             }
         }
 
         return array_values(array_unique($out));
+    }
+
+    private function nonEmptyString(mixed $value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return '' === $value ? null : $value;
+    }
+
+    private function stringOrDefault(mixed $value, string $default): string
+    {
+        return is_string($value) && '' !== $value ? $value : $default;
     }
 }

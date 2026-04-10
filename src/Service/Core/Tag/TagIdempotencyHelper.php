@@ -13,21 +13,19 @@ final class TagIdempotencyHelper
     /**
      * @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string, not_found?:bool}|null
      */
-    public static function begin(
-        ?IdempotencyStore $store,
-        string $tenant,
-        string $action,
-        string $tagId,
-        string $entityType,
-        string $entityId,
-        ?string $idempotencyKey,
-    ): ?array {
-        if (null === $idempotencyKey || '' === $idempotencyKey || null === $store) {
+    public static function begin(?IdempotencyStore $store, TagIdempotencyRequest $request): ?array
+    {
+        if (null === $request->idempotencyKey || '' === $request->idempotencyKey || null === $store) {
             return null;
         }
 
-        $checksum = hash('sha256', implode('|', [$tenant, $tagId, $entityType, $entityId]));
-        $state = $store->begin($tenant, $idempotencyKey, $action, $checksum);
+        $checksum = hash('sha256', implode('|', [
+            $request->tenant,
+            $request->tagId,
+            $request->entityType,
+            $request->entityId,
+        ]));
+        $state = $store->begin($request->tenant, $request->idempotencyKey, $request->action, $checksum);
 
         return match ($state['state'] ?? null) {
             'duplicate' => self::duplicateResult($state),
@@ -36,7 +34,8 @@ final class TagIdempotencyHelper
         };
     }
 
-    /** @param array<string,mixed> $state
+    /**
+     * @param array<string,mixed> $state
      * @return array{ok:bool, duplicated:bool, conflict?:bool, code?:string, not_found?:bool}
      */
     public static function duplicateResult(array $state): array

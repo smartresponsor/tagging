@@ -8,6 +8,7 @@ namespace App\Http\Api\Tag;
 use App\Http\Api\Tag\Responder\TagWebhookResponder;
 use App\Service\Core\Tag\Audit\TagAuditEmitter;
 use App\Service\Core\Tag\Webhook\TagWebhookRegistry;
+use Random\RandomException;
 
 final readonly class TagWebhookController
 {
@@ -46,7 +47,11 @@ final readonly class TagWebhookController
         return $this->responder()->list($this->registry->list());
     }
 
-    /** @param array<string,mixed> $request */
+    /**
+     * @param array<string,mixed> $request
+     * @return array
+     * @throws RandomException
+     */
     public function test(array $request = []): array
     {
         TagHttpRequest::query($request);

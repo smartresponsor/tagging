@@ -84,12 +84,7 @@ final readonly class AssignService implements AssignOperationInterface
 
         return TagIdempotencyHelper::begin(
             $this->idem,
-            $tenant,
-            self::ACTION,
-            $tagId,
-            $entityType,
-            $entityId,
-            $idemKey,
+            new TagIdempotencyRequest($tenant, self::ACTION, $tagId, $entityType, $entityId, $idemKey),
         );
     }
 

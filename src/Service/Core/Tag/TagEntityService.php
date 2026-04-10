@@ -7,6 +7,7 @@ namespace App\Service\Core\Tag;
 
 use App\Service\Core\Tag\Record\TagEntityCreateRecord;
 use App\Service\Core\Tag\Slug\SlugPolicy;
+use Random\RandomException;
 
 final readonly class TagEntityService implements TagEntityQueryServiceInterface
 {
@@ -17,7 +18,12 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
     ) {
     }
 
-    /** @param array<string,mixed> $payload */
+    /**
+     * @param string $tenant
+     * @param array<string,mixed> $payload
+     * @return array
+     * @throws RandomException
+     */
     public function create(string $tenant, array $payload): array
     {
         if ('' === $tenant) {
@@ -78,7 +84,7 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
     }
 
     /**
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
     private function ulid(): string
     {

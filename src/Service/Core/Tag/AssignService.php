@@ -128,7 +128,7 @@ final readonly class AssignService implements AssignOperationInterface
             'tag_id' => $tagId,
             'entity_type' => $entityType,
             'entity_id' => $entityId,
-            'at' => (new \DateTimeImmutable())->format(DATE_ATOM),
+            'at' => new \DateTimeImmutable()->format(DATE_ATOM),
         ]);
     }
 

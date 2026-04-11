@@ -1,6 +1,6 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace App\Infrastructure\ReadModel\Tag;
@@ -91,8 +91,8 @@ final readonly class TagReadModel implements TagReadModelInterface
     private static function mapSuggestItem(array $row): array
     {
         return [
-            'slug' => (string) ($row['slug'] ?? ''),
-            'name' => (string) ($row['name'] ?? ''),
+            'slug' => trim((string) ($row['slug'] ?? '')),
+            'name' => trim((string) ($row['name'] ?? '')),
         ];
     }
 
@@ -100,10 +100,10 @@ final readonly class TagReadModel implements TagReadModelInterface
     private static function mapTagSummary(array $row): array
     {
         return [
-            'id' => (string) ($row['id'] ?? ''),
-            'slug' => (string) ($row['slug'] ?? ''),
-            'name' => (string) ($row['name'] ?? ''),
-            'locale' => isset($row['locale']) && '' !== $row['locale'] ? (string) $row['locale'] : null,
+            'id' => trim((string) ($row['id'] ?? '')),
+            'slug' => trim((string) ($row['slug'] ?? '')),
+            'name' => trim((string) ($row['name'] ?? '')),
+            'locale' => isset($row['locale']) && '' !== trim((string) $row['locale']) ? trim((string) $row['locale']) : null,
             'weight' => (int) ($row['weight'] ?? 0),
         ];
     }
@@ -128,7 +128,13 @@ final readonly class TagReadModel implements TagReadModelInterface
         $stmt->bindValue(':l', $limit, \PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+        return array_map(
+            static fn(array $row): array => [
+                'entity_type' => trim((string) ($row['entity_type'] ?? '')),
+                'entity_id' => trim((string) ($row['entity_id'] ?? '')),
+            ],
+            $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [],
+        );
     }
 
     /** @return array<int, array{id: string, slug: string, name: string}> */
@@ -148,6 +154,13 @@ final readonly class TagReadModel implements TagReadModelInterface
         $stmt->bindValue(':l', $limit, \PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+        return array_map(
+            static fn(array $row): array => [
+                'id' => trim((string) ($row['id'] ?? '')),
+                'slug' => trim((string) ($row['slug'] ?? '')),
+                'name' => trim((string) ($row['name'] ?? '')),
+            ],
+            $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [],
+        );
     }
 }

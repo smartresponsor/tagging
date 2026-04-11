@@ -23,6 +23,10 @@ This repository uses CI as a canonical guardrail, not only as a test runner.
 - `composer run -n audit:version`
 - `composer run -n audit:canonical-stale`
 - `composer run -n audit:canonical-structure`
+- `composer run -n test:unit`
+- `composer run -n test:integration`
+- `composer run -n smoke:runtime`
+- `composer run -n test:e2e` (Playwright hard gate)
 
 ## Evidence on failure
 
@@ -36,3 +40,4 @@ CI workflow YAML must keep each gate as its own `- run:` step. In particular, `a
 
 RC packaging is handled separately by `.github/workflows/release-rc.yml`.
 CI does not publish releases, but it must keep release assets, Antora producer surface, and generated OpenAPI surface ready for the release lane.
+Release lane accepts only annotated semver tags (`vX.Y.Z` or `vX.Y.Z-rcN`) and uploads `release-traceability.txt` with tag/commit linkage evidence.

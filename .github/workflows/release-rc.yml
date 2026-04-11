@@ -23,6 +23,22 @@ jobs:
         with:
           node-version: '22'
       - run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Verify release git tag traceability
+        run: |
+          if ! [[ "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$ ]]; then
+            echo "Release tag must match semver pattern vX.Y.Z or vX.Y.Z-rcN."
+            exit 1
+          fi
+          if [ "$(git cat-file -t "${GITHUB_REF}")" != "tag" ]; then
+            echo "Release tag must be annotated for traceability."
+            exit 1
+          fi
+          {
+            echo "tag=${GITHUB_REF_NAME}"
+            echo "tag_object=$(git rev-parse "${GITHUB_REF}")"
+            echo "target_commit=$(git rev-list -n 1 "${GITHUB_REF_NAME}")"
+            echo "tagger_date=$(git for-each-ref --format='%(taggerdate:iso8601)' "refs/tags/${GITHUB_REF_NAME}")"
+          } > release-traceability.txt
       - run: composer run -n docs:openapi:publish
       - run: composer run -n release:preflight
       - run: composer run -n audit:release-assets
@@ -54,4 +70,10 @@ jobs:
         with:
           name: tagging-rc-bundle
           path: release-bundle
+          if-no-files-found: error
+      - name: Upload release traceability artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-traceability
+          path: release-traceability.txt
           if-no-files-found: error

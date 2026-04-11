@@ -1,5 +1,5 @@
 <?php
-
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
@@ -29,6 +29,7 @@ $required = [
     'composer run -n test:unit',
     'composer run -n test:integration',
     'composer run -n smoke:runtime',
+    'composer run -n test:e2e',
     'uses: actions/upload-artifact@v4',
 ];
 

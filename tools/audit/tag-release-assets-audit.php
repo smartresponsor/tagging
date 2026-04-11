@@ -1,5 +1,5 @@
 <?php
-
+# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
@@ -37,6 +37,8 @@ $checks = [
     ['docs/release/rc-checklist.md', $checklist, 'composer run -n docs:openapi:publish'],
     ['.github/workflows/release-rc.yml', $workflow, 'composer run -n docs:openapi:publish'],
     ['.github/workflows/release-rc.yml', $workflow, 'composer run -n audit:generated-openapi-surface'],
+    ['.github/workflows/release-rc.yml', $workflow, 'Verify release git tag traceability'],
+    ['.github/workflows/release-rc.yml', $workflow, 'release-traceability.txt'],
     ['.github/workflows/release-rc.yml', $workflow, 'uses: actions/upload-artifact@v4'],
 ];
 

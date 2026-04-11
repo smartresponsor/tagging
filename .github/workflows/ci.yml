@@ -178,3 +178,67 @@ jobs:
           name: runtime-smoke-host-log
           path: /tmp/tag-host.log
           if-no-files-found: ignore
+
+  e2e-playwright:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: app
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U app -d app"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      DB_DSN: pgsql:host=127.0.0.1;port=5432;dbname=app
+      DB_USER: app
+      DB_PASS: app
+      TENANT: demo
+      BASE_URL: http://127.0.0.1:8080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+          extensions: curl, pdo, pdo_pgsql
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: npm ci
+      - run: composer run -n docs:openapi:publish
+      - run: composer run -n audit:composer-integrity
+      - run: composer run -n audit:ci-workflow
+      - run: composer run -n db:migrate
+      - run: composer run -n demo:seed
+      - run: npm run e2e:install
+      - name: Start host-minimal for E2E gate
+        run: php -S 127.0.0.1:8080 host-minimal/index.php > /tmp/tag-host-e2e.log 2>&1 &
+      - name: Wait for runtime status
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/tag/_status > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/tag-host-e2e.log || true
+          exit 1
+      - run: composer run -n test:e2e
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-playwright-artifacts
+          path: |
+            playwright-report
+            test-results
+            /tmp/tag-host-e2e.log
+          if-no-files-found: ignore

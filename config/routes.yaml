@@ -1,0 +1,2 @@
+# Symfony-native route imports will replace custom host dispatch during migration.
+# Explicit route declarations or controller imports are introduced in a later wave.

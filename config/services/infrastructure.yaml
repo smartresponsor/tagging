@@ -1,0 +1,6 @@
+services:
+    PDO:
+        class: PDO
+        factory: ['App\Infrastructure\Persistence\Tag\PdoConnectionFactory', 'createFromEnvironment']
+
+    App\Infrastructure\Persistence\Tag\PdoConnectionFactory: ~

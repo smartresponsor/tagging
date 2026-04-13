@@ -1,6 +1,6 @@
-# HTTP Wiring v2
+# HTTP Wiring vNext
 
-Public-ready `host-minimal` wiring for the shipped Tag runtime surface.
+Symfony-native wiring target for the Tag runtime surface.
 
 ## Routed endpoints
 
@@ -20,12 +20,9 @@ Public-ready `host-minimal` wiring for the shipped Tag runtime surface.
 
 ## Route truth
 
-The current route truth is centralized in `tag.yaml` and projected into:
+The route truth remains centralized in `tag.yaml`, but runtime assembly is migrated away from `host-minimal` dispatch toward Symfony-native controller and service wiring.
 
-- `host-minimal/route.php`
-- `config/tag_public_surface.php`
-- `config/tag_runtime.php`
-- route/surface/contract audits
+Derived artifacts may continue to exist only when they project the Symfony-native runtime truth rather than competing with it.
 
 ## Request headers
 
@@ -38,11 +35,16 @@ The current route truth is centralized in `tag.yaml` and projected into:
 - search returns authoritative `total`
 - suggest returns flat payloads without nested `result`
 - unassign returns `404 tag_not_found` when the tag entity itself is absent
-- bulk write endpoints are part of the shipped public shell
+- bulk write endpoints remain part of the shipped public shell
 
-## Still out of scope for the shipped public shell
+## Runtime direction
+
+- Symfony-native runtime path is the intended primary direction
+- `host-minimal` is treated as transitional migration debt or historical context, not as the strategic runtime model
+
+## Still out of scope until later hardening
 
 - synonym or redirect routes
 - metrics endpoint
 - unpublished internal webhook management routes
-- HMAC / RBAC / quota middleware chain in `host-minimal`
+- advanced middleware hardening beyond the baseline migration

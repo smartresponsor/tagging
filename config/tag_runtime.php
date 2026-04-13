@@ -3,7 +3,7 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$surface = require __DIR__.'/tag_public_surface.php';
+$surface = require __DIR__ . '/../tag_public_surface.php';
 if (!is_array($surface)) {
     return [
         'service' => 'tag',
@@ -56,7 +56,7 @@ foreach ($methodByOperation as $operation => $defaultMethod) {
 
 return [
     'service' => (string) ($surface['service'] ?? 'tag'),
-    'runtime' => (string) ($surface['runtime'] ?? 'host-minimal'),
+    'runtime' => (string) ($surface['runtime'] ?? 'symfony-native-transition'),
     'version' => (string) ($surface['version'] ?? 'dev'),
     'route' => $routeMap,
     'example' => is_array($surface['example'] ?? null) ? $surface['example'] : [],

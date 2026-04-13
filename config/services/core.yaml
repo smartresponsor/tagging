@@ -1,0 +1,12 @@
+services:
+    App\Service\Core\Tag\:
+        resource: '../../src/Service/Core/Tag/'
+        exclude:
+            - '../../src/Service/Core/Tag/Webhook/'
+            - '../../src/Service/Core/Tag/Audit/'
+
+    App\Service\Core\Tag\TagEntityQueryServiceInterface: '@App\Service\Core\Tag\TagEntityService'
+    App\Service\Core\Tag\TagEntityRepositoryInterface: '@App\Infrastructure\Persistence\Tag\PdoTagEntityRepository'
+    App\Service\Core\Tag\TransactionRunnerInterface: '@App\Service\Core\Tag\PdoTransactionRunner'
+    App\Service\Core\Tag\AssignOperationInterface: '@App\Service\Core\Tag\AssignService'
+    App\Service\Core\Tag\UnassignOperationInterface: '@App\Service\Core\Tag\UnassignService'

@@ -1,0 +1,134 @@
+service: tag
+runtime: symfony-native
+version: p118-route-catalog-truth
+routes:
+  - operation: create
+    public: true
+    method: POST
+    path: /tag
+    pattern: '#^/tag$#'
+    controller: App\Http\Api\Tag\TagController::create
+    service_id: App\Http\Api\Tag\TagController
+    action: create
+  - operation: read
+    public: true
+    method: GET
+    path: /tag/{id}
+    pattern: '#^/tag/([A-Za-z0-9]{26})$#'
+    controller: App\Http\Api\Tag\TagController::get
+    service_id: App\Http\Api\Tag\TagController
+    action: get
+  - operation: patch
+    public: true
+    method: PATCH
+    path: /tag/{id}
+    pattern: '#^/tag/([A-Za-z0-9]{26})$#'
+    controller: App\Http\Api\Tag\TagController::patch
+    service_id: App\Http\Api\Tag\TagController
+    action: patch
+  - operation: delete
+    public: true
+    method: DELETE
+    path: /tag/{id}
+    pattern: '#^/tag/([A-Za-z0-9]{26})$#'
+    controller: App\Http\Api\Tag\TagController::delete
+    service_id: App\Http\Api\Tag\TagController
+    action: delete
+  - operation: assign
+    public: true
+    method: POST
+    path: /tag/{id}/assign
+    pattern: '#^/tag/([A-Za-z0-9]{26})/assign$#'
+    controller: App\Http\Api\Tag\AssignController::assign
+    service_id: App\Http\Api\Tag\AssignController
+    action: assign
+  - operation: unassign
+    public: true
+    method: POST
+    path: /tag/{id}/unassign
+    pattern: '#^/tag/([A-Za-z0-9]{26})/unassign$#'
+    controller: App\Http\Api\Tag\AssignController::unassign
+    service_id: App\Http\Api\Tag\AssignController
+    action: unassign
+  - operation: assignments_bulk
+    public: true
+    method: POST
+    path: /tag/assignments/bulk
+    pattern: '#^/tag/assignments/bulk$#'
+    controller: App\Http\Api\Tag\AssignController::bulk
+    service_id: App\Http\Api\Tag\AssignController
+    action: bulk
+  - operation: assignments_bulk_to_entity
+    public: true
+    method: POST
+    path: /tag/assignments/bulk-to-entity
+    pattern: '#^/tag/assignments/bulk-to-entity$#'
+    controller: App\Http\Api\Tag\AssignController::assignBulkToEntity
+    service_id: App\Http\Api\Tag\AssignController
+    action: assignBulkToEntity
+  - operation: assignments
+    public: true
+    method: GET
+    path: /tag/assignments
+    pattern: '#^/tag/assignments$#'
+    controller: App\Http\Api\Tag\AssignmentReadController::listByEntity
+    service_id: App\Http\Api\Tag\AssignmentReadController
+    action: listByEntity
+  - operation: search
+    public: true
+    method: GET
+    path: /tag/search
+    pattern: '#^/tag/search$#'
+    controller: App\Http\Api\Tag\SearchController::get
+    service_id: App\Http\Api\Tag\SearchController
+    action: get
+  - operation: suggest
+    public: true
+    method: GET
+    path: /tag/suggest
+    pattern: '#^/tag/suggest$#'
+    controller: App\Http\Api\Tag\SuggestController::get
+    service_id: App\Http\Api\Tag\SuggestController
+    action: get
+  - operation: webhooks_list
+    public: false
+    method: GET
+    path: /tag/_webhooks
+    pattern: '#^/tag/_webhooks$#'
+    controller: App\Http\Api\Tag\TagWebhookController::list
+    service_id: App\Http\Api\Tag\TagWebhookController
+    action: list
+  - operation: webhooks_subscribe
+    public: false
+    method: POST
+    path: /tag/_webhooks/subscribe
+    pattern: '#^/tag/_webhooks/subscribe$#'
+    controller: App\Http\Api\Tag\TagWebhookController::subscribe
+    service_id: App\Http\Api\Tag\TagWebhookController
+    action: subscribe
+  - operation: webhooks_test
+    public: false
+    method: POST
+    path: /tag/_webhooks/test
+    pattern: '#^/tag/_webhooks/test$#'
+    controller: App\Http\Api\Tag\TagWebhookController::test
+    service_id: App\Http\Api\Tag\TagWebhookController
+    action: test
+  - operation: status
+    public: true
+    method: GET
+    path: /tag/_status
+    pattern: '#^/tag/_status$#'
+    controller: App\Http\Api\Tag\StatusController::status
+    service_id: App\Http\Api\Tag\StatusController
+    action: status
+    response_header: X-Tag-Version
+  - operation: discovery
+    public: true
+    method: GET
+    path: /tag/_surface
+    pattern: '#^/tag/_surface$#'
+    controller: App\Http\Api\Tag\SurfaceController::surface
+    service_id: App\Http\Api\Tag\SurfaceController
+    action: surface
+    response_header: X-Tag-Surface-Version

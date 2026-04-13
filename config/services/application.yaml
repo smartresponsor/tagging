@@ -1,0 +1,7 @@
+services:
+    App\Application\:
+        resource: '../../src/Application/'
+
+    App\Application\Write\Tag\UseCase\CreateTagInterface: '@App\Application\Write\Tag\UseCase\CreateTag'
+    App\Application\Write\Tag\UseCase\PatchTagInterface: '@App\Application\Write\Tag\UseCase\PatchTag'
+    App\Application\Write\Tag\UseCase\DeleteTagInterface: '@App\Application\Write\Tag\UseCase\DeleteTag'

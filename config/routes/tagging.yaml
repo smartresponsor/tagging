@@ -1,0 +1,89 @@
+tag_create:
+    path: /tag
+    controller: App\Http\Api\Tag\TagController::create
+    methods: [POST]
+
+ tag_read:
+    path: /tag/{id}
+    controller: App\Http\Api\Tag\TagController::get
+    methods: [GET]
+    requirements:
+        id: '[A-Za-z0-9]{26}'
+
+ tag_patch:
+    path: /tag/{id}
+    controller: App\Http\Api\Tag\TagController::patch
+    methods: [PATCH]
+    requirements:
+        id: '[A-Za-z0-9]{26}'
+
+ tag_delete:
+    path: /tag/{id}
+    controller: App\Http\Api\Tag\TagController::delete
+    methods: [DELETE]
+    requirements:
+        id: '[A-Za-z0-9]{26}'
+
+ tag_assign:
+    path: /tag/{id}/assign
+    controller: App\Http\Api\Tag\AssignController::assign
+    methods: [POST]
+    requirements:
+        id: '[A-Za-z0-9]{26}'
+
+ tag_unassign:
+    path: /tag/{id}/unassign
+    controller: App\Http\Api\Tag\AssignController::unassign
+    methods: [POST]
+    requirements:
+        id: '[A-Za-z0-9]{26}'
+
+ tag_assignments_bulk:
+    path: /tag/assignments/bulk
+    controller: App\Http\Api\Tag\AssignController::bulk
+    methods: [POST]
+
+ tag_assignments_bulk_to_entity:
+    path: /tag/assignments/bulk-to-entity
+    controller: App\Http\Api\Tag\AssignController::assignBulkToEntity
+    methods: [POST]
+
+ tag_assignments:
+    path: /tag/assignments
+    controller: App\Http\Api\Tag\AssignmentReadController::listByEntity
+    methods: [GET]
+
+ tag_search:
+    path: /tag/search
+    controller: App\Http\Api\Tag\SearchController::get
+    methods: [GET]
+
+ tag_suggest:
+    path: /tag/suggest
+    controller: App\Http\Api\Tag\SuggestController::get
+    methods: [GET]
+
+ tag_status:
+    path: /tag/_status
+    controller: App\Http\Api\Tag\StatusController::status
+    methods: [GET]
+
+ tag_surface:
+    path: /tag/_surface
+    controller: App\Http\Api\Tag\SurfaceController::surface
+    methods: [GET]
+
+ tag_webhooks_list:
+    path: /tag/_webhooks
+    controller: App\Http\Api\Tag\TagWebhookController::list
+    methods: [GET]
+
+ tag_webhooks_subscribe:
+    path: /tag/_webhooks/subscribe
+    controller: App\Http\Api\Tag\TagWebhookController::subscribe
+    methods: [POST]
+
+ tag_webhooks_test:
+    path: /tag/_webhooks/test
+    controller: App\Http\Api\Tag\TagWebhookController::test
+    methods: [POST]

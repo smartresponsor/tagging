@@ -1,0 +1,6 @@
+services:
+    App\Infrastructure\ReadModel\Tag\TagReadModel:
+        arguments:
+            $pdo: '@PDO'
+
+    App\Service\Core\Tag\TagReadModelInterface: '@App\Infrastructure\ReadModel\Tag\TagReadModel'

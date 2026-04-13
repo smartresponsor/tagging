@@ -1,0 +1,10 @@
+services:
+    App\Cache\Store\Tag\:
+        resource: '../../src/Cache/Store/Tag/'
+
+    App\Cache\Store\Tag\SearchCache: ~
+    App\Cache\Store\Tag\SuggestCache: ~
+    App\Cache\Store\Tag\TagQueryCacheInvalidator:
+        arguments:
+            $searchCache: '@App\Cache\Store\Tag\SearchCache'
+            $suggestCache: '@App\Cache\Store\Tag\SuggestCache'

@@ -1,0 +1,9 @@
+services:
+    App\Http\Api\Tag\:
+        resource: '../../src/Http/Api/Tag/'
+
+    App\Http\Api\Tag\Responder\:
+        resource: '../../src/Http/Api/Tag/Responder/'
+
+    App\Http\Api\Tag\Middleware\:
+        resource: '../../src/Http/Api/Tag/Middleware/'

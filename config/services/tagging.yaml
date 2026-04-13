@@ -1,0 +1,16 @@
+services:
+    App\Infrastructure\Persistence\Tag\PdoTagEntityRepository:
+        arguments:
+            $pdo: '@PDO'
+
+    App\Service\Core\Tag\PdoTransactionRunner:
+        arguments:
+            $pdo: '@PDO'
+
+    App\Service\Core\Tag\TagEntityQueryServiceInterface: '@App\Service\Core\Tag\TagEntityService'
+    App\Service\Core\Tag\TagEntityRepositoryInterface: '@App\Infrastructure\Persistence\Tag\PdoTagEntityRepository'
+    App\Service\Core\Tag\TransactionRunnerInterface: '@App\Service\Core\Tag\PdoTransactionRunner'
+
+    App\Application\Write\Tag\UseCase\CreateTagInterface: '@App\Application\Write\Tag\UseCase\CreateTag'
+    App\Application\Write\Tag\UseCase\PatchTagInterface: '@App\Application\Write\Tag\UseCase\PatchTag'
+    App\Application\Write\Tag\UseCase\DeleteTagInterface: '@App\Application\Write\Tag\UseCase\DeleteTag'

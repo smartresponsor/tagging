@@ -1,3 +1,13 @@
+imports:
+    - { resource: 'services/infrastructure.yaml' }
+    - { resource: 'services/cache.yaml' }
+    - { resource: 'services/read_model.yaml' }
+    - { resource: 'services/application.yaml' }
+    - { resource: 'services/http.yaml' }
+    - { resource: 'services/ops.yaml' }
+    - { resource: 'services/core.yaml' }
+    - { resource: 'services/tagging.yaml' }
+
 services:
     _defaults:
         autowire: true

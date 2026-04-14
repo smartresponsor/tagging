@@ -9,28 +9,32 @@ use PHPUnit\Framework\TestCase;
 
 final class BootstrapContainerTest extends TestCase
 {
-    public function testBootstrapExposesExpectedCallableEntries(): void
+    public function testSymfonyNativeContainerSurfaceUsesLayeredServiceMaps(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
-        $required = [
-            'runtime',
-            'idempotencyMiddleware',
-            'observeMiddleware',
-            'verifySignatureMiddleware',
-            'httpPipeline',
-            'statusController',
-            'surfaceController',
-            'tagController',
-            'assignController',
-            'searchController',
-            'suggestController',
-            'assignmentReadController',
-            'defaultTenant',
-        ];
+        $services = file_get_contents(dirname(__DIR__) . '/config/services.yaml');
+        self::assertIsString($services);
 
-        foreach ($required as $key) {
-            self::assertArrayHasKey($key, $container);
-            self::assertIsCallable($container[$key]);
+        foreach ([
+            'services/infrastructure.yaml',
+            'services/cache.yaml',
+            'services/read_model.yaml',
+            'services/application.yaml',
+            'services/http.yaml',
+            'services/ops.yaml',
+            'services/core.yaml',
+            'services/tagging.yaml',
+        ] as $layer) {
+            self::assertStringContainsString($layer, $services);
         }
+    }
+
+    public function testSymfonyNativeHttpLayerRegistersControllerAndMiddlewareNamespaces(): void
+    {
+        $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
+        self::assertIsString($http);
+
+        self::assertStringContainsString('App\\Http\\Api\\Tag\\', $http);
+        self::assertStringContainsString('App\\Http\\Api\\Tag\\Responder\\', $http);
+        self::assertStringContainsString('App\\Http\\Api\\Tag\\Middleware\\', $http);
     }
 }

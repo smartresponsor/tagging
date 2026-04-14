@@ -9,28 +9,25 @@ use PHPUnit\Framework\TestCase;
 
 final class HostMinimalSurfaceTest extends TestCase
 {
-    public function testStatusRouteIsReachableWithoutComposerAutoload(): void
+    public function testPublicRuntimeTruthIsSymfonyNative(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
-        $routerFactory = require dirname(__DIR__) . '/host-minimal/route.php';
-        $dispatch = $routerFactory($container);
-
-        [$code, $headers, $body] = $dispatch('GET', '/tag/_status', ['headers' => [], 'query' => [], 'body' => null]);
-        $payload = json_decode($body, true);
-
-        self::assertSame(200, $code);
-        self::assertIsArray($payload);
-        self::assertSame('tag', $payload['service'] ?? null);
-        self::assertSame('host-minimal', $payload['runtime'] ?? null);
-        self::assertSame('/tag/_surface', $payload['surface']['discovery'] ?? null);
-        self::assertSame('no-store', $headers['Cache-Control'] ?? null);
-        self::assertArrayHasKey('X-Tag-Version', $headers);
-        self::assertArrayHasKey('db', $payload);
-        self::assertArrayHasKey('available', $payload['db']);
-        self::assertArrayHasKey('ok', $payload['db']);
+        $tagYaml = file_get_contents(dirname(__DIR__) . '/tag.yaml');
+        self::assertIsString($tagYaml);
+        self::assertStringContainsString('runtime: symfony-native', $tagYaml);
+        self::assertStringNotContainsString('runtime: host-minimal', $tagYaml);
     }
 
-    public function testContractOnlyDocumentsRunnableMinimalHostSurface(): void
+    public function testPublicIndexUsesSymfonyKernelEntry(): void
+    {
+        $publicIndex = file_get_contents(dirname(__DIR__) . '/public/index.php');
+        self::assertIsString($publicIndex);
+
+        self::assertStringContainsString('use App\\Kernel;', $publicIndex);
+        self::assertStringContainsString("require dirname(__DIR__) . '/config/bootstrap.php';", $publicIndex);
+        self::assertStringNotContainsString('host-minimal/index.php', $publicIndex);
+    }
+
+    public function testContractStillDocumentsStatusAndSurfaceRoutes(): void
     {
         $contract = file_get_contents(dirname(__DIR__) . '/contracts/http/tag-openapi.yaml');
         self::assertIsString($contract);

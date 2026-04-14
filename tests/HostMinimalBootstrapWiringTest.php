@@ -9,12 +9,31 @@ use PHPUnit\Framework\TestCase;
 
 final class HostMinimalBootstrapWiringTest extends TestCase
 {
-    public function testBootstrapResolvesSuggestControllerFactory(): void
+    public function testSymfonyNativeRootServicesImportLayeredMaps(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
+        $services = file_get_contents(dirname(__DIR__) . '/config/services.yaml');
+        self::assertIsString($services);
 
-        self::assertIsArray($container);
-        self::assertArrayHasKey('suggestController', $container);
-        self::assertIsCallable($container['suggestController']);
+        foreach ([
+            'services/infrastructure.yaml',
+            'services/cache.yaml',
+            'services/read_model.yaml',
+            'services/application.yaml',
+            'services/http.yaml',
+            'services/ops.yaml',
+            'services/core.yaml',
+            'services/tagging.yaml',
+        ] as $expectedImport) {
+            self::assertStringContainsString($expectedImport, $services);
+        }
+    }
+
+    public function testSymfonyNativeRootRoutesImportCorrectedRouteMap(): void
+    {
+        $routes = file_get_contents(dirname(__DIR__) . '/config/routes.yaml');
+        self::assertIsString($routes);
+
+        self::assertStringContainsString('routes/tagging_native.yaml', $routes);
+        self::assertStringNotContainsString('routes/tagging.yaml', $routes);
     }
 }

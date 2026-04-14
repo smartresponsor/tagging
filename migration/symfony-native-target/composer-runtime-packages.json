@@ -1,0 +1,44 @@
+{
+  "purpose": "Target runtime package baseline for Symfony-native Tagging migration",
+  "status": "planned_until_composer_rewrite",
+  "required": [
+    {
+      "package": "symfony/framework-bundle",
+      "reason": "Required for Kernel, bundle registry, package config loading, and standard Symfony application runtime."
+    },
+    {
+      "package": "symfony/http-kernel",
+      "reason": "Required for the Symfony Kernel and HTTP runtime flow."
+    },
+    {
+      "package": "symfony/dependency-injection",
+      "reason": "Required for service container wiring and layered service maps."
+    },
+    {
+      "package": "symfony/config",
+      "reason": "Required for loading and processing Symfony configuration files."
+    },
+    {
+      "package": "symfony/routing",
+      "reason": "Required for Symfony-native route maps and route loading."
+    },
+    {
+      "package": "symfony/console",
+      "reason": "Required for bin/console and standard Symfony console integration."
+    },
+    {
+      "package": "symfony/dotenv",
+      "reason": "Required for config/bootstrap.php environment loading baseline."
+    },
+    {
+      "package": "symfony/yaml",
+      "reason": "Required for YAML-based services, routes, and package configuration."
+    }
+  ],
+  "optional_followup": [
+    {
+      "package": "symfony/runtime",
+      "reason": "Can be evaluated later if the runtime entry is simplified toward standard Symfony runtime bootstrap conventions."
+    }
+  ]
+}

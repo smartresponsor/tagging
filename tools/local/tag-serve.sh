@@ -6,4 +6,4 @@ HOST="${HOST:-127.0.0.1}"
 PORT="${PORT:-8080}"
 
 cd "$ROOT_DIR"
-exec php -S "${HOST}:${PORT}" host-minimal/index.php
+exec php -S "${HOST}:${PORT}" -t public public/index.php

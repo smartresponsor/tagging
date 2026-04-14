@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\HostMinimal\Container\HostMinimalRuntimeConfig;
+use App\Infrastructure\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
 final class BootstrapMiddlewareExportTruthTest extends TestCase
 {
-    public function testBootstrapExportsCurrentMiddlewareEntries(): void
+    public function testSymfonyNativeHttpServiceMapKeepsMiddlewareNamespaceRegistered(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
+        $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
+        self::assertIsString($http);
 
-        foreach (['idempotencyMiddleware', 'observeMiddleware', 'verifySignatureMiddleware', 'httpPipeline'] as $key) {
-            self::assertArrayHasKey($key, $container);
-            self::assertIsCallable($container[$key]);
-        }
+        self::assertStringContainsString('App\\Http\\Api\\Tag\\Middleware\\', $http);
+        self::assertStringContainsString('../../src/Http/Api/Tag/Middleware/', $http);
     }
 
-    public function testRuntimeConfigSecurityShapeStillMatchesMiddlewareExpectations(): void
+    public function testSymfonyNativeSecurityConfigFactoryMatchesMiddlewareExpectations(): void
     {
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::securityConfig();
 
-        self::assertIsArray($config->security);
-        self::assertArrayHasKey('enforce', $config->security);
-        self::assertArrayHasKey('secret', $config->security);
-        self::assertArrayHasKey('apply', $config->security);
-        self::assertSame(['/tag/**'], $config->security['apply']['include'] ?? null);
-        self::assertContains('/tag/_status', $config->security['apply']['exclude'] ?? []);
-        self::assertContains('/tag/_surface', $config->security['apply']['exclude'] ?? []);
+        self::assertIsArray($config);
+        self::assertArrayHasKey('enforce', $config);
+        self::assertArrayHasKey('secret', $config);
+        self::assertArrayHasKey('apply', $config);
+        self::assertSame(['/tag/**'], $config['apply']['include'] ?? null);
+        self::assertContains('/tag/_status', $config['apply']['exclude'] ?? []);
+        self::assertContains('/tag/_surface', $config['apply']['exclude'] ?? []);
     }
 }

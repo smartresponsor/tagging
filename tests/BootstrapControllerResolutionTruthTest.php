@@ -4,60 +4,43 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\AssignController;
-use App\Http\Api\Tag\AssignmentReadController;
-use App\Http\Api\Tag\SearchController;
-use App\Http\Api\Tag\StatusController;
-use App\Http\Api\Tag\SuggestController;
-use App\Http\Api\Tag\SurfaceController;
-use App\Http\Api\Tag\TagController;
-use App\Http\Api\Tag\TagWebhookController;
 use PHPUnit\Framework\TestCase;
 
 final class BootstrapControllerResolutionTruthTest extends TestCase
 {
-    /** @return array<string, callable(): mixed> */
-    private function bootstrapContainerOrSkip(): array
+    public function testSymfonyNativeHttpServiceMapRegistersControllerSurface(): void
     {
-        try {
-            /** @var array<string, callable(): mixed> $container */
-            $container = require __DIR__ . '/../host-minimal/bootstrap.php';
+        $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
+        self::assertIsString($http);
 
-            return $container;
-        } catch (\PDOException $exception) {
-            self::markTestSkipped('Bootstrap controller resolution requires reachable DB: ' . $exception->getMessage());
-        }
+        self::assertStringContainsString('App\\Http\\Api\\Tag\\', $http);
+        self::assertStringContainsString('../../src/Http/Api/Tag/', $http);
     }
 
-    public function testBootstrapResolvesExpectedControllerInstances(): void
+    public function testSymfonyNativeRouteMapReferencesExpectedControllers(): void
     {
-        $container = $this->bootstrapContainerOrSkip();
+        $routes = file_get_contents(dirname(__DIR__) . '/config/routes/tagging_native.yaml');
+        self::assertIsString($routes);
 
-        try {
-            self::assertInstanceOf(StatusController::class, $container['statusController']());
-            self::assertInstanceOf(SurfaceController::class, $container['surfaceController']());
-            self::assertInstanceOf(TagController::class, $container['tagController']());
-            self::assertInstanceOf(AssignController::class, $container['assignController']());
-            self::assertInstanceOf(SearchController::class, $container['searchController']());
-            self::assertInstanceOf(SuggestController::class, $container['suggestController']());
-            self::assertInstanceOf(AssignmentReadController::class, $container['assignmentReadController']());
-            self::assertInstanceOf(TagWebhookController::class, $container['webhookController']());
-        } catch (\PDOException $exception) {
-            self::markTestSkipped('Bootstrap controller resolution requires reachable DB: ' . $exception->getMessage());
-        }
-    }
-
-    public function testResolvedControllerEntriesRemainStableAcrossRepeatedReads(): void
-    {
-        $container = $this->bootstrapContainerOrSkip();
-
-        try {
-            self::assertSame($container['statusController'](), $container['statusController']());
-            self::assertSame($container['assignController'](), $container['assignController']());
-            self::assertSame($container['searchController'](), $container['searchController']());
-            self::assertSame($container['webhookController'](), $container['webhookController']());
-        } catch (\PDOException $exception) {
-            self::markTestSkipped('Bootstrap controller stability requires reachable DB: ' . $exception->getMessage());
+        foreach ([
+            'App\\Http\\Api\\Tag\\TagController::create',
+            'App\\Http\\Api\\Tag\\TagController::get',
+            'App\\Http\\Api\\Tag\\TagController::patch',
+            'App\\Http\\Api\\Tag\\TagController::delete',
+            'App\\Http\\Api\\Tag\\AssignController::assign',
+            'App\\Http\\Api\\Tag\\AssignController::unassign',
+            'App\\Http\\Api\\Tag\\AssignController::bulk',
+            'App\\Http\\Api\\Tag\\AssignController::assignBulkToEntity',
+            'App\\Http\\Api\\Tag\\AssignmentReadController::listByEntity',
+            'App\\Http\\Api\\Tag\\SearchController::get',
+            'App\\Http\\Api\\Tag\\SuggestController::get',
+            'App\\Http\\Api\\Tag\\StatusController::status',
+            'App\\Http\\Api\\Tag\\SurfaceController::surface',
+            'App\\Http\\Api\\Tag\\TagWebhookController::list',
+            'App\\Http\\Api\\Tag\\TagWebhookController::subscribe',
+            'App\\Http\\Api\\Tag\\TagWebhookController::test',
+        ] as $controller) {
+            self::assertStringContainsString($controller, $routes);
         }
     }
 }

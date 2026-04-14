@@ -8,58 +8,48 @@ use PHPUnit\Framework\TestCase;
 
 final class BootstrapRuntimeCompositionTruthTest extends TestCase
 {
-    public function testBootstrapExposesCurrentCallableEntriesIncludingWebhookController(): void
+    public function testSymfonyNativeCompositionRootFilesExist(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
+        $root = dirname(__DIR__);
 
-        $required = [
-            'runtime',
-            'idempotencyMiddleware',
-            'observeMiddleware',
-            'verifySignatureMiddleware',
-            'httpPipeline',
-            'statusController',
-            'surfaceController',
-            'tagController',
-            'assignController',
-            'searchController',
-            'suggestController',
-            'assignmentReadController',
-            'webhookController',
-            'defaultTenant',
-        ];
-
-        foreach ($required as $key) {
-            self::assertArrayHasKey($key, $container);
-            self::assertIsCallable($container[$key]);
+        foreach ([
+            'src/Kernel.php',
+            'config/bootstrap.php',
+            'config/bundles.php',
+            'config/services.yaml',
+            'config/routes.yaml',
+            'public/index.php',
+            'bin/console',
+        ] as $path) {
+            self::assertFileExists($root . '/' . $path);
         }
     }
 
-    public function testBootstrapRuntimeAndDefaultTenantEntriesResolveToExpectedShapes(): void
+    public function testSymfonyNativeServiceCompositionImportsExpectedLayers(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
+        $services = file_get_contents(dirname(__DIR__) . '/config/services.yaml');
+        self::assertIsString($services);
 
-        $runtime = $container['runtime']();
-        $defaultTenant = $container['defaultTenant']();
-
-        self::assertIsArray($runtime);
-        self::assertArrayHasKey('version', $runtime);
-        self::assertArrayHasKey('service', $runtime);
-        self::assertIsString($defaultTenant);
-        self::assertNotSame('', trim($defaultTenant));
+        foreach ([
+            'services/infrastructure.yaml',
+            'services/cache.yaml',
+            'services/read_model.yaml',
+            'services/application.yaml',
+            'services/http.yaml',
+            'services/ops.yaml',
+            'services/core.yaml',
+            'services/tagging.yaml',
+        ] as $layer) {
+            self::assertStringContainsString($layer, $services);
+        }
     }
 
-    public function testBootstrapSourceStillUsesCompositionSegmentsAndRuntimeConfig(): void
+    public function testSymfonyNativeRuntimeTruthNoLongerNamesHostMinimalAsActiveRuntime(): void
     {
-        $bootstrap = file_get_contents(__DIR__ . '/../host-minimal/bootstrap.php');
-        self::assertIsString($bootstrap);
+        $tagYaml = file_get_contents(dirname(__DIR__) . '/tag.yaml');
+        self::assertIsString($tagYaml);
 
-        self::assertStringContainsString('HostMinimalRuntimeConfig::fromGlobals()', $bootstrap);
-        self::assertStringContainsString('$shareConfig = static function', $bootstrap);
-        self::assertStringContainsString('$shareInfrastructure = static function', $bootstrap);
-        self::assertStringContainsString('$shareMiddleware = static function', $bootstrap);
-        self::assertStringContainsString('$shareControllers = static function', $bootstrap);
-        self::assertStringContainsString('$shareWebhookServices = static function', $bootstrap);
-        self::assertStringContainsString("'webhookController'", $bootstrap);
+        self::assertStringContainsString('runtime: symfony-native', $tagYaml);
+        self::assertStringNotContainsString('runtime: host-minimal', $tagYaml);
     }
 }

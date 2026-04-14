@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
-if [[ ! -f /app/host-minimal/index.php ]]; then
-  echo "Missing /app/host-minimal/index.php (mount SRC_ROOT/host-minimal)"
-  ls -la /app/host-minimal || true
+if [[ ! -f /app/public/index.php ]]; then
+  echo "Missing /app/public/index.php (mount SRC_ROOT as /app)"
+  ls -la /app/public || true
   exit 1
 fi
-php -S 0.0.0.0:8080 -t /app/host-minimal
+php -S 0.0.0.0:8080 -t /app/public /app/public/index.php

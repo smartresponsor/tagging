@@ -1,0 +1,2 @@
+imports:
+    - { resource: 'routes/tagging_native.yaml' }

@@ -9,7 +9,7 @@ $targets = [
     $root . '/repo-map.md',
     $root . '/docs/architecture/repository-production-readiness-plan.md',
     $root . '/docs/http/http-wiring.md',
-    $root . '/docs/deploy/host-minimal-search.md',
+    $root . '/docs/deploy/symfony-native-search.md',
 ];
 
 $forbidden = [
@@ -39,12 +39,8 @@ foreach ($targets as $file) {
 }
 
 if ($hits !== []) {
-    fwrite(STDERR, 'Stale canonical references found:
-' . implode('
-', $hits) . '
-');
+    fwrite(STDERR, 'Stale canonical references found:' . PHP_EOL . implode(PHP_EOL, $hits) . PHP_EOL);
     exit(1);
 }
 
-echo 'tag canonical stale reference audit: ok
-';
+echo 'tag canonical stale reference audit: ok' . PHP_EOL;

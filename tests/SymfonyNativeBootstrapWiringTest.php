@@ -30,10 +30,13 @@ final class SymfonyNativeBootstrapWiringTest extends TestCase
 
     public function testSymfonyNativeRootRoutesImportCorrectedRouteMap(): void
     {
-        $routes = file_get_contents(dirname(__DIR__) . '/config/routes.yaml');
+        $root = dirname(__DIR__);
+        $routes = file_get_contents($root . '/config/routes.yaml');
         self::assertIsString($routes);
 
         self::assertStringContainsString('routes/tagging_native.yaml', $routes);
         self::assertStringNotContainsString('routes/tagging.yaml', $routes);
+        self::assertFileExists($root . '/config/routes/tagging_native.yaml');
+        self::assertFileDoesNotExist($root . '/config/routes/tag.yaml');
     }
 }

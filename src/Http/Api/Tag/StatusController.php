@@ -62,7 +62,7 @@ final class StatusController
 
     private function runtimeName(): string
     {
-        return $this->runtimeString('runtime', 'host-minimal');
+        return $this->runtimeString('runtime', 'symfony-native');
     }
 
     private function routeValue(string $key, string $fallback): string

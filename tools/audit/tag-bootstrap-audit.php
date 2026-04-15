@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 $root = require __DIR__ . '/../_bootstrap.php';
 
-errors = [];
+$errors = [];
 
 foreach ([
     'src/Kernel.php',
@@ -43,7 +43,7 @@ if (is_dir($root . '/host-minimal')) {
     $errors[] = 'host-minimal directory must not be active runtime surface';
 }
 
-if ($errors !== []) {
+if ([] !== $errors) {
     fwrite(STDERR, implode(PHP_EOL, $errors) . PHP_EOL);
     exit(1);
 }

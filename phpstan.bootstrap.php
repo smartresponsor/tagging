@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
-require_once __DIR__.'/host-minimal/cors.php';
+$vendorAutoload = __DIR__ . '/vendor/autoload.php';
+if (is_file($vendorAutoload)) {
+    require_once $vendorAutoload;
+}
 
-require_once __DIR__.'/config/tag_route_catalog.php';
+require_once __DIR__ . '/config/tag_route_catalog.php';

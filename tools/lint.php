@@ -5,8 +5,10 @@ declare(strict_types=1);
 $roots = [
     'src',
     'tests',
-    'host-minimal',
     'tools',
+    'config',
+    'bin',
+    'public',
 ];
 
 $rootDir = getcwd();

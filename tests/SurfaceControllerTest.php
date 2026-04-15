@@ -15,7 +15,7 @@ final class SurfaceControllerTest extends TestCase
     {
         $payload = (new SurfaceController())->surface();
         self::assertTrue($payload['ok']);
-        self::assertSame('host-minimal', $payload['runtime']);
+        self::assertSame('symfony-native', $payload['runtime']);
         self::assertSame('/tag/_surface', $payload['surface']['discovery']);
         self::assertArrayHasKey('tour', $payload['examples']);
         self::assertArrayHasKey('admin', $payload['docs']);

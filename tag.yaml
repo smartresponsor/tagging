@@ -38,7 +38,7 @@ routes:
     public: true
     method: POST
     path: /tag/{id}/assign
-    pattern: '#^\/tag\/([A-Za-z0-9]{26})\/assign$#'
+    pattern: '#^/tag/([A-Za-z0-9]{26})/assign$#'
     controller: App\Http\Api\Tag\AssignController::assign
     service_id: assignController
     action: assign
@@ -46,7 +46,7 @@ routes:
     public: true
     method: POST
     path: /tag/{id}/unassign
-    pattern: '#^\/tag\/([A-Za-z0-9]{26})\/unassign$#'
+    pattern: '#^/tag/([A-Za-z0-9]{26})/unassign$#'
     controller: App\Http\Api\Tag\AssignController::unassign
     service_id: assignController
     action: unassign
@@ -62,7 +62,7 @@ routes:
     public: true
     method: POST
     path: /tag/assignments/bulk-to-entity
-    pattern: '#^\/tag\/assignments\/bulk-to-entity$#'
+    pattern: '#^/tag/assignments/bulk-to-entity$#'
     controller: App\Http\Api\Tag\AssignController::assignBulkToEntity
     service_id: assignController
     action: assignBulkToEntity
@@ -94,7 +94,7 @@ routes:
     public: false
     method: GET
     path: /tag/_webhooks
-    pattern: '#^\/tag\/_webhooks$#'
+    pattern: '#^/tag/_webhooks$#'
     controller: App\Http\Api\Tag\TagWebhookController::list
     service_id: webhookController
     action: list
@@ -110,7 +110,7 @@ routes:
     public: false
     method: POST
     path: /tag/_webhooks/test
-    pattern: '#^\/tag\/_webhooks\/test$#'
+    pattern: '#^/tag/_webhooks/test$#'
     controller: App\Http\Api\Tag\TagWebhookController::test
     service_id: webhookController
     action: test
@@ -118,7 +118,7 @@ routes:
     public: true
     method: GET
     path: /tag/_status
-    pattern: '#^\/tag\/_status$#'
+    pattern: '#^/tag/_status$#'
     controller: App\Http\Api\Tag\StatusController::status
     service_id: statusController
     action: status
@@ -127,7 +127,7 @@ routes:
     public: true
     method: GET
     path: /tag/_surface
-    pattern: '#^\/tag\/_surface$#'
+    pattern: '#^/tag/_surface$#'
     controller: App\Http\Api\Tag\SurfaceController::surface
     service_id: surfaceController
     action: surface

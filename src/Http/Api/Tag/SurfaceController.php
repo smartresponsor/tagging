@@ -17,7 +17,7 @@ final readonly class SurfaceController
         return [
             'ok' => true,
             'service' => $this->runtimeString($runtime, 'service', 'tag'),
-            'runtime' => $this->runtimeString($runtime, 'runtime', 'host-minimal'),
+            'runtime' => $this->runtimeString($runtime, 'runtime', 'symfony-native'),
             'version' => $this->runtimeString($runtime, 'version', RuntimeVersion::read()),
             'surface' => $this->runtimeArray($runtime, 'route'),
             'examples' => $this->runtimeArray($runtime, 'example'),
@@ -34,7 +34,9 @@ final readonly class SurfaceController
         return is_string($value) && '' !== $value ? $value : $fallback;
     }
 
-    /** @param array<string,mixed> $runtime
+    /**
+     * @param array<string,mixed> $runtime
+     *
      * @return array<string,mixed>
      */
     private function runtimeArray(array $runtime, string $key): array

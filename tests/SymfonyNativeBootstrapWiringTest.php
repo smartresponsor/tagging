@@ -7,7 +7,7 @@ namespace Tests;
 
 use PHPUnit\Framework\TestCase;
 
-final class HostMinimalBootstrapWiringTest extends TestCase
+final class SymfonyNativeBootstrapWiringTest extends TestCase
 {
     public function testSymfonyNativeRootServicesImportLayeredMaps(): void
     {

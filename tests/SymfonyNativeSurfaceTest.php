@@ -7,7 +7,7 @@ namespace Tests;
 
 use PHPUnit\Framework\TestCase;
 
-final class HostMinimalSurfaceTest extends TestCase
+final class SymfonyNativeSurfaceTest extends TestCase
 {
     public function testPublicRuntimeTruthIsSymfonyNative(): void
     {

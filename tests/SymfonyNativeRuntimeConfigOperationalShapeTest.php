@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\HostMinimal\Container\HostMinimalRuntimeConfig;
+use App\Infrastructure\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
-final class HostMinimalRuntimeConfigOperationalShapeTest extends TestCase
+final class SymfonyNativeRuntimeConfigOperationalShapeTest extends TestCase
 {
     protected function tearDown(): void
     {
@@ -24,7 +24,7 @@ final class HostMinimalRuntimeConfigOperationalShapeTest extends TestCase
 
     public function testWebhookAndObservabilityDefaultsExposeExpectedOperationalKeys(): void
     {
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertArrayHasKey('registry_path', $config->webhook);
         self::assertArrayHasKey('audit_path', $config->webhook);
@@ -50,7 +50,7 @@ final class HostMinimalRuntimeConfigOperationalShapeTest extends TestCase
         putenv('TAG_SIGNATURE_SECRET=top-secret');
         putenv('TAG_SIGNATURE_NONCE_DIR=var/custom/nonce');
 
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertSame('var/custom/webhook-registry.json', $config->webhook['registry_path'] ?? null);
         self::assertSame('var/custom/audit.ndjson', $config->webhook['audit_path'] ?? null);

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\HostMinimal\Container\HostMinimalRuntimeConfig;
+use App\Infrastructure\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
-final class HostMinimalRuntimeConfigEdgeCaseTest extends TestCase
+final class SymfonyNativeRuntimeConfigEdgeCaseTest extends TestCase
 {
     protected function tearDown(): void
     {
@@ -29,7 +29,7 @@ final class HostMinimalRuntimeConfigEdgeCaseTest extends TestCase
     {
         putenv('TAG_ENTITY_TYPES= ,  ,   ');
 
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertSame(['*'], $config->entityTypes);
     }
@@ -38,14 +38,14 @@ final class HostMinimalRuntimeConfigEdgeCaseTest extends TestCase
     {
         putenv('TENANT=');
 
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertSame('demo', $config->defaultTenant);
     }
 
     public function testDbFallbackUsesBuiltInDefaultsWhenEnvironmentIsMissing(): void
     {
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertSame('pgsql:host=localhost;port=5432;dbname=app', $config->dbDsn);
         self::assertSame('app', $config->dbUser);

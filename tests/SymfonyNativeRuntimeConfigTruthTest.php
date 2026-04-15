@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\HostMinimal\Container\HostMinimalRuntimeConfig;
+use App\Infrastructure\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
-final class HostMinimalRuntimeConfigTruthTest extends TestCase
+final class SymfonyNativeRuntimeConfigTruthTest extends TestCase
 {
     protected function tearDown(): void
     {
@@ -20,7 +20,7 @@ final class HostMinimalRuntimeConfigTruthTest extends TestCase
 
     public function testDefaultsKeepPublicHealthRoutesOutsideSignatureEnforcement(): void
     {
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertFalse($config->security['enforce'] ?? true);
         self::assertSame(['/tag/**'], $config->security['apply']['include'] ?? null);
@@ -35,7 +35,7 @@ final class HostMinimalRuntimeConfigTruthTest extends TestCase
         putenv('TAG_ENTITY_TYPES=project,product,category');
         putenv('TENANT=tenant-alpha');
 
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertTrue($config->security['enforce'] ?? false);
         self::assertSame('test-secret', $config->security['secret'] ?? null);

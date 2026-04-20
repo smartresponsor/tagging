@@ -1,15 +1,14 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\Middleware\Observe;
-use App\Http\Api\Tag\Responder\TagWebhookResponder;
-use App\Http\Api\Tag\TagWebhookController;
-use App\Service\Core\Tag\Audit\TagAuditEmitter;
-use App\Service\Core\Tag\Webhook\TagWebhookRegistry;
+use App\Tagging\Http\Api\Tag\Middleware\Observe;
+use App\Tagging\Http\Api\Tag\Responder\TagWebhookResponder;
+use App\Tagging\Http\Api\Tag\TagWebhookController;
+use App\Tagging\Service\Core\Tag\Audit\TagAuditEmitter;
+use App\Tagging\Service\Core\Tag\Webhook\TagWebhookRegistry;
 use PHPUnit\Framework\TestCase;
 
 final class WebhookObservabilityCleanupTest extends TestCase
@@ -66,10 +65,8 @@ final class WebhookObservabilityCleanupTest extends TestCase
         self::assertStringContainsString('"method":"GET"', $slowlog);
     }
 
-    public function testHostMinimalBootstrapExportsWebhookAndObserveEntries(): void
+    public function testHostedPackageDoesNotShipHostMinimalBootstrap(): void
     {
-        $container = require dirname(__DIR__) . '/host-minimal/bootstrap.php';
-        self::assertArrayHasKey('webhookController', $container);
-        self::assertArrayHasKey('observeMiddleware', $container);
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/host-minimal/bootstrap.php');
     }
 }

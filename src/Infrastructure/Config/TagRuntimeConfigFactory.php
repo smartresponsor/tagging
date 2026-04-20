@@ -3,7 +3,7 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Infrastructure\Config;
+namespace App\Tagging\Infrastructure\Config;
 
 final class TagRuntimeConfigFactory
 {

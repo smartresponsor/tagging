@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Infrastructure\Config\TagRuntimeConfigFactory;
+use App\Tagging\Infrastructure\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
 final class SymfonyNativeRuntimeConfigTest extends TestCase

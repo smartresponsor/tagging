@@ -12,7 +12,7 @@ final class ComposerIntegrityAuditTest extends TestCase
     {
         $composer = json_decode((string) file_get_contents(__DIR__ . '/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
 
-        self::assertSame('src/', $composer['autoload']['psr-4']['App\\'] ?? null);
+        self::assertSame('src/', $composer['autoload']['psr-4']['App\Tagging\\'] ?? null);
         self::assertArrayHasKey('phpunit/phpunit', $composer['require-dev'] ?? []);
         self::assertArrayHasKey('audit:composer-integrity', $composer['scripts'] ?? []);
         self::assertArrayHasKey('test', $composer['scripts'] ?? []);

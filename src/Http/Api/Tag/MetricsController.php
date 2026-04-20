@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag;
+namespace App\Tagging\Http\Api\Tag;
 
-use App\Ops\Metrics\TagMetrics;
+use App\Tagging\Ops\Metrics\TagMetrics;
 
 final class MetricsController
 {

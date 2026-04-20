@@ -21,7 +21,7 @@ foreach ($routes as $route) {
     }
 
     [$class, $method] = explode('::', $controller, 2);
-    $path = $root . '/src/' . str_replace('App\\', '', $class);
+    $path = $root . '/src/' . str_replace('App\Tagging\\', '', $class);
     $path = str_replace('\\', '/', $path) . '.php';
     if (!is_file($path)) {
         $errors[] = 'missing file ' . $path;

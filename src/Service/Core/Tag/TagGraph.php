@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Core\Tag;
+namespace App\Tagging\Service\Core\Tag;
 
-use App\Entity\Core\Tag\TagRelation;
+use App\Tagging\Entity\Core\Tag\TagRelation;
 
 final class TagGraph
 {

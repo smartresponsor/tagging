@@ -3,10 +3,10 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag\Middleware;
+namespace App\Tagging\Http\Api\Tag\Middleware;
 
-use App\Http\Api\Tag\Responder\JsonResponder;
-use App\Service\Core\Tag\Authz\TagAuthorizer;
+use App\Tagging\Http\Api\Tag\Responder\JsonResponder;
+use App\Tagging\Service\Core\Tag\Authz\TagAuthorizer;
 
 final readonly class Authorize
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\AssignController;
+use App\Tagging\Http\Api\Tag\AssignController;
 use PHPUnit\Framework\TestCase;
 
 final class TagSingleAssignmentControllerBehaviorTest extends TestCase
@@ -109,7 +109,7 @@ final class TagSingleAssignmentControllerBehaviorTest extends TestCase
     }
 }
 
-final class TagSingleAssignOperationStub implements \App\Service\Core\Tag\AssignOperationInterface
+final class TagSingleAssignOperationStub implements \App\Tagging\Service\Core\Tag\AssignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;
@@ -131,7 +131,7 @@ final class TagSingleAssignOperationStub implements \App\Service\Core\Tag\Assign
     }
 }
 
-final class TagSingleUnassignOperationStub implements \App\Service\Core\Tag\UnassignOperationInterface
+final class TagSingleUnassignOperationStub implements \App\Tagging\Service\Core\Tag\UnassignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;

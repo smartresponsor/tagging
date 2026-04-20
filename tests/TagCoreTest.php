@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Infrastructure\Persistence\Tag\InMemoryTagRepository;
-use App\Service\Core\Tag\TagService;
+use App\Tagging\Infrastructure\Persistence\Tag\InMemoryTagRepository;
+use App\Tagging\Service\Core\Tag\TagService;
 use PHPUnit\Framework\TestCase;
 
 final class TagCoreTest extends TestCase

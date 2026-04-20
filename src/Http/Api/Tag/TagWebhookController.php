@@ -3,11 +3,11 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag;
+namespace App\Tagging\Http\Api\Tag;
 
-use App\Http\Api\Tag\Responder\TagWebhookResponder;
-use App\Service\Core\Tag\Audit\TagAuditEmitter;
-use App\Service\Core\Tag\Webhook\TagWebhookRegistry;
+use App\Tagging\Http\Api\Tag\Responder\TagWebhookResponder;
+use App\Tagging\Service\Core\Tag\Audit\TagAuditEmitter;
+use App\Tagging\Service\Core\Tag\Webhook\TagWebhookRegistry;
 use Random\RandomException;
 
 final readonly class TagWebhookController

@@ -3,16 +3,16 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Application\Write\Tag\UseCase;
+namespace App\Tagging\Application\Write\Tag\UseCase;
 
-use App\Application\Write\Tag\Dto\DeleteTagCommand;
-use App\Application\Write\Tag\Dto\TagError;
-use App\Application\Write\Tag\Dto\TagResult;
-use App\Cache\Store\Tag\SearchCache;
-use App\Cache\Store\Tag\SuggestCache;
-use App\Cache\Store\Tag\TagQueryCacheInvalidator;
-use App\Service\Core\Tag\TagEntityRepositoryInterface;
-use App\Service\Core\Tag\TransactionRunnerInterface;
+use App\Tagging\Application\Write\Tag\Dto\DeleteTagCommand;
+use App\Tagging\Application\Write\Tag\Dto\TagError;
+use App\Tagging\Application\Write\Tag\Dto\TagResult;
+use App\Tagging\Cache\Store\Tag\SearchCache;
+use App\Tagging\Cache\Store\Tag\SuggestCache;
+use App\Tagging\Cache\Store\Tag\TagQueryCacheInvalidator;
+use App\Tagging\Service\Core\Tag\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\Tag\TransactionRunnerInterface;
 
 final readonly class DeleteTag implements DeleteTagInterface
 {

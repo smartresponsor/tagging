@@ -33,8 +33,8 @@ final class BootstrapContainerTest extends TestCase
         $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
         self::assertIsString($http);
 
-        self::assertStringContainsString('App\\Http\\Api\\Tag\\', $http);
-        self::assertStringContainsString('App\\Http\\Api\\Tag\\Responder\\', $http);
-        self::assertStringContainsString('App\\Http\\Api\\Tag\\Middleware\\', $http);
+        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\', $http);
+        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\Responder\\', $http);
+        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\Middleware\\', $http);
     }
 }

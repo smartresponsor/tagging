@@ -15,7 +15,7 @@ final class TagRouteCatalogParserRegressionTest extends TestCase
             $fixture,
             <<<'YAML'
 service: tag
-runtime: host-minimal
+runtime: hosted-package
 version: parser-regression
 routes:
   - operation: status
@@ -50,7 +50,7 @@ YAML,
             $fixture,
             <<<'YAML'
 service: 'tag'
-runtime: "host-minimal"
+runtime: "hosted-package"
 version: quoted-values
 routes:
   - operation: discovery
@@ -70,7 +70,7 @@ YAML,
         @unlink($fixture);
 
         self::assertSame('tag', $parsed['service']);
-        self::assertSame('host-minimal', $parsed['runtime']);
+        self::assertSame('hosted-package', $parsed['runtime']);
         self::assertSame('quoted-values', $parsed['version']);
         self::assertCount(2, $parsed['routes']);
         self::assertTrue($parsed['routes'][0]['public'] ?? false);
@@ -85,7 +85,7 @@ YAML,
         $parsed = \tagRouteCatalogParse('/definitely/missing/tag.yaml');
 
         self::assertSame('tag', $parsed['service']);
-        self::assertSame('host-minimal', $parsed['runtime']);
+        self::assertSame('hosted-package', $parsed['runtime']);
         self::assertSame('dev', $parsed['version']);
         self::assertSame([], $parsed['routes']);
     }

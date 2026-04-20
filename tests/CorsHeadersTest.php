@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\CorsHeaders;
+use App\Tagging\Http\Api\Tag\CorsHeaders;
 use PHPUnit\Framework\TestCase;
 
 final class CorsHeadersTest extends TestCase

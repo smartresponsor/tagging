@@ -8,13 +8,13 @@ use PHPUnit\Framework\TestCase;
 
 final class TagRouteCatalogProjectionRuntimeTruthTest extends TestCase
 {
-    public function testCatalogRoutesRemainAlignedWithRuntimeRouteDispatchSource(): void
+    public function testCatalogRoutesRemainAlignedWithRouteProjectionSource(): void
     {
         $catalog = require __DIR__ . '/../config/tag_route_catalog.php';
-        $runtimeRoutePhp = file_get_contents(__DIR__ . '/../host-minimal/route.php');
+        $surface = require __DIR__ . '/../config/tag_public_surface.php';
 
         self::assertIsArray($catalog);
-        self::assertIsString($runtimeRoutePhp);
+        self::assertIsArray($surface);
 
         $operations = [];
         foreach (($catalog['routes'] ?? []) as $route) {
@@ -37,11 +37,14 @@ final class TagRouteCatalogProjectionRuntimeTruthTest extends TestCase
         self::assertContains('search', $operations);
         self::assertContains('suggest', $operations);
 
-        self::assertStringContainsString("require dirname(__DIR__) . '/config/tag_route_catalog.php'", $runtimeRoutePhp);
-        self::assertStringContainsString('$routeDefinitions', $runtimeRoutePhp);
-        self::assertStringContainsString('$buildHandler', $runtimeRoutePhp);
-        self::assertStringContainsString('response_header', $runtimeRoutePhp);
-        self::assertStringContainsString("'pattern'", $runtimeRoutePhp);
+        $routeMap = $surface['route'] ?? null;
+        self::assertIsArray($routeMap);
+        self::assertArrayHasKey('status', $routeMap);
+        self::assertArrayHasKey('discovery', $routeMap);
+        self::assertArrayHasKey('assignments_bulk', $routeMap);
+        self::assertArrayHasKey('assignments_bulk_to_entity', $routeMap);
+        self::assertArrayHasKey('search', $routeMap);
+        self::assertArrayHasKey('suggest', $routeMap);
     }
 
     public function testPublicProjectionStillFiltersPrivateWebhookRoutesOutOfSurface(): void

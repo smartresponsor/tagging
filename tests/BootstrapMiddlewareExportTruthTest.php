@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Infrastructure\Config\TagRuntimeConfigFactory;
+use App\Tagging\Infrastructure\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
 final class BootstrapMiddlewareExportTruthTest extends TestCase
@@ -14,7 +14,7 @@ final class BootstrapMiddlewareExportTruthTest extends TestCase
         $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
         self::assertIsString($http);
 
-        self::assertStringContainsString('App\\Http\\Api\\Tag\\Middleware\\', $http);
+        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\Middleware\\', $http);
         self::assertStringContainsString('../../src/Http/Api/Tag/Middleware/', $http);
     }
 

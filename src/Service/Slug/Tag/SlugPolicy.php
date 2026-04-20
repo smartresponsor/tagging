@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Slug\Tag;
+namespace App\Tagging\Service\Slug\Tag;
 
-use App\Service\Core\Tag\Slug\SlugPolicy as CoreSlugPolicy;
+use App\Tagging\Service\Core\Tag\Slug\SlugPolicy as CoreSlugPolicy;
 
 /**
  * Backward-compatible facade over the canonical core slug policy.

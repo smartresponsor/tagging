@@ -1,3 +1,2 @@
-component_controllers:
-  resource: '../../src/Controller/'
-  type: attribute
+tagging_component_routes:
+  resource: '../routes/tagging_native.yaml'

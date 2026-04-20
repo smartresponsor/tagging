@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Authz\Tag;
+namespace App\Tagging\Service\Authz\Tag;
 
-use App\Service\Core\Tag\Authz\TagAuthorizer as CoreTagAuthorizer;
+use App\Tagging\Service\Core\Tag\Authz\TagAuthorizer as CoreTagAuthorizer;
 
 /**
  * Backward-compatible facade over the canonical core authorizer.

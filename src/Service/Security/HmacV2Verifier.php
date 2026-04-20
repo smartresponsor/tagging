@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Security;
+namespace App\Tagging\Service\Security;
 
-use App\Ops\Security\NonceStore;
+use App\Tagging\Ops\Security\NonceStore;
 
 final readonly class HmacV2Verifier
 {

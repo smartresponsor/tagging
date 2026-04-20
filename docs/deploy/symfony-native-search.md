@@ -13,7 +13,7 @@ The search and suggest endpoints are part of that Symfony route map:
 - `GET /tag/suggest`
 
 The controllers are resolved through Symfony service maps under `config/services/*.yaml`.
-The HTTP layer registers `App\Http\Api\Tag\`, responders, and middleware from `config/services/http.yaml`.
+The HTTP layer registers `App\Tagging\Http\Api\Tag\`, responders, and middleware from `config/services/http.yaml`.
 The read-model layer is registered from `config/services/read_model.yaml` and keeps search and suggest on the shared tagging read model.
 
 ## Operational check

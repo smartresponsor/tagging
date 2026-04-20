@@ -3,10 +3,10 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Tag;
+namespace App\Tagging\Infrastructure\Persistence\Tag;
 
-use App\Service\Core\Tag\Record\TagEntityCreateRecord;
-use App\Service\Core\Tag\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\Tag\Record\TagEntityCreateRecord;
+use App\Tagging\Service\Core\Tag\TagEntityRepositoryInterface;
 
 final readonly class PdoTagEntityRepository implements TagEntityRepositoryInterface
 {

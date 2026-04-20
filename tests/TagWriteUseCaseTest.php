@@ -5,18 +5,18 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Application\Write\Tag\Dto\CreateTagCommand;
-use App\Application\Write\Tag\Dto\DeleteTagCommand;
-use App\Application\Write\Tag\Dto\PatchTagCommand;
-use App\Application\Write\Tag\UseCase\CreateTag;
-use App\Application\Write\Tag\UseCase\DeleteTag;
-use App\Application\Write\Tag\UseCase\PatchTag;
-use App\Http\Api\Tag\Responder\TagWriteResponder;
-use App\Service\Core\Tag\Record\TagEntityCreateRecord;
-use App\Service\Core\Tag\Slug\Slugifier;
-use App\Service\Core\Tag\Slug\SlugPolicy;
-use App\Service\Core\Tag\TagEntityRepositoryInterface;
-use App\Service\Core\Tag\TransactionRunnerInterface;
+use App\Tagging\Application\Write\Tag\Dto\CreateTagCommand;
+use App\Tagging\Application\Write\Tag\Dto\DeleteTagCommand;
+use App\Tagging\Application\Write\Tag\Dto\PatchTagCommand;
+use App\Tagging\Application\Write\Tag\UseCase\CreateTag;
+use App\Tagging\Application\Write\Tag\UseCase\DeleteTag;
+use App\Tagging\Application\Write\Tag\UseCase\PatchTag;
+use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
+use App\Tagging\Service\Core\Tag\Record\TagEntityCreateRecord;
+use App\Tagging\Service\Core\Tag\Slug\Slugifier;
+use App\Tagging\Service\Core\Tag\Slug\SlugPolicy;
+use App\Tagging\Service\Core\Tag\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\Tag\TransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagWriteUseCaseTest extends TestCase

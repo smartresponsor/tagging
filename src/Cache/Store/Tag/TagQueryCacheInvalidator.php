@@ -3,7 +3,7 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Cache\Store\Tag;
+namespace App\Tagging\Cache\Store\Tag;
 
 final readonly class TagQueryCacheInvalidator
 {

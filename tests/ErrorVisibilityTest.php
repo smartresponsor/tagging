@@ -5,11 +5,11 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\StatusController;
-use App\Infrastructure\Outbox\Tag\OutboxPublisher;
-use App\Service\Core\Tag\AssignService;
-use App\Service\Core\Tag\QuotaService;
-use App\Service\Core\Tag\UnassignService;
+use App\Tagging\Http\Api\Tag\StatusController;
+use App\Tagging\Infrastructure\Outbox\Tag\OutboxPublisher;
+use App\Tagging\Service\Core\Tag\AssignService;
+use App\Tagging\Service\Core\Tag\QuotaService;
+use App\Tagging\Service\Core\Tag\UnassignService;
 use PHPUnit\Framework\TestCase;
 
 final class ErrorVisibilityTest extends TestCase

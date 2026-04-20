@@ -15,7 +15,7 @@ It intentionally wraps the existing repository material instead of duplicating i
 == Current architectural reading
 
 The shipped runtime is centered on `host-minimal/` with route truth centralized in `tag.yaml`.
-The repository follows the current Symfony-oriented `App\` layout and keeps the canonical Tag branches under:
+The repository follows the current Symfony-oriented `App\Tagging\` layout and keeps the canonical Tag branches under:
 
 * `src/Application/Write/Tag/...`
 * `src/Http/Api/Tag/...`

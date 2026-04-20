@@ -7,15 +7,24 @@ $root = require __DIR__ . '/../_bootstrap.php';
 $errors = [];
 
 foreach ([
-    'src/Kernel.php',
-    'config/bootstrap.php',
     'config/services.yaml',
     'config/routes.yaml',
+    'src/TaggingBundle.php',
+] as $path) {
+    if (!is_file($root . '/' . $path)) {
+        $errors[] = 'missing hosted-package bootstrap file ' . $path;
+    }
+}
+
+foreach ([
+    'src/Kernel.php',
+    'config/bootstrap.php',
+    'config/bundles.php',
     'public/index.php',
     'bin/console',
 ] as $path) {
-    if (!is_file($root . '/' . $path)) {
-        $errors[] = 'missing Symfony bootstrap file ' . $path;
+    if (is_file($root . '/' . $path)) {
+        $errors[] = 'retired standalone runtime file must be removed: ' . $path;
     }
 }
 

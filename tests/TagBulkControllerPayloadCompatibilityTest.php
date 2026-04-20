@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\AssignController;
+use App\Tagging\Http\Api\Tag\AssignController;
 use PHPUnit\Framework\TestCase;
 
 final class TagBulkControllerPayloadCompatibilityTest extends TestCase
@@ -137,7 +137,7 @@ final class TagBulkControllerPayloadCompatibilityTest extends TestCase
     }
 }
 
-final class TagBulkCompatAssignOperationStub implements \App\Service\Core\Tag\AssignOperationInterface
+final class TagBulkCompatAssignOperationStub implements \App\Tagging\Service\Core\Tag\AssignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;
@@ -164,7 +164,7 @@ final class TagBulkCompatAssignOperationStub implements \App\Service\Core\Tag\As
     }
 }
 
-final class TagBulkCompatUnassignOperationStub implements \App\Service\Core\Tag\UnassignOperationInterface
+final class TagBulkCompatUnassignOperationStub implements \App\Tagging\Service\Core\Tag\UnassignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;

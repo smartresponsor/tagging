@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\RuntimeSurfaceCatalog;
-use App\Http\Api\Tag\StatusController;
+use App\Tagging\Http\Api\Tag\RuntimeSurfaceCatalog;
+use App\Tagging\Http\Api\Tag\StatusController;
 use PHPUnit\Framework\TestCase;
 
 final class RuntimeVersionCatalogTest extends TestCase

@@ -3,7 +3,7 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag\Responder;
+namespace App\Tagging\Http\Api\Tag\Responder;
 
 final readonly class TagMiddlewareResponder
 {

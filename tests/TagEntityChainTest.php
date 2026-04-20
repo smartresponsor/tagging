@@ -5,17 +5,17 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Application\Write\Tag\UseCase\CreateTag;
-use App\Application\Write\Tag\UseCase\DeleteTag;
-use App\Application\Write\Tag\UseCase\PatchTag;
-use App\Http\Api\Tag\Responder\TagWriteResponder;
-use App\Http\Api\Tag\TagController;
-use App\Infrastructure\Persistence\Tag\PdoTagEntityRepository;
-use App\Service\Core\Tag\PdoTransactionRunner;
-use App\Service\Core\Tag\Slug\Slugifier;
-use App\Service\Core\Tag\Slug\SlugPolicy;
-use App\Service\Core\Tag\TagEntityPayloadNormalizer;
-use App\Service\Core\Tag\TagEntityService;
+use App\Tagging\Application\Write\Tag\UseCase\CreateTag;
+use App\Tagging\Application\Write\Tag\UseCase\DeleteTag;
+use App\Tagging\Application\Write\Tag\UseCase\PatchTag;
+use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
+use App\Tagging\Http\Api\Tag\TagController;
+use App\Tagging\Infrastructure\Persistence\Tag\PdoTagEntityRepository;
+use App\Tagging\Service\Core\Tag\PdoTransactionRunner;
+use App\Tagging\Service\Core\Tag\Slug\Slugifier;
+use App\Tagging\Service\Core\Tag\Slug\SlugPolicy;
+use App\Tagging\Service\Core\Tag\TagEntityPayloadNormalizer;
+use App\Tagging\Service\Core\Tag\TagEntityService;
 use PHPUnit\Framework\TestCase;
 
 final class TagEntityChainTest extends TestCase

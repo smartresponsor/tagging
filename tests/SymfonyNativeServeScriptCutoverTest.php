@@ -8,28 +8,13 @@ use PHPUnit\Framework\TestCase;
 
 final class SymfonyNativeServeScriptCutoverTest extends TestCase
 {
-    public function testLocalTagServeUsesPublicSymfonyEntry(): void
+    public function testLocalServeScriptIsRetiredFromPackageSurface(): void
     {
-        $content = $this->read('tools/local/tag-serve.sh');
-
-        self::assertStringContainsString('-t public public/index.php', $content);
-        self::assertStringNotContainsString('host-minimal/index.php', $content);
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/tools/local/tag-serve.sh');
     }
 
-    public function testContainerHostRunUsesPublicSymfonyEntry(): void
+    public function testContainerHostRunScriptIsRetiredFromPackageSurface(): void
     {
-        $content = $this->read('host/run.sh');
-
-        self::assertStringContainsString('/app/public/index.php', $content);
-        self::assertStringContainsString('-t /app/public /app/public/index.php', $content);
-        self::assertStringNotContainsString('/app/host-minimal', $content);
-    }
-
-    private function read(string $relativePath): string
-    {
-        $content = file_get_contents(dirname(__DIR__) . '/' . $relativePath);
-        self::assertIsString($content);
-
-        return $content;
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/host/run.sh');
     }
 }

@@ -1,3 +1,5 @@
+> Package mode note: this component is hosted by a Symfony ecosystem application and does not ship its own Kernel, front controller, or standalone bin/console surface.
+
 # Smartresponsor Tag (Tagging)
 
 Canonical tagging component for any object type: create and manage tags, attach/detach them to entities, and expose a stable API for CRUD, assignment, search, suggest, status, and surface discovery.

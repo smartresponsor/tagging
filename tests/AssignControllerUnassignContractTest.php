@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\AssignController;
-use App\Service\Core\Tag\AssignOperationInterface;
-use App\Service\Core\Tag\UnassignOperationInterface;
+use App\Tagging\Http\Api\Tag\AssignController;
+use App\Tagging\Service\Core\Tag\AssignOperationInterface;
+use App\Tagging\Service\Core\Tag\UnassignOperationInterface;
 use PHPUnit\Framework\TestCase;
 
 final class AssignControllerUnassignContractTest extends TestCase

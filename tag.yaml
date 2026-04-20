@@ -1,5 +1,5 @@
 service: tag
-runtime: symfony-native
+runtime: hosted-package
 version: p118-route-catalog-truth
 routes:
   - operation: create
@@ -7,7 +7,7 @@ routes:
     method: POST
     path: /tag
     pattern: '#^/tag$#'
-    controller: App\Http\Api\Tag\TagController::create
+    controller: App\Tagging\Http\Api\Tag\TagController::create
     service_id: tagController
     action: create
   - operation: read
@@ -15,7 +15,7 @@ routes:
     method: GET
     path: /tag/{id}
     pattern: '#^/tag/([A-Za-z0-9]{26})$#'
-    controller: App\Http\Api\Tag\TagController::get
+    controller: App\Tagging\Http\Api\Tag\TagController::get
     service_id: tagController
     action: get
   - operation: patch
@@ -23,7 +23,7 @@ routes:
     method: PATCH
     path: /tag/{id}
     pattern: '#^/tag/([A-Za-z0-9]{26})$#'
-    controller: App\Http\Api\Tag\TagController::patch
+    controller: App\Tagging\Http\Api\Tag\TagController::patch
     service_id: tagController
     action: patch
   - operation: delete
@@ -31,7 +31,7 @@ routes:
     method: DELETE
     path: /tag/{id}
     pattern: '#^/tag/([A-Za-z0-9]{26})$#'
-    controller: App\Http\Api\Tag\TagController::delete
+    controller: App\Tagging\Http\Api\Tag\TagController::delete
     service_id: tagController
     action: delete
   - operation: assign
@@ -39,7 +39,7 @@ routes:
     method: POST
     path: /tag/{id}/assign
     pattern: '#^/tag/([A-Za-z0-9]{26})/assign$#'
-    controller: App\Http\Api\Tag\AssignController::assign
+    controller: App\Tagging\Http\Api\Tag\AssignController::assign
     service_id: assignController
     action: assign
   - operation: unassign
@@ -47,7 +47,7 @@ routes:
     method: POST
     path: /tag/{id}/unassign
     pattern: '#^/tag/([A-Za-z0-9]{26})/unassign$#'
-    controller: App\Http\Api\Tag\AssignController::unassign
+    controller: App\Tagging\Http\Api\Tag\AssignController::unassign
     service_id: assignController
     action: unassign
   - operation: assignments_bulk
@@ -55,7 +55,7 @@ routes:
     method: POST
     path: /tag/assignments/bulk
     pattern: '#^/tag/assignments/bulk$#'
-    controller: App\Http\Api\Tag\AssignController::bulk
+    controller: App\Tagging\Http\Api\Tag\AssignController::bulk
     service_id: assignController
     action: bulk
   - operation: assignments_bulk_to_entity
@@ -63,7 +63,7 @@ routes:
     method: POST
     path: /tag/assignments/bulk-to-entity
     pattern: '#^/tag/assignments/bulk-to-entity$#'
-    controller: App\Http\Api\Tag\AssignController::assignBulkToEntity
+    controller: App\Tagging\Http\Api\Tag\AssignController::assignBulkToEntity
     service_id: assignController
     action: assignBulkToEntity
   - operation: assignments
@@ -71,7 +71,7 @@ routes:
     method: GET
     path: /tag/assignments
     pattern: '#^/tag/assignments$#'
-    controller: App\Http\Api\Tag\AssignmentReadController::listByEntity
+    controller: App\Tagging\Http\Api\Tag\AssignmentReadController::listByEntity
     service_id: assignmentReadController
     action: listByEntity
   - operation: search
@@ -79,7 +79,7 @@ routes:
     method: GET
     path: /tag/search
     pattern: '#^/tag/search$#'
-    controller: App\Http\Api\Tag\SearchController::get
+    controller: App\Tagging\Http\Api\Tag\SearchController::get
     service_id: searchController
     action: get
   - operation: suggest
@@ -87,7 +87,7 @@ routes:
     method: GET
     path: /tag/suggest
     pattern: '#^/tag/suggest$#'
-    controller: App\Http\Api\Tag\SuggestController::get
+    controller: App\Tagging\Http\Api\Tag\SuggestController::get
     service_id: suggestController
     action: get
   - operation: webhooks_list
@@ -95,7 +95,7 @@ routes:
     method: GET
     path: /tag/_webhooks
     pattern: '#^/tag/_webhooks$#'
-    controller: App\Http\Api\Tag\TagWebhookController::list
+    controller: App\Tagging\Http\Api\Tag\TagWebhookController::list
     service_id: webhookController
     action: list
   - operation: webhooks_subscribe
@@ -103,7 +103,7 @@ routes:
     method: POST
     path: /tag/_webhooks/subscribe
     pattern: '#^/tag/_webhooks/subscribe$#'
-    controller: App\Http\Api\Tag\TagWebhookController::subscribe
+    controller: App\Tagging\Http\Api\Tag\TagWebhookController::subscribe
     service_id: webhookController
     action: subscribe
   - operation: webhooks_test
@@ -111,7 +111,7 @@ routes:
     method: POST
     path: /tag/_webhooks/test
     pattern: '#^/tag/_webhooks/test$#'
-    controller: App\Http\Api\Tag\TagWebhookController::test
+    controller: App\Tagging\Http\Api\Tag\TagWebhookController::test
     service_id: webhookController
     action: test
   - operation: status
@@ -119,7 +119,7 @@ routes:
     method: GET
     path: /tag/_status
     pattern: '#^/tag/_status$#'
-    controller: App\Http\Api\Tag\StatusController::status
+    controller: App\Tagging\Http\Api\Tag\StatusController::status
     service_id: statusController
     action: status
     response_header: X-Tag-Version
@@ -128,7 +128,7 @@ routes:
     method: GET
     path: /tag/_surface
     pattern: '#^/tag/_surface$#'
-    controller: App\Http\Api\Tag\SurfaceController::surface
+    controller: App\Tagging\Http\Api\Tag\SurfaceController::surface
     service_id: surfaceController
     action: surface
     response_header: X-Tag-Surface-Version

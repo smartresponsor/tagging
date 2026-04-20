@@ -3,10 +3,10 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag;
+namespace App\Tagging\Http\Api\Tag;
 
-use App\Http\Api\Tag\Responder\TagReadResponder;
-use App\Service\Core\Tag\SuggestService;
+use App\Tagging\Http\Api\Tag\Responder\TagReadResponder;
+use App\Tagging\Service\Core\Tag\SuggestService;
 
 final readonly class SuggestController
 {

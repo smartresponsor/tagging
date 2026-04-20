@@ -3,7 +3,7 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Infrastructure\Outbox\Tag;
+namespace App\Tagging\Infrastructure\Outbox\Tag;
 
 final readonly class OutboxPublisher
 {

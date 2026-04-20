@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Entity\Core\Tag\TagRelation;
-use App\Service\Core\Tag\TagGraph;
+use App\Tagging\Entity\Core\Tag\TagRelation;
+use App\Tagging\Service\Core\Tag\TagGraph;
 use PHPUnit\Framework\TestCase;
 
 final class TagGraphTest extends TestCase

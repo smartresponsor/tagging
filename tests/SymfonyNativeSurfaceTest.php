@@ -1,6 +1,5 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace Tests;
@@ -9,22 +8,20 @@ use PHPUnit\Framework\TestCase;
 
 final class SymfonyNativeSurfaceTest extends TestCase
 {
-    public function testPublicRuntimeTruthIsSymfonyNative(): void
+    public function testPublicRuntimeTruthIsHostedPackage(): void
     {
         $tagYaml = file_get_contents(dirname(__DIR__) . '/tag.yaml');
         self::assertIsString($tagYaml);
-        self::assertStringContainsString('runtime: symfony-native', $tagYaml);
+        self::assertStringContainsString('runtime: hosted-package', $tagYaml);
+        self::assertStringNotContainsString('runtime: symfony-native', $tagYaml);
         self::assertStringNotContainsString('runtime: host-minimal', $tagYaml);
     }
 
-    public function testPublicIndexUsesSymfonyKernelEntry(): void
+    public function testStandaloneFrontControllerIsNotPartOfPackageSurface(): void
     {
-        $publicIndex = file_get_contents(dirname(__DIR__) . '/public/index.php');
-        self::assertIsString($publicIndex);
-
-        self::assertStringContainsString('use App\\Kernel;', $publicIndex);
-        self::assertStringContainsString("require dirname(__DIR__) . '/config/bootstrap.php';", $publicIndex);
-        self::assertStringNotContainsString('host-minimal/index.php', $publicIndex);
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/public/index.php');
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/bin/console');
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/config/bootstrap.php');
     }
 
     public function testContractStillDocumentsStatusAndSurfaceRoutes(): void

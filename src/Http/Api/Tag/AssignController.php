@@ -3,13 +3,13 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag;
+namespace App\Tagging\Http\Api\Tag;
 
-use App\Http\Api\Tag\Responder\TagAssignmentResponder;
-use App\Service\Core\Tag\AssignOperationInterface;
-use App\Service\Core\Tag\AssignService;
-use App\Service\Core\Tag\UnassignOperationInterface;
-use App\Service\Core\Tag\UnassignService;
+use App\Tagging\Http\Api\Tag\Responder\TagAssignmentResponder;
+use App\Tagging\Service\Core\Tag\AssignOperationInterface;
+use App\Tagging\Service\Core\Tag\AssignService;
+use App\Tagging\Service\Core\Tag\UnassignOperationInterface;
+use App\Tagging\Service\Core\Tag\UnassignService;
 
 final class AssignController
 {

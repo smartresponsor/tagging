@@ -5,10 +5,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Service\Core\Tag\CallableTagErrorSink;
-use App\Service\Core\Tag\NullTagErrorSink;
-use App\Service\Core\Tag\TagErrorSink;
-use App\Service\Core\Tag\TagErrorSinkFactory;
+use App\Tagging\Service\Core\Tag\CallableTagErrorSink;
+use App\Tagging\Service\Core\Tag\NullTagErrorSink;
+use App\Tagging\Service\Core\Tag\TagErrorSink;
+use App\Tagging\Service\Core\Tag\TagErrorSinkFactory;
 use PHPUnit\Framework\TestCase;
 
 final class TagErrorSinkFactoryTest extends TestCase

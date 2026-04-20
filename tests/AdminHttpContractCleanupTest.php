@@ -5,18 +5,18 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Application\Write\Tag\Dto\CreateTagCommand;
-use App\Application\Write\Tag\Dto\DeleteTagCommand;
-use App\Application\Write\Tag\Dto\PatchTagCommand;
-use App\Application\Write\Tag\Dto\TagError;
-use App\Application\Write\Tag\Dto\TagResult;
-use App\Application\Write\Tag\UseCase\CreateTagInterface;
-use App\Application\Write\Tag\UseCase\DeleteTagInterface;
-use App\Application\Write\Tag\UseCase\PatchTagInterface;
-use App\Http\Api\Tag\Responder\TagWriteResponder;
-use App\Http\Api\Tag\TagController;
-use App\Http\Api\Tag\TagHttpRequest;
-use App\Service\Core\Tag\TagEntityQueryServiceInterface;
+use App\Tagging\Application\Write\Tag\Dto\CreateTagCommand;
+use App\Tagging\Application\Write\Tag\Dto\DeleteTagCommand;
+use App\Tagging\Application\Write\Tag\Dto\PatchTagCommand;
+use App\Tagging\Application\Write\Tag\Dto\TagError;
+use App\Tagging\Application\Write\Tag\Dto\TagResult;
+use App\Tagging\Application\Write\Tag\UseCase\CreateTagInterface;
+use App\Tagging\Application\Write\Tag\UseCase\DeleteTagInterface;
+use App\Tagging\Application\Write\Tag\UseCase\PatchTagInterface;
+use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
+use App\Tagging\Http\Api\Tag\TagController;
+use App\Tagging\Http\Api\Tag\TagHttpRequest;
+use App\Tagging\Service\Core\Tag\TagEntityQueryServiceInterface;
 use PHPUnit\Framework\TestCase;
 
 final class AdminHttpContractCleanupTest extends TestCase

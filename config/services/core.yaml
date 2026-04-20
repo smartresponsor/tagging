@@ -3,5 +3,5 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Core\:
+    App\Tagging\Core\:
         resource: '../../src/Core/'

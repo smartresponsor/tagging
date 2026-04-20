@@ -3,7 +3,7 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Entity\Core\Tag;
+namespace App\Tagging\Entity\Core\Tag;
 
 final class Tag
 {

@@ -1,13 +1,12 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-surface = require __DIR__.'/tag_public_surface.php';
+$surface = require __DIR__ . '/tag_public_surface.php';
 if (!is_array($surface)) {
     return [
         'service' => 'tag',
-        'runtime' => 'symfony-native',
+        'runtime' => 'hosted-package',
         'version' => 'dev',
         'route' => [],
         'example' => [],
@@ -51,13 +50,13 @@ foreach ($methodByOperation as $operation => $defaultMethod) {
     $publicSurface[] = [
         'method' => $method,
         'path' => $path,
-        'name' => str_replace('_', ' ', $operation),
+        'name' => $operation === 'discovery' ? 'discovery' : str_replace('_', ' ', $operation),
     ];
 }
 
 return [
     'service' => (string) ($surface['service'] ?? 'tag'),
-    'runtime' => (string) ($surface['runtime'] ?? 'symfony-native'),
+    'runtime' => (string) ($surface['runtime'] ?? 'hosted-package'),
     'version' => (string) ($surface['version'] ?? 'dev'),
     'route' => $routeMap,
     'example' => is_array($surface['example'] ?? null) ? $surface['example'] : [],

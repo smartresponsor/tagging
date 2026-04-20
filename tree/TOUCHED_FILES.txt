@@ -1,0 +1,14 @@
+config/component/api_platform.yaml
+config/component/component.yaml
+config/component/doctrine.yaml
+config/component/env.yaml
+config/component/messenger.yaml
+config/component/routes.yaml
+config/component/security.yaml
+config/component/services.yaml
+config/component/smoke.yaml
+delivery/rc/manifest.yaml
+docs/component/integration.adoc
+src/DependencyInjection/TaggingExtension.php
+src/TaggingBundle.php
+tree/TOUCHED_FILES.txt

@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  # Symfony-native component export surface.
+  # The host application may import this file from the component root.
+  App\:
+    resource: '../../src/'
+    exclude:
+      - '../../src/Kernel.php'
+      - '../../src/DependencyInjection/'
+      - '../../src/Entity/'
+      - '../../src/Tests/'

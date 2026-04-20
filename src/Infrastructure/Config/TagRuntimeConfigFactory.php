@@ -3,31 +3,11 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\HostMinimal\Container;
+namespace App\Infrastructure\Config;
 
-final readonly class HostMinimalRuntimeConfig
+final class TagRuntimeConfigFactory
 {
-    /**
-     * @param array<string,mixed> $runtime
-     * @param list<string>        $entityTypes
-     * @param array<string,mixed> $webhook
-     * @param array<string,mixed> $observability
-     * @param array<string,mixed> $security
-     */
-    public function __construct(
-        public array $runtime,
-        public string $runtimeVersion,
-        public string $dbDsn,
-        public string $dbUser,
-        public string $dbPass,
-        public string $defaultTenant,
-        public array $entityTypes,
-        public array $webhook,
-        public array $observability,
-        public array $security,
-    ) {}
-
-    public static function fromGlobals(): self
+    public static function fromGlobals(): TagRuntimeConfig
     {
         $runtime = require dirname(__DIR__, 3) . '/config/tag_runtime.php';
         $entityTypes = array_values(array_filter(
@@ -39,7 +19,7 @@ final readonly class HostMinimalRuntimeConfig
             $entityTypes = ['*'];
         }
 
-        return new self(
+        return new TagRuntimeConfig(
             is_array($runtime) ? $runtime : [],
             is_array($runtime) ? (string) ($runtime['version'] ?? 'dev') : 'dev',
             self::dbDsn(),
@@ -51,6 +31,25 @@ final readonly class HostMinimalRuntimeConfig
             self::observabilityConfig(),
             self::securityConfig(),
         );
+    }
+
+    /** @return array<string,mixed> */
+    public static function securityConfig(): array
+    {
+        $secret = self::env('TAG_SIGNATURE_SECRET', '');
+
+        return [
+            'enforce' => '' !== $secret,
+            'secret' => $secret,
+            'skew_sec' => (int) self::env('TAG_SIGNATURE_SKEW_SEC', '120'),
+            'nonce_ttl_sec' => (int) self::env('TAG_SIGNATURE_NONCE_TTL_SEC', '300'),
+            'nonce_dir' => self::env('TAG_SIGNATURE_NONCE_DIR', 'var/cache/nonce'),
+            'max_entries' => (int) self::env('TAG_SIGNATURE_NONCE_MAX', '100000'),
+            'apply' => [
+                'include' => ['/tag/**'],
+                'exclude' => ['/tag/_status', '/tag/_surface', '/tag/_metrics'],
+            ],
+        ];
     }
 
     /** @return array<string,mixed> */
@@ -84,25 +83,6 @@ final readonly class HostMinimalRuntimeConfig
                 'checks' => [
                     ['name' => 'metrics_up', 'type' => 'counter_exists', 'key' => 'tag_up'],
                 ],
-            ],
-        ];
-    }
-
-    /** @return array<string,mixed> */
-    private static function securityConfig(): array
-    {
-        $secret = self::env('TAG_SIGNATURE_SECRET', '');
-
-        return [
-            'enforce' => '' !== $secret,
-            'secret' => $secret,
-            'skew_sec' => (int) self::env('TAG_SIGNATURE_SKEW_SEC', '120'),
-            'nonce_ttl_sec' => (int) self::env('TAG_SIGNATURE_NONCE_TTL_SEC', '300'),
-            'nonce_dir' => self::env('TAG_SIGNATURE_NONCE_DIR', 'var/cache/nonce'),
-            'max_entries' => (int) self::env('TAG_SIGNATURE_NONCE_MAX', '100000'),
-            'apply' => [
-                'include' => ['/tag/**'],
-                'exclude' => ['/tag/_status', '/tag/_surface', '/tag/_metrics'],
             ],
         ];
     }

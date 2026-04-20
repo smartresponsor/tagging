@@ -1,5 +1,5 @@
 service: tag
-runtime: host-minimal
+runtime: symfony-native
 version: p118-route-catalog-truth
 routes:
   - operation: create

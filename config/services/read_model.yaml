@@ -1,0 +1,7 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Service\Core\Tag\:
+        resource: '../../src/Service/Core/Tag/'

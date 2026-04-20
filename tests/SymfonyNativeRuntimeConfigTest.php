@@ -5,16 +5,16 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\HostMinimal\Container\HostMinimalRuntimeConfig;
+use App\Infrastructure\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
-final class HostMinimalRuntimeConfigTest extends TestCase
+final class SymfonyNativeRuntimeConfigTest extends TestCase
 {
     public function testRuntimeConfigProvidesEntityTypesFallback(): void
     {
         putenv('TAG_ENTITY_TYPES');
 
-        $cfg = HostMinimalRuntimeConfig::fromGlobals();
+        $cfg = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertSame(['*'], $cfg->entityTypes);
         self::assertNotSame('', $cfg->runtimeVersion);

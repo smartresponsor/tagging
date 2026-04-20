@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\HostMinimal\Container\HostMinimalRuntimeConfig;
+use App\Infrastructure\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
-final class HostMinimalRuntimeConfigDbResolutionTest extends TestCase
+final class SymfonyNativeRuntimeConfigDbResolutionTest extends TestCase
 {
     protected function tearDown(): void
     {
@@ -33,7 +33,7 @@ final class HostMinimalRuntimeConfigDbResolutionTest extends TestCase
         putenv('POSTGRES_USER=ignored-user');
         putenv('POSTGRES_PASSWORD=ignored-pass');
 
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertSame('pgsql:host=db.internal;port=5544;dbname=tagging', $config->dbDsn);
         self::assertSame('runtime-user', $config->dbUser);
@@ -49,7 +49,7 @@ final class HostMinimalRuntimeConfigDbResolutionTest extends TestCase
         putenv('POSTGRES_PASSWORD=tagging_pass');
         putenv('TAG_ENTITY_TYPES= , product, ,category , ');
 
-        $config = HostMinimalRuntimeConfig::fromGlobals();
+        $config = TagRuntimeConfigFactory::fromGlobals();
 
         self::assertSame('pgsql:host=postgres.internal;port=6543;dbname=tagging_app', $config->dbDsn);
         self::assertSame('tagging_user', $config->dbUser);

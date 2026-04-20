@@ -1,6 +1,5 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 if (!function_exists('tagRouteCatalogParse')) {
@@ -9,7 +8,7 @@ if (!function_exists('tagRouteCatalogParse')) {
     {
         $catalog = [
             'service' => 'tag',
-            'runtime' => 'host-minimal',
+            'runtime' => 'hosted-package',
             'version' => 'dev',
             'routes' => [],
         ];
@@ -70,6 +69,7 @@ if (!function_exists('tagRouteCatalogParse')) {
                 if (1 === preg_match('/^([a-z_]+):\s*(.+)$/', $trimmed, $matches)) {
                     $assign($catalog, $matches[1], $matches[2]);
                 }
+
                 continue;
             }
 
@@ -100,4 +100,4 @@ if (!function_exists('tagRouteCatalogParse')) {
     }
 }
 
-return tagRouteCatalogParse(dirname(__DIR__).'/tag.yaml');
+return tagRouteCatalogParse(dirname(__DIR__) . '/tag.yaml');

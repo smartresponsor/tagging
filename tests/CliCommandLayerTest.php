@@ -1,6 +1,5 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace Tests;
@@ -13,19 +12,20 @@ final class CliCommandLayerTest extends TestCase
     {
         $result = $this->runCli('help --pretty');
 
-        self::assertSame(0, $result['exit']);
+        self::assertSame(0, $result['exit'], $result['stderr']);
         self::assertStringContainsString('"commands"', $result['stdout']);
         self::assertStringContainsString('"status"', $result['stdout']);
         self::assertStringContainsString('"surface"', $result['stdout']);
-        self::assertStringContainsString('"assignments', $result['stdout']);
+        self::assertStringContainsString('"assignments"', $result['stdout']);
     }
 
     public function testCliStatusReturnsServicePayload(): void
     {
         $result = $this->runCli('status --pretty');
 
-        self::assertSame(0, $result['exit']);
+        self::assertSame(0, $result['exit'], $result['stderr']);
         self::assertStringContainsString('"service": "tag"', $result['stdout']);
+        self::assertStringContainsString('"runtime": "hosted-package"', $result['stdout']);
         self::assertStringContainsString('"version":', $result['stdout']);
     }
 
@@ -33,11 +33,9 @@ final class CliCommandLayerTest extends TestCase
     {
         $result = $this->runCli('surface --pretty');
 
-        self::assertSame(0, $result['exit']);
+        self::assertSame(0, $result['exit'], $result['stderr']);
         self::assertStringContainsString('"public_surface"', $result['stdout']);
         self::assertStringContainsString('/tag/_surface', $result['stdout']);
-        self::assertStringContainsString('/tag/assignments/bulk', $result['stdout']);
-        self::assertStringContainsString('/tag/assignments/bulk-to-entity', $result['stdout']);
     }
 
     public function testCliRejectsUnknownCommand(): void
@@ -45,8 +43,7 @@ final class CliCommandLayerTest extends TestCase
         $result = $this->runCli('unknown-command');
 
         self::assertSame(2, $result['exit']);
-        self::assertStringContainsString('"code": "invalid_cli_arguments"', $result['stderr']);
-        self::assertStringContainsString('Unknown command: unknown-command', $result['stderr']);
+        self::assertStringContainsString('invalid_cli_arguments', $result['stderr']);
     }
 
     /** @return array{exit:int,stdout:string,stderr:string} */

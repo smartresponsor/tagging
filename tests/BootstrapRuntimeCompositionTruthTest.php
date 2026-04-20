@@ -8,24 +8,31 @@ use PHPUnit\Framework\TestCase;
 
 final class BootstrapRuntimeCompositionTruthTest extends TestCase
 {
-    public function testSymfonyNativeCompositionRootFilesExist(): void
+    public function testPackageHostedCompositionRootDoesNotShipStandaloneAppSurface(): void
     {
         $root = dirname(__DIR__);
+
+        foreach ([
+            'config/services.yaml',
+            'config/routes.yaml',
+            'src/TaggingBundle.php',
+        ] as $path) {
+            self::assertFileExists($root . '/' . $path);
+        }
 
         foreach ([
             'src/Kernel.php',
             'config/bootstrap.php',
             'config/bundles.php',
-            'config/services.yaml',
-            'config/routes.yaml',
             'public/index.php',
             'bin/console',
+            'host-minimal',
         ] as $path) {
-            self::assertFileExists($root . '/' . $path);
+            self::assertFileDoesNotExist($root . '/' . $path);
         }
     }
 
-    public function testSymfonyNativeServiceCompositionImportsExpectedLayers(): void
+    public function testPackageHostedServiceCompositionImportsExpectedLayers(): void
     {
         $services = file_get_contents(dirname(__DIR__) . '/config/services.yaml');
         self::assertIsString($services);
@@ -44,12 +51,13 @@ final class BootstrapRuntimeCompositionTruthTest extends TestCase
         }
     }
 
-    public function testSymfonyNativeRuntimeTruthNoLongerNamesHostMinimalAsActiveRuntime(): void
+    public function testRuntimeTruthNamesHostedPackageAsActiveRuntime(): void
     {
         $tagYaml = file_get_contents(dirname(__DIR__) . '/tag.yaml');
         self::assertIsString($tagYaml);
 
-        self::assertStringContainsString('runtime: symfony-native', $tagYaml);
+        self::assertStringContainsString('runtime: hosted-package', $tagYaml);
+        self::assertStringNotContainsString('runtime: symfony-native', $tagYaml);
         self::assertStringNotContainsString('runtime: host-minimal', $tagYaml);
     }
 }

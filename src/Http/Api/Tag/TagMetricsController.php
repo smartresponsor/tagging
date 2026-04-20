@@ -4,9 +4,9 @@
 declare(strict_types=1);
 // /tag/_metrics endpoint (plain text). Framework-agnostic stub.
 
-namespace App\Http\Api\Tag;
+namespace App\Tagging\Http\Api\Tag;
 
-use App\Service\Core\Tag\Metric\TagMetrics;
+use App\Tagging\Service\Core\Tag\Metric\TagMetrics;
 
 final class TagMetricsController
 {

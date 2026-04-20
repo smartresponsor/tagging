@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Slug\Tag;
+namespace App\Tagging\Service\Slug\Tag;
 
-use App\Service\Core\Tag\Slug\Slugifier as CoreSlugifier;
+use App\Tagging\Service\Core\Tag\Slug\Slugifier as CoreSlugifier;
 
 /**
  * Backward-compatible facade over the canonical core slugifier.

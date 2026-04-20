@@ -5,14 +5,14 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Cache\Store\Tag\SearchCache;
-use App\Cache\Store\Tag\SuggestCache;
-use App\Http\Api\Tag\AssignmentReadController;
-use App\Http\Api\Tag\SearchController;
-use App\Http\Api\Tag\SuggestController;
-use App\Service\Core\Tag\SearchService;
-use App\Service\Core\Tag\SuggestService;
-use App\Service\Core\Tag\TagReadModelInterface;
+use App\Tagging\Cache\Store\Tag\SearchCache;
+use App\Tagging\Cache\Store\Tag\SuggestCache;
+use App\Tagging\Http\Api\Tag\AssignmentReadController;
+use App\Tagging\Http\Api\Tag\SearchController;
+use App\Tagging\Http\Api\Tag\SuggestController;
+use App\Tagging\Service\Core\Tag\SearchService;
+use App\Tagging\Service\Core\Tag\SuggestService;
+use App\Tagging\Service\Core\Tag\TagReadModelInterface;
 use PHPUnit\Framework\TestCase;
 
 final class SearchSuggestControllerContractTest extends TestCase

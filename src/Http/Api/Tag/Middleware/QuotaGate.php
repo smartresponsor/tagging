@@ -3,11 +3,11 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag\Middleware;
+namespace App\Tagging\Http\Api\Tag\Middleware;
 
-use App\Http\Api\Tag\Responder\JsonResponder;
-use App\Ops\Metrics\TagMetrics;
-use App\Service\Core\Tag\RateLimiter;
+use App\Tagging\Http\Api\Tag\Responder\JsonResponder;
+use App\Tagging\Ops\Metrics\TagMetrics;
+use App\Tagging\Service\Core\Tag\RateLimiter;
 
 final readonly class QuotaGate
 {
@@ -135,7 +135,7 @@ final readonly class QuotaGate
 
     private function bumpMetric(string $name, array $labels): void
     {
-        if (class_exists('App\\Ops\\Metrics\\TagMetrics')) {
+        if (class_exists('App\Tagging\\Ops\\Metrics\\TagMetrics')) {
             $exp = TagMetrics::exporter();
             if (method_exists($exp, 'inc')) {
                 $exp->inc($name, $labels);

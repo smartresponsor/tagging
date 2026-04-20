@@ -5,7 +5,7 @@ declare(strict_types=1);
 // Minimal in-process metrics registry (Prometheus exposition).
 // No external agent; use GET /tag/_metrics to scrape.
 
-namespace App\Service\Core\Tag\Metric;
+namespace App\Tagging\Service\Core\Tag\Metric;
 
 final class TagMetrics
 {

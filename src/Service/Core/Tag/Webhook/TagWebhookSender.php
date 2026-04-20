@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Core\Tag\Webhook;
+namespace App\Tagging\Service\Core\Tag\Webhook;
 
-use App\Service\Core\Tag\Metric\TagMetrics;
+use App\Tagging\Service\Core\Tag\Metric\TagMetrics;
 use Random\RandomException;
 
 final readonly class TagWebhookSender

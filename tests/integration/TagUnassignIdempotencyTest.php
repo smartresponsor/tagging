@@ -7,9 +7,9 @@ namespace Tests\Integration;
 
 require_once __DIR__ . '/IntegrationDbTestCase.php';
 
-use App\Infrastructure\Outbox\Tag\OutboxPublisher;
-use App\Service\Core\Tag\IdempotencyStore;
-use App\Service\Core\Tag\UnassignService;
+use App\Tagging\Infrastructure\Outbox\Tag\OutboxPublisher;
+use App\Tagging\Service\Core\Tag\IdempotencyStore;
+use App\Tagging\Service\Core\Tag\UnassignService;
 
 final class TagUnassignIdempotencyTest extends IntegrationDbTestCase
 {

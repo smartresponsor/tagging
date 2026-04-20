@@ -3,5 +3,5 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Ops\:
+    App\Tagging\Ops\:
         resource: '../../src/Ops/'

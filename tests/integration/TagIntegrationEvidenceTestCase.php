@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use App\Http\Api\Tag\AssignController;
-use App\Infrastructure\Outbox\Tag\OutboxPublisher;
-use App\Infrastructure\ReadModel\Tag\TagReadModel;
-use App\Service\Core\Tag\AssignService;
-use App\Service\Core\Tag\IdempotencyStore;
-use App\Service\Core\Tag\UnassignService;
+use App\Tagging\Http\Api\Tag\AssignController;
+use App\Tagging\Infrastructure\Outbox\Tag\OutboxPublisher;
+use App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel;
+use App\Tagging\Service\Core\Tag\AssignService;
+use App\Tagging\Service\Core\Tag\IdempotencyStore;
+use App\Tagging\Service\Core\Tag\UnassignService;
 
 abstract class TagIntegrationEvidenceTestCase extends IntegrationDbTestCase
 {

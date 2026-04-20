@@ -46,7 +46,7 @@ final class SymfonyNativeLegacyRuntimeRemovalTest extends TestCase
 
             $content = file_get_contents($file->getPathname());
             self::assertIsString($content);
-            self::assertStringNotContainsString('App\\HostMinimal\\', $content, $file->getPathname());
+            self::assertStringNotContainsString('App\Tagging\\HostMinimal\\', $content, $file->getPathname());
         }
     }
 }

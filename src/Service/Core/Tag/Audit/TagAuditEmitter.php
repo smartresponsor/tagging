@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Core\Tag\Audit;
+namespace App\Tagging\Service\Core\Tag\Audit;
 
-use App\Service\Core\Tag\Webhook\TagWebhookSender;
+use App\Tagging\Service\Core\Tag\Webhook\TagWebhookSender;
 use Random\RandomException;
 
 final readonly class TagAuditEmitter

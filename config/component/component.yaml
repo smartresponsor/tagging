@@ -2,9 +2,9 @@ component:
   schema_version: 1
   name: tagging
   title: Tagging
-  package: tagging/tag
+  package: smartresponsor/tag
   status: rc
-  namespace: App
+  namespace: App\Tagging
   responsibility: "tag, taxonomy, and classification surfaces"
   export_contract:
     services: config/component/services.yaml
@@ -23,7 +23,7 @@ component:
     entities_as_transport_contracts: false
 
   symfony_bundle:
-    class: App\TaggingBundle
-    extension: App\DependencyInjection\TaggingExtension
+    class: App\Tagging\TaggingBundle
+    extension: App\Tagging\DependencyInjection\TaggingExtension
     services_loaded_by_extension: config/component/services.yaml
     routes_import_required_by_host: config/component/routes.yaml

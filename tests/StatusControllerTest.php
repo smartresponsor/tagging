@@ -1,12 +1,11 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\RuntimeVersion;
-use App\Http\Api\Tag\StatusController;
+use App\Tagging\Http\Api\Tag\RuntimeVersion;
+use App\Tagging\Http\Api\Tag\StatusController;
 use PHPUnit\Framework\TestCase;
 
 final class StatusControllerTest extends TestCase
@@ -18,7 +17,7 @@ final class StatusControllerTest extends TestCase
         self::assertSame('tag', $payload['service']);
         self::assertArrayHasKey('ts', $payload);
         self::assertArrayHasKey('db', $payload);
-        self::assertSame('symfony-native', $payload['runtime']);
+        self::assertSame('hosted-package', $payload['runtime']);
         self::assertSame('/tag/_surface', $payload['surface']['discovery'] ?? null);
         self::assertSame('/tag/_status', $payload['surface']['status'] ?? null);
         self::assertSame(['available' => false, 'ok' => false], $payload['db']);

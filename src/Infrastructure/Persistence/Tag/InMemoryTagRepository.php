@@ -3,17 +3,17 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Tag;
+namespace App\Tagging\Infrastructure\Persistence\Tag;
 
-use App\Entity\Core\Tag\Tag;
-use App\Entity\Core\Tag\TagAssignment;
-use App\Entity\Core\Tag\TagRelation;
-use App\Entity\Core\Tag\TagScheme;
-use App\Entity\Core\Tag\TagSynonym;
-use App\Service\Core\Tag\Record\TagAuditRecord;
-use App\Service\Core\Tag\Record\TagClassificationRecord;
-use App\Service\Core\Tag\Record\TagEffectRecord;
-use App\Service\Core\Tag\TagRepositoryInterface;
+use App\Tagging\Entity\Core\Tag\Tag;
+use App\Tagging\Entity\Core\Tag\TagAssignment;
+use App\Tagging\Entity\Core\Tag\TagRelation;
+use App\Tagging\Entity\Core\Tag\TagScheme;
+use App\Tagging\Entity\Core\Tag\TagSynonym;
+use App\Tagging\Service\Core\Tag\Record\TagAuditRecord;
+use App\Tagging\Service\Core\Tag\Record\TagClassificationRecord;
+use App\Tagging\Service\Core\Tag\Record\TagEffectRecord;
+use App\Tagging\Service\Core\Tag\TagRepositoryInterface;
 
 final class InMemoryTagRepository implements TagRepositoryInterface
 {

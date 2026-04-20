@@ -3,5 +3,5 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Infrastructure\:
+    App\Tagging\Infrastructure\:
         resource: '../../src/Infrastructure/'

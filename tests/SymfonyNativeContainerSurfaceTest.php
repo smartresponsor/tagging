@@ -1,6 +1,5 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace Tests;
@@ -9,14 +8,14 @@ use PHPUnit\Framework\TestCase;
 
 final class SymfonyNativeContainerSurfaceTest extends TestCase
 {
-    public function testSymfonyNativeAutowiringOwnsApplicationServiceDiscovery(): void
+    public function testPackageServiceDiscoveryDoesNotReferenceStandaloneKernel(): void
     {
         $services = file_get_contents(dirname(__DIR__) . '/config/services.yaml');
         self::assertIsString($services);
 
-        self::assertStringContainsString('App\\\\:', $services);
-        self::assertStringContainsString("resource: '../src/'", $services);
-        self::assertStringContainsString("- '../src/Kernel.php'", $services);
+        self::assertStringNotContainsString('../src/Kernel.php', $services);
+        self::assertStringContainsString('services/infrastructure.yaml', $services);
+        self::assertStringContainsString('services/http.yaml', $services);
     }
 
     public function testActiveServiceMapsDoNotRegisterHostMinimalNamespace(): void
@@ -34,17 +33,17 @@ final class SymfonyNativeContainerSurfaceTest extends TestCase
         ] as $path) {
             $content = file_get_contents(dirname(__DIR__) . '/' . $path);
             self::assertIsString($content);
-            self::assertStringNotContainsString('App\\\\HostMinimal\\\\', $content, $path);
+            self::assertStringNotContainsString('App\\HostMinimal\\', $content, $path);
             self::assertStringNotContainsString('host-minimal', $content, $path);
         }
     }
 
-    public function testSymfonyKernelAndFrameworkBundleAreDeclaredAsRuntimeSurface(): void
+    public function testBundleAndContainerDependenciesRemainDeclared(): void
     {
         $composer = file_get_contents(dirname(__DIR__) . '/composer.json');
         self::assertIsString($composer);
 
-        self::assertStringContainsString('symfony/framework-bundle', $composer);
+        self::assertStringContainsString('symfony/dependency-injection', $composer);
         self::assertStringContainsString('symfony/dependency-injection', $composer);
         self::assertStringContainsString('symfony/http-kernel', $composer);
     }

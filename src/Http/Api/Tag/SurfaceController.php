@@ -1,9 +1,8 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag;
+namespace App\Tagging\Http\Api\Tag;
 
 final readonly class SurfaceController
 {
@@ -17,7 +16,7 @@ final readonly class SurfaceController
         return [
             'ok' => true,
             'service' => $this->runtimeString($runtime, 'service', 'tag'),
-            'runtime' => $this->runtimeString($runtime, 'runtime', 'symfony-native'),
+            'runtime' => $this->runtimeString($runtime, 'runtime', 'hosted-package'),
             'version' => $this->runtimeString($runtime, 'version', RuntimeVersion::read()),
             'surface' => $this->runtimeArray($runtime, 'route'),
             'examples' => $this->runtimeArray($runtime, 'example'),

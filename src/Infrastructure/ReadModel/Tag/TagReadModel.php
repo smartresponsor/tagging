@@ -3,9 +3,9 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Infrastructure\ReadModel\Tag;
+namespace App\Tagging\Infrastructure\ReadModel\Tag;
 
-use App\Service\Core\Tag\TagReadModelInterface;
+use App\Tagging\Service\Core\Tag\TagReadModelInterface;
 
 final readonly class TagReadModel implements TagReadModelInterface
 {

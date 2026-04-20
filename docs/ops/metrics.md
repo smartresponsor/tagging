@@ -15,7 +15,7 @@
 ## Instrumentation (example)
 
 ```php
-use App\Ops\Metrics\TagMetrics;
+use App\Tagging\Ops\Metrics\TagMetrics;
 
 $start = microtime(true);
 // ... handle request /tag/search
@@ -27,7 +27,7 @@ TagMetrics::observeLatency('/tag/search', microtime(true)-$start);
 
 ```php
 if ($path === '/tag/_metrics') {
-  $ctl = new App\Http\Api\Tag\MetricsController();
+  $ctl = new App\Tagging\Http\Api\Tag\MetricsController();
   [$code,$hdr,$body] = $ctl->metrics();
   http_response_code($code); foreach ($hdr as $k=>$v){ header($k.': '.$v); } echo $body; exit;
 }

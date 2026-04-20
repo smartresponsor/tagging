@@ -10,7 +10,7 @@ Wave 06 hardens the repository around reproducible install and baseline PHPUnit 
 
 ## Composer scripts
 
-- `audit:composer-integrity` checks `composer.json` / `composer.lock` consistency for `require-dev`, required gate scripts, and `App\ => src/` autoload.
+- `audit:composer-integrity` checks `composer.json` / `composer.lock` consistency for `require-dev`, required gate scripts, and `App\Tagging\ => src/` autoload.
 - `test` runs the default PHPUnit suite.
 - `test:unit` runs the `unit` testsuite.
 - `test:integration` runs the `integration` testsuite.

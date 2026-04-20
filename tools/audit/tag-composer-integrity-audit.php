@@ -21,9 +21,9 @@ $composerLock = json_decode((string) file_get_contents($composerLockPath), true,
 
 $errors = [];
 
-$autoload = $composerJson['autoload']['psr-4']['App\\'] ?? null;
+$autoload = $composerJson['autoload']['psr-4']['App\Tagging\\'] ?? null;
 if ($autoload !== 'src/') {
-    $errors[] = 'composer.json must map App\\ to src/';
+    $errors[] = 'composer.json must map App\Tagging\\ to src/';
 }
 
 $requiredDevPackages = array_keys($composerJson['require-dev'] ?? []);

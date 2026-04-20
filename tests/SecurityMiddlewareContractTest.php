@@ -5,10 +5,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\Middleware\TagMiddlewarePipeline;
-use App\Http\Api\Tag\Middleware\VerifySignature;
-use App\Ops\Security\NonceStore;
-use App\Service\Security\HmacV2Verifier;
+use App\Tagging\Http\Api\Tag\Middleware\TagMiddlewarePipeline;
+use App\Tagging\Http\Api\Tag\Middleware\VerifySignature;
+use App\Tagging\Ops\Security\NonceStore;
+use App\Tagging\Service\Security\HmacV2Verifier;
 use PHPUnit\Framework\TestCase;
 
 final class SecurityMiddlewareContractTest extends TestCase

@@ -15,8 +15,8 @@ $targets = [
 $forbidden = [
     'src/Domain/',
     'src/Infra/',
-    'App\\Domain\\',
-    'App\\Infra\\',
+    'App\Tagging\\Domain\\',
+    'App\Tagging\\Infra\\',
     'src/Application/Tag/',
     'src/Cache/Tag/',
     'src/Data/Tag/',

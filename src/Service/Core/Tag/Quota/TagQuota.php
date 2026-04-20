@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Core\Tag\Quota;
+namespace App\Tagging\Service\Core\Tag\Quota;
 
-use App\Service\Core\Tag\Metric\TagMetrics;
+use App\Tagging\Service\Core\Tag\Metric\TagMetrics;
 
 final class TagQuota
 {

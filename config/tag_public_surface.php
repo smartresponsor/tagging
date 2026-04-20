@@ -1,9 +1,8 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$catalog = require __DIR__.'/tag_route_catalog.php';
+$catalog = require __DIR__ . '/tag_route_catalog.php';
 $routes = is_array($catalog['routes'] ?? null) ? $catalog['routes'] : [];
 $routeMap = [];
 foreach ($routes as $route) {
@@ -25,7 +24,7 @@ foreach ($routes as $route) {
 
 return [
     'service' => (string) ($catalog['service'] ?? 'tag'),
-    'runtime' => (string) ($catalog['runtime'] ?? 'host-minimal'),
+    'runtime' => (string) ($catalog['runtime'] ?? 'hosted-package'),
     'version' => (string) ($catalog['version'] ?? 'dev'),
     'route' => $routeMap,
     'example' => [

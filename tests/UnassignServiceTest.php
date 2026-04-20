@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Infrastructure\Outbox\Tag\OutboxPublisher;
-use App\Service\Core\Tag\UnassignService;
+use App\Tagging\Infrastructure\Outbox\Tag\OutboxPublisher;
+use App\Tagging\Service\Core\Tag\UnassignService;
 use PHPUnit\Framework\TestCase;
 
 final class UnassignServiceTest extends TestCase

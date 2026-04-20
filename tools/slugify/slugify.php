@@ -4,7 +4,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use App\Service\Core\Tag\Slug\{Slugifier, SlugPolicy};
+use App\Tagging\Service\Core\Tag\Slug\{Slugifier, SlugPolicy};
 
 $tenant = getenv('TENANT') ?: 'demo';
 $dsn = getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app';

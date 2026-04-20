@@ -3,16 +3,16 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag;
+namespace App\Tagging\Http\Api\Tag;
 
-use App\Application\Write\Tag\Dto\CreateTagCommand;
-use App\Application\Write\Tag\Dto\DeleteTagCommand;
-use App\Application\Write\Tag\Dto\PatchTagCommand;
-use App\Application\Write\Tag\UseCase\CreateTagInterface;
-use App\Application\Write\Tag\UseCase\DeleteTagInterface;
-use App\Application\Write\Tag\UseCase\PatchTagInterface;
-use App\Http\Api\Tag\Responder\TagWriteResponder;
-use App\Service\Core\Tag\TagEntityQueryServiceInterface;
+use App\Tagging\Application\Write\Tag\Dto\CreateTagCommand;
+use App\Tagging\Application\Write\Tag\Dto\DeleteTagCommand;
+use App\Tagging\Application\Write\Tag\Dto\PatchTagCommand;
+use App\Tagging\Application\Write\Tag\UseCase\CreateTagInterface;
+use App\Tagging\Application\Write\Tag\UseCase\DeleteTagInterface;
+use App\Tagging\Application\Write\Tag\UseCase\PatchTagInterface;
+use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
+use App\Tagging\Service\Core\Tag\TagEntityQueryServiceInterface;
 
 final readonly class TagController
 {

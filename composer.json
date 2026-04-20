@@ -1,162 +1,33 @@
 {
-<<<<<<< HEAD
-  "name": "tagging/tag",
-  "type": "symfony-bundle",
+  "name": "smartresponsor/tag",
+  "type": "library",
   "license": "proprietary",
-  "description": "Tagging process app",
+  "description": "Smartresponsor canonical tagging component hosted by a Symfony ecosystem application.",
   "require": {
     "php": "^8.4",
     "ext-pdo": "*",
     "ext-curl": "*",
     "ext-mbstring": "*",
     "ext-ctype": "*",
-    "ext-intl": "*"
+    "ext-intl": "*",
+    "symfony/config": "^8.0",
+    "symfony/dependency-injection": "^8.0",
+    "symfony/http-kernel": "^8.0",
+    "symfony/routing": "^8.0",
+    "symfony/yaml": "^8.0"
   },
   "require-dev": {
-    "doctrine/doctrine-fixtures-bundle": "^4.3",
-    "doctrine/doctrine-migrations-bundle": "^4.0",
+    "doctrine/doctrine-fixtures-bundle": "^3.6",
+    "doctrine/doctrine-migrations-bundle": "^3.4",
     "friendsofphp/php-cs-fixer": "^3.94",
     "phpmd/phpmd": "^2.15",
     "phpstan/phpstan": "^2.1",
-    "phpunit/phpunit": "^11.5",
+    "phpunit/phpunit": "^10.5",
     "symfony/panther": "^2.2"
   },
   "autoload": {
     "psr-4": {
-      "App\\": "src/"
-=======
-    "name": "smartresponsor/tag",
-    "type": "library",
-    "license": "proprietary",
-    "description": "Smartresponsor canonical tagging component aligned to a Symfony-native runtime surface.",
-    "require": {
-        "php": "^8.4",
-        "ext-pdo": "*",
-        "ext-curl": "*",
-        "ext-mbstring": "*",
-        "ext-ctype": "*",
-        "ext-intl": "*",
-        "symfony/config": "^8.0",
-        "symfony/console": "^8.0",
-        "symfony/dependency-injection": "^8.0",
-        "symfony/dotenv": "^8.0",
-        "symfony/framework-bundle": "^8.0",
-        "symfony/http-kernel": "^8.0",
-        "symfony/routing": "^8.0",
-        "symfony/yaml": "^8.0"
-    },
-    "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^3.6",
-        "doctrine/doctrine-migrations-bundle": "^3.4",
-        "friendsofphp/php-cs-fixer": "^3.94",
-        "phpmd/phpmd": "^2.15",
-        "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^10.5",
-        "symfony/panther": "^2.2"
-    },
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/",
-            "Tests\\Integration\\": "tests/integration/",
-            "Tests\\E2E\\": "tests/e2e/",
-            "Tests\\Panther\\": "tests/panther/"
-        }
-    },
-    "scripts": {
-        "lint": "php tools/lint.php",
-        "lint:admin": "node --check admin/app.js",
-        "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon.dist --memory-limit=512M",
-        "cs:check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --using-cache=no",
-        "cs:fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --using-cache=no",
-        "fixture:validate": "php tools/seed/tag-fixture-validate.php",
-        "fixture:dry-run": "php tools/seed/tag-fixture-dry-run.php",
-        "docs:openapi:publish": "php tools/release/tag-openapi-publish.php",
-        "audit:surface": "php tools/audit/tag-surface-audit.php",
-        "audit:contract": "php tools/audit/tag-contract-audit.php",
-        "audit:route": "php tools/audit/tag-route-controller-audit.php",
-        "audit:bootstrap": "php tools/audit/tag-bootstrap-audit.php",
-        "audit:bootstrap-runtime": "php tools/audit/tag-bootstrap-runtime-audit.php",
-        "audit:config": "php tools/audit/tag-config-audit.php",
-        "audit:sdk": "php tools/audit/tag-sdk-audit.php",
-        "audit:version": "php tools/audit/tag-version-audit.php",
-        "audit:release-assets": "php tools/audit/tag-release-assets-audit.php",
-        "audit:openapi-semantics": "php tools/audit/tag-openapi-semantics-audit.php",
-        "audit:generated-openapi-surface": "php tools/audit/tag-generated-openapi-surface-audit.php",
-        "audit:antora-surface": "php tools/audit/tag-antora-surface-audit.php",
-        "release:preflight": "php tools/release/tag-preflight.php",
-        "db:migrate": "php tools/db/tag-migrate.php",
-        "db:smoke": "bash tools/db/tag-migration-smoke.sh",
-        "db:test:start": "bash tools/test-db-start.sh",
-        "db:test:stop": "bash tools/test-db-stop.sh",
-        "db:smoke:self-contained": "bash tools/migration-smoke.sh",
-        "demo:seed": "php tools/seed/tag-seed.php",
-        "demo:clear": "php tools/seed/tag-clear.php",
-        "smoke:runtime": "php tools/smoke/tag-smoke.php",
-        "audit:canonical-stale": "php tools/audit/tag-canonical-stale-reference-audit.php",
-        "audit:canonical-structure": "php tools/audit/tag-canonical-structure-audit.php",
-        "audit:ci": [
-            "@docs:openapi:publish",
-            "@audit:composer-integrity",
-            "@audit:surface",
-            "@audit:contract",
-            "@audit:route",
-            "@audit:bootstrap",
-            "@audit:bootstrap-runtime",
-            "@audit:config",
-            "@audit:sdk",
-            "@audit:version",
-            "@audit:release-assets",
-            "@audit:openapi-semantics",
-            "@audit:generated-openapi-surface",
-            "@audit:antora-surface",
-            "@audit:core-boundary",
-            "@audit:canonical-stale",
-            "@audit:canonical-structure",
-            "@audit:repo-hygiene",
-            "@audit:snapshot-purity",
-            "@audit:repo-map-truth",
-            "@audit:ci-workflow",
-            "@audit:demo-truth-pack",
-            "@audit:release-grade-portrait",
-            "@test:unit"
-        ],
-        "audit:composer-integrity": "php tools/audit/tag-composer-integrity-audit.php",
-        "test": "vendor/bin/phpunit --testsuite unit",
-        "test:unit": "vendor/bin/phpunit --testsuite unit",
-        "test:integration": "vendor/bin/phpunit --testsuite integration",
-        "test:panther": [
-            "tools/local/panther-test.sh"
-        ],
-        "test:e2e": "npx playwright test",
-        "test:e2e:install": "npx playwright install chromium",
-        "doctor:php-ext": "bash tools/local/php-extension-doctor.sh",
-        "symfony:server:start": "bash tools/local/symfony-server-start.sh",
-        "host:test-db:serve": "bash tools/local/tag-serve-test-db.sh",
-        "gate:install-test": [
-            "composer validate --no-interaction --strict",
-            "@audit:composer-integrity",
-            "@test:unit"
-        ],
-        "audit:repo-hygiene": "php tools/audit/tag-repo-hygiene-audit.php",
-        "audit:snapshot-purity": "php tools/audit/tag-snapshot-purity-audit.php",
-        "audit:repo-map-truth": "php tools/audit/tag-repo-map-truth-audit.php",
-        "audit:ci-workflow": "php tools/audit/tag-ci-workflow-audit.php",
-        "test:all": "vendor/bin/phpunit",
-        "audit:core-boundary": "php tools/audit/tag-core-boundary-audit.php",
-        "audit:demo-truth-pack": "php tools/audit/tag-demo-truth-pack-audit.php",
-        "audit:release-grade-portrait": "php tools/audit/tag-release-grade-portrait-audit.php",
-        "audit:assessment-surface": "php tools/audit/tag-assessment-surface-audit.php",
-        "cli:tag": "php bin/console list",
-        "cli:tag:status": "php bin/console about",
-        "cli:tag:surface": "php bin/console debug:router",
-        "test:cli": "vendor/bin/phpunit --filter CliCommandLayerTest",
-        "hook:install": "php tools/git/install-hooks.php"
->>>>>>> aed51a5054e0ac8c49e263f12c3c3b96ebf62e35
+      "App\\Tagging\\": "src/"
     }
   },
   "autoload-dev": {
@@ -235,7 +106,6 @@
     "test:e2e": "npx playwright test",
     "test:e2e:install": "npx playwright install chromium",
     "doctor:php-ext": "bash tools/local/php-extension-doctor.sh",
-    "symfony:server:start": "bash tools/local/symfony-server-start.sh",
     "host:test-db:serve": "bash tools/local/tag-serve-test-db.sh",
     "gate:install-test": [
       "composer validate --no-interaction --strict",
@@ -251,10 +121,6 @@
     "audit:demo-truth-pack": "php tools/audit/tag-demo-truth-pack-audit.php",
     "audit:release-grade-portrait": "php tools/audit/tag-release-grade-portrait-audit.php",
     "audit:assessment-surface": "php tools/audit/tag-assessment-surface-audit.php",
-    "cli:tag": "php tools/cli/tag.php help",
-    "cli:tag:status": "php tools/cli/tag.php status --pretty",
-    "cli:tag:surface": "php tools/cli/tag.php surface --pretty",
-    "test:cli": "vendor/bin/phpunit --filter CliCommandLayerTest",
     "hook:install": "php tools/git/install-hooks.php"
   }
 }

@@ -1,12 +1,11 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag;
+namespace App\Tagging\Http\Api\Tag;
 
-use App\Service\Core\Tag\TagErrorSink;
-use App\Service\Core\Tag\TagErrorSinkFactory;
+use App\Tagging\Service\Core\Tag\TagErrorSink;
+use App\Tagging\Service\Core\Tag\TagErrorSinkFactory;
 
 final class StatusController
 {
@@ -62,7 +61,7 @@ final class StatusController
 
     private function runtimeName(): string
     {
-        return $this->runtimeString('runtime', 'symfony-native');
+        return $this->runtimeString('runtime', 'hosted-package');
     }
 
     private function routeValue(string $key, string $fallback): string

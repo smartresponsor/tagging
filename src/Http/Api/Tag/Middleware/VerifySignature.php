@@ -3,10 +3,10 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag\Middleware;
+namespace App\Tagging\Http\Api\Tag\Middleware;
 
-use App\Http\Api\Tag\Responder\TagMiddlewareResponder;
-use App\Service\Security\HmacV2Verifier;
+use App\Tagging\Http\Api\Tag\Responder\TagMiddlewareResponder;
+use App\Tagging\Service\Security\HmacV2Verifier;
 
 final readonly class VerifySignature
 {

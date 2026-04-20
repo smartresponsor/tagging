@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Cache\Store\Tag\SearchCache;
-use App\Service\Core\Tag\SearchService;
-use App\Service\Core\Tag\TagReadModelInterface;
+use App\Tagging\Cache\Store\Tag\SearchCache;
+use App\Tagging\Service\Core\Tag\SearchService;
+use App\Tagging\Service\Core\Tag\TagReadModelInterface;
 use PHPUnit\Framework\TestCase;
 
 final class SearchServiceTotalTest extends TestCase

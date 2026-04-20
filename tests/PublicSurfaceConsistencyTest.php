@@ -33,7 +33,7 @@ final class PublicSurfaceConsistencyTest extends TestCase
         self::assertStringNotContainsString('/tag/assign-bulk', $route);
         self::assertStringNotContainsString('/tag/assignment/bulk', $route);
         self::assertStringContainsString('/tag/_surface', $route);
-        self::assertStringContainsString('App\\Http\\Api\\Tag\\AssignController::assign', $route);
-        self::assertStringContainsString('App\\Http\\Api\\Tag\\SuggestController::get', $route);
+        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\AssignController::assign', $route);
+        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\SuggestController::get', $route);
     }
 }

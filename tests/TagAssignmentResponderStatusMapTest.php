@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\Responder\TagAssignmentResponder;
+use App\Tagging\Http\Api\Tag\Responder\TagAssignmentResponder;
 use PHPUnit\Framework\TestCase;
 
 final class TagAssignmentResponderStatusMapTest extends TestCase

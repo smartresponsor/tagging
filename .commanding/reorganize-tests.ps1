@@ -120,16 +120,16 @@ function Rel-To-Namespace($relPath)
     $dir = Split-Path $relPath -Parent
     if ( [string]::IsNullOrWhiteSpace($dir))
     {
-        return 'App\Tests'
+        return 'App\Tagging\Tests'
     }
 
     # Преобразуем \ -> \\ для namespace
     $parts = $dir.Trim('\', '/').Split('\', '/').Where({ $_ -ne '' })
     if ($parts.Count -eq 0)
     {
-        return 'App\Tests'
+        return 'App\Tagging\Tests'
     }
-    return 'App\Tests\' + ($parts -join '\')
+    return 'App\Tagging\Tests\' + ($parts -join '\')
 }
 
 # Нормализуем «temp/test» -> «Temp/Test»
@@ -193,7 +193,7 @@ foreach ($f in $files)
         $destDir = Join-Path $testsRoot $destHit.Dest
         $dst = Join-Path $destDir $name
         Move-File $f.FullName $dst
-        $ns = "App\Tests\" + $destHit.Dest
+        $ns = "App\Tagging\Tests\" + $destHit.Dest
         $skipNs = ($name -ieq 'bootstrap.php') # на всякий случай
         Update-Namespace $dst $ns $skipNs
         continue
@@ -204,8 +204,8 @@ foreach ($f in $files)
     $dirRel = Split-Path $rel -Parent
     if ($dirRel -eq '')
     {
-        # файл в корне tests -> только NS "App\Tests"
-        Update-Namespace $f.FullName 'App\Tests'
+        # файл в корне tests -> только NS "App\Tagging\Tests"
+        Update-Namespace $f.FullName 'App\Tagging\Tests'
     }
     else
     {
@@ -217,7 +217,7 @@ foreach ($f in $files)
             $destDir = Join-Path $testsRoot $top
             $dst = Join-Path $destDir $name
             Move-File $f.FullName $dst
-            $ns = "App\Tests\$top"
+            $ns = "App\Tagging\Tests\$top"
             Update-Namespace $dst $ns
         }
         else

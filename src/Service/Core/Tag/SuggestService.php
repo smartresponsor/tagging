@@ -3,9 +3,9 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Service\Core\Tag;
+namespace App\Tagging\Service\Core\Tag;
 
-use App\Cache\Store\Tag\SuggestCache;
+use App\Tagging\Cache\Store\Tag\SuggestCache;
 
 /**
  * Host-minimal suggest read service backed by the tag read-model.

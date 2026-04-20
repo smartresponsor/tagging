@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Core\Tag\Record;
+namespace App\Tagging\Service\Core\Tag\Record;
 
 final readonly class TagClassificationRecord
 {

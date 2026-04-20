@@ -5,13 +5,13 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Http\Api\Tag\AssignController;
-use App\Service\Core\Tag\AssignOperationInterface;
-use App\Service\Core\Tag\QuotaService;
-use App\Service\Core\Tag\TagPolicyService;
-use App\Service\Core\Tag\TagRepositoryInterface;
-use App\Service\Core\Tag\TagValidator;
-use App\Service\Core\Tag\UnassignOperationInterface;
+use App\Tagging\Http\Api\Tag\AssignController;
+use App\Tagging\Service\Core\Tag\AssignOperationInterface;
+use App\Tagging\Service\Core\Tag\QuotaService;
+use App\Tagging\Service\Core\Tag\TagPolicyService;
+use App\Tagging\Service\Core\Tag\TagRepositoryInterface;
+use App\Tagging\Service\Core\Tag\TagValidator;
+use App\Tagging\Service\Core\Tag\UnassignOperationInterface;
 use PHPUnit\Framework\TestCase;
 
 final class AssignQuotaPolicyHardeningTest extends TestCase

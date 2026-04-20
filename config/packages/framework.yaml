@@ -1,6 +1,0 @@
-framework:
-    secret: '%env(default:APP_SECRET:APP_SECRET)%'
-    http_method_override: false
-    handle_all_throwables: true
-    router:
-        utf8: true

@@ -1,6 +1,5 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace Tests;
@@ -23,14 +22,14 @@ final class TagArchitectureWiringDocsTruthTest extends TestCase
         self::assertStringNotContainsString('bulk assignment routes', $doc);
     }
 
-    public function testHostMinimalDeployExampleUsesSharedReadModelForSuggest(): void
+    public function testPackageHostedDeployExampleUsesSharedReadModelForSuggest(): void
     {
-        $doc = file_get_contents(__DIR__ . '/../docs/deploy/host-minimal-search.md');
+        $doc = file_get_contents(__DIR__ . '/../docs/deploy/package-hosted-search.md');
 
         self::assertIsString($doc);
-        self::assertStringContainsString('new App\Infrastructure\ReadModel\Tag\TagReadModel($pdo)', $doc);
-        self::assertStringContainsString('new App\Service\Core\Tag\SuggestService($read, $suggestCache)', $doc);
+        self::assertStringContainsString('new App\\Tagging\\Infrastructure\\ReadModel\\Tag\\TagReadModel($pdo)', $doc);
+        self::assertStringContainsString('new App\\Tagging\\Service\\Core\\Tag\\SuggestService($read, $suggestCache)', $doc);
         self::assertStringContainsString('bulk assignments', $doc);
-        self::assertStringNotContainsString('new App\Service\Core\Tag\SuggestService($pdo, $suggestCache)', $doc);
+        self::assertStringNotContainsString('new App\\Tagging\\Service\\Core\\Tag\\SuggestService($pdo, $suggestCache)', $doc);
     }
 }

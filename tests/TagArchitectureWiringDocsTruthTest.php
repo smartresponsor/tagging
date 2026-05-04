@@ -28,8 +28,8 @@ final class TagArchitectureWiringDocsTruthTest extends TestCase
 
         self::assertIsString($doc);
         self::assertStringContainsString('new App\\Tagging\\Infrastructure\\ReadModel\\Tag\\TagReadModel($pdo)', $doc);
-        self::assertStringContainsString('new App\\Tagging\\Service\\Core\\Tag\\SuggestService($read, $suggestCache)', $doc);
+        self::assertStringContainsString('new App\\Tagging\\Service\\Core\\Tag\\TagSuggestService($read, $suggestCache)', $doc);
         self::assertStringContainsString('bulk assignments', $doc);
-        self::assertStringNotContainsString('new App\\Tagging\\Service\\Core\\Tag\\SuggestService($pdo, $suggestCache)', $doc);
+        self::assertStringNotContainsString('new App\\Tagging\\Service\\Core\\Tag\\TagSuggestService($pdo, $suggestCache)', $doc);
     }
 }

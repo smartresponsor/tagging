@@ -6,8 +6,8 @@ A host application composes Tagging services through the imported service maps a
 
 ```php
 $read = new App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel($pdo);
-$suggestCache = new App\Tagging\Cache\Store\Tag\SuggestCache($cacheDir);
-$suggest = new App\Tagging\Service\Core\Tag\SuggestService($read, $suggestCache);
+$suggestCache = new App\Tagging\Cache\Store\Tag\TagSuggestCache($cacheDir);
+$suggest = new App\Tagging\Service\Core\TagSuggestService($read, $suggestCache);
 ```
 
 The same shared read model also supports bulk assignments and related projections, so host wiring must not construct suggest directly from a raw PDO handle.

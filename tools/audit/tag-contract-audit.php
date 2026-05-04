@@ -3,7 +3,7 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$root = require __DIR__ . '/../_bootstrap.php';
+$root = require __DIR__ . '/../tag-bootstrap.php';
 $publicRoutePaths = require $root . '/config/tag_public_route_paths.php';
 $expected = is_array($publicRoutePaths['paths'] ?? null) ? $publicRoutePaths['paths'] : [];
 $openapi = file_get_contents($root . '/contracts/http/tag-openapi.yaml');

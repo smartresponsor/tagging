@@ -10,7 +10,7 @@ These files are acceptable inside delivery patch archives, but they must not rem
 
 Gates:
 - `composer run -n audit:snapshot-purity`
-- `vendor/bin/phpunit --filter SnapshotPurityAuditTest`
+- `vendor/bin/phpunit --filter TagSnapshotPurityAuditTest`
 
 
 ## Transient workspace roots

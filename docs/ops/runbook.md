@@ -141,7 +141,7 @@ POST /tag/{missing}/unassign
 ## 10. Observability
 
 - slowlog: `report/tag/slowlog.ndjson`
-- middleware: `Observe`
+- middleware: `TagObserveMiddleware`
 - no `/tag/_metrics` endpoint (by design in current slice)
 
 ---

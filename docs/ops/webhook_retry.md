@@ -11,7 +11,7 @@ Config (`config/tag_webhooks.yaml`):
 Flow:
 
 1) TagAuditEmitter emits audit line and enqueues jobs via TagWebhookSender.
-2) Worker (`tools/webhook_worker.php`) drains the spool with exponential backoff.
+2) Worker (`tools/tag-webhook-worker.php`) drains the spool with exponential backoff.
 3) After retries exhausted, job goes to DLQ (append NDJSON).
 
 Metrics:
@@ -22,5 +22,5 @@ Metrics:
 
 Ops:
 
-- Run worker: `php tools/webhook_worker.php` (cron/systemd).
+- Run worker: `php tools/tag-webhook-worker.php` (cron/systemd).
 - Inspect DLQ: `report/webhook/dlq.ndjson`.

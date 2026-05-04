@@ -23,7 +23,7 @@ final class TagAdminShellSurfaceTest extends TestCase
 
     public function testAdminShellScriptUsesFlatPayloadAssumptionAndBulkRoutes(): void
     {
-        $script = file_get_contents(__DIR__ . '/../admin/app.js');
+        $script = file_get_contents(__DIR__ . '/../admin/tag-admin.js');
 
         self::assertIsString($script);
         self::assertStringContainsString("'/tag/assignments/bulk'", $script);

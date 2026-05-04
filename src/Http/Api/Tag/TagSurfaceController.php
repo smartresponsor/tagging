@@ -1,0 +1,47 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tagging\Http\Api\Tag;
+
+final readonly class TagSurfaceController
+{
+    public function __construct(private array $runtime = []) {}
+
+    /** @return array<string,mixed> */
+    public function surface(): array
+    {
+        $runtime = [] !== $this->runtime ? $this->runtime : TagRuntimeSurfaceCatalog::read();
+
+        return [
+            'ok' => true,
+            'service' => $this->runtimeString($runtime, 'service', 'tag'),
+            'runtime' => $this->runtimeString($runtime, 'runtime', 'hosted-package'),
+            'version' => $this->runtimeString($runtime, 'version', TagRuntimeVersion::read()),
+            'surface' => $this->runtimeArray($runtime, 'route'),
+            'examples' => $this->runtimeArray($runtime, 'example'),
+            'docs' => $this->runtimeArray($runtime, 'doc'),
+            'public_surface' => $this->runtimeArray($runtime, 'public_surface'),
+        ];
+    }
+
+    /** @param array<string,mixed> $runtime */
+    private function runtimeString(array $runtime, string $key, string $fallback): string
+    {
+        $value = $runtime[$key] ?? null;
+
+        return is_string($value) && '' !== $value ? $value : $fallback;
+    }
+
+    /**
+     * @param array<string,mixed> $runtime
+     *
+     * @return array<string,mixed>
+     */
+    private function runtimeArray(array $runtime, string $key): array
+    {
+        $value = $runtime[$key] ?? null;
+
+        return is_array($value) ? $value : [];
+    }
+}

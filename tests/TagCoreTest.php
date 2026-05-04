@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Infrastructure\Persistence\Tag\InMemoryTagRepository;
-use App\Tagging\Service\Core\Tag\TagService;
+use App\Tagging\Infrastructure\Persistence\Tag\TagInMemoryRepository;
+use App\Tagging\Service\Core\TagService;
 use PHPUnit\Framework\TestCase;
 
 final class TagCoreTest extends TestCase
@@ -16,7 +16,7 @@ final class TagCoreTest extends TestCase
      */
     public function testCreateAndList(): void
     {
-        $repo = new InMemoryTagRepository();
+        $repo = new TagInMemoryRepository();
         $svc = new TagService($repo);
         $tenantId = 'tenant-a';
         $t = $svc->create($tenantId, 'alpha', 'Alpha');

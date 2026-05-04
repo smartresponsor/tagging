@@ -6,8 +6,8 @@ declare(strict_types=1);
 namespace App\Tagging\Http\Api\Tag;
 
 use App\Tagging\Http\Api\Tag\Responder\TagWebhookResponder;
-use App\Tagging\Service\Core\Tag\Audit\TagAuditEmitter;
-use App\Tagging\Service\Core\Tag\Webhook\TagWebhookRegistry;
+use App\Tagging\Service\Core\Audit\TagAuditEmitter;
+use App\Tagging\Service\Core\Webhook\TagWebhookRegistry;
 use Random\RandomException;
 
 final readonly class TagWebhookController

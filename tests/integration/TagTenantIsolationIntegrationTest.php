@@ -8,20 +8,19 @@ final class TagTenantIsolationIntegrationTest extends TagIntegrationEvidenceTest
 {
     public function testSearchAndAssignmentReadsRemainTenantIsolatedOnSharedEntityCoordinates(): void
     {
-        $pdo = $this->pdo();
         $tenantA = 'tenant-alpha';
         $tenantB = 'tenant-beta';
         $tagA = '01K3TAGDEMO00000000001001';
         $tagB = '01K3TAGDEMO00000000001002';
 
-        $this->insertTag($pdo, $tenantA, $tagA, 'alpha-electronics', 'Alpha Electronics', 100);
-        $this->insertTag($pdo, $tenantB, $tagB, 'beta-electronics', 'Beta Electronics', 90);
+        $this->insertTag($tenantA, $tagA, 'alpha-electronics', 'Alpha Electronics', 100);
+        $this->insertTag($tenantB, $tagB, 'beta-electronics', 'Beta Electronics', 90);
 
-        $assign = $this->assignService($pdo);
+        $assign = $this->assignService();
         self::assertTrue($assign->assign($tenantA, $tagA, 'product', 'shared-product-1')['ok'] ?? false);
         self::assertTrue($assign->assign($tenantB, $tagB, 'product', 'shared-product-1')['ok'] ?? false);
 
-        $read = $this->readModel($pdo);
+        $read = $this->readModel();
         $alphaSearch = $read->search($tenantA, 'electronics', 10, 0);
         $betaSearch = $read->search($tenantB, 'electronics', 10, 0);
         self::assertCount(1, $alphaSearch);

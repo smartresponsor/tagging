@@ -28,10 +28,10 @@ return [
     'version' => (string) ($catalog['version'] ?? 'dev'),
     'route' => $routeMap,
     'example' => [
-        'http' => 'public/tag/examples/http.http',
-        'seed' => 'public/tag/examples/seed.http',
-        'tour' => 'public/tag/examples/tour.http',
-        'demo' => 'public/tag/demo/requests.http',
+        'http' => 'public/tag/examples/tag-http-examples.http',
+        'seed' => 'public/tag/examples/tag-seed-examples.http',
+        'tour' => 'public/tag/examples/tag-tour-examples.http',
+        'demo' => 'public/tag/demo/tag-demo-tag-demo-requests.http',
     ],
     'doc' => [
         'readme' => 'README.md',

@@ -1,0 +1,24 @@
+imports:
+  - { resource: '../services.yaml' }
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  App\Tagging\Infrastructure\Persistence\Tag\DoctrineTagRepository:
+    public: true
+
+  App\Tagging\Infrastructure\Persistence\Tag\DoctrineTagEntityRepository:
+    public: true
+
+  App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel:
+    public: true
+
+  App\Tagging\Service\Core\TagRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\DoctrineTagRepository'
+  App\Tagging\Service\Core\TagReadRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\DoctrineTagRepository'
+  App\Tagging\Service\Core\TagWriteRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\DoctrineTagRepository'
+  App\Tagging\Service\Core\TagPolicyRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\DoctrineTagRepository'
+  App\Tagging\Service\Core\TagEntityRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\DoctrineTagEntityRepository'
+  App\Tagging\Service\Core\TagReadModelInterface: '@App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel'
+  App\Tagging\Service\Core\TagTransactionRunnerInterface: '@App\Tagging\Service\Core\TagDoctrineTransactionRunner'

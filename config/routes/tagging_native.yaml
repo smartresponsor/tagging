@@ -1,11 +1,11 @@
 tag_status:
     path: /tag/_status
-    controller: App\Tagging\Http\Api\Tag\StatusController::status
+    controller: App\Tagging\Http\Api\Tag\TagStatusController::status
     methods: [GET]
 
 tag_surface:
     path: /tag/_surface
-    controller: App\Tagging\Http\Api\Tag\SurfaceController::surface
+    controller: App\Tagging\Http\Api\Tag\TagSurfaceController::surface
     methods: [GET]
 
 tag_create:
@@ -30,37 +30,37 @@ tag_delete:
 
 tag_assign:
     path: /tag/{id}/assign
-    controller: App\Tagging\Http\Api\Tag\AssignController::assign
+    controller: App\Tagging\Http\Api\Tag\TagAssignController::assign
     methods: [POST]
 
 tag_unassign:
     path: /tag/{id}/unassign
-    controller: App\Tagging\Http\Api\Tag\AssignController::unassign
+    controller: App\Tagging\Http\Api\Tag\TagAssignController::unassign
     methods: [POST]
 
 tag_assignments_bulk:
     path: /tag/assignments/bulk
-    controller: App\Tagging\Http\Api\Tag\AssignController::bulk
+    controller: App\Tagging\Http\Api\Tag\TagAssignController::bulk
     methods: [POST]
 
 tag_assignments_bulk_to_entity:
     path: /tag/assignments/bulk-to-entity
-    controller: App\Tagging\Http\Api\Tag\AssignController::assignBulkToEntity
+    controller: App\Tagging\Http\Api\Tag\TagAssignController::assignBulkToEntity
     methods: [POST]
 
 tag_assignments:
     path: /tag/assignments
-    controller: App\Tagging\Http\Api\Tag\AssignmentReadController::listByEntity
+    controller: App\Tagging\Http\Api\Tag\TagAssignmentReadController::listByEntity
     methods: [GET]
 
 tag_search:
     path: /tag/search
-    controller: App\Tagging\Http\Api\Tag\SearchController::get
+    controller: App\Tagging\Http\Api\Tag\TagSearchController::get
     methods: [GET]
 
 tag_suggest:
     path: /tag/suggest
-    controller: App\Tagging\Http\Api\Tag\SuggestController::get
+    controller: App\Tagging\Http\Api\Tag\TagSuggestController::get
     methods: [GET]
 
 tag_webhooks_list:

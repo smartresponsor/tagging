@@ -17,7 +17,7 @@ Optional path_overrides let you force 'admin' op on specific prefixes.
 
 Integration:
 
-- Place Authorize middleware early in the HTTP pipeline.
+- Place TagAuthorizeMiddleware middleware early in the HTTP pipeline.
 - In prod, integrate with Role component to resolve roles by token/subject instead of X-Roles.
 - Keep fallback_allow_all=true for early bring-up; set to false when Role is connected.
 

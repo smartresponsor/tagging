@@ -3,9 +3,15 @@
 doctrine:
   orm:
     mappings:
-      Tagging:
+      TaggingEntity:
         type: attribute
         is_bundle: false
-        dir: '%kernel.project_dir%/vendor/tagging/tag/src/Entity'
+        dir: '%kernel.project_dir%/src/Entity'
         prefix: 'App\Tagging\Entity'
-        alias: Tagging
+        alias: TaggingEntity
+      TaggingDataModel:
+        type: attribute
+        is_bundle: false
+        dir: '%kernel.project_dir%/src/Data/Model/Tag'
+        prefix: 'App\Tagging\Data\Model\Tag'
+        alias: TaggingDataModel

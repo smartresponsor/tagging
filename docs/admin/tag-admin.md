@@ -2,8 +2,8 @@
 
 Files:
 - `admin/index.html`
-- `admin/app.js`
-- `admin/style.css`
+- `admin/tag-admin.js`
+- `admin/tag-admin.css`
 
 Expected backend surface:
 - `GET /tag/_status`

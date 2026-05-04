@@ -14,7 +14,7 @@ final class TagObservabilityDocsTruthTest extends TestCase
         self::assertIsString($doc);
 
         self::assertStringContainsString('there is **no shipped `/tag/_metrics` route**', $doc);
-        self::assertStringContainsString('`Observe` wraps live host-minimal dispatch', $doc);
+        self::assertStringContainsString('`TagObserveMiddleware` wraps live host-minimal dispatch', $doc);
         self::assertStringContainsString('`GET /tag/_status`', $doc);
         self::assertStringContainsString('`GET /tag/_surface`', $doc);
         self::assertStringNotContainsString('Export /tag/_metrics in Prometheus', $doc);

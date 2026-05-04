@@ -5,3 +5,20 @@ services:
   _defaults:
     autowire: true
     autoconfigure: true
+
+  App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository:
+    public: true
+
+  App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineEntityRepository:
+    public: true
+
+  App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel:
+    public: true
+
+  App\Tagging\Service\Core\TagRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
+  App\Tagging\Service\Core\TagReadRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
+  App\Tagging\Service\Core\TagWriteRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
+  App\Tagging\Service\Core\TagPolicyRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
+  App\Tagging\Service\Core\TagEntityRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineEntityRepository'
+  App\Tagging\Service\Core\TagReadModelInterface: '@App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel'
+  App\Tagging\Service\Core\TagTransactionRunnerInterface: '@App\Tagging\Service\Core\TagDoctrineTransactionRunner'

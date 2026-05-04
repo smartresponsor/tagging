@@ -30,6 +30,6 @@ This catalog documents the currently shipped transport-level error codes for the
 For the current shipped surface, cross-check this catalog against:
 
 - `contracts/http/tag-openapi.yaml`
-- `src/Http/Api/Tag/AssignController.php`
+- `src/Http/Api/Tag/TagAssignController.php`
 - `src/Http/Api/Tag/Responder/TagAssignmentResponder.php`
 - `docs/api/assign.md`

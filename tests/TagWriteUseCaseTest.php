@@ -5,29 +5,30 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Application\Write\Tag\Dto\CreateTagCommand;
-use App\Tagging\Application\Write\Tag\Dto\DeleteTagCommand;
-use App\Tagging\Application\Write\Tag\Dto\PatchTagCommand;
-use App\Tagging\Application\Write\Tag\UseCase\CreateTag;
-use App\Tagging\Application\Write\Tag\UseCase\DeleteTag;
-use App\Tagging\Application\Write\Tag\UseCase\PatchTag;
+use App\Tagging\Application\Write\Tag\Dto\TagCreateCommand;
+use App\Tagging\Application\Write\Tag\Dto\TagDeleteCommand;
+use App\Tagging\Application\Write\Tag\Dto\TagPatchCommand;
+use App\Tagging\Application\Write\Tag\UseCase\TagCreateUseCase;
+use App\Tagging\Application\Write\Tag\UseCase\TagDeleteUseCase;
+use App\Tagging\Application\Write\Tag\UseCase\TagPatchUseCase;
 use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
-use App\Tagging\Service\Core\Tag\Record\TagEntityCreateRecord;
-use App\Tagging\Service\Core\Tag\Slug\Slugifier;
-use App\Tagging\Service\Core\Tag\Slug\SlugPolicy;
-use App\Tagging\Service\Core\Tag\TagEntityRepositoryInterface;
-use App\Tagging\Service\Core\Tag\TransactionRunnerInterface;
+use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
+use App\Tagging\Service\Core\Slug\TagSlugifier;
+use App\Tagging\Service\Core\Slug\TagSlugPolicy;
+use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagTransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagWriteUseCaseTest extends TestCase
 {
-    use RequiresSqlite;
-
     public function testCreateTagMapsUniqueViolationToConflict(): void
     {
-        $this->requireSqlite();
-
         $repo = new class implements TagEntityRepositoryInterface {
+            public function existsSlug(string $tenant, string $slug, ?string $excludeId = null): bool
+            {
+                return false;
+            }
+
             public function findById(string $tenant, string $id): ?array
             {
                 return null;
@@ -35,10 +36,7 @@ final class TagWriteUseCaseTest extends TestCase
 
             public function create(string $tenant, TagEntityCreateRecord $record): array
             {
-                $exception = new \PDOException('duplicate');
-                $property = new \ReflectionProperty(\PDOException::class, 'code');
-                $property->setValue($exception, '23505');
-                throw $exception;
+                throw new \RuntimeException('slug_conflict');
             }
 
             public function patch(string $tenant, string $id, array $patch): void {}
@@ -46,18 +44,18 @@ final class TagWriteUseCaseTest extends TestCase
             public function delete(string $tenant, string $id): void {}
         };
 
-        $tx = new class implements TransactionRunnerInterface {
+        $tx = new class implements TagTransactionRunnerInterface {
             public function run(callable $callback): mixed
             {
                 return $callback();
             }
         };
 
-        $policy = new SlugPolicy(new \PDO('sqlite::memory:'), new Slugifier());
-        $useCase = new CreateTag($repo, $policy, $tx);
+        $policy = new TagSlugPolicy($repo, new TagSlugifier());
+        $useCase = new TagCreateUseCase($repo, $policy, $tx);
 
         $result = $useCase->execute(
-            new CreateTagCommand('tenant-a', ['name' => 'Alpha', 'slug' => 'alpha']),
+            new TagCreateCommand('tenant-a', ['name' => 'Alpha', 'slug' => 'alpha']),
         );
         $response = (new TagWriteResponder())->respond($result);
 
@@ -68,6 +66,11 @@ final class TagWriteUseCaseTest extends TestCase
     public function testPatchTagReturnsNotFoundWhenEntityMissing(): void
     {
         $repo = new class implements TagEntityRepositoryInterface {
+            public function existsSlug(string $tenant, string $slug, ?string $excludeId = null): bool
+            {
+                return false;
+            }
+
             public function findById(string $tenant, string $id): ?array
             {
                 return null;
@@ -83,16 +86,16 @@ final class TagWriteUseCaseTest extends TestCase
             public function delete(string $tenant, string $id): void {}
         };
 
-        $tx = new class implements TransactionRunnerInterface {
+        $tx = new class implements TagTransactionRunnerInterface {
             public function run(callable $callback): mixed
             {
                 return $callback();
             }
         };
 
-        $useCase = new PatchTag($repo, $tx);
+        $useCase = new TagPatchUseCase($repo, $tx);
         $result = $useCase->execute(
-            new PatchTagCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV', ['name' => 'Beta']),
+            new TagPatchCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV', ['name' => 'Beta']),
         );
         $response = (new TagWriteResponder())->respond($result);
 
@@ -104,6 +107,11 @@ final class TagWriteUseCaseTest extends TestCase
     {
         $repo = new class implements TagEntityRepositoryInterface {
             public bool $deleted = false;
+
+            public function existsSlug(string $tenant, string $slug, ?string $excludeId = null): bool
+            {
+                return false;
+            }
 
             public function findById(string $tenant, string $id): ?array
             {
@@ -123,16 +131,16 @@ final class TagWriteUseCaseTest extends TestCase
             }
         };
 
-        $tx = new class implements TransactionRunnerInterface {
+        $tx = new class implements TagTransactionRunnerInterface {
             public function run(callable $callback): mixed
             {
                 return $callback();
             }
         };
 
-        $useCase = new DeleteTag($repo, $tx);
+        $useCase = new TagDeleteUseCase($repo, $tx);
         $result = $useCase->execute(
-            new DeleteTagCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV'),
+            new TagDeleteCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV'),
         );
         $response = (new TagWriteResponder())->respond($result);
 

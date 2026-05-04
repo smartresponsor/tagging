@@ -1,0 +1,25 @@
+{
+  "component": "Tagging",
+  "component_namespace": "App\\Tagging\\",
+  "profile": "post-canon",
+  "entrypoints": {
+    "ci_bridge": "tools/test/tag-ci-bridge-wave27.php",
+    "ci_bridge_powershell": "tools/test/tag-ci-bridge-wave28.ps1",
+    "ci_bridge_bash": "tools/test/tag-ci-bridge-wave28.sh",
+    "canon_status": "tools/test/tag-canon-status-wave26.php",
+    "health": "tools/test/tag-post-canon-health-wave24.php",
+    "complete_post_canon": "tools/test/tag-post-canon-all-wave22.php"
+  },
+  "required_artifacts": [
+    "delivery/canon/tagging-canon-status.json",
+    "tools/test/tag-ci-bridge-wave27.php",
+    "tools/test/tag-ci-bridge-wave28.ps1",
+    "tools/test/tag-ci-bridge-wave28.sh"
+  ],
+  "forbidden": {
+    "plain_app_namespace": true,
+    "repository_wide_cleanup": true,
+    "full_repository_overwrite": true,
+    "cumulative_snapshot_application": true
+  }
+}

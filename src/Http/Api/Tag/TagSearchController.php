@@ -1,0 +1,52 @@
+<?php
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
+
+namespace App\Tagging\Http\Api\Tag;
+
+use App\Tagging\Http\Api\Tag\Responder\TagReadResponder;
+use App\Tagging\Service\Core\TagSearchService;
+
+final readonly class TagSearchController
+{
+    public function __construct(
+        private TagSearchService $svc,
+        private TagReadResponder $responder = new TagReadResponder(),
+    ) {}
+
+    /**
+     * @return array{0:int,1:array<string,string>,2:string}
+     *
+     * @throws \JsonException
+     */
+    public function get(array $req): array
+    {
+        $tenant = TagHttpRequest::tenantOrNull($req);
+        if (null === $tenant) {
+            return $this->responder->bad('invalid_tenant');
+        }
+
+        $result = $this->svc->search(
+            $tenant,
+            TagHttpRequest::queryString($req, 'q'),
+            TagHttpRequest::queryInt($req, 'pageSize', 20, 1, 100),
+            $this->optionalString(TagHttpRequest::queryString($req, 'pageToken')),
+        );
+
+        return $this->responder->ok([
+            'ok' => true,
+            'items' => $result['items'] ?? [],
+            'total' => $result['total'] ?? -1,
+            'nextPageToken' => $result['nextPageToken'] ?? null,
+            'cacheHit' => (bool) ($result['cacheHit'] ?? false),
+        ]);
+    }
+
+    private function optionalString(mixed $value): ?string
+    {
+        $value = trim((string) $value);
+
+        return '' !== $value ? $value : null;
+    }
+}

@@ -39,56 +39,56 @@ routes:
     method: POST
     path: /tag/{id}/assign
     pattern: '#^/tag/([A-Za-z0-9]{26})/assign$#'
-    controller: App\Tagging\Http\Api\Tag\AssignController::assign
-    service_id: App\Tagging\Http\Api\Tag\AssignController
+    controller: App\Tagging\Http\Api\Tag\TagAssignController::assign
+    service_id: App\Tagging\Http\Api\Tag\TagAssignController
     action: assign
   - operation: unassign
     public: true
     method: POST
     path: /tag/{id}/unassign
     pattern: '#^/tag/([A-Za-z0-9]{26})/unassign$#'
-    controller: App\Tagging\Http\Api\Tag\AssignController::unassign
-    service_id: App\Tagging\Http\Api\Tag\AssignController
+    controller: App\Tagging\Http\Api\Tag\TagAssignController::unassign
+    service_id: App\Tagging\Http\Api\Tag\TagAssignController
     action: unassign
   - operation: assignments_bulk
     public: true
     method: POST
     path: /tag/assignments/bulk
     pattern: '#^/tag/assignments/bulk$#'
-    controller: App\Tagging\Http\Api\Tag\AssignController::bulk
-    service_id: App\Tagging\Http\Api\Tag\AssignController
+    controller: App\Tagging\Http\Api\Tag\TagAssignController::bulk
+    service_id: App\Tagging\Http\Api\Tag\TagAssignController
     action: bulk
   - operation: assignments_bulk_to_entity
     public: true
     method: POST
     path: /tag/assignments/bulk-to-entity
     pattern: '#^/tag/assignments/bulk-to-entity$#'
-    controller: App\Tagging\Http\Api\Tag\AssignController::assignBulkToEntity
-    service_id: App\Tagging\Http\Api\Tag\AssignController
+    controller: App\Tagging\Http\Api\Tag\TagAssignController::assignBulkToEntity
+    service_id: App\Tagging\Http\Api\Tag\TagAssignController
     action: assignBulkToEntity
   - operation: assignments
     public: true
     method: GET
     path: /tag/assignments
     pattern: '#^/tag/assignments$#'
-    controller: App\Tagging\Http\Api\Tag\AssignmentReadController::listByEntity
-    service_id: App\Tagging\Http\Api\Tag\AssignmentReadController
+    controller: App\Tagging\Http\Api\Tag\TagAssignmentReadController::listByEntity
+    service_id: App\Tagging\Http\Api\Tag\TagAssignmentReadController
     action: listByEntity
   - operation: search
     public: true
     method: GET
     path: /tag/search
     pattern: '#^/tag/search$#'
-    controller: App\Tagging\Http\Api\Tag\SearchController::get
-    service_id: App\Tagging\Http\Api\Tag\SearchController
+    controller: App\Tagging\Http\Api\Tag\TagSearchController::get
+    service_id: App\Tagging\Http\Api\Tag\TagSearchController
     action: get
   - operation: suggest
     public: true
     method: GET
     path: /tag/suggest
     pattern: '#^/tag/suggest$#'
-    controller: App\Tagging\Http\Api\Tag\SuggestController::get
-    service_id: App\Tagging\Http\Api\Tag\SuggestController
+    controller: App\Tagging\Http\Api\Tag\TagSuggestController::get
+    service_id: App\Tagging\Http\Api\Tag\TagSuggestController
     action: get
   - operation: webhooks_list
     public: false
@@ -119,8 +119,8 @@ routes:
     method: GET
     path: /tag/_status
     pattern: '#^/tag/_status$#'
-    controller: App\Tagging\Http\Api\Tag\StatusController::status
-    service_id: App\Tagging\Http\Api\Tag\StatusController
+    controller: App\Tagging\Http\Api\Tag\TagStatusController::status
+    service_id: App\Tagging\Http\Api\Tag\TagStatusController
     action: status
     response_header: X-Tag-Version
   - operation: discovery
@@ -128,7 +128,7 @@ routes:
     method: GET
     path: /tag/_surface
     pattern: '#^/tag/_surface$#'
-    controller: App\Tagging\Http\Api\Tag\SurfaceController::surface
-    service_id: App\Tagging\Http\Api\Tag\SurfaceController
+    controller: App\Tagging\Http\Api\Tag\TagSurfaceController::surface
+    service_id: App\Tagging\Http\Api\Tag\TagSurfaceController
     action: surface
     response_header: X-Tag-Surface-Version

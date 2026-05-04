@@ -8,8 +8,8 @@ namespace App\Tagging\Cache\Store\Tag;
 final readonly class TagQueryCacheInvalidator
 {
     public function __construct(
-        private ?SearchCache $searchCache = null,
-        private ?SuggestCache $suggestCache = null,
+        private ?TagSearchCache $searchCache = null,
+        private ?TagSuggestCache $suggestCache = null,
     ) {}
 
     public function clearTenant(string $tenant): void

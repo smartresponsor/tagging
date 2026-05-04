@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Tagging\Entity\Core\Tag\TagRelation;
-use App\Tagging\Service\Core\Tag\TagGraph;
+use App\Tagging\Service\Core\TagGraph;
 use PHPUnit\Framework\TestCase;
 
 final class TagGraphTest extends TestCase
@@ -17,7 +17,7 @@ final class TagGraphTest extends TestCase
         $b = 'b';
         $c = 'c';
         $adj = [
-            $b => [TagRelation::create('1', $b, $c, 'broader')],
+            $b => [TagRelation::create('tenant-a', '1', $b, $c, 'broader')],
         ];
         self::assertFalse(TagGraph::wouldCreateCycle($a, $b, $adj));
     }

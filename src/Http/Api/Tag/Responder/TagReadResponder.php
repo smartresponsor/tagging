@@ -10,11 +10,11 @@ namespace App\Tagging\Http\Api\Tag\Responder;
  */
 final class TagReadResponder
 {
-    private JsonResponder $json;
+    private TagJsonResponder $json;
 
     public function __construct()
     {
-        $this->json = new JsonResponder();
+        $this->json = new TagJsonResponder();
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */

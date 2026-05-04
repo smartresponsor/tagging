@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Cache\Store\Tag\SearchCache;
-use App\Tagging\Cache\Store\Tag\SuggestCache;
-use App\Tagging\Http\Api\Tag\SearchController;
-use App\Tagging\Http\Api\Tag\SuggestController;
-use App\Tagging\Service\Core\Tag\SearchService;
-use App\Tagging\Service\Core\Tag\SuggestService;
-use App\Tagging\Service\Core\Tag\TagReadModelInterface;
+use App\Tagging\Cache\Store\Tag\TagSearchCache;
+use App\Tagging\Cache\Store\Tag\TagSuggestCache;
+use App\Tagging\Http\Api\Tag\TagSearchController;
+use App\Tagging\Http\Api\Tag\TagSuggestController;
+use App\Tagging\Service\Core\TagSearchService;
+use App\Tagging\Service\Core\TagSuggestService;
+use App\Tagging\Service\Core\TagReadModelInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagReadControllerTransportBehaviorTest extends TestCase
@@ -21,8 +21,8 @@ final class TagReadControllerTransportBehaviorTest extends TestCase
             searchItems: [['id' => 'tag-1', 'slug' => 'alpha', 'name' => 'Alpha', 'locale' => 'en', 'weight' => 10]],
             searchTotal: 1,
         );
-        $service = new SearchService($read, new SearchCache($this->cacheDir('search')));
-        $controller = new SearchController($service);
+        $service = new TagSearchService($read, new TagSearchCache($this->cacheDir('search')));
+        $controller = new TagSearchController($service);
 
         [$status, , $body] = $controller->get([
             'headers' => ['x-tenant-id' => ' tenant-read '],
@@ -51,8 +51,8 @@ final class TagReadControllerTransportBehaviorTest extends TestCase
         $read = new RecordingTagReadModel(
             suggestItems: [['slug' => 'alpha', 'name' => 'Alpha']],
         );
-        $service = new SuggestService($read, new SuggestCache($this->cacheDir('suggest')));
-        $controller = new SuggestController($service);
+        $service = new TagSuggestService($read, new TagSuggestCache($this->cacheDir('suggest')));
+        $controller = new TagSuggestController($service);
 
         [$status, , $body] = $controller->get([
             'headers' => ['X-Tenant-Id' => 'tenant-read'],
@@ -74,8 +74,8 @@ final class TagReadControllerTransportBehaviorTest extends TestCase
 
     public function testReadControllersRejectMissingTenant(): void
     {
-        $search = new SearchController(new SearchService(new RecordingTagReadModel(), new SearchCache($this->cacheDir('search-missing-tenant'))));
-        $suggest = new SuggestController(new SuggestService(new RecordingTagReadModel(), new SuggestCache($this->cacheDir('suggest-missing-tenant'))));
+        $search = new TagSearchController(new TagSearchService(new RecordingTagReadModel(), new TagSearchCache($this->cacheDir('search-missing-tenant'))));
+        $suggest = new TagSuggestController(new TagSuggestService(new RecordingTagReadModel(), new TagSuggestCache($this->cacheDir('suggest-missing-tenant'))));
 
         [$searchStatus, , $searchBody] = $search->get(['headers' => [], 'query' => ['q' => 'alpha']]);
         [$suggestStatus, , $suggestBody] = $suggest->get(['headers' => [], 'query' => ['q' => 'al']]);

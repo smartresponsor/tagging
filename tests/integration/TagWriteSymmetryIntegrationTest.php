@@ -8,14 +8,13 @@ final class TagWriteSymmetryIntegrationTest extends TagIntegrationEvidenceTestCa
 {
     public function testSingleAssignAndUnassignPreserveIdempotencyAndMissingTagSemantics(): void
     {
-        $pdo = $this->pdo();
         $tenant = 'tenant-symmetry';
         $tagId = '01K3TAGDEMO00000000002001';
 
-        $this->insertTag($pdo, $tenant, $tagId, 'symmetry-primary', 'Symmetry Primary', 80);
+        $this->insertTag($tenant, $tagId, 'symmetry-primary', 'Symmetry Primary', 80);
 
-        $assign = $this->assignService($pdo);
-        $unassign = $this->unassignService($pdo);
+        $assign = $this->assignService();
+        $unassign = $this->unassignService();
 
         $firstAssign = $assign->assign($tenant, $tagId, 'collection', 'symmetry-entity-1', 'idem-assign-1');
         self::assertTrue($firstAssign['ok'] ?? false);
@@ -45,16 +44,15 @@ final class TagWriteSymmetryIntegrationTest extends TagIntegrationEvidenceTestCa
 
     public function testBulkControllerFlowsStaySymmetricWithEntityReads(): void
     {
-        $pdo = $this->pdo();
         $tenant = 'tenant-bulk';
         $tagA = '01K3TAGDEMO00000000002011';
         $tagB = '01K3TAGDEMO00000000002012';
 
-        $this->insertTag($pdo, $tenant, $tagA, 'bulk-primary', 'Bulk Primary', 100);
-        $this->insertTag($pdo, $tenant, $tagB, 'bulk-secondary', 'Bulk Secondary', 50);
+        $this->insertTag($tenant, $tagA, 'bulk-primary', 'Bulk Primary', 100);
+        $this->insertTag($tenant, $tagB, 'bulk-secondary', 'Bulk Secondary', 50);
 
-        $controller = $this->assignController($pdo);
-        $read = $this->readModel($pdo);
+        $controller = $this->assignController();
+        $read = $this->readModel();
 
         [$status, , $body] = $controller->assignBulkToEntity([
             'headers' => ['X-Tenant-Id' => $tenant],

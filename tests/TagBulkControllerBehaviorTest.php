@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Http\Api\Tag\AssignController;
+use App\Tagging\Http\Api\Tag\TagAssignController;
 use PHPUnit\Framework\TestCase;
 
 final class TagBulkControllerBehaviorTest extends TestCase
@@ -19,7 +19,7 @@ final class TagBulkControllerBehaviorTest extends TestCase
             ['ok' => true, 'not_found' => true],
         ]);
 
-        $controller = new AssignController($assign, $unassign, ['entity_types' => ['product']]);
+        $controller = new TagAssignController($assign, $unassign, ['entity_types' => ['product']]);
         [$status, , $body] = $controller->bulk([
             'headers' => ['X-Tenant-Id' => 'tenant-bulk'],
             'body' => [
@@ -66,7 +66,7 @@ final class TagBulkControllerBehaviorTest extends TestCase
 
     public function testBulkMarksMalformedItemsAsValidationFailures(): void
     {
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             new TagBulkAssignOperationStub([]),
             new TagBulkUnassignOperationStub([]),
             ['entity_types' => ['product']],
@@ -101,7 +101,7 @@ final class TagBulkControllerBehaviorTest extends TestCase
             ['ok' => true, 'duplicated' => true],
             ['ok' => false, 'code' => 'tag_not_found'],
         ]);
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             $assign,
             new TagBulkUnassignOperationStub([]),
             ['entity_types' => ['product']],
@@ -131,7 +131,7 @@ final class TagBulkControllerBehaviorTest extends TestCase
 
     public function testBulkEndpointsRejectInvalidTenantAndDisallowedEntityType(): void
     {
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             new TagBulkAssignOperationStub([]),
             new TagBulkUnassignOperationStub([]),
             ['entity_types' => ['product']],
@@ -159,7 +159,7 @@ final class TagBulkControllerBehaviorTest extends TestCase
     }
 }
 
-final class TagBulkAssignOperationStub implements \App\Tagging\Service\Core\Tag\AssignOperationInterface
+final class TagBulkAssignOperationStub implements \App\Tagging\Service\Core\TagAssignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;
@@ -181,7 +181,7 @@ final class TagBulkAssignOperationStub implements \App\Tagging\Service\Core\Tag\
     }
 }
 
-final class TagBulkUnassignOperationStub implements \App\Tagging\Service\Core\Tag\UnassignOperationInterface
+final class TagBulkUnassignOperationStub implements \App\Tagging\Service\Core\TagUnassignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;

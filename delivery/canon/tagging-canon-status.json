@@ -1,0 +1,46 @@
+{
+  "component": "Tagging",
+  "component_namespace": "App\\Tagging\\",
+  "plain_app_namespace_forbidden": true,
+  "workflow": {
+    "patch_mode": "touched-files only",
+    "cumulative_snapshot_application": false,
+    "repository_wide_cleanup": false,
+    "full_repository_overwrite": false
+  },
+  "verification": {
+    "health_check": "tools/test/tag-post-canon-health-wave24.php",
+    "complete_runner": "tools/test/tag-post-canon-all-wave22.php",
+    "powershell_wrapper": "tools/test/tag-post-canon-all-wave23.ps1",
+    "bash_wrapper": "tools/test/tag-post-canon-all-wave23.sh",
+    "maintenance_playbook_audit": "tools/test/tag-maintenance-playbook-wave25.php"
+  },
+  "allowed_conventional_artifacts": [
+    "admin/index.html",
+    "public/tag/openapi/index.html",
+    "docs/README.md",
+    "docs/admin/README.md",
+    "sdk/README.md",
+    "composer.json",
+    "config/routes.yaml",
+    "config/services.yaml"
+  ],
+  "forbidden_regressions": [
+    "docker-compose.yml",
+    "host/Dockerfile",
+    "Tagging",
+    "admin/app.js",
+    "admin/style.css",
+    "delivery/rc/manifest.yaml",
+    "public/tag/demo/requests.http",
+    "public/tag/examples/http.http",
+    "public/tag/examples/seed.http",
+    "public/tag/examples/tour.http",
+    "sdk/php/tag/Client.php",
+    "sdk/ts/tag/client.ts",
+    "tools/_bootstrap.php",
+    "tools/cli/tag.php",
+    "tools/lint.php",
+    "tools/webhook_worker.php"
+  ]
+}

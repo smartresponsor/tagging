@@ -4,12 +4,12 @@
   "generated_at": "2025-10-27T20:49:59.757907",
   "paths": [
     "config/tag_cache.yaml",
-    "src/Cache/Tag/SearchCache.php",
-    "src/Cache/Tag/SuggestCache.php",
-    "src/Service/Tag/SearchService.php",
-    "src/Service/Tag/SuggestService.php",
-    "src/Http/Tag/SearchController.php",
-    "src/Http/Tag/SuggestController.php",
+    "src/Cache/Tag/TagSearchCache.php",
+    "src/Cache/Tag/TagSuggestCache.php",
+    "src/Service/Tag/TagSearchService.php",
+    "src/Service/Tag/TagSuggestService.php",
+    "src/Http/Tag/TagSearchController.php",
+    "src/Http/Tag/TagSuggestController.php",
     "docs/api/search.md",
     "docs/deploy/host-minimal-search.md",
     "docs/acceptance/e4.md"

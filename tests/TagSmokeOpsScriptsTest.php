@@ -23,7 +23,7 @@ final class TagSmokeOpsScriptsTest extends TestCase
     public function testSyntheticScriptsProbeStatusSurfaceSearchAndSuggest(): void
     {
         $gate = file_get_contents(__DIR__ . '/../tools/synthetic/tag-slo-gate.sh');
-        $smoke = file_get_contents(__DIR__ . '/../tools/synthetic/slo.sh');
+        $smoke = file_get_contents(__DIR__ . '/../tools/synthetic/tag-tag-slo.sh');
 
         self::assertIsString($gate);
         self::assertIsString($smoke);

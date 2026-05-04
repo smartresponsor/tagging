@@ -41,9 +41,9 @@ final class TagRouteCatalogTruthTest extends TestCase
             }
         }
 
-        self::assertContains('App\\Tagging\\Http\\Api\\Tag\\StatusController::status', $controllers);
-        self::assertContains('App\\Tagging\\Http\\Api\\Tag\\SurfaceController::surface', $controllers);
-        self::assertContains('App\\Tagging\\Http\\Api\\Tag\\AssignController::bulk', $controllers);
-        self::assertNotContains('App\\Http\\Api\\Tag\\StatusController::status', $controllers);
+        self::assertContains('App\\Tagging\\Http\\Api\\Tag\\TagStatusController::status', $controllers);
+        self::assertContains('App\\Tagging\\Http\\Api\\Tag\\TagSurfaceController::surface', $controllers);
+        self::assertContains('App\\Tagging\\Http\\Api\\Tag\\TagAssignController::bulk', $controllers);
+        self::assertNotContains('App\\Http\\Api\\Tag\\TagStatusController::status', $controllers);
     }
 }

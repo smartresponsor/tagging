@@ -5,27 +5,17 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-require_once __DIR__ . '/IntegrationDbTestCase.php';
+use App\Tagging\Entity\Core\Tag\TagLink;
 
-use App\Tagging\Infrastructure\Outbox\Tag\OutboxPublisher;
-use App\Tagging\Service\Core\Tag\IdempotencyStore;
-use App\Tagging\Service\Core\Tag\UnassignService;
-
-final class TagUnassignIdempotencyTest extends IntegrationDbTestCase
+final class TagUnassignIdempotencyTest extends TagIntegrationEvidenceTestCase
 {
     public function testUnassignWithSameIdempotencyKeyIsStableOnRepeat(): void
     {
-        $pdo = $this->pdo();
-        $pdo->exec(
-            'INSERT INTO tag_entity (id, tenant, slug, name) '
-            . "VALUES ('tag-unassign-idem', 'tenant-unassign-idem', 'idem', 'Idem')",
-        );
-        $pdo->exec(
-            'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) '
-            . "VALUES ('tenant-unassign-idem', 'product', 'p-1001', 'tag-unassign-idem')",
-        );
+        $this->insertTag('tenant-unassign-idem', 'tag-unassign-idem', 'idem', 'Idem');
+        $this->entityManager()->persist(new TagLink('tenant-unassign-idem', 'product', 'p-1001', 'tag-unassign-idem'));
+        $this->entityManager()->flush();
 
-        $service = new UnassignService($pdo, new OutboxPublisher($pdo), new IdempotencyStore($pdo));
+        $service = $this->unassignService();
 
         $first = $service->unassign(
             'tenant-unassign-idem',
@@ -42,42 +32,20 @@ final class TagUnassignIdempotencyTest extends IntegrationDbTestCase
             'idem-unassign-1',
         );
 
-        $linkCount = (int) $pdo
-            ->query("SELECT COUNT(*) FROM tag_link WHERE tenant='tenant-unassign-idem'")
-            ->fetchColumn();
-        $outboxCount = (int) $pdo
-            ->query(
-                'SELECT COUNT(*) FROM outbox_event '
-                . "WHERE tenant='tenant-unassign-idem' AND topic='tag.unassigned'",
-            )
-            ->fetchColumn();
-        $status = $pdo
-            ->query(
-                'SELECT status FROM idempotency_store '
-                . "WHERE tenant='tenant-unassign-idem' AND key='idem-unassign-1'",
-            )
-            ->fetchColumn();
-
         self::assertSame(['ok' => true, 'not_found' => false], $first);
         self::assertSame(['ok' => true, 'not_found' => false, 'duplicated' => true], $second);
-        self::assertSame(0, $linkCount);
-        self::assertSame(1, $outboxCount);
-        self::assertSame('done', $status);
+        self::assertSame(0, $this->countLinks('tenant-unassign-idem'));
+        self::assertSame(1, $this->countOutbox('tenant-unassign-idem', 'tag.unassigned'));
+        self::assertSame('done', $this->idempotencyStatus('tenant-unassign-idem', 'idem-unassign-1'));
     }
 
     public function testUnassignWithSameIdempotencyKeyAndDifferentPayloadReturnsConflict(): void
     {
-        $pdo = $this->pdo();
-        $pdo->exec(
-            'INSERT INTO tag_entity (id, tenant, slug, name) VALUES ('
-            . "'tag-unassign-conflict', 'tenant-unassign-conflict', 'idem-conflict', 'Idem Conflict')",
-        );
-        $pdo->exec(
-            'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) VALUES ('
-            . "'tenant-unassign-conflict', 'product', 'p-1001', 'tag-unassign-conflict')",
-        );
+        $this->insertTag('tenant-unassign-conflict', 'tag-unassign-conflict', 'idem-conflict', 'Idem Conflict');
+        $this->entityManager()->persist(new TagLink('tenant-unassign-conflict', 'product', 'p-1001', 'tag-unassign-conflict'));
+        $this->entityManager()->flush();
 
-        $service = new UnassignService($pdo, new OutboxPublisher($pdo), new IdempotencyStore($pdo));
+        $service = $this->unassignService();
 
         $first = $service->unassign(
             'tenant-unassign-conflict',

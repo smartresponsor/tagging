@@ -25,7 +25,7 @@ Local (Docker Compose):
 
 CI / automation:
 
-- `bash tools/db/tag-migration-smoke.sh`
+- `bash tools/db/tag-tag-migration-tag-smoke.sh`
 
 ## Deprecation plan for secondary tracks
 

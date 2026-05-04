@@ -6,6 +6,8 @@ $root = dirname(__DIR__, 2);
 $errors = [];
 
 $forbiddenRootFiles = [
+    'tag-compose.yaml',
+    'Tagging',
     'MANIFEST.wave-02.json',
     'MANIFEST.wave-03.json',
     'MANIFEST.wave-04.json',
@@ -18,6 +20,7 @@ $forbiddenRootFiles = [
 ];
 
 $forbiddenRootDirectories = [
+    'host',
     'tag_cons_patched',
     'tag_fix',
     'tmp',
@@ -45,6 +48,19 @@ foreach ($forbiddenLegacyArtifacts as $relativePath) {
     }
 }
 
+$requiredDeployArtifacts = [
+    'deploy/docker/Dockerfile',
+    'deploy/docker/compose.yaml',
+    'deploy/docker/entrypoint.sh',
+    'deploy/docker/host.Dockerfile',
+];
+
+foreach ($requiredDeployArtifacts as $relativePath) {
+    if (!is_file($root . '/' . $relativePath)) {
+        $errors[] = sprintf('required deploy artifact is missing: %s', $relativePath);
+    }
+}
+
 $requiredDocs = [
     'docs/ops/ci-gates.md',
     'docs/ops/install-test-gates.md',
@@ -64,5 +80,4 @@ if ($errors !== []) {
     exit(1);
 }
 
-fwrite(STDOUT, '[repo-hygiene] OK
-');
+fwrite(STDOUT, '[repo-hygiene] OK' . PHP_EOL);

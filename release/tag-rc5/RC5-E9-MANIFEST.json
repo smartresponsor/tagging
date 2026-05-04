@@ -4,13 +4,13 @@
   "generated_at": "2025-10-27T21:00:09.891682",
   "paths": [
     ".env.example",
-    "docker-compose.yml",
+    "tag-compose.yaml",
     "host/Dockerfile",
     "host/run.sh",
     "Makefile",
-    "tools/db/migrate.sh",
-    "tools/smoke/smoke.sh",
-    "tools/synthetic/slo.sh",
+    "tools/db/tag-tag-migrate.sh",
+    "tools/smoke/tag-tag-smoke.sh",
+    "tools/synthetic/tag-tag-slo.sh",
     "docs/rc5/e9-assembly.md",
     "docs/acceptance/e9.md"
   ]

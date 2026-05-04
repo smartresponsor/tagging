@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-$root = require __DIR__ . '/../_bootstrap.php';
+$root = require __DIR__ . '/../tag-bootstrap.php';
 $source = $root . '/contracts/http/tag-openapi.yaml';
 $targetDir = $root . '/public/tag/openapi';
 $target = $targetDir . '/tag-openapi.yaml';

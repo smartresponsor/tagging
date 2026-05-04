@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Http\Api\Tag\AssignController;
+use App\Tagging\Http\Api\Tag\TagAssignController;
 use PHPUnit\Framework\TestCase;
 
 final class TagSingleAssignmentControllerBehaviorTest extends TestCase
@@ -15,7 +15,7 @@ final class TagSingleAssignmentControllerBehaviorTest extends TestCase
             ['ok' => true],
             ['ok' => false, 'conflict' => true, 'code' => 'idempotency_conflict'],
         ]);
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             $assign,
             new TagSingleUnassignOperationStub([]),
             ['entity_types' => ['product']],
@@ -51,7 +51,7 @@ final class TagSingleAssignmentControllerBehaviorTest extends TestCase
             ['ok' => true, 'not_found' => true],
             ['ok' => false, 'code' => 'tag_not_found'],
         ]);
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             new TagSingleAssignOperationStub([]),
             $unassign,
             ['entity_types' => ['product']],
@@ -85,7 +85,7 @@ final class TagSingleAssignmentControllerBehaviorTest extends TestCase
 
     public function testSingleOperationsRejectInvalidTenantAndDisallowedEntityType(): void
     {
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             new TagSingleAssignOperationStub([]),
             new TagSingleUnassignOperationStub([]),
             ['entity_types' => ['product']],
@@ -109,7 +109,7 @@ final class TagSingleAssignmentControllerBehaviorTest extends TestCase
     }
 }
 
-final class TagSingleAssignOperationStub implements \App\Tagging\Service\Core\Tag\AssignOperationInterface
+final class TagSingleAssignOperationStub implements \App\Tagging\Service\Core\TagAssignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;
@@ -131,7 +131,7 @@ final class TagSingleAssignOperationStub implements \App\Tagging\Service\Core\Ta
     }
 }
 
-final class TagSingleUnassignOperationStub implements \App\Tagging\Service\Core\Tag\UnassignOperationInterface
+final class TagSingleUnassignOperationStub implements \App\Tagging\Service\Core\TagUnassignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;

@@ -9,14 +9,14 @@ TEST_DB_STARTED=0
 
 cleanup() {
   if [[ "$TEST_DB_STARTED" -eq 1 && "${KEEP_TEST_DB:-0}" != "1" ]]; then
-    "$ROOT_DIR/tools/test-db-stop.sh" >/dev/null
+    "$ROOT_DIR/tools/tag-tag-test-db-stop.sh" >/dev/null
   fi
 }
 
 echo "tag-serve-test-db: starting docker-backed test DB" >&2
-eval "$("$ROOT_DIR/tools/test-db-start.sh")"
+eval "$("$ROOT_DIR/tools/tag-tag-test-db-start.sh")"
 TEST_DB_STARTED=1
 trap cleanup EXIT
 
-"$ROOT_DIR/tools/db/tag-migration-smoke.sh"
+"$ROOT_DIR/tools/db/tag-tag-migration-tag-smoke.sh"
 TENANT="$TENANT" "$ROOT_DIR/tools/local/tag-serve.sh"

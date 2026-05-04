@@ -6,7 +6,7 @@
     "fixtures/tag-demo.json",
     "fixtures/tag-demo.sql",
     "tools/seed/tag-seed.php",
-    "public/tag/demo/requests.http",
+    "public/tag/demo/tag-demo-tag-demo-requests.http",
     "docs/fixtures/demo.md",
     "docs/acceptance/e8.md"
   ]

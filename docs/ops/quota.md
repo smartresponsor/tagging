@@ -14,7 +14,7 @@ See `config/tag_quota.yaml`.
 
 ```php
 $cfg = yaml_parse_file(__DIR__.'/../config/tag_quota.yaml') ?: [];
-$mw = new App\Tagging\Http\Api\Tag\Middleware\QuotaGate(new App\Tagging\Service\Core\Tag\RateLimiter(), $cfg);
+$mw = new App\Tagging\Http\Api\Tag\Middleware\TagQuotaGateMiddleware(new App\Tagging\Service\Core\TagRateLimiter(), $cfg);
 
 $raw = file_get_contents('php://input') ?: '';
 $req = ['method'=>$method,'path'=>$path,'headers'=>getallheaders(),'body'=>$raw];

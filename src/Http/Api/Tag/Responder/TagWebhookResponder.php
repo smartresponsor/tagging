@@ -7,11 +7,11 @@ namespace App\Tagging\Http\Api\Tag\Responder;
 
 final class TagWebhookResponder
 {
-    private JsonResponder $json;
+    private TagJsonResponder $json;
 
     public function __construct()
     {
-        $this->json = new JsonResponder();
+        $this->json = new TagJsonResponder();
     }
 
     /** @return array{int,array<string,string>,string} */

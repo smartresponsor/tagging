@@ -3,7 +3,7 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$root = require __DIR__ . '/../_bootstrap.php';
+$root = require __DIR__ . '/../tag-bootstrap.php';
 $runtime = require $root . '/config/tag_runtime.php';
 $surface = require $root . '/config/tag_public_surface.php';
 $manifest = json_decode((string) file_get_contents($root . '/MANIFEST.json'), true);

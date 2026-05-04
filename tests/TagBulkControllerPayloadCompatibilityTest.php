@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Http\Api\Tag\AssignController;
+use App\Tagging\Http\Api\Tag\TagAssignController;
 use PHPUnit\Framework\TestCase;
 
 final class TagBulkControllerPayloadCompatibilityTest extends TestCase
@@ -15,7 +15,7 @@ final class TagBulkControllerPayloadCompatibilityTest extends TestCase
             ['ok' => true],
             ['ok' => true, 'duplicated' => true],
         ]);
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             $assign,
             new TagBulkCompatUnassignOperationStub([]),
             ['entity_types' => ['product']],
@@ -62,7 +62,7 @@ final class TagBulkControllerPayloadCompatibilityTest extends TestCase
             ['ok' => true],
             ['ok' => true],
         ]);
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             $assign,
             new TagBulkCompatUnassignOperationStub([]),
             ['entity_types' => ['*']],
@@ -100,7 +100,7 @@ final class TagBulkControllerPayloadCompatibilityTest extends TestCase
 
     public function testAssignBulkToEntityRejectsEmptyTagListAndBlankTagItems(): void
     {
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             new TagBulkCompatAssignOperationStub([]),
             new TagBulkCompatUnassignOperationStub([]),
             ['entity_types' => ['product']],
@@ -137,7 +137,7 @@ final class TagBulkControllerPayloadCompatibilityTest extends TestCase
     }
 }
 
-final class TagBulkCompatAssignOperationStub implements \App\Tagging\Service\Core\Tag\AssignOperationInterface
+final class TagBulkCompatAssignOperationStub implements \App\Tagging\Service\Core\TagAssignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;
@@ -164,7 +164,7 @@ final class TagBulkCompatAssignOperationStub implements \App\Tagging\Service\Cor
     }
 }
 
-final class TagBulkCompatUnassignOperationStub implements \App\Tagging\Service\Core\Tag\UnassignOperationInterface
+final class TagBulkCompatUnassignOperationStub implements \App\Tagging\Service\Core\TagUnassignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;

@@ -1,0 +1,20 @@
+{
+  "component": "Tagging",
+  "status": "post-canon-complete",
+  "component_namespace": "App\\Tagging\\",
+  "completed_wave": 30,
+  "canon_status": "delivery/canon/tagging-canon-status.json",
+  "verification_profile": "delivery/canon/tagging-verification-profile.json",
+  "ci_bridge": "tools/test/tag-ci-bridge-wave27.php",
+  "ci_bridge_powershell": "tools/test/tag-ci-bridge-wave28.ps1",
+  "ci_bridge_bash": "tools/test/tag-ci-bridge-wave28.sh",
+  "maintenance_playbook": "docs/architecture/tagging-wave25-maintenance-playbook.md",
+  "rules": {
+    "preserve_component_namespace": true,
+    "plain_app_namespace_forbidden": true,
+    "touched_files_only": true,
+    "repository_wide_cleanup_forbidden": true,
+    "full_repository_overwrite_forbidden": true,
+    "cumulative_snapshot_application_forbidden": true
+  }
+}

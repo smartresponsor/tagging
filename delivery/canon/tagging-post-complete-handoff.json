@@ -1,0 +1,23 @@
+{
+  "component": "Tagging",
+  "status": "post-complete-handoff",
+  "component_namespace": "App\\Tagging\\",
+  "after_wave": 30,
+  "next_work_policy": {
+    "continue_only_from_local_failures": true,
+    "require_current_slice_for_new_structural_work": true,
+    "preserve_component_namespace": true,
+    "touched_files_only": true,
+    "repository_wide_cleanup_forbidden": true,
+    "full_repository_overwrite_forbidden": true
+  },
+  "primary_checks": [
+    "php tools/test/tag-canonicalization-complete-wave30.php",
+    "php tools/test/tag-verification-profile-wave29.php",
+    "php tools/test/tag-ci-bridge-wave27.php"
+  ],
+  "operator_wrappers": [
+    "tools/test/tag-ci-bridge-wave28.ps1",
+    "tools/test/tag-ci-bridge-wave28.sh"
+  ]
+}

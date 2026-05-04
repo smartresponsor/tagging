@@ -43,7 +43,7 @@
     },
     "scripts": {
         "lint": "php tools/lint.php",
-        "lint:admin": "node --check admin/app.js",
+        "lint:admin": "node --check admin/tag-admin.js",
         "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon.dist --memory-limit=512M",
         "cs:check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --using-cache=no",
         "cs:fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --using-cache=no",
@@ -64,10 +64,10 @@
         "audit:antora-surface": "php tools/audit/tag-antora-surface-audit.php",
         "release:preflight": "php tools/release/tag-preflight.php",
         "db:migrate": "php tools/db/tag-migrate.php",
-        "db:smoke": "bash tools/db/tag-migration-smoke.sh",
-        "db:test:start": "bash tools/test-db-start.sh",
-        "db:test:stop": "bash tools/test-db-stop.sh",
-        "db:smoke:self-contained": "bash tools/migration-smoke.sh",
+        "db:smoke": "bash tools/db/tag-tag-migration-tag-smoke.sh",
+        "db:test:start": "bash tools/tag-tag-test-db-start.sh",
+        "db:test:stop": "bash tools/tag-tag-test-db-stop.sh",
+        "db:smoke:self-contained": "bash tools/tag-tag-migration-tag-smoke.sh",
         "demo:seed": "php tools/seed/tag-seed.php",
         "demo:clear": "php tools/seed/tag-clear.php",
         "smoke:runtime": "php tools/smoke/tag-smoke.php",
@@ -128,7 +128,7 @@
         "cli:tag": "php bin/console list",
         "cli:tag:status": "php bin/console about",
         "cli:tag:surface": "php bin/console debug:router",
-        "test:cli": "vendor/bin/phpunit --filter CliCommandLayerTest",
+        "test:cli": "vendor/bin/phpunit --filter TagCliCommandLayerTest",
         "hook:install": "php tools/git/install-hooks.php"
     }
 }

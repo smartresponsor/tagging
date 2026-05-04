@@ -5,10 +5,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Service\Core\Tag\CallableTagErrorSink;
-use App\Tagging\Service\Core\Tag\NullTagErrorSink;
-use App\Tagging\Service\Core\Tag\TagErrorSink;
-use App\Tagging\Service\Core\Tag\TagErrorSinkFactory;
+use App\Tagging\Service\Core\TagCallableErrorSink;
+use App\Tagging\Service\Core\TagNullErrorSink;
+use App\Tagging\Service\Core\TagErrorSink;
+use App\Tagging\Service\Core\TagErrorSinkFactory;
 use PHPUnit\Framework\TestCase;
 
 final class TagErrorSinkFactoryTest extends TestCase
@@ -35,8 +35,8 @@ final class TagErrorSinkFactoryTest extends TestCase
         });
         $nullSink = TagErrorSinkFactory::from();
 
-        self::assertInstanceOf(CallableTagErrorSink::class, $callableSink);
-        self::assertInstanceOf(NullTagErrorSink::class, $nullSink);
+        self::assertInstanceOf(TagCallableErrorSink::class, $callableSink);
+        self::assertInstanceOf(TagNullErrorSink::class, $nullSink);
 
         $callableSink->report(['code' => 'demo']);
         $nullSink->report(['code' => 'ignored']);

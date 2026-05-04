@@ -4,11 +4,11 @@ The host-minimal entrypoint now applies transport middleware through a small exp
 
 ## Active middleware order
 
-1. `Observe`
-2. `VerifySignature`
+1. `TagObserveMiddleware`
+2. `TagVerifySignatureMiddleware`
 3. route dispatch
 
-## VerifySignature contract
+## TagVerifySignatureMiddleware contract
 
 When `TAG_SIGNATURE_SECRET` is configured, write and non-meta `/tag/**` routes require:
 

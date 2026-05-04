@@ -1,0 +1,18 @@
+@baseUrl = http://127.0.0.1:8080
+@tenant = demo
+
+### status
+GET {{baseUrl}}/tag/_status
+X-Tenant-Id: {{tenant}}
+
+### discovery
+GET {{baseUrl}}/tag/_surface
+X-Tenant-Id: {{tenant}}
+
+### search seeded electronics
+GET {{baseUrl}}/tag/search?q=elect&pageSize=5
+X-Tenant-Id: {{tenant}}
+
+### suggest seeded premium
+GET {{baseUrl}}/tag/suggest?q=pre&limit=5
+X-Tenant-Id: {{tenant}}

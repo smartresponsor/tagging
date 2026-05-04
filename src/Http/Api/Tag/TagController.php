@@ -5,22 +5,22 @@ declare(strict_types=1);
 
 namespace App\Tagging\Http\Api\Tag;
 
-use App\Tagging\Application\Write\Tag\Dto\CreateTagCommand;
-use App\Tagging\Application\Write\Tag\Dto\DeleteTagCommand;
-use App\Tagging\Application\Write\Tag\Dto\PatchTagCommand;
-use App\Tagging\Application\Write\Tag\UseCase\CreateTagInterface;
-use App\Tagging\Application\Write\Tag\UseCase\DeleteTagInterface;
-use App\Tagging\Application\Write\Tag\UseCase\PatchTagInterface;
+use App\Tagging\Application\Write\Tag\Dto\TagCreateCommand;
+use App\Tagging\Application\Write\Tag\Dto\TagDeleteCommand;
+use App\Tagging\Application\Write\Tag\Dto\TagPatchCommand;
+use App\Tagging\Application\Write\Tag\UseCase\TagCreateUseCaseInterface;
+use App\Tagging\Application\Write\Tag\UseCase\TagDeleteUseCaseInterface;
+use App\Tagging\Application\Write\Tag\UseCase\TagPatchUseCaseInterface;
 use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
-use App\Tagging\Service\Core\Tag\TagEntityQueryServiceInterface;
+use App\Tagging\Service\Core\TagEntityQueryServiceInterface;
 
 final readonly class TagController
 {
     public function __construct(
         private TagEntityQueryServiceInterface $queryService,
-        private CreateTagInterface $createTag,
-        private PatchTagInterface $patchTag,
-        private DeleteTagInterface $deleteTag,
+        private TagCreateUseCaseInterface $createTag,
+        private TagPatchUseCaseInterface $patchTag,
+        private TagDeleteUseCaseInterface $deleteTag,
         private TagWriteResponder $responder,
     ) {}
 
@@ -28,7 +28,7 @@ final readonly class TagController
     public function create(array $req): array
     {
         return $this->responder->respond(
-            $this->createTag->execute(new CreateTagCommand(TagHttpRequest::tenant($req), TagHttpRequest::body($req))),
+            $this->createTag->execute(new TagCreateCommand(TagHttpRequest::tenant($req), TagHttpRequest::body($req))),
         );
     }
 
@@ -52,7 +52,7 @@ final readonly class TagController
     {
         return $this->responder->respond(
             $this->patchTag->execute(
-                new PatchTagCommand(TagHttpRequest::tenant($req), $id, TagHttpRequest::body($req)),
+                new TagPatchCommand(TagHttpRequest::tenant($req), $id, TagHttpRequest::body($req)),
             ),
         );
     }
@@ -61,7 +61,7 @@ final readonly class TagController
     public function delete(array $req, string $id): array
     {
         return $this->responder->respond(
-            $this->deleteTag->execute(new DeleteTagCommand(TagHttpRequest::tenant($req), $id)),
+            $this->deleteTag->execute(new TagDeleteCommand(TagHttpRequest::tenant($req), $id)),
         );
     }
 

@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests;
+
+use App\Tagging\Http\Api\Tag\TagRuntimeVersion;
+use App\Tagging\Http\Api\Tag\TagStatusController;
+use PHPUnit\Framework\TestCase;
+
+final class TagStatusControllerTest extends TestCase
+{
+    public function testStatusShape(): void
+    {
+        $payload = (new TagStatusController())->status();
+        self::assertTrue($payload['ok']);
+        self::assertSame('tag', $payload['service']);
+        self::assertArrayHasKey('ts', $payload);
+        self::assertArrayHasKey('db', $payload);
+        self::assertSame('hosted-package', $payload['runtime']);
+        self::assertSame('/tag/_surface', $payload['surface']['discovery'] ?? null);
+        self::assertSame('/tag/_status', $payload['surface']['status'] ?? null);
+        self::assertSame(['available' => false, 'ok' => false], $payload['db']);
+        self::assertSame(TagRuntimeVersion::read(), $payload['version']);
+    }
+
+    public function testStatusCanProbeDatabase(): void
+    {
+        $payload = (new TagStatusController(static fn(): bool => true, 'test-version'))->status();
+        self::assertSame('test-version', $payload['version']);
+        self::assertSame(['available' => true, 'ok' => true], $payload['db']);
+    }
+
+    public function testStatusMarksDatabaseUnavailableOnProbeFailure(): void
+    {
+        $payload = (new TagStatusController(static function (): bool {
+            throw new \RuntimeException('db_down');
+        }))->status();
+
+        self::assertTrue($payload['db']['available']);
+        self::assertFalse($payload['db']['ok']);
+        self::assertSame('db_unavailable', $payload['db']['error']);
+    }
+}

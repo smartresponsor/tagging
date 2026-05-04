@@ -3,7 +3,7 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$root = require __DIR__ . '/../_bootstrap.php';
+$root = require __DIR__ . '/../tag-bootstrap.php';
 $loadFixture = require __DIR__ . '/tag-demo-fixture-loader.php';
 $data = $loadFixture($root);
 $errors = [];

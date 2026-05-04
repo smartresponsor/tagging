@@ -1,8 +1,8 @@
 {
-  "name": "smartresponsor/tag",
+  "name": "tagging/tag",
   "type": "library",
   "license": "proprietary",
-  "description": "Smartresponsor canonical tagging component hosted by a Symfony ecosystem application.",
+  "description": "Tagging process app",
   "require": {
     "php": "^8.4",
     "ext-pdo": "*",
@@ -39,8 +39,8 @@
     }
   },
   "scripts": {
-    "lint": "php tools/lint.php",
-    "lint:admin": "node --check admin/app.js",
+    "lint": "php tools/tag-lint.php",
+    "lint:admin": "node --check admin/tag-admin.js",
     "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon.dist --memory-limit=512M",
     "cs:check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --using-cache=no",
     "cs:fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --using-cache=no",
@@ -61,10 +61,10 @@
     "audit:antora-surface": "php tools/audit/tag-antora-surface-audit.php",
     "release:preflight": "php tools/release/tag-preflight.php",
     "db:migrate": "php tools/db/tag-migrate.php",
-    "db:smoke": "bash tools/db/tag-migration-smoke.sh",
-    "db:test:start": "bash tools/test-db-start.sh",
-    "db:test:stop": "bash tools/test-db-stop.sh",
-    "db:smoke:self-contained": "bash tools/migration-smoke.sh",
+    "db:smoke": "bash tools/db/tag-tag-migration-tag-smoke.sh",
+    "db:test:start": "bash tools/tag-tag-test-db-start.sh",
+    "db:test:stop": "bash tools/tag-tag-test-db-stop.sh",
+    "db:smoke:self-contained": "bash tools/tag-tag-migration-tag-smoke.sh",
     "demo:seed": "php tools/seed/tag-seed.php",
     "demo:clear": "php tools/seed/tag-clear.php",
     "smoke:runtime": "php tools/smoke/tag-smoke.php",
@@ -101,11 +101,11 @@
     "test:unit": "vendor/bin/phpunit --testsuite unit",
     "test:integration": "vendor/bin/phpunit --testsuite integration",
     "test:panther": [
-      "tools/local/panther-test.sh"
+      "tools/local/tag-panther-test.sh"
     ],
     "test:e2e": "npx playwright test",
     "test:e2e:install": "npx playwright install chromium",
-    "doctor:php-ext": "bash tools/local/php-extension-doctor.sh",
+    "doctor:php-ext": "bash tools/local/tag-php-extension-doctor.sh",
     "host:test-db:serve": "bash tools/local/tag-serve-test-db.sh",
     "gate:install-test": [
       "composer validate --no-interaction --strict",
@@ -121,6 +121,7 @@
     "audit:demo-truth-pack": "php tools/audit/tag-demo-truth-pack-audit.php",
     "audit:release-grade-portrait": "php tools/audit/tag-release-grade-portrait-audit.php",
     "audit:assessment-surface": "php tools/audit/tag-assessment-surface-audit.php",
-    "hook:install": "php tools/git/install-hooks.php"
+    "hook:install": "php tools/git/tag-install-hooks.php",
+    "audit:tooling-entrypoint": "php tools/audit/tag-tooling-entrypoint-audit.php"
   }
 }

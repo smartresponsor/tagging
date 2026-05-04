@@ -17,7 +17,7 @@
 
 ```php
 $cfg = yaml_parse_file(__DIR__.'/../config/tag_purge.yaml') ?: [];
-$ctl = new App\Tagging\Http\Api\Tag\PurgeController(new App\Tagging\Service\Core\Tag\PurgeService($cfg));
+$ctl = new App\Tagging\Http\Api\Tag\PurgeController(new App\Tagging\Service\Core\PurgeService($cfg));
 
 if ($method === 'POST' && $path === '/tag/_purge') {
   $raw = file_get_contents('php://input') ?: '';

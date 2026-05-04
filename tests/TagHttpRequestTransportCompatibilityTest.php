@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Http\Api\Tag\AssignController;
+use App\Tagging\Http\Api\Tag\TagAssignController;
 use App\Tagging\Http\Api\Tag\TagHttpRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -43,7 +43,7 @@ final class TagHttpRequestTransportCompatibilityTest extends TestCase
             ['ok' => true],
             ['ok' => true],
         ]);
-        $controller = new AssignController(
+        $controller = new TagAssignController(
             $assign,
             new TagRequestCompatUnassignStub([]),
             ['entity_types' => ['product']],
@@ -76,7 +76,7 @@ final class TagHttpRequestTransportCompatibilityTest extends TestCase
     }
 }
 
-final class TagRequestCompatAssignStub implements \App\Tagging\Service\Core\Tag\AssignOperationInterface
+final class TagRequestCompatAssignStub implements \App\Tagging\Service\Core\TagAssignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;
@@ -103,7 +103,7 @@ final class TagRequestCompatAssignStub implements \App\Tagging\Service\Core\Tag\
     }
 }
 
-final class TagRequestCompatUnassignStub implements \App\Tagging\Service\Core\Tag\UnassignOperationInterface
+final class TagRequestCompatUnassignStub implements \App\Tagging\Service\Core\TagUnassignOperationInterface
 {
     /** @var list<array<string,mixed>> */
     private array $results;

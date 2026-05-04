@@ -9,7 +9,7 @@ The detailed operational commands remain in the repository's existing runbook an
 * `docs/ops/runbook.md`
 * `docs/ops/install-test-gates.md`
 * `db/postgres/migrations/`
-* `docker-compose.yml`
+* `tag-compose.yaml`
 
 == Minimal local bring-up
 

@@ -5,51 +5,78 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Application\Write\Tag\UseCase\CreateTag;
-use App\Tagging\Application\Write\Tag\UseCase\DeleteTag;
-use App\Tagging\Application\Write\Tag\UseCase\PatchTag;
+use App\Tagging\Application\Write\Tag\UseCase\TagCreateUseCase;
+use App\Tagging\Application\Write\Tag\UseCase\TagDeleteUseCase;
+use App\Tagging\Application\Write\Tag\UseCase\TagPatchUseCase;
 use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
 use App\Tagging\Http\Api\Tag\TagController;
-use App\Tagging\Infrastructure\Persistence\Tag\PdoTagEntityRepository;
-use App\Tagging\Service\Core\Tag\PdoTransactionRunner;
-use App\Tagging\Service\Core\Tag\Slug\Slugifier;
-use App\Tagging\Service\Core\Tag\Slug\SlugPolicy;
-use App\Tagging\Service\Core\Tag\TagEntityPayloadNormalizer;
-use App\Tagging\Service\Core\Tag\TagEntityService;
+use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
+use App\Tagging\Service\Core\Slug\TagSlugifier;
+use App\Tagging\Service\Core\Slug\TagSlugPolicy;
+use App\Tagging\Service\Core\TagEntityPayloadNormalizer;
+use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagEntityService;
+use App\Tagging\Service\Core\TagTransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagEntityChainTest extends TestCase
 {
-    use RequiresSqlite;
-
     public function testEntityRepositoryServiceAndControllerChain(): void
     {
-        $this->requireSqlite();
+        $repo = new class implements TagEntityRepositoryInterface {
+            /** @var array<string,array<string,array<string,mixed>>> */
+            private array $rows = [];
 
-        $pdo = new \PDO('sqlite::memory:');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $pdo->exec('CREATE TABLE tag_entity (
-            id TEXT PRIMARY KEY,
-            tenant TEXT NOT NULL,
-            slug TEXT NOT NULL,
-            name TEXT NOT NULL,
-            locale TEXT NOT NULL DEFAULT "en",
-            weight INTEGER NOT NULL DEFAULT 0,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )');
-        $pdo->exec('CREATE UNIQUE INDEX tag_entity_slug_uq ON tag_entity (tenant, slug)');
+            public function existsSlug(string $tenant, string $slug, ?string $excludeId = null): bool
+            {
+                foreach ($this->rows[$tenant] ?? [] as $row) {
+                    if (($row['slug'] ?? null) === $slug && ($excludeId === null || $excludeId !== ($row['id'] ?? null))) {
+                        return true;
+                    }
+                }
 
-        $repo = new PdoTagEntityRepository($pdo);
-        $slugPolicy = new SlugPolicy($pdo, new Slugifier());
+                return false;
+            }
+
+            public function findById(string $tenant, string $id): ?array
+            {
+                return $this->rows[$tenant][$id] ?? null;
+            }
+
+            public function create(string $tenant, TagEntityCreateRecord $record): array
+            {
+                return $this->rows[$tenant][$record->id] = $record->toArray();
+            }
+
+            public function patch(string $tenant, string $id, array $patch): void
+            {
+                if (!isset($this->rows[$tenant][$id])) {
+                    return;
+                }
+
+                $this->rows[$tenant][$id] = array_replace($this->rows[$tenant][$id], $patch);
+            }
+
+            public function delete(string $tenant, string $id): void
+            {
+                unset($this->rows[$tenant][$id]);
+            }
+        };
+
+        $slugPolicy = new TagSlugPolicy($repo, new TagSlugifier());
         $normalizer = new TagEntityPayloadNormalizer();
         $service = new TagEntityService($repo, $slugPolicy, $normalizer);
-        $tx = new PdoTransactionRunner($pdo);
+        $tx = new class implements TagTransactionRunnerInterface {
+            public function run(callable $callback): mixed
+            {
+                return $callback();
+            }
+        };
         $controller = new TagController(
             $service,
-            new CreateTag($repo, $slugPolicy, $tx),
-            new PatchTag($repo, $tx),
-            new DeleteTag($repo, $tx),
+            new TagCreateUseCase($repo, $slugPolicy, $tx),
+            new TagPatchUseCase($repo, $tx),
+            new TagDeleteUseCase($repo, $tx),
             new TagWriteResponder(),
         );
 
@@ -92,21 +119,27 @@ final class TagEntityChainTest extends TestCase
 
     public function testServiceRejectsEmptyPatchAfterNormalization(): void
     {
-        $this->requireSqlite();
+        $repo = new class implements TagEntityRepositoryInterface {
+            public function existsSlug(string $tenant, string $slug, ?string $excludeId = null): bool
+            {
+                return false;
+            }
 
-        $pdo = new \PDO('sqlite::memory:');
-        $pdo->exec(
-            'CREATE TABLE tag_entity ('
-            . 'id TEXT PRIMARY KEY, '
-            . 'tenant TEXT NOT NULL, '
-            . 'slug TEXT NOT NULL, '
-            . 'name TEXT NOT NULL, '
-            . 'locale TEXT NOT NULL DEFAULT "en", '
-            . 'weight INTEGER NOT NULL DEFAULT 0'
-            . ')',
-        );
-        $repo = new PdoTagEntityRepository($pdo);
-        $service = new TagEntityService($repo, new SlugPolicy($pdo, new Slugifier()), new TagEntityPayloadNormalizer());
+            public function findById(string $tenant, string $id): ?array
+            {
+                return null;
+            }
+
+            public function create(string $tenant, TagEntityCreateRecord $record): array
+            {
+                return $record->toArray();
+            }
+
+            public function patch(string $tenant, string $id, array $patch): void {}
+
+            public function delete(string $tenant, string $id): void {}
+        };
+        $service = new TagEntityService($repo, new TagSlugPolicy($repo, new TagSlugifier()), new TagEntityPayloadNormalizer());
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('validation_failed');

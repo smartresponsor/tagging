@@ -7,7 +7,7 @@ namespace App\Tagging\Http\Api\Tag\Responder;
 
 final readonly class TagMiddlewareResponder
 {
-    public function __construct(private JsonResponder $json = new JsonResponder()) {}
+    public function __construct(private TagJsonResponder $json = new TagJsonResponder()) {}
 
     /** @return array{0:int,1:array<string,string>,2:string} */
     public function reject(int $status, string $code, array $payload = [], array $headers = []): array

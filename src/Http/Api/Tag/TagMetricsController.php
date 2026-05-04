@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Http\Api\Tag;
 
-use App\Tagging\Service\Core\Tag\Metric\TagMetrics;
+use App\Tagging\Service\Core\Metric\TagMetrics;
 
 final class TagMetricsController
 {

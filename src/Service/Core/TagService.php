@@ -5,11 +5,11 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Core\Tag\Tag;
-use App\Tagging\Entity\Core\Tag\TagAssignment;
-use App\Tagging\Entity\Core\Tag\TagRelation;
-use App\Tagging\Entity\Core\Tag\TagScheme;
-use App\Tagging\Entity\Core\Tag\TagSynonym;
+use App\Tagging\Entity\Tag\TagEntity;
+use App\Tagging\Entity\Tag\TagEntityAssignment;
+use App\Tagging\Entity\Tag\TagEntityRelation;
+use App\Tagging\Entity\Tag\TagEntityScheme;
+use App\Tagging\Entity\Tag\TagEntitySynonym;
 use App\Tagging\Service\Core\TagRepositoryInterface as TagRepositoryContract;
 use Random\RandomException;
 
@@ -23,7 +23,7 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function create(string $tenantId, ?string $slugOrNull, string $label): Tag
+    public function create(string $tenantId, ?string $slugOrNull, string $label): TagEntity
     {
         $label = TagNormalizer::normalizeLabel($label);
         $slug = ('' === $slugOrNull || null === $slugOrNull)
@@ -33,7 +33,7 @@ final readonly class TagService
         if ($this->repo->getBySlug($tenantId, $slug)) {
             throw new \InvalidArgumentException('Slug already exists');
         }
-        $tag = Tag::create($tenantId, TagUlidGenerator::generate(), $slug, $label);
+        $tag = TagEntity::create($tenantId, TagUlidGenerator::generate(), $slug, $label);
         $this->repo->saveTag($tenantId, $tag);
 
         return $tag;
@@ -52,10 +52,10 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function assign(string $tenantId, string $tagId, string $type, string $assignedId): TagAssignment
+    public function assign(string $tenantId, string $tagId, string $type, string $assignedId): TagAssignmentEntity
     {
         $this->enforceCaps($tenantId, $tagId, $type, $assignedId);
-        $a = TagAssignment::create($tenantId, TagUlidGenerator::generate(), $tagId, $type, $assignedId);
+        $a = TagAssignmentEntity::create($tenantId, TagUlidGenerator::generate(), $tagId, $type, $assignedId);
         $this->repo->saveAssignment($tenantId, $a);
 
         return $a;
@@ -64,10 +64,10 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function addSynonym(string $tenantId, string $tagId, string $label): TagSynonym
+    public function addSynonym(string $tenantId, string $tagId, string $label): TagSynonymEntity
     {
         $label = TagNormalizer::normalizeLabel($label);
-        $s = TagSynonym::create($tenantId, TagUlidGenerator::generate(), $tagId, $label);
+        $s = TagSynonymEntity::create($tenantId, TagUlidGenerator::generate(), $tagId, $label);
         $this->repo->saveSynonym($tenantId, $s);
 
         return $s;
@@ -76,7 +76,7 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function addRelation(string $tenantId, string $fromTagId, string $toTagId, string $type): TagRelation
+    public function addRelation(string $tenantId, string $fromTagId, string $toTagId, string $type): TagRelationEntity
     {
         if ('broader' === $type) {
             $adj = [];
@@ -86,7 +86,7 @@ final readonly class TagService
                 throw new \InvalidArgumentException('broader cycle');
             }
         }
-        $r = TagRelation::create($tenantId, TagUlidGenerator::generate(), $fromTagId, $toTagId, $type);
+        $r = TagRelationEntity::create($tenantId, TagUlidGenerator::generate(), $fromTagId, $toTagId, $type);
         $this->repo->saveRelation($tenantId, $r);
 
         return $r;
@@ -95,12 +95,12 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function createScheme(string $tenantId, string $name, ?string $locale): TagScheme
+    public function createScheme(string $tenantId, string $nameEntity, ?string $locale): TagSchemeEntity
     {
-        if ($this->repo->getSchemeByName($tenantId, $name)) {
+        if ($this->repo->getSchemeByName($tenantId, $nameEntity)) {
             throw new \InvalidArgumentException('scheme exists');
         }
-        $s = TagScheme::create($tenantId, TagUlidGenerator::generate(), $name, $locale);
+        $s = TagSchemeEntity::create($tenantId, TagUlidGenerator::generate(), $nameEntity, $locale);
         $this->repo->saveScheme($tenantId, $s);
 
         return $s;

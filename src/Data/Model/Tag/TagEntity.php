@@ -5,11 +5,13 @@ declare(strict_types=1);
 
 namespace App\Tagging\Data\Model\Tag;
 
+use App\Tagging\Repository\Data\Tag\TagEntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
-#[ORM\Table(name: 'tag_entity')]
-#[ORM\UniqueConstraint(name: 'tag_entity_slug_uq', columns: ['tenant', 'slug'])]
+#[ORM\Entity(repositoryClass: TagEntityRepository::class)]
+#[ORM\Table(nameEntity: 'tag_entity')]
+#[ORM\UniqueConstraint(nameEntity: 'tag_entity_slug_uq', columns: ['tenant', 'slug'])]
+#[ORM\Index(nameEntity: 'tag_entity_tenant_created_idx', columns: ['tenant', 'created_at'])]
 final class TagEntity
 {
     public function __construct(
@@ -22,14 +24,18 @@ final class TagEntity
         #[ORM\Column(type: 'string')]
         private string $slug,
         #[ORM\Column(type: 'string')]
-        private string $name,
+        private string $nameEntity,
         #[ORM\Column(type: 'string', nullable: true)]
         private ?string $locale = null,
         #[ORM\Column(type: 'integer')]
         private int $weight = 0,
-        #[ORM\Column(name: 'created_at', type: 'datetime_immutable', nullable: true)]
+        #[ORM\Column(nameEntity: 'required_flag', type: 'boolean')]
+        private bool $requiredFlag = false,
+        #[ORM\Column(nameEntity: 'mod_only_flag', type: 'boolean')]
+        private bool $modOnlyFlag = false,
+        #[ORM\Column(nameEntity: 'created_at', type: 'datetime_immutable', nullable: true)]
         private ?\DateTimeImmutable $createdAt = null,
-        #[ORM\Column(name: 'updated_at', type: 'datetime_immutable', nullable: true)]
+        #[ORM\Column(nameEntity: 'updated_at', type: 'datetime_immutable', nullable: true)]
         private ?\DateTimeImmutable $updatedAt = null,
     ) {
         $now = new \DateTimeImmutable();
@@ -52,9 +58,9 @@ final class TagEntity
         return $this->slug;
     }
 
-    public function name(): string
+    public function nameEntity(): string
     {
-        return $this->name;
+        return $this->nameEntity;
     }
 
     public function locale(): ?string
@@ -67,6 +73,16 @@ final class TagEntity
         return $this->weight;
     }
 
+    public function requiredFlag(): bool
+    {
+        return $this->requiredFlag;
+    }
+
+    public function modOnlyFlag(): bool
+    {
+        return $this->modOnlyFlag;
+    }
+
     public function createdAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -77,9 +93,9 @@ final class TagEntity
         return $this->updatedAt;
     }
 
-    public function rename(string $name): void
+    public function rename(string $nameEntity): void
     {
-        $this->name = $name;
+        $this->nameEntity = $nameEntity;
         $this->updatedAt = new \DateTimeImmutable();
     }
 
@@ -89,10 +105,17 @@ final class TagEntity
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function patch(?string $name = null, ?string $locale = null, ?int $weight = null): void
+    public function setFlags(bool $requiredFlag, bool $modOnlyFlag): void
     {
-        if (null !== $name) {
-            $this->name = $name;
+        $this->requiredFlag = $requiredFlag;
+        $this->modOnlyFlag = $modOnlyFlag;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function patch(?string $nameEntity = null, ?string $locale = null, ?int $weight = null): void
+    {
+        if (null !== $nameEntity) {
+            $this->nameEntity = $nameEntity;
         }
         if (null !== $locale) {
             $this->locale = $locale;

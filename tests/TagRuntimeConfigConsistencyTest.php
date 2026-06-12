@@ -19,7 +19,7 @@ final class TagRuntimeConfigConsistencyTest extends TestCase
         self::assertSame($surface['route']['status'] ?? null, $runtime['route']['status'] ?? null);
         self::assertSame($surface['doc']['sdk'] ?? null, $runtime['doc']['sdk'] ?? null);
         self::assertContains(
-            ['method' => 'GET', 'path' => '/tag/_surface', 'name' => 'discovery'],
+            ['method' => 'GET', 'path' => '/tag/_surface', 'nameEntity' => 'discovery'],
             $runtime['public_surface'],
         );
     }

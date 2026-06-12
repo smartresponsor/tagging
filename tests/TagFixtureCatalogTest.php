@@ -14,10 +14,14 @@ final class TagFixtureCatalogTest extends TestCase
         $fixture = require dirname(__DIR__) . '/fixtures/tag-demo-fixture.php';
         $catalog = require dirname(__DIR__) . '/fixtures/tag-demo-catalog.php';
         $ids = array_column($fixture['tags'] ?? [], 'id');
+        $adminRows = $fixture['admin_rows'] ?? [];
 
         self::assertContains($catalog['primary_tag_id'], $ids);
         self::assertSame('demo', $catalog['tenant']);
         self::assertSame('product', $catalog['assignment_entity_type']);
         self::assertSame('demo-product-1', $catalog['assignment_entity_id']);
+        self::assertIsArray($adminRows);
+        self::assertSame(7, count($adminRows));
+        self::assertSame(1, $adminRows[0]['id'] ?? null);
     }
 }

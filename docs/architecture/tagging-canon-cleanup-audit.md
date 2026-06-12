@@ -38,7 +38,7 @@ Any future Tagging cleanup must preserve `App\Tagging\...` unless the owner expl
 4. **Class/file naming convention gap**
    - Several active classes are semantically useful but not fully canonical by ecosystem naming:
      - use-case classes such as `TagCreateUseCase`, `TagPatchUseCase`, `TagDeleteUseCase`;
-     - generic controllers such as `TagAssignController`, `TagSearchController`, `TagStatusController`, `TagSurfaceController`;
+     - generic controllers such as `TagAssignmentAssignService`, `TagSearchService`, `TagStatusService`, `TagStatusService`;
      - generic middleware names such as `TagAuthorizeMiddleware`, `TagObserveMiddleware`, `TagQuotaGateMiddleware`, `TagTenantContextMiddleware`, `TagVerifySignatureMiddleware`;
      - generic cache names such as `TagSearchCache` and `TagSuggestCache`;
      - mixed service/interface placement under `src/Service/Core/Tag`.
@@ -66,12 +66,12 @@ Status: implemented in this corrected patch.
 Recommended next.
 
 - Rename controllers to component-prefixed/suffixed names:
-  - `TagAssignController` -> `TagAssignController`
-  - `TagAssignmentReadController` -> `TagAssignmentReadController`
-  - `TagSearchController` -> `TagSearchController`
-  - `TagSuggestController` -> `TagSuggestController`
-  - `TagStatusController` -> `TagStatusController`
-  - `TagSurfaceController` -> `TagSurfaceController`
+  - `TagAssignmentAssignService` -> `TagAssignmentAssignService`
+  - `TagAssignmentIndexService` -> `TagAssignmentIndexService`
+  - `TagSearchService` -> `TagSearchService`
+  - `TagSuggestService` -> `TagSuggestService`
+  - `TagStatusService` -> `TagStatusService`
+  - `TagStatusService` -> `TagStatusService`
 - Move middleware from `src/Http/Api/Tag/Middleware` into a type layer:
   - target: `src/Middleware/Tag/...`
   - names: `TagAuthorizeMiddleware`, `TagObserveMiddleware`, `TagQuotaGateMiddleware`, `TagTenantContextMiddleware`, `TagVerifySignatureMiddleware`

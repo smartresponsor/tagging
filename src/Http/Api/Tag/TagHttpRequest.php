@@ -7,11 +7,11 @@ namespace App\Tagging\Http\Api\Tag;
 
 final class TagHttpRequest
 {
-    public static function header(array $req, string $name, string $default = ''): string
+    public static function header(array $req, string $nameEntity, string $default = ''): string
     {
         $headers = self::headers($req);
 
-        return trim((string) ($headers[$name] ?? $headers[strtolower($name)] ?? $default));
+        return trim((string) ($headers[$nameEntity] ?? $headers[strtolower($nameEntity)] ?? $default));
     }
 
     public static function headers(array $req): array
@@ -29,25 +29,25 @@ final class TagHttpRequest
         return is_array($req['body'] ?? null) ? $req['body'] : [];
     }
 
-    public static function queryString(array $req, string $name, string $fallback = ''): string
+    public static function queryString(array $req, string $nameEntity, string $fallback = ''): string
     {
         $query = self::query($req);
 
-        return trim((string) ($query[$name] ?? ('' !== $fallback ? ($query[$fallback] ?? '') : '')));
+        return trim((string) ($query[$nameEntity] ?? ('' !== $fallback ? ($query[$fallback] ?? '') : '')));
     }
 
-    public static function queryInt(array $req, string $name, int $default, int $min, int $max): int
+    public static function queryInt(array $req, string $nameEntity, int $default, int $min, int $max): int
     {
         $query = self::query($req);
 
-        return max($min, min($max, (int) ($query[$name] ?? $default)));
+        return max($min, min($max, (int) ($query[$nameEntity] ?? $default)));
     }
 
-    public static function bodyString(array $req, string $name, string $fallback = ''): string
+    public static function bodyString(array $req, string $nameEntity, string $fallback = ''): string
     {
         $body = self::body($req);
 
-        return trim((string) ($body[$name] ?? ('' !== $fallback ? ($body[$fallback] ?? '') : '')));
+        return trim((string) ($body[$nameEntity] ?? ('' !== $fallback ? ($body[$fallback] ?? '') : '')));
     }
 
     public static function tenantOrNull(array $req): ?string

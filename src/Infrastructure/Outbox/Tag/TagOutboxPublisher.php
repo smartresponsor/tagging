@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Infrastructure\Outbox\Tag;
 
-use App\Tagging\Entity\Core\Tag\TagOutboxEvent;
+use App\Tagging\Entity\Tag\TagEntityOutboxEvent;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class TagOutboxPublisher
@@ -15,7 +15,7 @@ final readonly class TagOutboxPublisher
     /** @param array<string,mixed> $payload */
     public function publish(string $tenant, string $topic, array $payload): void
     {
-        $this->entityManager->persist(new TagOutboxEvent(
+        $this->entityManager->persist(new TagOutboxEventEntity(
             tenant: $tenant,
             topic: $topic,
             payload: $payload,

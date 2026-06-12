@@ -5,11 +5,11 @@ declare(strict_types=1);
 
 namespace App\Tagging\Infrastructure\Persistence\Tag;
 
-use App\Tagging\Entity\Core\Tag\Tag;
-use App\Tagging\Entity\Core\Tag\TagAssignment;
-use App\Tagging\Entity\Core\Tag\TagRelation;
-use App\Tagging\Entity\Core\Tag\TagScheme;
-use App\Tagging\Entity\Core\Tag\TagSynonym;
+use App\Tagging\Entity\Tag\TagEntity;
+use App\Tagging\Entity\Tag\TagEntityAssignment;
+use App\Tagging\Entity\Tag\TagEntityRelation;
+use App\Tagging\Entity\Tag\TagEntityScheme;
+use App\Tagging\Entity\Tag\TagEntitySynonym;
 use App\Tagging\Service\Core\Record\TagAuditRecord;
 use App\Tagging\Service\Core\Record\TagClassificationRecord;
 use App\Tagging\Service\Core\Record\TagEffectRecord;
@@ -26,17 +26,17 @@ final class TagInMemoryRepository implements TagRepositoryInterface
     private array $class = [];
     private array $effects = [];
 
-    public function saveTag(string $tenantId, Tag $tag): void
+    public function saveTag(string $tenantId, TagEntity $tag): void
     {
         $this->tags[$tenantId][$tag->id()] = $tag;
     }
 
-    public function getById(string $tenantId, string $id): ?Tag
+    public function getById(string $tenantId, string $id): ?TagEntity
     {
         return $this->tags[$tenantId][$id] ?? null;
     }
 
-    public function getBySlug(string $tenantId, string $slug): ?Tag
+    public function getBySlug(string $tenantId, string $slug): ?TagEntity
     {
         return array_find($this->tags[$tenantId] ?? [], fn($t) => $t->slug() === $slug);
     }
@@ -83,7 +83,7 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         unset($this->tags[$tenantId][$id]);
     }
 
-    public function saveAssignment(string $tenantId, TagAssignment $a): void
+    public function saveAssignment(string $tenantId, TagAssignmentEntity $a): void
     {
         $this->assignments[$tenantId][$a->id()] = $a;
     }
@@ -104,7 +104,7 @@ final class TagInMemoryRepository implements TagRepositoryInterface
     ): array {
         return array_values(array_filter(
             $this->assignments[$tenantId] ?? [],
-            function (TagAssignment $x) use ($tagId, $type, $assignedId) {
+            function (TagAssignmentEntity $x) use ($tagId, $type, $assignedId) {
                 if ($x->tagId() !== $tagId) {
                     return false;
                 }
@@ -120,7 +120,7 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         ));
     }
 
-    public function saveSynonym(string $tenantId, TagSynonym $s): void {}
+    public function saveSynonym(string $tenantId, TagSynonymEntity $s): void {}
 
     /**
      * @return array|TagSynonym[]
@@ -130,7 +130,7 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         return [];
     }
 
-    public function saveRelation(string $tenantId, TagRelation $r): void {}
+    public function saveRelation(string $tenantId, TagRelationEntity $r): void {}
 
     /**
      * @return array|TagRelation[]
@@ -140,9 +140,9 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         return [];
     }
 
-    public function saveScheme(string $tenantId, TagScheme $s): void {}
+    public function saveScheme(string $tenantId, TagSchemeEntity $s): void {}
 
-    public function getSchemeByName(string $tenantId, string $name): ?TagScheme
+    public function getSchemeByName(string $tenantId, string $nameEntity): ?TagSchemeEntity
     {
         return null;
     }
@@ -151,7 +151,7 @@ final class TagInMemoryRepository implements TagRepositoryInterface
     {
         foreach (($this->assignments[$tenantId] ?? []) as $k => $a) {
             if ($a->tagId() === $fromTagId) {
-                $this->assignments[$tenantId][$k] = new TagAssignment(
+                $this->assignments[$tenantId][$k] = new TagAssignmentEntity(
                     $a->id(),
                     $tenantId,
                     $toTagId,
@@ -171,7 +171,7 @@ final class TagInMemoryRepository implements TagRepositoryInterface
             return;
         }
         $t = $this->tags[$tenantId][$tagId];
-        $this->tags[$tenantId][$tagId] = new Tag($t->id(), $tenantId, $newSlug, $newLabel, $t->createdAt());
+        $this->tags[$tenantId][$tagId] = new TagEntity($t->id(), $tenantId, $newSlug, $newLabel, $t->createdAt());
     }
 
     public function insertProposal(string $tenantId, string $id, string $type, string $payloadJson): void {}

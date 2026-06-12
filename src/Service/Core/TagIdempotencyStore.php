@@ -5,10 +5,10 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Core\Tag\TagIdempotencyStore as IdempotencyStoreEntity;
+use App\Tagging\Entity\Tag\TagEntityIdempotencyStore as IdempotencyStoreEntity;
 use Doctrine\ORM\EntityManagerInterface;
 
-final readonly class TagIdempotencyStore
+final readonly class TagIdempotencyStoreEntity
 {
     public function __construct(private EntityManagerInterface $entityManager) {}
 

@@ -50,7 +50,7 @@ foreach ($methodByOperation as $operation => $defaultMethod) {
     $publicSurface[] = [
         'method' => $method,
         'path' => $path,
-        'name' => $operation === 'discovery' ? 'discovery' : str_replace('_', ' ', $operation),
+        'nameEntity' => $operation === 'discovery' ? 'discovery' : str_replace('_', ' ', $operation),
     ];
 }
 

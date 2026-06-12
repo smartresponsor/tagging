@@ -9,6 +9,7 @@ $data = $loadFixture($root);
 $errors = [];
 $ids = [];
 $slugs = [];
+$adminRows = [];
 
 foreach (($data['tags'] ?? []) as $tag) {
     $id = trim((string) ($tag['id'] ?? ''));
@@ -31,6 +32,27 @@ foreach (($data['tags'] ?? []) as $tag) {
 
     $ids[$id] = true;
     $slugs[$slug] = true;
+}
+
+foreach (($data['admin_rows'] ?? []) as $row) {
+    $adminId = (int) ($row['id'] ?? 0);
+    $tagId = trim((string) ($row['tag_id'] ?? ''));
+    $tenant = trim((string) ($row['tenant'] ?? ''));
+    $slug = trim((string) ($row['slug'] ?? ''));
+    $label = trim((string) ($row['label'] ?? ''));
+
+    if ($adminId <= 0 || '' === $tagId || '' === $tenant || '' === $slug || '' === $label) {
+        $errors[] = 'invalid admin row';
+        continue;
+    }
+    if (isset($adminRows[$adminId])) {
+        $errors[] = 'duplicate admin row id ' . $adminId;
+    }
+    if (!isset($ids[$tagId])) {
+        $errors[] = 'admin row references unknown tag_id ' . $tagId;
+    }
+
+    $adminRows[$adminId] = true;
 }
 
 $links = [];

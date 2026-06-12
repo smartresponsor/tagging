@@ -9,7 +9,7 @@ $dsn = getenv('DB_DSN') ?: 'pgsql:host=localhost;port=5432;dbname=app';
 $user = getenv('DB_USER') ?: 'app';
 $pass = getenv('DB_PASS') ?: 'app';
 $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-foreach (['tag_link', 'tag_synonym', 'tag_relation', 'tag_entity'] as $table) {
+foreach (['tag_assignment', 'tag_synonym', 'tag_relation', 'tag_entity'] as $table) {
     $stmt = $pdo->prepare('DELETE FROM ' . $table . ' WHERE tenant = :tenant');
     $stmt->execute(['tenant' => $tenant]);
 }

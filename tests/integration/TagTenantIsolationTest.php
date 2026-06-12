@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use App\Tagging\Entity\Core\Tag\TagLink;
+use App\Tagging\Entity\Tag\TagAssignmentEntity;
 
 final class TagTenantIsolationTest extends TagIntegrationEvidenceTestCase
 {

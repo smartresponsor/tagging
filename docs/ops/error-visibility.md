@@ -4,7 +4,7 @@ The tagging component keeps failure handling compact, but no longer allows silen
 
 ## Covered paths
 
-- `TagStatusController` emits `status.db_probe_failed` to an optional error sink when DB probing fails.
+- `TagStatusService` emits `status.db_probe_failed` to an optional error sink when DB probing fails.
 - `TagQuotaService` emits `quota.count_failed` to an optional error sink when quota counting fails.
 - `TagAssignService` emits `tag.assign_failed` and returns `code=assign_failed` when assignment fails unexpectedly.
 - `TagUnassignService` emits `tag.unassign_failed` and returns `code=unassign_failed` when unassignment fails unexpectedly.

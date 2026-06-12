@@ -12,7 +12,7 @@ use Random\RandomException;
 final readonly class TagEntityService implements TagEntityQueryServiceInterface
 {
     public function __construct(
-        private TagEntityRepositoryInterface $repo,
+        private TagCrudRepositoryInterface $repo,
         private TagSlugPolicy $slugPolicy,
         private TagEntityPayloadNormalizer $normalizer = new TagEntityPayloadNormalizer(),
     ) {}
@@ -30,7 +30,7 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
 
         $normalized = $this->normalizer->normalizeCreate(
             $payload,
-            fn(string $name): string => $this->slugPolicy->make($tenant, $name),
+            fn(string $nameEntity): string => $this->slugPolicy->make($tenant, $nameEntity),
         );
         if (!$this->slugPolicy->validate($normalized['slug'])) {
             throw new \InvalidArgumentException('validation_failed');
@@ -41,7 +41,7 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
             new TagEntityCreateRecord(
                 $this->ulid(),
                 $normalized['slug'],
-                $normalized['name'],
+                $normalized['nameEntity'],
                 $normalized['locale'],
                 $normalized['weight'],
             ),

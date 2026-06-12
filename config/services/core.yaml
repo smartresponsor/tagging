@@ -2,3 +2,9 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+
+    App\Tagging\Service\Core\:
+        resource: '../../src/Service/Core/'
+
+    App\Tagging\Service\Core\TagLifecycleServiceInterface: '@App\Tagging\Service\Core\TagLifecycleService'
+    App\Tagging\Service\Core\TagDuplicateServiceInterface: '@App\Tagging\Service\Core\TagDuplicateService'

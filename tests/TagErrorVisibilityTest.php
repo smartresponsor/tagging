@@ -5,11 +5,11 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Http\Api\Tag\TagStatusController;
+use App\Tagging\Service\Http\Tag\TagStatusService;
 use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
 use App\Tagging\Service\Core\TagAssignService;
 use App\Tagging\Service\Core\TagQuotaService;
-use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 use App\Tagging\Service\Core\TagUnassignService;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,7 +22,7 @@ final class TagErrorVisibilityTest extends TestCase
     public function testStatusControllerReportsProbeFailuresToErrorSink(): void
     {
         $errors = [];
-        $controller = new TagStatusController(
+        $controller = new TagStatusService(
             static function (): bool {
                 throw new \RuntimeException('db down');
             },
@@ -66,7 +66,7 @@ final class TagErrorVisibilityTest extends TestCase
     {
         $errors = [];
         $entityManager = $this->failingEntityManager();
-        $tagRepo = $this->createMock(TagEntityRepositoryInterface::class);
+        $tagRepo = $this->createMock(TagCrudRepositoryInterface::class);
         $tagRepo->method('findById')->willThrowException(new \RuntimeException('boom'));
         $service = new TagAssignService(
             $entityManager,
@@ -90,7 +90,7 @@ final class TagErrorVisibilityTest extends TestCase
     {
         $errors = [];
         $entityManager = $this->failingEntityManager();
-        $tagRepo = $this->createMock(TagEntityRepositoryInterface::class);
+        $tagRepo = $this->createMock(TagCrudRepositoryInterface::class);
         $tagRepo->method('findById')->willThrowException(new \RuntimeException('boom'));
         $service = new TagUnassignService(
             $entityManager,

@@ -11,7 +11,7 @@ use App\Tagging\Application\Write\Tag\Dto\TagResult;
 use App\Tagging\Cache\Store\Tag\TagSearchCache;
 use App\Tagging\Cache\Store\Tag\TagSuggestCache;
 use App\Tagging\Cache\Store\Tag\TagQueryCacheInvalidator;
-use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 use App\Tagging\Service\Core\TagTransactionRunnerInterface;
 
 final readonly class TagDeleteUseCase implements TagDeleteUseCaseInterface
@@ -19,7 +19,7 @@ final readonly class TagDeleteUseCase implements TagDeleteUseCaseInterface
     private TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
-        private TagEntityRepositoryInterface $repo,
+        private TagCrudRepositoryInterface $repo,
         private TagTransactionRunnerInterface $transaction,
         private ?TagSearchCache $searchCache = null,
         private ?TagSuggestCache $suggestCache = null,

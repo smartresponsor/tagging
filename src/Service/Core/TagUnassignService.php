@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Core\Tag\TagLink;
+use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,9 +17,9 @@ final readonly class TagUnassignService implements TagUnassignOperationInterface
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private TagEntityRepositoryInterface $tagEntities,
+        private TagCrudRepositoryInterface $tagEntities,
         private TagOutboxPublisher $outbox,
-        private ?TagIdempotencyStore $idem = null,
+        private ?TagIdempotencyStoreEntity $idem = null,
         TagErrorSink|callable|null $errorSink = null,
     ) {
         $this->errorSink = TagErrorSinkFactory::from($errorSink);
@@ -48,13 +48,13 @@ final readonly class TagUnassignService implements TagUnassignOperationInterface
                 return $result;
             }
 
-            $link = $this->entityManager->getRepository(TagLink::class)->findOneBy([
+            $link = $this->entityManager->getRepository(TagAssignmentEntity::class)->findOneBy([
                 'tenant' => $tenant,
-                'entityType' => $entityType,
-                'entityId' => $entityId,
+                'assignedType' => $entityType,
+                'assignedId' => $entityId,
                 'tagId' => $tagId,
             ]);
-            $deleted = $link instanceof TagLink;
+            $deleted = $link instanceof TagAssignmentEntity;
             if ($deleted) {
                 $this->entityManager->remove($link);
                 $this->outbox->publish($tenant, 'tag.unassigned', [

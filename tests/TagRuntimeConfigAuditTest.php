@@ -17,7 +17,7 @@ final class TagRuntimeConfigAuditTest extends TestCase
         self::assertMatchesRegularExpression('/^enforce:\s*(true|false)\s*$/m', $quota);
         self::assertStringNotContainsString('\\n', $quota);
         self::assertMatchesRegularExpression('/driver:\s*pdo/m', $assignment);
-        self::assertMatchesRegularExpression('/table:\s*tag_link/m', $assignment);
+        self::assertMatchesRegularExpression('/table:\s*tag_assignment/m', $assignment);
         self::assertStringNotContainsString('path:', $assignment);
     }
 }

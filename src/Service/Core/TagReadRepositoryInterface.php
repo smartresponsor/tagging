@@ -5,17 +5,17 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Core\Tag\Tag;
-use App\Tagging\Entity\Core\Tag\TagAssignment;
-use App\Tagging\Entity\Core\Tag\TagRelation;
-use App\Tagging\Entity\Core\Tag\TagScheme;
-use App\Tagging\Entity\Core\Tag\TagSynonym;
+use App\Tagging\Entity\Tag\TagEntity;
+use App\Tagging\Entity\Tag\TagEntityAssignment;
+use App\Tagging\Entity\Tag\TagEntityRelation;
+use App\Tagging\Entity\Tag\TagEntityScheme;
+use App\Tagging\Entity\Tag\TagEntitySynonym;
 
 interface TagReadRepositoryInterface
 {
-    public function getById(string $tenantId, string $id): ?Tag;
+    public function getById(string $tenantId, string $id): ?TagEntity;
 
-    public function getBySlug(string $tenantId, string $slug): ?Tag;
+    public function getBySlug(string $tenantId, string $slug): ?TagEntity;
 
     /** @return Tag[] */
     public function search(string $tenantId, ?string $query, int $limit, int $offset): array;
@@ -34,7 +34,7 @@ interface TagReadRepositoryInterface
     /** @return TagRelation[] */
     public function listRelations(string $tenantId, string $tagId, ?string $type = null): array;
 
-    public function getSchemeByName(string $tenantId, string $name): ?TagScheme;
+    public function getSchemeByName(string $tenantId, string $nameEntity): ?TagSchemeEntity;
 
     /** @return Tag[] */
     public function listAllTags(string $tenantId): array;

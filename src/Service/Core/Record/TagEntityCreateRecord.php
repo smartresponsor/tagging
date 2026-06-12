@@ -9,7 +9,7 @@ final readonly class TagEntityCreateRecord
     public function __construct(
         public string $id,
         public string $slug,
-        public string $name,
+        public string $nameEntity,
         public string $locale,
         public int $weight,
     ) {}
@@ -20,7 +20,7 @@ final readonly class TagEntityCreateRecord
         return [
             'id' => $this->id,
             'slug' => $this->slug,
-            'name' => $this->name,
+            'nameEntity' => $this->nameEntity,
             'locale' => $this->locale,
             'weight' => $this->weight,
         ];

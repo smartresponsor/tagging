@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Tagging\Http\Api\Tag\TagRuntimeSurfaceCatalog;
-use App\Tagging\Http\Api\Tag\TagStatusController;
+use App\Tagging\Service\Http\Tag\TagStatusService;
 use PHPUnit\Framework\TestCase;
 
 final class TagRuntimeVersionCatalogTest extends TestCase
@@ -16,7 +16,7 @@ final class TagRuntimeVersionCatalogTest extends TestCase
         $catalog = TagRuntimeSurfaceCatalog::read();
         $version = (string) ($catalog['version'] ?? '');
 
-        $payload = (new TagStatusController(null, $version))->status();
+        $payload = (new TagStatusService(null, $version))->status();
 
         self::assertNotSame('', $version);
         self::assertSame($version, $payload['version']);

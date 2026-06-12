@@ -1,0 +1,76 @@
+= Tagging Objecting Adoption Wave 2
+
+== Decision
+
+`TagEntity` is the pilot entity for Objecting field-pack adoption.
+
+Tagging keeps local ownership of persistence, repositories, use cases, controllers/services, and tag-specific business fields.
+Objecting provides reusable system field packs only.
+
+== Adopted Objecting packs
+
+`TagEntity` adopts:
+
+* `object_identity`
+** `object_uuid`
+** `object_slug`
+* `object_audit`
+** `object_created_at`
+** `object_updated_at`
+** `object_created_by`
+** `object_updated_by`
+* `object_title`
+** `object_first_title`
+** `object_middle_title`
+** `object_last_title`
+
+== Compatibility rule
+
+The legacy tag columns remain active:
+
+* `id`
+* `tenant`
+* `slug`
+* `label`
+* `created_at`
+* `updated_at`
+* `required_flag`
+* `mod_only_flag`
+
+`slug` mirrors to `object_slug`.
+`label` mirrors to `object_first_title`.
+`updated_at` mirrors to `object_updated_at`.
+
+This wave is intentionally non-destructive. It does not delete `slug`, `label`, `created_at`, or `updated_at`.
+
+== Boundary
+
+Object-to-tag assignment remains polymorphic:
+
+[source,text]
+----
+assigned_type
+assigned_id
+tag_id
+----
+
+No Doctrine relation should be created from Tagging to every taggable object in the ecosystem.
+
+Tag-to-tag relations are internal to Tagging and can be handled in a later wave:
+
+[source,text]
+----
+TagRelationEntity.fromTag -> TagEntity
+TagRelationEntity.toTag   -> TagEntity
+TagSynonymEntity.tag      -> TagEntity
+TagRedirectEntity.toTag   -> TagEntity
+----
+
+== Required verification
+
+[source,powershell]
+----
+php Tagging/tools/inspection/tagging-objecting-adoption-wave2-audit.php
+php -l Tagging/src/Entity/Tag/TagEntity.php
+php bin/console doctrine:mapping:info -vvv
+----

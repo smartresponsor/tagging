@@ -4,23 +4,29 @@
   "license": "proprietary",
   "description": "Tagging process app",
   "require": {
-    "php": "^8.4",
+    
+    
+    
+    
+    "symfony/console": "^8.1","symfony/options-resolver": "^8.1","symfony/validator": "^8.1","symfony/form": "^8.1","php": "^8.4",
     "ext-pdo": "*",
     "ext-curl": "*",
     "ext-mbstring": "*",
     "ext-ctype": "*",
     "ext-intl": "*",
-    "symfony/config": "^8.0",
-    "symfony/dependency-injection": "^8.0",
-    "symfony/http-kernel": "^8.0",
-    "symfony/routing": "^8.0",
-    "symfony/yaml": "^8.0"
+    "symfony/config": "^8.1",
+    "symfony/dependency-injection": "^8.1",
+    "symfony/http-kernel": "^8.1",
+    "symfony/routing": "^8.1",
+    "symfony/yaml": "^8.1",
+    "objecting/object": "*@dev"
   },
   "require-dev": {
-    "doctrine/doctrine-fixtures-bundle": "^3.6",
-    "doctrine/doctrine-migrations-bundle": "^3.4",
+    "doctrine/doctrine-fixtures-bundle": "^4.3",
+    "doctrine/doctrine-migrations-bundle": "^4.0",
     "friendsofphp/php-cs-fixer": "^3.94",
-    "phpmd/phpmd": "^2.15",
+    "phpmd/phpmd": "3.x-dev",
+    "pdepend/pdepend": "3.x-dev",
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^10.5",
     "symfony/panther": "^2.2"
@@ -123,5 +129,15 @@
     "audit:assessment-surface": "php tools/audit/tag-assessment-surface-audit.php",
     "hook:install": "php tools/git/tag-install-hooks.php",
     "audit:tooling-entrypoint": "php tools/audit/tag-tooling-entrypoint-audit.php"
-  }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../Objecting",
+      "options": {
+        "symlink": true
+      }
+    }
+  ]
 }
+

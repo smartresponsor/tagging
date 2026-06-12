@@ -1,0 +1,23 @@
+{
+  "component": "Tagging",
+  "releaseStage": "RC",
+  "generatedBy": "tools/inspection/tagging-rc-readiness-audit.php",
+  "sourceOfTruth": {
+    "entity": "App\\Tagging\\Entity\\Tag\\TagEntity",
+    "http": "App\\Tagging\\Service\\Http\\Tag\\Tag*Service",
+    "routes": "config/platform/routes/crud/tag.yaml",
+    "forms": "App\\Tagging\\Form\\Tag\\Tag*Type",
+    "commands": "App\\Tagging\\Command\\Tag\\Tag*Command"
+  },
+  "requiredRuntimeGates": [
+    "composer validate --strict",
+    "composer dump-autoload --strict-psr",
+    "php lint over src/tests/tools",
+    "Symfony container lint",
+    "Doctrine schema validation",
+    "route/debug inspection",
+    "PHPStan when configured",
+    "PHPUnit when configured",
+    "Tagging RC static audit"
+  ]
+}

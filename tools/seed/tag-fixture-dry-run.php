@@ -22,16 +22,16 @@ try {
     $linkCount = 0;
 
     $insertTag = $pdo->prepare(
-        'INSERT INTO tag_entity (id, tenant, slug, name, locale, weight) '
-        . 'VALUES (:id,:tenant,:slug,:name,:locale,:weight) '
+        'INSERT INTO tag_entity (id, tenant, slug, nameEntity, locale, weight) '
+        . 'VALUES (:id,:tenant,:slug,:nameEntity,:locale,:weight) '
         . 'ON CONFLICT (tenant, slug) DO UPDATE SET '
         . 'id = EXCLUDED.id, '
-        . 'name = EXCLUDED.name, '
+        . 'nameEntity = EXCLUDED.nameEntity, '
         . 'locale = EXCLUDED.locale, '
         . 'weight = EXCLUDED.weight',
     );
     $insertLink = $pdo->prepare(
-        'INSERT INTO tag_link (tenant, entity_type, entity_id, tag_id) '
+        'INSERT INTO tag_assignment (tenant, entity_type, entity_id, tag_id) '
         . 'VALUES (:tenant,:entity_type,:entity_id,:tag_id) '
         . 'ON CONFLICT DO NOTHING',
     );
@@ -41,7 +41,7 @@ try {
             ':id' => (string) ($tag['id'] ?? ''),
             ':tenant' => $tenant,
             ':slug' => (string) ($tag['slug'] ?? ''),
-            ':name' => (string) ($tag['name'] ?? ''),
+            ':nameEntity' => (string) ($tag['nameEntity'] ?? ''),
             ':locale' => (string) ($tag['locale'] ?? 'en'),
             ':weight' => (int) ($tag['weight'] ?? 0),
         ]);

@@ -29,8 +29,8 @@ foreach (['src', 'config', 'tests', 'docs', 'release', 'tools'] as $dir) {
         if (!$file->isFile()) {
             continue;
         }
-        $name = $file->getFilename();
-        if (!preg_match('/\.(php|yaml|yml|json|md|adoc|txt)$/', $name)) {
+        $nameEntity = $file->getFilename();
+        if (!preg_match('/\.(php|yaml|yml|json|md|adoc|txt)$/', $nameEntity)) {
             continue;
         }
         $scanFiles[] = $file->getPathname();

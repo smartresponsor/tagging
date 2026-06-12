@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Entity\Core\Tag\TagLink;
+use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
-use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 use App\Tagging\Service\Core\TagUnassignService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -19,7 +19,7 @@ final class TagUnassignServiceTest extends TestCase
     public function testReturnsTagNotFoundWhenTagEntityDoesNotExist(): void
     {
         $entityManager = $this->entityManagerMock();
-        $tagRepo = $this->createMock(TagEntityRepositoryInterface::class);
+        $tagRepo = $this->createMock(TagCrudRepositoryInterface::class);
         $tagRepo->method('findById')->willReturn(null);
 
         $service = new TagUnassignService($entityManager, $tagRepo, new TagOutboxPublisher($entityManager));
@@ -32,17 +32,17 @@ final class TagUnassignServiceTest extends TestCase
     public function testReturnsNotFoundWhenLinkDoesNotExistButTagDoes(): void
     {
         $entityManager = $this->entityManagerMock();
-        $tagRepo = $this->createMock(TagEntityRepositoryInterface::class);
+        $tagRepo = $this->createMock(TagCrudRepositoryInterface::class);
         $tagRepo->method('findById')->willReturn(['id' => 'tag-1']);
 
         $repo = $this->createMock(EntityRepository::class);
         $repo->method('findOneBy')->with([
             'tenant' => 'demo',
-            'entityType' => 'product',
-            'entityId' => 'p-1',
+            'assignedType' => 'product',
+            'assignedId' => 'p-1',
             'tagId' => 'tag-1',
         ])->willReturn(null);
-        $entityManager->method('getRepository')->with(TagLink::class)->willReturn($repo);
+        $entityManager->method('getRepository')->with(TagAssignmentEntity::class)->willReturn($repo);
 
         $service = new TagUnassignService($entityManager, $tagRepo, new TagOutboxPublisher($entityManager));
         $result = $service->unassign('demo', 'tag-1', 'product', 'p-1');

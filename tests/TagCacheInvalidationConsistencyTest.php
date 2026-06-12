@@ -16,7 +16,7 @@ use App\Tagging\Cache\Store\Tag\TagSuggestCache;
 use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
 use App\Tagging\Service\Core\Slug\TagSlugifier;
 use App\Tagging\Service\Core\Slug\TagSlugPolicy;
-use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 use App\Tagging\Service\Core\TagTransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -31,7 +31,7 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
         $suggest = new TagSuggestCache($baseDir . '/suggest', 60);
 
         $search->set('tenant-a', 'Priority', 10, 0, ['items' => [['slug' => 'priority']]]);
-        $suggest->set('tenant-a', 'Priority', 10, ['items' => [['slug' => 'priority', 'name' => 'Priority']]]);
+        $suggest->set('tenant-a', 'Priority', 10, ['items' => [['slug' => 'priority', 'nameEntity' => 'Priority']]]);
 
         self::assertTrue($search->get('tenant-a', 'priority', 10, 0)['hit']);
         self::assertTrue($suggest->get('tenant-a', 'priority', 10)['hit']);
@@ -45,7 +45,7 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
         $baseDir = sys_get_temp_dir() . '/tag-invalidation-' . bin2hex(random_bytes(4));
         mkdir($baseDir, 0777, true);
 
-        $repo = new class implements TagEntityRepositoryInterface {
+        $repo = new class implements TagCrudRepositoryInterface {
             /** @var array<string,array<string,array<string,mixed>>> */
             private array $rows = [];
 
@@ -97,10 +97,10 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
         $search = new TagSearchCache($baseDir . '/search', 60);
         $suggest = new TagSuggestCache($baseDir . '/suggest', 60);
         $search->set('tenant-a', 'alpha', 10, 0, ['items' => [['slug' => 'alpha']]]);
-        $suggest->set('tenant-a', 'alpha', 10, ['items' => [['slug' => 'alpha', 'name' => 'Alpha']]]);
+        $suggest->set('tenant-a', 'alpha', 10, ['items' => [['slug' => 'alpha', 'nameEntity' => 'Alpha']]]);
 
         $create = new TagCreateUseCase($repo, $policy, $tx, $search, $suggest);
-        $created = $create->execute(new TagCreateCommand('tenant-a', ['name' => 'Alpha']));
+        $created = $create->execute(new TagCreateCommand('tenant-a', ['nameEntity' => 'Alpha']));
         self::assertTrue($created->ok);
         $id = (string) ($created->payload['id'] ?? $created->data['id'] ?? '');
         self::assertNotSame('', $id);
@@ -108,14 +108,14 @@ final class TagCacheInvalidationConsistencyTest extends TestCase
         self::assertFalse($suggest->get('tenant-a', 'alpha', 10)['hit']);
 
         $search->set('tenant-a', 'alpha', 10, 0, ['items' => [['slug' => 'alpha']]]);
-        $suggest->set('tenant-a', 'alpha', 10, ['items' => [['slug' => 'alpha', 'name' => 'Alpha']]]);
+        $suggest->set('tenant-a', 'alpha', 10, ['items' => [['slug' => 'alpha', 'nameEntity' => 'Alpha']]]);
         $patch = new TagPatchUseCase($repo, $tx, $search, $suggest);
-        self::assertTrue($patch->execute(new TagPatchCommand('tenant-a', $id, ['name' => 'Alpha 2']))->ok);
+        self::assertTrue($patch->execute(new TagPatchCommand('tenant-a', $id, ['nameEntity' => 'Alpha 2']))->ok);
         self::assertFalse($search->get('tenant-a', 'alpha', 10, 0)['hit']);
         self::assertFalse($suggest->get('tenant-a', 'alpha', 10)['hit']);
 
         $search->set('tenant-a', 'alpha', 10, 0, ['items' => [['slug' => 'alpha']]]);
-        $suggest->set('tenant-a', 'alpha', 10, ['items' => [['slug' => 'alpha', 'name' => 'Alpha']]]);
+        $suggest->set('tenant-a', 'alpha', 10, ['items' => [['slug' => 'alpha', 'nameEntity' => 'Alpha']]]);
         $delete = new TagDeleteUseCase($repo, $tx, $search, $suggest);
         self::assertTrue($delete->execute(new TagDeleteCommand('tenant-a', $id))->ok);
         self::assertFalse($search->get('tenant-a', 'alpha', 10, 0)['hit']);

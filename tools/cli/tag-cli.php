@@ -2,96 +2,126 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/vendor/autoload.php';
+$root = require __DIR__ . '/../tag-bootstrap.php';
+$runtime = require $root . '/config/tag_runtime.php';
 
-/** @var array<string, mixed> $runtime */
-$runtime = require dirname(__DIR__, 2) . '/config/tag_runtime.php';
+if (!is_array($runtime)) {
+    fwrite(STDERR, json_encode(['ok' => false, 'code' => 'runtime_config_invalid'], JSON_UNESCAPED_SLASHES) . PHP_EOL);
 
-$argv = $_SERVER['argv'] ?? [];
-$command = $argv[1] ?? 'help';
-$options = parseOptions(array_slice($argv, 2));
-$pretty = isset($options['pretty']);
-
-try {
-    $payload = dispatch($command, $runtime);
-    fwrite(STDOUT, encodeJson($payload, $pretty) . PHP_EOL);
-    exit(0);
-} catch (InvalidArgumentException $e) {
-    fwrite(
-        STDERR,
-        encodeJson([
-            'ok' => false,
-            'code' => 'invalid_cli_arguments',
-            'message' => $e->getMessage(),
-        ], true) . PHP_EOL,
-    );
-    exit(2);
-} catch (Throwable $e) {
-    fwrite(
-        STDERR,
-        encodeJson([
-            'ok' => false,
-            'code' => 'cli_command_failed',
-            'message' => $e->getMessage(),
-        ], true) . PHP_EOL,
-    );
     exit(1);
 }
 
-/** @return array<string, mixed> */
-function dispatch(string $command, array $runtime): array
-{
-    return match ($command) {
-        'help', '--help', '-h' => helpPayload(),
-        'status' => (new App\Tagging\Http\Api\Tag\TagStatusController(runtime: $runtime))->status(),
-        'surface' => (new App\Tagging\Http\Api\Tag\TagSurfaceController($runtime))->surface(),
-        default => throw new InvalidArgumentException('Unknown command: ' . $command),
-    };
-}
+$argv = $_SERVER['argv'] ?? [];
+array_shift($argv);
 
-/** @return array<string, mixed> */
-function helpPayload(): array
-{
-    return [
-        'ok' => true,
-        'service' => 'tag',
-        'cli' => 'tools/cli/tag-cli.php',
-        'commands' => [
-            'help',
-            'status',
-            'surface',
-            'assignments',
-            'search',
-            'suggest',
-        ],
-    ];
-}
+$command = $argv[0] ?? 'help';
+$arguments = array_slice($argv, 1);
 
-/** @param list<string> $argv */
-function parseOptions(array $argv): array
-{
-    $options = [];
-    foreach ($argv as $arg) {
-        if (str_starts_with($arg, '--')) {
-            $option = substr($arg, 2);
-            if (false !== ($pos = strpos($option, '='))) {
-                $options[substr($option, 0, $pos)] = substr($option, $pos + 1);
-            } else {
-                $options[$option] = true;
-            }
-        }
+$pretty = false;
+$filter = null;
+foreach ($arguments as $argument) {
+    if ('--pretty' === $argument) {
+        $pretty = true;
+        continue;
     }
 
-    return $options;
+    if (!str_starts_with($argument, '--') && null === $filter) {
+        $filter = $argument;
+    }
 }
 
-/** @param array<string, mixed> $payload */
-function encodeJson(array $payload, bool $pretty): string
-{
+$commands = [
+    'help' => ['description' => 'Show the local Tagging CLI command catalog.'],
+    'list' => ['description' => 'Alias of help; optional filter argument is accepted.'],
+    'status' => ['description' => 'Show hosted-package runtime status metadata.'],
+    'surface' => ['description' => 'Show the current public surface contract.'],
+    'create' => ['description' => 'Create a tag from a JSON payload.', 'implemented' => false],
+    'get' => ['description' => 'Read one tag by id or slug.', 'implemented' => false],
+    'patch' => ['description' => 'Patch a tag from a JSON payload.', 'implemented' => false],
+    'delete' => ['description' => 'Delete a tag.', 'implemented' => false],
+    'assign' => ['description' => 'Assign a tag to an entity.', 'implemented' => false],
+    'unassign' => ['description' => 'Unassign a tag from an entity.', 'implemented' => false],
+    'assignments' => ['description' => 'Inspect assignment routes and capabilities.', 'implemented' => false],
+    'search' => ['description' => 'Search tags.', 'implemented' => false],
+    'suggest' => ['description' => 'Suggest tags.', 'implemented' => false],
+];
+
+$encode = static function (mixed $payload) use ($pretty): string {
     $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
     if ($pretty) {
         $flags |= JSON_PRETTY_PRINT;
     }
 
-    return (string) json_encode($payload, $flags | JSON_THROW_ON_ERROR);
+    return (string) json_encode($payload, $flags);
+};
+
+$emitStdout = static function (mixed $payload) use ($encode): void {
+    fwrite(STDOUT, $encode($payload) . PHP_EOL);
+};
+
+$emitStderr = static function (mixed $payload) use ($encode): void {
+    fwrite(STDERR, $encode($payload) . PHP_EOL);
+};
+
+$filteredCommands = $commands;
+if (null !== $filter && '' !== $filter && !in_array($command, ['status', 'surface'], true)) {
+    $filteredCommands = array_filter(
+        $commands,
+        static function (array $definition, string $name) use ($filter): bool {
+            if (str_contains($name, $filter)) {
+                return true;
+            }
+
+            if ('tag' === strtolower($filter)) {
+                return true;
+            }
+
+            return str_contains(strtolower((string) ($definition['description'] ?? '')), strtolower($filter));
+        },
+        ARRAY_FILTER_USE_BOTH,
+    );
+}
+
+switch ($command) {
+    case 'help':
+    case 'list':
+        $emitStdout([
+            'ok' => true,
+            'service' => $runtime['service'] ?? 'tag',
+            'runtime' => $runtime['runtime'] ?? 'hosted-package',
+            'version' => $runtime['version'] ?? 'dev',
+            'commands' => $filteredCommands,
+        ]);
+        exit(0);
+
+    case 'status':
+        $emitStdout([
+            'ok' => true,
+            'service' => $runtime['service'] ?? 'tag',
+            'runtime' => $runtime['runtime'] ?? 'hosted-package',
+            'version' => $runtime['version'] ?? 'dev',
+            'routes' => $runtime['route'] ?? [],
+        ]);
+        exit(0);
+
+    case 'surface':
+        $emitStdout([
+            'ok' => true,
+            'service' => $runtime['service'] ?? 'tag',
+            'runtime' => $runtime['runtime'] ?? 'hosted-package',
+            'version' => $runtime['version'] ?? 'dev',
+            'public_surface' => $runtime['public_surface'] ?? [],
+            'route' => $runtime['route'] ?? [],
+            'doc' => $runtime['doc'] ?? [],
+            'example' => $runtime['example'] ?? [],
+        ]);
+        exit(0);
+
+    default:
+        $emitStderr([
+            'ok' => false,
+            'code' => 'invalid_cli_arguments',
+            'message' => sprintf('Unknown command "%s". Use "help" to list supported commands.', $command),
+        ]);
+        exit(2);
 }

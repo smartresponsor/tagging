@@ -11,7 +11,7 @@ use App\Tagging\Application\Write\Tag\Dto\TagResult;
 use App\Tagging\Cache\Store\Tag\TagSearchCache;
 use App\Tagging\Cache\Store\Tag\TagSuggestCache;
 use App\Tagging\Cache\Store\Tag\TagQueryCacheInvalidator;
-use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 use App\Tagging\Service\Core\TagTransactionRunnerInterface;
 
 final readonly class TagPatchUseCase implements TagPatchUseCaseInterface
@@ -19,7 +19,7 @@ final readonly class TagPatchUseCase implements TagPatchUseCaseInterface
     private TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
-        private TagEntityRepositoryInterface $repo,
+        private TagCrudRepositoryInterface $repo,
         private TagTransactionRunnerInterface $transaction,
         private ?TagSearchCache $searchCache = null,
         private ?TagSuggestCache $suggestCache = null,
@@ -57,18 +57,18 @@ final readonly class TagPatchUseCase implements TagPatchUseCaseInterface
     }
 
     /** @param array<string,mixed> $payload
-     * @return array{name?:string,locale?:string,weight?:int}|null
+     * @return array{nameEntity?:string,locale?:string,weight?:int}|null
      */
     private function normalizePatch(array $payload): ?array
     {
         $patch = [];
 
-        if (array_key_exists('name', $payload)) {
-            $name = trim((string) $payload['name']);
-            if ('' === $name) {
+        if (array_key_exists('nameEntity', $payload)) {
+            $nameEntity = trim((string) $payload['nameEntity']);
+            if ('' === $nameEntity) {
                 return null;
             }
-            $patch['name'] = $name;
+            $patch['nameEntity'] = $nameEntity;
         }
 
         if (array_key_exists('locale', $payload)) {

@@ -4,5 +4,7 @@
 
 -- Example:
 -- INSERT INTO tag_entity (id, tenant, slug, name, locale, weight)
--- VALUES ('01HSEEDSUMMER00000000000000', 'demo', 'summer-sale', 'Summer Sale', 'en', 20)
+-- VALUES
+--   ('01HSEEDSUMMER00000000000000', 'demo', 'summer-sale', 'Summer Sale', 'en', 20),
+--   ('01HSEEDFREE0000000000000000', 'demo', 'free-shipping', 'Free Shipping', 'en', 15)
 -- ON CONFLICT (tenant, slug) DO NOTHING;

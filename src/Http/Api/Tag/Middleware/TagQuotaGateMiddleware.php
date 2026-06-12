@@ -133,12 +133,12 @@ final readonly class TagQuotaGateMiddleware
         );
     }
 
-    private function bumpMetric(string $name, array $labels): void
+    private function bumpMetric(string $nameEntity, array $labels): void
     {
         if (class_exists('App\Tagging\\Ops\\Metrics\\TagMetrics')) {
             $exp = TagMetrics::exporter();
             if (method_exists($exp, 'inc')) {
-                $exp->inc($name, $labels);
+                $exp->inc($nameEntity, $labels);
             }
         }
     }

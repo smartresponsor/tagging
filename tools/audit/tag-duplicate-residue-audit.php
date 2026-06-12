@@ -40,7 +40,7 @@ $forbidden = [
     'src/Cache/Store/Tag/SuggestCache.php',
     'src/Data/Model/Tag/AssignmentRecord.php',
     'src/Entity/Core/Tag/IdempotencyStore.php',
-    'src/Entity/Core/Tag/OutboxEvent.php',
+    'src/Entity/Core/Tag/OutboxEventEntity.php',
     'src/Http/Api/Tag/AssignController.php',
     'src/Http/Api/Tag/AssignmentReadController.php',
     'src/Http/Api/Tag/CorsHeaders.php',

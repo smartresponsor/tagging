@@ -16,8 +16,8 @@ final class TagIdempotencyMiddleware
                 continue;
             }
 
-            $name = strtolower(str_replace('_', '-', substr((string) $key, 5)));
-            $headers[$name] = (string) $value;
+            $nameEntity = strtolower(str_replace('_', '-', substr((string) $key, 5)));
+            $headers[$nameEntity] = (string) $value;
         }
 
         $idemKey = $headers['x-idempotency-key'] ?? null;

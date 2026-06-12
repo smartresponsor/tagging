@@ -31,7 +31,7 @@ $legacyClasses = [
     'CallableTagErrorSink',
     'NullTagErrorSink',
     'IdempotencyMiddleware',
-    'OutboxEvent',
+    'OutboxEventEntity',
 ];
 
 $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/src'));

@@ -15,7 +15,7 @@ use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
 use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
 use App\Tagging\Service\Core\Slug\TagSlugifier;
 use App\Tagging\Service\Core\Slug\TagSlugPolicy;
-use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 use App\Tagging\Service\Core\TagTransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ final class TagWriteUseCaseTest extends TestCase
 {
     public function testCreateTagMapsUniqueViolationToConflict(): void
     {
-        $repo = new class implements TagEntityRepositoryInterface {
+        $repo = new class implements TagCrudRepositoryInterface {
             public function existsSlug(string $tenant, string $slug, ?string $excludeId = null): bool
             {
                 return false;
@@ -55,7 +55,7 @@ final class TagWriteUseCaseTest extends TestCase
         $useCase = new TagCreateUseCase($repo, $policy, $tx);
 
         $result = $useCase->execute(
-            new TagCreateCommand('tenant-a', ['name' => 'Alpha', 'slug' => 'alpha']),
+            new TagCreateCommand('tenant-a', ['nameEntity' => 'Alpha', 'slug' => 'alpha']),
         );
         $response = (new TagWriteResponder())->respond($result);
 
@@ -65,7 +65,7 @@ final class TagWriteUseCaseTest extends TestCase
 
     public function testPatchTagReturnsNotFoundWhenEntityMissing(): void
     {
-        $repo = new class implements TagEntityRepositoryInterface {
+        $repo = new class implements TagCrudRepositoryInterface {
             public function existsSlug(string $tenant, string $slug, ?string $excludeId = null): bool
             {
                 return false;
@@ -95,7 +95,7 @@ final class TagWriteUseCaseTest extends TestCase
 
         $useCase = new TagPatchUseCase($repo, $tx);
         $result = $useCase->execute(
-            new TagPatchCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV', ['name' => 'Beta']),
+            new TagPatchCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV', ['nameEntity' => 'Beta']),
         );
         $response = (new TagWriteResponder())->respond($result);
 
@@ -105,7 +105,7 @@ final class TagWriteUseCaseTest extends TestCase
 
     public function testDeleteTagReturnsNoContentWhenEntityExists(): void
     {
-        $repo = new class implements TagEntityRepositoryInterface {
+        $repo = new class implements TagCrudRepositoryInterface {
             public bool $deleted = false;
 
             public function existsSlug(string $tenant, string $slug, ?string $excludeId = null): bool
@@ -115,7 +115,7 @@ final class TagWriteUseCaseTest extends TestCase
 
             public function findById(string $tenant, string $id): ?array
             {
-                return ['id' => $id, 'slug' => 'x', 'name' => 'x', 'locale' => 'en', 'weight' => 0];
+                return ['id' => $id, 'slug' => 'x', 'nameEntity' => 'x', 'locale' => 'en', 'weight' => 0];
             }
 
             public function create(string $tenant, TagEntityCreateRecord $record): array

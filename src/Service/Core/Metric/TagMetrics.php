@@ -14,15 +14,15 @@ final class TagMetrics
     /** @var array<string, array{count:int, sum:float}> */
     private static array $summaries = [];
 
-    public static function inc(string $name, float $val = 1.0, array $labels = []): void
+    public static function inc(string $nameEntity, float $val = 1.0, array $labels = []): void
     {
-        $key = self::key($name, $labels);
+        $key = self::key($nameEntity, $labels);
         self::$counters[$key] = (self::$counters[$key] ?? 0.0) + $val;
     }
 
-    public static function observe(string $name, float $v, array $labels = []): void
+    public static function observe(string $nameEntity, float $v, array $labels = []): void
     {
-        $key = self::key($name, $labels);
+        $key = self::key($nameEntity, $labels);
         $s = self::$summaries[$key] ?? ['count' => 0, 'sum' => 0.0];
         ++$s['count'];
         $s['sum'] += $v;
@@ -33,22 +33,22 @@ final class TagMetrics
     {
         $out = [];
         foreach (self::$counters as $k => $v) {
-            [$name, $lbl] = self::split($k);
-            $out[] = sprintf('%s%s %.6f', $name, $lbl, $v);
+            [$nameEntity, $lbl] = self::split($k);
+            $out[] = sprintf('%s%s %.6f', $nameEntity, $lbl, $v);
         }
         foreach (self::$summaries as $k => $s) {
-            [$name, $lbl] = self::split($k);
-            $out[] = sprintf('%s_count%s %d', $name, $lbl, $s['count']);
-            $out[] = sprintf('%s_sum%s %.6f', $name, $lbl, $s['sum']);
+            [$nameEntity, $lbl] = self::split($k);
+            $out[] = sprintf('%s_count%s %d', $nameEntity, $lbl, $s['count']);
+            $out[] = sprintf('%s_sum%s %.6f', $nameEntity, $lbl, $s['sum']);
         }
 
         return implode("\n", $out) . "\n";
     }
 
-    private static function key(string $name, array $labels): string
+    private static function key(string $nameEntity, array $labels): string
     {
         if (!$labels) {
-            return $name;
+            return $nameEntity;
         }
         ksort($labels);
         $pairs = [];
@@ -56,7 +56,7 @@ final class TagMetrics
             $pairs[] = $k . '="' . str_replace('"', '\"', (string) $v) . '"';
         }
 
-        return $name . '{' . implode(',', $pairs) . '}';
+        return $nameEntity . '{' . implode(',', $pairs) . '}';
     }
 
     /**

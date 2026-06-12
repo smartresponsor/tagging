@@ -12,7 +12,7 @@ $forbidden = [
 ];
 
 $required = [
-    'src/Infrastructure/Persistence/Tag/TagDoctrineEntityRepository.php',
+    'src/Infrastructure/Persistence/Tag/TagDoctrineRepository.php',
     'src/Infrastructure/Persistence/Tag/TagDoctrineRepository.php',
     'src/Infrastructure/Persistence/Tag/TagInMemoryRepository.php',
 ];

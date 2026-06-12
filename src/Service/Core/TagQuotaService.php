@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Data\Model\Tag\TagEntity;
-use App\Tagging\Entity\Core\Tag\TagLink;
+use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class TagQuotaService
@@ -47,7 +47,7 @@ final readonly class TagQuotaService
             static fn(EntityManagerInterface $entityManager, string $tenantId): int => (int) $entityManager
                 ->createQueryBuilder()
                 ->select('COUNT(l.tenant)')
-                ->from(TagLink::class, 'l')
+                ->from(TagAssignmentEntity::class, 'l')
                 ->where('l.tenant = :tenant')
                 ->setParameter('tenant', $tenantId)
                 ->getQuery()

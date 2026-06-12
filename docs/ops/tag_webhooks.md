@@ -29,7 +29,7 @@ Metrics:
 
 ## Host-minimal cleanup
 
-- Host-minimal now wires `TagWebhookController` directly.
+- Host-minimal now wires `TagWebhookIndexService` directly.
 - Stable transport contract:
   - `GET /tag/_webhooks` → `{ok:true,items:[...],total:n}`
   - `POST /tag/_webhooks/subscribe` → `201 {ok:true,url:"..."}` or `400 {ok:false,code:"..."}`

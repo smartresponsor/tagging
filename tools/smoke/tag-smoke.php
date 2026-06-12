@@ -150,7 +150,7 @@ $createResult = expectTuple(
     'POST',
     '/tag',
     $tenant,
-    ['name' => 'Smoke Runtime', 'locale' => 'en', 'weight' => 7],
+    ['nameEntity' => 'Smoke Runtime', 'locale' => 'en', 'weight' => 7],
     ['X-Idempotency-Key: ' . uniqueToken('smoke-create')],
     [200, 201],
 );
@@ -166,7 +166,7 @@ $patchResult = expectTuple(
     'PATCH',
     '/tag/' . rawurlencode($tagId),
     $tenant,
-    ['name' => 'Smoke Runtime Patched', 'weight' => 9],
+    ['nameEntity' => 'Smoke Runtime Patched', 'weight' => 9],
     ['X-Idempotency-Key: ' . uniqueToken('smoke-patch')],
     [200, 204],
 );
@@ -279,6 +279,6 @@ fwrite(STDOUT, json_encode([
     'seed_assignment_items' => count($assignment['items'] ?? []),
     'bulk_processed' => $bulk['processed'] ?? null,
     'bulk_to_entity_processed' => $bulkToEntity['processed'] ?? null,
-    'patched' => $patchResult['name'] ?? null,
+    'patched' => $patchResult['nameEntity'] ?? null,
     'surface_version' => $surface['version'] ?? null,
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . PHP_EOL);

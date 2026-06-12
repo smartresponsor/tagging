@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Http\Api\Tag\TagAssignController;
+use App\Tagging\Service\Http\Tag\TagAssignmentAssignService;
 use App\Tagging\Service\Core\TagAssignOperationInterface;
 use App\Tagging\Service\Core\TagQuotaService;
 use App\Tagging\Service\Core\TagPolicyService;
@@ -46,7 +46,7 @@ final class TagAssignQuotaPolicyHardeningTest extends TestCase
                 return ['ok' => true];
             }
         };
-        $controller = new TagAssignController($assign, $unassign, ['entity_types' => ['file']]);
+        $controller = new TagAssignmentAssignService($assign, $unassign, ['entity_types' => ['file']]);
 
         [$status, , $body] = $controller->assign([
             'headers' => ['X-Tenant-Id' => 'tenant-a'],
@@ -82,7 +82,7 @@ final class TagAssignQuotaPolicyHardeningTest extends TestCase
                 return ['ok' => true];
             }
         };
-        $controller = new TagAssignController($assign, $unassign, ['entity_types' => ['file']]);
+        $controller = new TagAssignmentAssignService($assign, $unassign, ['entity_types' => ['file']]);
 
         [$status, , $body] = $controller->assign([
             'headers' => ['x-tenant-id' => 'tenant-a'],

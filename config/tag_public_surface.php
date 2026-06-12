@@ -2,31 +2,69 @@
 
 declare(strict_types=1);
 
-$catalog = require __DIR__ . '/tag_route_catalog.php';
-$routes = is_array($catalog['routes'] ?? null) ? $catalog['routes'] : [];
+$routeSource = __DIR__ . '/platform/routes/crud/tag.yaml';
 $routeMap = [];
-foreach ($routes as $route) {
-    if (!is_array($route) || true !== ($route['public'] ?? false)) {
-        continue;
-    }
 
-    $operation = (string) ($route['operation'] ?? '');
-    $method = (string) ($route['method'] ?? 'GET');
-    $path = (string) ($route['path'] ?? '');
-    if ('' === $operation || '' === $path) {
-        continue;
-    }
+if (is_file($routeSource)) {
+    $lines = file($routeSource, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
 
-    $routeMap[$operation] = in_array($operation, ['status', 'discovery'], true)
-        ? $path
-        : sprintf('%s %s', $method, $path);
+    foreach ($lines as $line) {
+        $trimmed = trim($line);
+
+        if ('' === $trimmed || str_starts_with($trimmed, '#')) {
+            continue;
+        }
+
+        if (1 !== preg_match(
+            '/^([a-z0-9_.]+):\s*\{\s*path:\s*([^,}]+)(?:,\s*[^}]*)?\}\s*$/',
+            $trimmed,
+            $match,
+        )) {
+            continue;
+        }
+
+        $routeKey = $match[1];
+        $path = trim($match[2]);
+
+        $operation = match (true) {
+            str_ends_with($routeKey, '.index') => 'index',
+            str_contains($routeKey, '.show_') => 'show',
+            str_contains($routeKey, '.create') => 'create',
+            str_contains($routeKey, '.update_') => 'update',
+            str_contains($routeKey, '.delete_') => 'delete',
+            str_contains($routeKey, '.assign') => 'assign',
+            str_contains($routeKey, '.unassign') => 'unassign',
+            str_contains($routeKey, '.search') => 'search',
+            str_contains($routeKey, '.suggest') => 'suggest',
+            str_contains($routeKey, '.status') => 'status',
+            str_contains($routeKey, '.metrics') => 'metrics',
+            default => str_replace('tag.', '', $routeKey),
+        };
+
+        $method = match (true) {
+            str_contains($routeKey, '.create'),
+            str_contains($routeKey, '.assign'),
+            str_contains($routeKey, '.unassign'),
+            str_contains($routeKey, '.archive_'),
+            str_contains($routeKey, '.restore_'),
+            str_contains($routeKey, '.duplicate_'),
+            str_contains($routeKey, '.approve_') => 'POST',
+
+            str_contains($routeKey, '.update_') => 'PATCH',
+            str_contains($routeKey, '.delete_') => 'DELETE',
+            default => 'GET',
+        };
+
+        $routeMap[$operation] ??= sprintf('%s %s', $method, $path);
+    }
 }
 
 return [
-    'service' => (string) ($catalog['service'] ?? 'tag'),
-    'runtime' => (string) ($catalog['runtime'] ?? 'hosted-package'),
-    'version' => (string) ($catalog['version'] ?? 'dev'),
+    'service' => 'tag',
+    'runtime' => 'cruding-registry',
+    'version' => 'dev',
     'route' => $routeMap,
+    'source' => 'config/platform/routes/crud/tag.yaml',
     'example' => [
         'http' => 'public/tag/examples/tag-http-examples.http',
         'seed' => 'public/tag/examples/tag-seed-examples.http',

@@ -81,20 +81,20 @@ final class TagRuntimeConfigFactory
             ],
             'status' => [
                 'checks' => [
-                    ['name' => 'metrics_up', 'type' => 'counter_exists', 'key' => 'tag_up'],
+                    ['nameEntity' => 'metrics_up', 'type' => 'counter_exists', 'key' => 'tag_up'],
                 ],
             ],
         ];
     }
 
-    private static function env(string $name, string $default): string
+    private static function env(string $nameEntity, string $default): string
     {
-        return self::envNullable($name) ?? $default;
+        return self::envNullable($nameEntity) ?? $default;
     }
 
-    private static function envNullable(string $name): ?string
+    private static function envNullable(string $nameEntity): ?string
     {
-        $value = getenv($name);
+        $value = getenv($nameEntity);
 
         return is_string($value) && '' !== $value ? $value : null;
     }
@@ -108,9 +108,9 @@ final class TagRuntimeConfigFactory
 
         $host = self::env('DB_HOST', 'localhost');
         $port = self::env('DB_PORT', '5432');
-        $name = self::env('POSTGRES_DB', 'app');
+        $nameEntity = self::env('POSTGRES_DB', 'app');
 
-        return sprintf('pgsql:host=%s;port=%s;dbname=%s', $host, $port, $name);
+        return sprintf('pgsql:host=%s;port=%s;dbname=%s', $host, $port, $nameEntity);
     }
 
     private static function dbUser(): string

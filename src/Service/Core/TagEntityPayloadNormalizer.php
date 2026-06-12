@@ -14,14 +14,14 @@ final class TagEntityPayloadNormalizer
      */
     public function normalizeCreate(array $payload, callable $slugFactory): array
     {
-        $name = trim((string) ($payload['name'] ?? ''));
-        if ('' === $name) {
+        $nameEntity = trim((string) ($payload['nameEntity'] ?? ''));
+        if ('' === $nameEntity) {
             throw new \InvalidArgumentException('validation_failed');
         }
 
         $slug = trim((string) ($payload['slug'] ?? ''));
         if ('' === $slug) {
-            $slug = (string) $slugFactory($name);
+            $slug = (string) $slugFactory($nameEntity);
         }
 
         $locale = trim((string) ($payload['locale'] ?? 'en'));
@@ -32,7 +32,7 @@ final class TagEntityPayloadNormalizer
         $weight = $this->normalizeWeight($payload['weight'] ?? 0);
 
         return [
-            'name' => $name,
+            'nameEntity' => $nameEntity,
             'slug' => $slug,
             'locale' => $locale,
             'weight' => $weight,
@@ -42,18 +42,18 @@ final class TagEntityPayloadNormalizer
     /**
      * @param array<string,mixed> $payload
      *
-     * @return array{name?:string,locale?:string,weight?:int}
+     * @return array{nameEntity?:string,locale?:string,weight?:int}
      */
     public function normalizePatch(array $payload): array
     {
         $patch = [];
 
-        if (array_key_exists('name', $payload)) {
-            $name = trim((string) $payload['name']);
-            if ('' === $name) {
+        if (array_key_exists('nameEntity', $payload)) {
+            $nameEntity = trim((string) $payload['nameEntity']);
+            if ('' === $nameEntity) {
                 throw new \InvalidArgumentException('validation_failed');
             }
-            $patch['name'] = $name;
+            $patch['nameEntity'] = $nameEntity;
         }
 
         if (array_key_exists('locale', $payload)) {

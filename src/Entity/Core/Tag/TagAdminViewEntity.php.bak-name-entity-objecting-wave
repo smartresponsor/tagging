@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tagging\Entity\Tag;
+
+use App\Tagging\Repository\Core\Tag\TagAdminViewRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(readOnly: true)]
+#[ORM\Table(nameEntity: 'tag_admin_view')]
+#[ORM\UniqueConstraint(nameEntity: 'tag_admin_view_tag_uq', columns: ['tenant', 'tag_id'])]
+#[ORM\UniqueConstraint(nameEntity: 'tag_admin_view_slug_uq', columns: ['tenant', 'slug'])]
+final class TagAdminViewEntity
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
+
+    #[ORM\Column(nameEntity: 'tag_id', type: 'string', length: 26)]
+    private string $tagId;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $tenant;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $slug;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $label;
+
+    #[ORM\Column(nameEntity: 'created_at', type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(nameEntity: 'updated_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(nameEntity: 'required_flag', type: 'boolean')]
+    private bool $requiredFlag = false;
+
+    #[ORM\Column(nameEntity: 'mod_only_flag', type: 'boolean')]
+    private bool $modOnlyFlag = false;
+
+    public function id(): ?int
+    {
+        return $this->id;
+    }
+
+    public function tagId(): string
+    {
+        return $this->tagId;
+    }
+
+    public function tenant(): string
+    {
+        return $this->tenant;
+    }
+
+    public function slug(): string
+    {
+        return $this->slug;
+    }
+
+    public function label(): string
+    {
+        return $this->label;
+    }
+
+    public function createdAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function updatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function requiredFlag(): bool
+    {
+        return $this->requiredFlag;
+    }
+
+    public function modOnlyFlag(): bool
+    {
+        return $this->modOnlyFlag;
+    }
+}

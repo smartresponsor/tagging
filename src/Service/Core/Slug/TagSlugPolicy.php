@@ -5,13 +5,13 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core\Slug;
 
-use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 
 final readonly class TagSlugPolicy
 {
     /** @param list<string> $reserved */
     public function __construct(
-        private TagEntityRepositoryInterface $repo,
+        private TagCrudRepositoryInterface $repo,
         private TagSlugifier $slugifier,
         private array $reserved = [],
         private int $maxLen = 64,

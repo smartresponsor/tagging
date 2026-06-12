@@ -3,11 +3,8 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Tagging\Http\Api\Tag\:
-        resource: '../../src/Http/Api/Tag/'
+    App\Tagging\Service\Http\Tag\:
+        resource: '../../src/Service/Http/Tag/'
 
-    App\Tagging\Http\Api\Tag\Responder\:
-        resource: '../../src/Http/Api/Tag/Responder/'
-
-    App\Tagging\Http\Api\Tag\Middleware\:
-        resource: '../../src/Http/Api/Tag/Middleware/'
+    App\Tagging\Form\Tag\:
+        resource: '../../src/Form/Tag/'

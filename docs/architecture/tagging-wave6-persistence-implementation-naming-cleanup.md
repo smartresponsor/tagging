@@ -11,7 +11,7 @@ The wave normalizes persistence implementation class names so the component pref
 
 ## Renames
 
-- `DoctrineTagEntityRepository` -> `TagDoctrineEntityRepository`
+- `DoctrineTagEntityRepository` -> `TagDoctrineRepository`
 - `DoctrineTagRepository` -> `TagDoctrineRepository`
 - `InMemoryTagRepository` -> `TagInMemoryRepository`
 

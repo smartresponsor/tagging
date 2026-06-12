@@ -5,11 +5,11 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Core\Tag\Tag;
-use App\Tagging\Entity\Core\Tag\TagAssignment;
-use App\Tagging\Entity\Core\Tag\TagRelation;
-use App\Tagging\Entity\Core\Tag\TagScheme;
-use App\Tagging\Entity\Core\Tag\TagSynonym;
+use App\Tagging\Entity\Tag\TagEntity;
+use App\Tagging\Entity\Tag\TagEntityAssignment;
+use App\Tagging\Entity\Tag\TagEntityRelation;
+use App\Tagging\Entity\Tag\TagEntityScheme;
+use App\Tagging\Entity\Tag\TagEntitySynonym;
 use App\Tagging\Service\Core\Record\TagAuditRecord;
 use App\Tagging\Service\Core\Record\TagClassificationRecord;
 use App\Tagging\Service\Core\Record\TagEffectRecord;
@@ -22,17 +22,17 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         private TagPolicyRepositoryInterface $tagPolicyRepository,
     ) {}
 
-    public function saveTag(string $tenantId, Tag $tag): void
+    public function saveTag(string $tenantId, TagEntity $tag): void
     {
         $this->tagWriteRepository->saveTag($tenantId, $tag);
     }
 
-    public function getById(string $tenantId, string $id): ?Tag
+    public function getById(string $tenantId, string $id): ?TagEntity
     {
         return $this->tagReadRepository->getById($tenantId, $id);
     }
 
-    public function getBySlug(string $tenantId, string $slug): ?Tag
+    public function getBySlug(string $tenantId, string $slug): ?TagEntity
     {
         return $this->tagReadRepository->getBySlug($tenantId, $slug);
     }
@@ -65,7 +65,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         $this->tagWriteRepository->deleteTag($tenantId, $id);
     }
 
-    public function saveAssignment(string $tenantId, TagAssignment $a): void
+    public function saveAssignment(string $tenantId, TagAssignmentEntity $a): void
     {
         $this->tagWriteRepository->saveAssignment($tenantId, $a);
     }
@@ -87,7 +87,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $this->tagReadRepository->listAssignments($tenantId, $tagId, $type, $assignedId);
     }
 
-    public function saveSynonym(string $tenantId, TagSynonym $s): void
+    public function saveSynonym(string $tenantId, TagSynonymEntity $s): void
     {
         $this->tagWriteRepository->saveSynonym($tenantId, $s);
     }
@@ -100,7 +100,7 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $this->tagReadRepository->listSynonyms($tenantId, $tagId);
     }
 
-    public function saveRelation(string $tenantId, TagRelation $r): void
+    public function saveRelation(string $tenantId, TagRelationEntity $r): void
     {
         $this->tagWriteRepository->saveRelation($tenantId, $r);
     }
@@ -113,14 +113,14 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $this->tagReadRepository->listRelations($tenantId, $tagId, $type);
     }
 
-    public function saveScheme(string $tenantId, TagScheme $s): void
+    public function saveScheme(string $tenantId, TagSchemeEntity $s): void
     {
         $this->tagWriteRepository->saveScheme($tenantId, $s);
     }
 
-    public function getSchemeByName(string $tenantId, string $name): ?TagScheme
+    public function getSchemeByName(string $tenantId, string $nameEntity): ?TagSchemeEntity
     {
-        return $this->tagReadRepository->getSchemeByName($tenantId, $name);
+        return $this->tagReadRepository->getSchemeByName($tenantId, $nameEntity);
     }
 
     public function reassignAssignments(string $tenantId, string $fromTagId, string $toTagId): void

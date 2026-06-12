@@ -16,43 +16,43 @@ final class TagPrometheusExporter
     /** @var array<string,array{series:array<string,array{count:int,sum:float,buckets:array<int,int>}>}> */
     private array $histValues = [];
 
-    public function counter(string $name, string $help, array $labels = []): void
+    public function counter(string $nameEntity, string $help, array $labels = []): void
     {
-        $this->counters[$name] = ['help' => $help, 'labels' => $labels];
+        $this->counters[$nameEntity] = ['help' => $help, 'labels' => $labels];
     }
 
-    public function inc(string $name, array $labels = [], int $n = 1): void
+    public function inc(string $nameEntity, array $labels = [], int $n = 1): void
     {
         $key = $this->labelsKey($labels);
-        $this->counterValues[$name] ??= [];
-        $this->counterValues[$name][$key] ??= 0;
-        $this->counterValues[$name][$key] += $n;
+        $this->counterValues[$nameEntity] ??= [];
+        $this->counterValues[$nameEntity][$key] ??= 0;
+        $this->counterValues[$nameEntity][$key] += $n;
     }
 
-    public function histogram(string $name, string $help, array $buckets, array $labels = []): void
+    public function histogram(string $nameEntity, string $help, array $buckets, array $labels = []): void
     {
         sort($buckets, SORT_NUMERIC);
-        $this->histograms[$name] = ['help' => $help, 'labels' => $labels, 'buckets' => $buckets];
-        $this->histValues[$name] = ['series' => []];
+        $this->histograms[$nameEntity] = ['help' => $help, 'labels' => $labels, 'buckets' => $buckets];
+        $this->histValues[$nameEntity] = ['series' => []];
     }
 
-    public function observe(string $name, float $value, array $labels = []): void
+    public function observe(string $nameEntity, float $value, array $labels = []): void
     {
-        if (!isset($this->histograms[$name])) {
+        if (!isset($this->histograms[$nameEntity])) {
             return;
         }
 
-        $spec = $this->histograms[$name];
+        $spec = $this->histograms[$nameEntity];
         $seriesKey = $this->labelsKey($labels);
-        if (!isset($this->histValues[$name]['series'][$seriesKey])) {
-            $this->histValues[$name]['series'][$seriesKey] = [
+        if (!isset($this->histValues[$nameEntity]['series'][$seriesKey])) {
+            $this->histValues[$nameEntity]['series'][$seriesKey] = [
                 'count' => 0,
                 'sum' => 0.0,
                 'buckets' => array_fill(0, count($spec['buckets']), 0),
             ];
         }
 
-        $series = &$this->histValues[$name]['series'][$seriesKey];
+        $series = &$this->histValues[$nameEntity]['series'][$seriesKey];
         ++$series['count'];
         $series['sum'] += $value;
 
@@ -83,27 +83,27 @@ final class TagPrometheusExporter
     public function renderText(): string
     {
         $out = [];
-        foreach ($this->counters as $name => $meta) {
-            $out[] = '# HELP ' . $name . ' ' . $this->esc($meta['help']);
-            $out[] = '# TYPE ' . $name . ' counter';
-            foreach (($this->counterValues[$name] ?? []) as $key => $val) {
+        foreach ($this->counters as $nameEntity => $meta) {
+            $out[] = '# HELP ' . $nameEntity . ' ' . $this->esc($meta['help']);
+            $out[] = '# TYPE ' . $nameEntity . ' counter';
+            foreach (($this->counterValues[$nameEntity] ?? []) as $key => $val) {
                 $labels = $this->labelsFromKey((string) $key);
-                $out[] = $name . $this->fmtLabels($labels) . ' ' . $val;
+                $out[] = $nameEntity . $this->fmtLabels($labels) . ' ' . $val;
             }
         }
-        foreach ($this->histograms as $name => $meta) {
-            $out[] = '# HELP ' . $name . ' ' . $this->esc($meta['help']);
-            $out[] = '# TYPE ' . $name . ' histogram';
-            foreach (($this->histValues[$name]['series'] ?? []) as $seriesKey => $series) {
+        foreach ($this->histograms as $nameEntity => $meta) {
+            $out[] = '# HELP ' . $nameEntity . ' ' . $this->esc($meta['help']);
+            $out[] = '# TYPE ' . $nameEntity . ' histogram';
+            foreach (($this->histValues[$nameEntity]['series'] ?? []) as $seriesKey => $series) {
                 $labels = $this->labelsFromKey((string) $seriesKey);
                 $cumulative = 0;
                 foreach ($meta['buckets'] as $i => $bucket) {
                     $cumulative += $series['buckets'][$i] ?? 0;
                     $le = is_infinite($bucket) ? '+Inf' : (string) $bucket;
-                    $out[] = $name . '_bucket' . $this->fmtLabels(array_merge($labels, ['le' => $le])) . ' ' . $cumulative;
+                    $out[] = $nameEntity . '_bucket' . $this->fmtLabels(array_merge($labels, ['le' => $le])) . ' ' . $cumulative;
                 }
-                $out[] = $name . '_count' . $this->fmtLabels($labels) . ' ' . $series['count'];
-                $out[] = $name . '_sum' . $this->fmtLabels($labels) . ' ' . $series['sum'];
+                $out[] = $nameEntity . '_count' . $this->fmtLabels($labels) . ' ' . $series['count'];
+                $out[] = $nameEntity . '_sum' . $this->fmtLabels($labels) . ' ' . $series['sum'];
             }
         }
 

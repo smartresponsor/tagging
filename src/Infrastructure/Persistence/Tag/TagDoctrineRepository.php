@@ -5,34 +5,36 @@ declare(strict_types=1);
 
 namespace App\Tagging\Infrastructure\Persistence\Tag;
 
-use App\Tagging\Entity\Core\Tag\Tag;
-use App\Tagging\Entity\Core\Tag\TagAssignment;
-use App\Tagging\Entity\Core\Tag\TagAssignmentEffect;
-use App\Tagging\Entity\Core\Tag\TagAuditLog;
-use App\Tagging\Entity\Core\Tag\TagClassification;
-use App\Tagging\Entity\Core\Tag\TagPolicy;
-use App\Tagging\Entity\Core\Tag\TagProposal;
-use App\Tagging\Entity\Core\Tag\TagRelation;
-use App\Tagging\Entity\Core\Tag\TagScheme;
-use App\Tagging\Entity\Core\Tag\TagSynonym;
-use App\Tagging\Entity\Core\Tag\TagLink;
+use App\Tagging\Entity\Projection\Tag\TagAssignmentEffectProjection;
+use App\Tagging\Entity\Tag\TagEntity;
+use App\Tagging\Entity\Tag\TagEntityAssignment;
+use App\Tagging\Entity\Tag\TagEntityAuditLog;
+use App\Tagging\Entity\Tag\TagEntityClassification;
+use App\Tagging\Entity\Tag\TagEntityPolicy;
+use App\Tagging\Entity\Tag\TagEntityProposal;
+use App\Tagging\Entity\Tag\TagEntityRelation;
+use App\Tagging\Entity\Tag\TagEntityScheme;
+use App\Tagging\Entity\Tag\TagEntitySynonym;
+use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Service\Core\Record\TagAuditRecord;
 use App\Tagging\Service\Core\Record\TagClassificationRecord;
 use App\Tagging\Service\Core\Record\TagEffectRecord;
+use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
 use App\Tagging\Service\Core\TagRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 use App\Tagging\Service\Core\TagPolicyRepositoryInterface;
 use App\Tagging\Service\Core\TagReadRepositoryInterface;
 use App\Tagging\Service\Core\TagWriteRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepositoryInterface, TagWriteRepositoryInterface, TagPolicyRepositoryInterface
+final class TagDoctrineRepository implements TagRepositoryInterface, TagCrudRepositoryInterface
 {
     public function __construct(private EntityManagerInterface $entityManager) {}
 
-    public function saveTag(string $tenantId, Tag $tag): void
+    public function saveTag(string $tenantId, TagEntity $tag): void
     {
         $existing = $this->getManagedTag($tenantId, $tag->id());
-        if ($existing instanceof Tag) {
+        if ($existing instanceof TagEntity) {
             $existing->rename($tag->label());
             $existing->changeSlug($tag->slug());
             $existing->setFlags($tag->requiredFlag(), $tag->modOnlyFlag());
@@ -45,17 +47,17 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
         $this->flushSafely();
     }
 
-    public function getById(string $tenantId, string $id): ?Tag
+    public function getById(string $tenantId, string $id): ?TagEntity
     {
-        return $this->entityManager->getRepository(Tag::class)->findOneBy([
+        return $this->entityManager->getRepository(TagEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $id,
         ]);
     }
 
-    public function getBySlug(string $tenantId, string $slug): ?Tag
+    public function getBySlug(string $tenantId, string $slug): ?TagEntity
     {
-        return $this->entityManager->getRepository(Tag::class)->findOneBy([
+        return $this->entityManager->getRepository(TagEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'slug' => $slug,
         ]);
@@ -65,7 +67,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('COUNT(t.id)')
-            ->from(Tag::class, 't')
+            ->from(TagEntity::class, 't')
             ->where('t.tenant = :tenant')
             ->andWhere('t.slug = :slug')
             ->setParameter('tenant', $tenantId)
@@ -90,7 +92,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('t')
-            ->from(Tag::class, 't')
+            ->from(TagEntity::class, 't')
             ->where('t.tenant = :tenant')
             ->orderBy('t.createdAt', 'DESC')
             ->setFirstResult(max(0, $offset))
@@ -108,15 +110,15 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     public function deleteTag(string $tenantId, string $id): void
     {
         $tag = $this->getById($tenantId, $id);
-        if ($tag instanceof Tag) {
+        if ($tag instanceof TagEntity) {
             $this->entityManager->remove($tag);
             $this->flushSafely();
         }
     }
 
-    public function saveAssignment(string $tenantId, TagAssignment $a): void
+    public function saveAssignment(string $tenantId, TagAssignmentEntity $a): void
     {
-        if (null !== $this->entityManager->getRepository(TagAssignment::class)->findOneBy([
+        if (null !== $this->entityManager->getRepository(TagAssignmentEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $a->id(),
         ])) {
@@ -129,11 +131,11 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
 
     public function deleteAssignment(string $tenantId, string $assignmentId): void
     {
-        $entity = $this->entityManager->getRepository(TagAssignment::class)->findOneBy([
+        $entity = $this->entityManager->getRepository(TagAssignmentEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $assignmentId,
         ]);
-        if ($entity instanceof TagAssignment) {
+        if ($entity instanceof TagAssignmentEntity) {
             $this->entityManager->remove($entity);
             $this->flushSafely();
         }
@@ -150,7 +152,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     ): array {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('a')
-            ->from(TagAssignment::class, 'a')
+            ->from(TagAssignmentEntity::class, 'a')
             ->where('a.tenant = :tenant')
             ->andWhere('a.tagId = :tagId')
             ->setParameter('tenant', $tenantId)
@@ -167,9 +169,9 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
         return $qb->getQuery()->getResult();
     }
 
-    public function saveSynonym(string $tenantId, TagSynonym $s): void
+    public function saveSynonym(string $tenantId, TagSynonymEntity $s): void
     {
-        if (null !== $this->entityManager->getRepository(TagSynonym::class)->findOneBy([
+        if (null !== $this->entityManager->getRepository(TagSynonymEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $s->id(),
         ])) {
@@ -187,7 +189,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         return $this->entityManager->createQueryBuilder()
             ->select('s')
-            ->from(TagSynonym::class, 's')
+            ->from(TagSynonymEntity::class, 's')
             ->where('s.tenant = :tenant')
             ->andWhere('s.tagId = :tagId')
             ->orderBy('s.label', 'ASC')
@@ -197,9 +199,9 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
             ->getResult();
     }
 
-    public function saveRelation(string $tenantId, TagRelation $r): void
+    public function saveRelation(string $tenantId, TagRelationEntity $r): void
     {
-        if (null !== $this->entityManager->getRepository(TagRelation::class)->findOneBy([
+        if (null !== $this->entityManager->getRepository(TagRelationEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $r->id(),
         ])) {
@@ -217,7 +219,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('r')
-            ->from(TagRelation::class, 'r')
+            ->from(TagRelationEntity::class, 'r')
             ->where('r.tenant = :tenant')
             ->andWhere('r.fromTagId = :tagId')
             ->setParameter('tenant', $tenantId)
@@ -231,9 +233,9 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
         return $qb->getQuery()->getResult();
     }
 
-    public function saveScheme(string $tenantId, TagScheme $s): void
+    public function saveScheme(string $tenantId, TagSchemeEntity $s): void
     {
-        if (null !== $this->entityManager->getRepository(TagScheme::class)->findOneBy([
+        if (null !== $this->entityManager->getRepository(TagSchemeEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $s->id(),
         ])) {
@@ -244,18 +246,18 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
         $this->flushSafely();
     }
 
-    public function getSchemeByName(string $tenantId, string $name): ?TagScheme
+    public function getSchemeByName(string $tenantId, string $nameEntity): ?TagSchemeEntity
     {
-        return $this->entityManager->getRepository(TagScheme::class)->findOneBy([
+        return $this->entityManager->getRepository(TagSchemeEntity::class)->findOneBy([
             'tenant' => $tenantId,
-            'name' => $name,
+            'nameEntity' => $nameEntity,
         ]);
     }
 
     public function reassignAssignments(string $tenantId, string $fromTagId, string $toTagId): void
     {
         $this->entityManager->createQueryBuilder()
-            ->update(TagAssignment::class, 'a')
+            ->update(TagAssignmentEntity::class, 'a')
             ->set('a.tagId', ':to')
             ->where('a.tenant = :tenant')
             ->andWhere('a.tagId = :from')
@@ -269,7 +271,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     public function setTagFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void
     {
         $tag = $this->getById($tenantId, $tagId);
-        if (!$tag instanceof Tag) {
+        if (!$tag instanceof TagEntity) {
             return;
         }
 
@@ -280,7 +282,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     public function renameTag(string $tenantId, string $tagId, string $newLabel, string $newSlug): void
     {
         $tag = $this->getById($tenantId, $tagId);
-        if (!$tag instanceof Tag) {
+        if (!$tag instanceof TagEntity) {
             return;
         }
 
@@ -291,14 +293,14 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
 
     public function insertProposal(string $tenantId, string $id, string $type, string $payloadJson): void
     {
-        if (null !== $this->entityManager->getRepository(TagProposal::class)->findOneBy([
+        if (null !== $this->entityManager->getRepository(TagProposalEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $id,
         ])) {
             return;
         }
 
-        $this->entityManager->persist(new TagProposal(
+        $this->entityManager->persist(new TagProposalEntity(
             $tenantId,
             $id,
             $type,
@@ -309,11 +311,11 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
 
     public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void
     {
-        $proposal = $this->entityManager->getRepository(TagProposal::class)->findOneBy([
+        $proposal = $this->entityManager->getRepository(TagProposalEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $id,
         ]);
-        if (!$proposal instanceof TagProposal) {
+        if (!$proposal instanceof TagProposalEntity) {
             return;
         }
 
@@ -323,7 +325,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
 
     public function insertAudit(string $tenantId, TagAuditRecord $record): void
     {
-        if (null !== $this->entityManager->getRepository(TagAuditLog::class)->findOneBy([
+        if (null !== $this->entityManager->getRepository(TagAuditLogEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $record->id,
         ])) {
@@ -340,7 +342,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
             $details = [];
         }
 
-        $this->entityManager->persist(new TagAuditLog(
+        $this->entityManager->persist(new TagAuditLogEntity(
             $tenantId,
             $record->id,
             $record->action,
@@ -358,7 +360,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         return $this->entityManager->createQueryBuilder()
             ->select('t')
-            ->from(Tag::class, 't')
+            ->from(TagEntity::class, 't')
             ->where('t.tenant = :tenant')
             ->orderBy('t.slug', 'ASC')
             ->setParameter('tenant', $tenantId)
@@ -368,8 +370,8 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
 
     public function getPolicy(string $tenantId): array
     {
-        $policy = $this->entityManager->getRepository(TagPolicy::class)->find($tenantId);
-        if (!$policy instanceof TagPolicy) {
+        $policy = $this->entityManager->getRepository(TagPolicyEntity::class)->find($tenantId);
+        if (!$policy instanceof TagPolicyEntity) {
             return [];
         }
 
@@ -378,11 +380,11 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
 
     public function setPolicy(string $tenantId, array $policy): void
     {
-        $existing = $this->entityManager->getRepository(TagPolicy::class)->find($tenantId);
-        if ($existing instanceof TagPolicy) {
+        $existing = $this->entityManager->getRepository(TagPolicyEntity::class)->find($tenantId);
+        if ($existing instanceof TagPolicyEntity) {
             $existing->setPolicy($policy);
         } else {
-            $this->entityManager->persist(new TagPolicy($tenantId, $policy));
+            $this->entityManager->persist(new TagPolicyEntity($tenantId, $policy));
         }
 
         $this->flushSafely();
@@ -395,10 +397,10 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         return $this->entityManager->createQueryBuilder()
             ->select('t.id AS tagId, t.slug AS slug, t.label AS label, COUNT(l.tagId) AS cnt')
-            ->from(TagLink::class, 'l')
-            ->join(Tag::class, 't', 'WITH', 't.tenant = l.tenant AND t.id = l.tagId')
+            ->from(TagAssignmentEntity::class, 'l')
+            ->join(TagEntity::class, 't', 'WITH', 't.tenant = l.tenant AND t.id = l.tagId')
             ->where('l.tenant = :tenant')
-            ->andWhere('l.entityType = :assignedType')
+            ->andWhere('l.assignedType = :assignedType')
             ->groupBy('t.id, t.slug, t.label')
             ->orderBy('cnt', 'DESC')
             ->addOrderBy('t.slug', 'ASC')
@@ -416,8 +418,8 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         return $this->entityManager->createQueryBuilder()
             ->select('t.id AS tagId, t.slug AS slug, t.label AS label, COUNT(l.tagId) AS cnt')
-            ->from(TagLink::class, 'l')
-            ->join(Tag::class, 't', 'WITH', 't.tenant = l.tenant AND t.id = l.tagId')
+            ->from(TagAssignmentEntity::class, 'l')
+            ->join(TagEntity::class, 't', 'WITH', 't.tenant = l.tenant AND t.id = l.tagId')
             ->where('l.tenant = :tenant')
             ->groupBy('t.id, t.slug, t.label')
             ->orderBy('cnt', 'DESC')
@@ -430,10 +432,10 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     public function putClassification(string $tenantId, TagClassificationRecord $record): void
     {
         $existing = $this->findClassification($tenantId, $record->scope, $record->refId, $record->key);
-        if ($existing instanceof TagClassification) {
+        if ($existing instanceof TagClassificationEntity) {
             $existing->setValue($record->value);
         } else {
-            $this->entityManager->persist(new TagClassification(
+            $this->entityManager->persist(new TagClassificationEntity(
                 $tenantId,
                 $record->id,
                 $record->scope,
@@ -453,7 +455,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         return $this->entityManager->createQueryBuilder()
             ->select('c.key AS key, c.value AS value')
-            ->from(TagClassification::class, 'c')
+            ->from(TagClassificationEntity::class, 'c')
             ->where('c.tenant = :tenant')
             ->andWhere('c.scope = :scope')
             ->andWhere('c.refId = :refId')
@@ -467,14 +469,14 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
 
     public function putEffect(string $tenantId, TagEffectRecord $record): void
     {
-        if (null !== $this->entityManager->getRepository(TagAssignmentEffect::class)->findOneBy([
+        if (null !== $this->entityManager->getRepository(TagAssignmentEffectProjection::class)->findOneBy([
             'tenant' => $tenantId,
             'id' => $record->id,
         ])) {
             return;
         }
 
-        $this->entityManager->persist(new TagAssignmentEffect(
+        $this->entityManager->persist(new TagAssignmentEffectProjection(
             $tenantId,
             $record->id,
             $record->assignedType,
@@ -490,7 +492,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void
     {
         $this->entityManager->createQueryBuilder()
-            ->delete(TagAssignmentEffect::class, 'e')
+            ->delete(TagAssignmentEffectProjection::class, 'e')
             ->where('e.tenant = :tenant')
             ->andWhere('e.sourceScope = :scope')
             ->andWhere('e.sourceId = :sourceId')
@@ -508,7 +510,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     {
         return $this->entityManager->createQueryBuilder()
             ->select('a.assignedType AS assigned_type, a.assignedId AS assigned_id')
-            ->from(TagAssignment::class, 'a')
+            ->from(TagAssignmentEntity::class, 'a')
             ->where('a.tenant = :tenant')
             ->andWhere('a.tagId = :tagId')
             ->orderBy('a.assignedType', 'ASC')
@@ -525,13 +527,13 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
     public function listTagsByScheme(string $tenantId, string $schemeName): array
     {
         $scheme = $this->getSchemeByName($tenantId, $schemeName);
-        if (!$scheme instanceof TagScheme) {
+        if (!$scheme instanceof TagSchemeEntity) {
             return [];
         }
 
         return $this->entityManager->createQueryBuilder()
             ->select('t.id AS tag_id')
-            ->from(Tag::class, 't')
+            ->from(TagEntity::class, 't')
             ->where('t.tenant = :tenant')
             ->orderBy('t.slug', 'ASC')
             ->setParameter('tenant', $tenantId)
@@ -539,16 +541,83 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagReadRepo
             ->getArrayResult();
     }
 
-    private function getManagedTag(string $tenantId, string $tagId): ?Tag
+
+    public function findById(string $tenant, string $id): ?array
+    {
+        $entity = $this->getById($tenant, $id);
+
+        return $entity instanceof TagEntity ? $this->toCrudArray($entity) : null;
+    }
+
+    public function create(string $tenant, TagEntityCreateRecord $record): array
+    {
+        $entity = TagEntity::create(
+            tenant: $tenant,
+            id: $record->id,
+            slug: $record->slug,
+            label: $record->nameEntity,
+            locale: $record->locale,
+            weight: $record->weight,
+        );
+
+        $this->saveTag($tenant, $entity);
+
+        return $this->toCrudArray($entity);
+    }
+
+    public function patch(string $tenant, string $id, array $patch): void
+    {
+        $entity = $this->getById($tenant, $id);
+        if (!$entity instanceof TagEntity) {
+            return;
+        }
+
+        $entity->patch($patch);
+        $this->flushSafely();
+    }
+
+    public function delete(string $tenant, string $id): void
+    {
+        $this->deleteTag($tenant, $id);
+    }
+
+    /**
+     * @return array{
+     *     id:string,
+     *     slug:string,
+     *     nameEntity:string,
+     *     locale:string,
+     *     weight:int,
+     *     required_flag:bool,
+     *     mod_only_flag:bool,
+     *     created_at:string,
+     *     updated_at:string
+     * }
+     */
+    private function toCrudArray(TagEntity $entity): array
+    {
+        return [
+            'id' => $entity->id(),
+            'slug' => $entity->slug(),
+            'nameEntity' => $entity->label(),
+            'locale' => (string) ($entity->locale() ?? ''),
+            'weight' => $entity->weight(),
+            'required_flag' => $entity->requiredFlag(),
+            'mod_only_flag' => $entity->modOnlyFlag(),
+            'created_at' => $entity->createdAt()->format(DATE_ATOM),
+            'updated_at' => $entity->updatedAt()?->format(DATE_ATOM) ?? '',
+        ];
+    }
+    private function getManagedTag(string $tenantId, string $tagId): ?TagEntity
     {
         $tag = $this->getById($tenantId, $tagId);
 
-        return $tag instanceof Tag ? $tag : null;
+        return $tag instanceof TagEntity ? $tag : null;
     }
 
-    private function findClassification(string $tenantId, string $scope, string $refId, string $key): ?TagClassification
+    private function findClassification(string $tenantId, string $scope, string $refId, string $key): ?TagClassificationEntity
     {
-        return $this->entityManager->getRepository(TagClassification::class)->findOneBy([
+        return $this->entityManager->getRepository(TagClassificationEntity::class)->findOneBy([
             'tenant' => $tenantId,
             'scope' => $scope,
             'refId' => $refId,

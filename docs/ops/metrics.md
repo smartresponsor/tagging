@@ -27,7 +27,7 @@ TagMetrics::observeLatency('/tag/search', microtime(true)-$start);
 
 ```php
 if ($path === '/tag/_metrics') {
-  $ctl = new App\Tagging\Http\Api\Tag\TagMetricsController();
+  $ctl = new App\Tagging\Service\Http\Tag\TagMetricsService();
   [$code,$hdr,$body] = $ctl->metrics();
   http_response_code($code); foreach ($hdr as $k=>$v){ header($k.': '.$v); } echo $body; exit;
 }

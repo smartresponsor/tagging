@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Core\Tag\TagLink;
+use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,9 +17,9 @@ final readonly class TagAssignService implements TagAssignOperationInterface
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private TagEntityRepositoryInterface $tagEntities,
+        private TagCrudRepositoryInterface $tagEntities,
         private TagOutboxPublisher $outbox,
-        private ?TagIdempotencyStore $idem = null,
+        private ?TagIdempotencyStoreEntity $idem = null,
         TagErrorSink|callable|null $errorSink = null,
     ) {
         $this->errorSink = TagErrorSinkFactory::from($errorSink);
@@ -106,22 +106,26 @@ final readonly class TagAssignService implements TagAssignOperationInterface
 
     private function insertAssignment(string $tenant, string $tagId, string $entityType, string $entityId): bool
     {
-        /** @var TagLink|null $existing */
-        $existing = $this->entityManager->getRepository(TagLink::class)->findOneBy([
+        /** @var TagAssignmentEntity|null $existing */
+        $existing = $this->entityManager->getRepository(TagAssignmentEntity::class)->findOneBy([
             'tenant' => $tenant,
-            'entityType' => $entityType,
-            'entityId' => $entityId,
+            'assignedType' => $entityType,
+            'assignedId' => $entityId,
             'tagId' => $tagId,
         ]);
-        if ($existing instanceof TagLink) {
+        if ($existing instanceof TagAssignmentEntity) {
             return false;
         }
 
-        $this->entityManager->persist(new TagLink($tenant, $entityType, $entityId, $tagId));
+        $this->entityManager->persist(TagAssignmentEntity::create($tenant, self::assignmentId($tenant, $tagId, $entityType, $entityId), $tagId, $entityType, $entityId));
 
         return true;
     }
 
+    private static function assignmentId(string $tenant, string $tagId, string $assignedType, string $assignedId): string
+    {
+        return 'ta_' . substr(hash('sha256', $tenant . "\0" . $assignedType . "\0" . $assignedId . "\0" . $tagId), 0, 32);
+    }
     private function publishAssignedEvent(string $tenant, string $tagId, string $entityType, string $entityId): void
     {
         $this->outbox->publish($tenant, 'tag.assigned', [

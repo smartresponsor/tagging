@@ -1,22 +1,17 @@
 <?php
 
-// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
 interface TagEntityQueryServiceInterface
 {
-    /**
-     * @return array{
-     *     id: string,
-     *     slug: string,
-     *     name: string,
-     *     locale: string,
-     *     weight: int,
-     *     created_at?: string,
-     *     updated_at?: string
-     * }|null
-     */
-    public function get(string $tenant, string $id): ?array;
+    /** @return list<array<string,mixed>> */
+    public function index(string $tenant, int $limit = 100, int $offset = 0): array;
+
+    /** @return array<string,mixed>|null */
+    public function findById(string $tenant, string $id): ?array;
+
+    /** @return array<string,mixed>|null */
+    public function findBySlug(string $tenant, string $slug): ?array;
 }

@@ -5,30 +5,30 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Core\Tag\Tag;
-use App\Tagging\Entity\Core\Tag\TagAssignment;
-use App\Tagging\Entity\Core\Tag\TagRelation;
-use App\Tagging\Entity\Core\Tag\TagScheme;
-use App\Tagging\Entity\Core\Tag\TagSynonym;
+use App\Tagging\Entity\Tag\TagEntity;
+use App\Tagging\Entity\Tag\TagEntityAssignment;
+use App\Tagging\Entity\Tag\TagEntityRelation;
+use App\Tagging\Entity\Tag\TagEntityScheme;
+use App\Tagging\Entity\Tag\TagEntitySynonym;
 use App\Tagging\Service\Core\Record\TagAuditRecord;
 use App\Tagging\Service\Core\Record\TagClassificationRecord;
 use App\Tagging\Service\Core\Record\TagEffectRecord;
 
 interface TagWriteRepositoryInterface
 {
-    public function saveTag(string $tenantId, Tag $tag): void;
+    public function saveTag(string $tenantId, TagEntity $tag): void;
 
     public function deleteTag(string $tenantId, string $id): void;
 
-    public function saveAssignment(string $tenantId, TagAssignment $a): void;
+    public function saveAssignment(string $tenantId, TagAssignmentEntity $a): void;
 
     public function deleteAssignment(string $tenantId, string $assignmentId): void;
 
-    public function saveSynonym(string $tenantId, TagSynonym $s): void;
+    public function saveSynonym(string $tenantId, TagSynonymEntity $s): void;
 
-    public function saveRelation(string $tenantId, TagRelation $r): void;
+    public function saveRelation(string $tenantId, TagRelationEntity $r): void;
 
-    public function saveScheme(string $tenantId, TagScheme $s): void;
+    public function saveScheme(string $tenantId, TagSchemeEntity $s): void;
 
     public function reassignAssignments(string $tenantId, string $fromTagId, string $toTagId): void;
 

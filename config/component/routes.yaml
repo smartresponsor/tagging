@@ -1,2 +1,2 @@
 tagging_component_routes:
-  resource: '../routes/tagging_native.yaml'
+  resource: '../platform/routes/crud/tag.yaml'

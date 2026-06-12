@@ -19,7 +19,7 @@ final class TagSearchSuggestCleanupTest extends TestCase
         $read = new class implements TagReadModelInterface {
             public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
             {
-                return [['id' => 't1', 'slug' => 'priority', 'name' => 'Priority', 'locale' => null, 'weight' => 100]];
+                return [['id' => 't1', 'slug' => 'priority', 'nameEntity' => 'Priority', 'locale' => null, 'weight' => 100]];
             }
 
             public function countSearch(string $tenant, string $q): int
@@ -29,7 +29,7 @@ final class TagSearchSuggestCleanupTest extends TestCase
 
             public function suggest(string $tenant, string $q, int $limit = 10): array
             {
-                return [['slug' => 'priority', 'name' => 'Priority']];
+                return [['slug' => 'priority', 'nameEntity' => 'Priority']];
             }
 
             public function linksForTag(string $tenant, string $tagId, int $limit = 100): array

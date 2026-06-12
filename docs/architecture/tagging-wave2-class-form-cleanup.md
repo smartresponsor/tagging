@@ -23,7 +23,7 @@ Examples:
 - `CreateTag` → `TagCreateUseCase`
 - `Authorize` → `TagAuthorizeMiddleware`
 - `JsonResponder` → `TagJsonResponder`
-- `SearchController` → `TagSearchController`
+- `SearchController` → `TagSearchService`
 - `OutboxPublisher` → `TagOutboxPublisher`
 - `HmacV2Verifier` → `TagHmacV2Verifier`
 

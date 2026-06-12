@@ -7,6 +7,7 @@ declare(strict_types=1);
  * @return array{
  *     tenant:string,
  *     tags:array<int,array<string,mixed>>,
+ *     admin_rows:array<int,array<string,mixed>>,
  *     links:array<int,array<string,mixed>>,
  *     catalog:array<string,mixed>
  * }
@@ -25,6 +26,7 @@ return static function (string $root): array {
     return [
         'tenant' => (string) ($catalog['tenant'] ?? 'demo'),
         'tags' => is_array($fixture['tags'] ?? null) ? $fixture['tags'] : [],
+        'admin_rows' => is_array($fixture['admin_rows'] ?? null) ? $fixture['admin_rows'] : [],
         'links' => is_array($fixture['links'] ?? null) ? $fixture['links'] : [],
         'catalog' => $catalog,
     ];

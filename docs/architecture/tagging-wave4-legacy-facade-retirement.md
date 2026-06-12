@@ -10,7 +10,7 @@ Wave 4 removes post-renaming compatibility facades and duplicate HTTP/service su
 
 ## Retired legacy files
 
-- `src/Http/Api/Tag/MetricsController.php` — replaced by `src/Http/Api/Tag/TagMetricsController.php`.
+- `src/Http/Api/Tag/MetricsController.php` — replaced by `src/Http/Api/Tag/TagMetricsService.php`.
 - `src/Service/Authz/TagAuthorizer.php` — canonical implementation lives in `src/Service/Core/Authz/TagAuthorizer.php`.
 - `src/Service/Slug/Tag/TagSlugPolicy.php` — canonical implementation lives in `src/Service/Core/Slug/TagSlugPolicy.php`.
 - `src/Service/Slug/Tag/TagSlugifier.php` — canonical implementation lives in `src/Service/Core/Slug/TagSlugifier.php`.

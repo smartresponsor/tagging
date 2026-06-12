@@ -49,14 +49,14 @@ final class TagSearchServiceTotalTest extends TestCase
                     [
                         'id' => '01HTESTSEARCH0000000000000',
                         'slug' => 'summer-sale',
-                        'name' => 'Summer Sale',
+                        'nameEntity' => 'Summer Sale',
                         'locale' => 'en',
                         'weight' => 10,
                     ],
                     [
                         'id' => '01HTESTSEARCH0000000000001',
                         'slug' => 'summer-hats',
-                        'name' => 'Summer Hats',
+                        'nameEntity' => 'Summer Hats',
                         'locale' => 'en',
                         'weight' => 8,
                     ],

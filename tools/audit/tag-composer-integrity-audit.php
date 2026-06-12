@@ -28,7 +28,7 @@ if ($autoload !== 'src/') {
 
 $requiredDevPackages = array_keys($composerJson['require-dev'] ?? []);
 $lockedDevPackages = array_map(
-    static fn(array $package): string => (string) ($package['name'] ?? ''),
+    static fn(array $package): string => (string) ($package['nameEntity'] ?? ''),
     $composerLock['packages-dev'] ?? [],
 );
 

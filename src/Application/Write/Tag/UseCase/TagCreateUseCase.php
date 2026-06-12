@@ -13,7 +13,7 @@ use App\Tagging\Cache\Store\Tag\TagSuggestCache;
 use App\Tagging\Cache\Store\Tag\TagQueryCacheInvalidator;
 use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
 use App\Tagging\Service\Core\Slug\TagSlugPolicy;
-use App\Tagging\Service\Core\TagEntityRepositoryInterface;
+use App\Tagging\Service\Core\TagCrudRepositoryInterface;
 use App\Tagging\Service\Core\TagTransactionRunnerInterface;
 use Random\RandomException;
 
@@ -22,7 +22,7 @@ final readonly class TagCreateUseCase implements TagCreateUseCaseInterface
     private TagQueryCacheInvalidator $cacheInvalidator;
 
     public function __construct(
-        private TagEntityRepositoryInterface $repo,
+        private TagCrudRepositoryInterface $repo,
         private TagSlugPolicy $slugPolicy,
         private TagTransactionRunnerInterface $transaction,
         private ?TagSearchCache $searchCache = null,
@@ -42,14 +42,14 @@ final readonly class TagCreateUseCase implements TagCreateUseCaseInterface
             return TagResult::failure(TagError::InvalidTenant);
         }
 
-        $name = trim((string) ($command->payload['name'] ?? ''));
-        if ('' === $name) {
+        $nameEntity = trim((string) ($command->payload['nameEntity'] ?? ''));
+        if ('' === $nameEntity) {
             return TagResult::failure(TagError::ValidationFailed);
         }
 
         $slug = trim((string) ($command->payload['slug'] ?? ''));
         if ('' === $slug) {
-            $slug = $this->slugPolicy->make($command->tenant, $name);
+            $slug = $this->slugPolicy->make($command->tenant, $nameEntity);
         }
         if (!$this->slugPolicy->validate($slug)) {
             return TagResult::failure(TagError::ValidationFailed);
@@ -68,10 +68,10 @@ final readonly class TagCreateUseCase implements TagCreateUseCaseInterface
 
         try {
             /** @var array<string,mixed> $created */
-            $created = $this->transaction->run(function () use ($command, $slug, $name, $locale, $weight): array {
+            $created = $this->transaction->run(function () use ($command, $slug, $nameEntity, $locale, $weight): array {
                 return $this->repo->create(
                     $command->tenant,
-                    new TagEntityCreateRecord($this->ulid(), $slug, $name, $locale, $weight),
+                    new TagEntityCreateRecord($this->ulid(), $slug, $nameEntity, $locale, $weight),
                 );
             });
 

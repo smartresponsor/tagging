@@ -15,8 +15,10 @@ final class TagFixtureDemoTest extends TestCase
         self::assertIsArray($fixture);
 
         $tags = $fixture['tags'] ?? [];
+        $adminRows = $fixture['admin_rows'] ?? [];
         $links = $fixture['links'] ?? [];
         self::assertIsArray($tags);
+        self::assertIsArray($adminRows);
         self::assertIsArray($links);
 
         $ids = [];
@@ -31,6 +33,18 @@ final class TagFixtureDemoTest extends TestCase
             self::assertArrayNotHasKey($slug, $slugs);
             $ids[$id] = true;
             $slugs[$slug] = true;
+        }
+
+        $adminIds = [];
+        foreach ($adminRows as $row) {
+            self::assertIsArray($row);
+            self::assertIsInt($row['id'] ?? null);
+            self::assertGreaterThan(0, $row['id']);
+            $tagId = (string) ($row['tag_id'] ?? '');
+            self::assertNotSame('', $tagId);
+            self::assertArrayHasKey($tagId, $ids);
+            self::assertArrayNotHasKey((string) $row['id'], $adminIds);
+            $adminIds[(string) $row['id']] = true;
         }
 
         $seen = [];

@@ -11,7 +11,7 @@ final class TagIdempotencyHelper
     /**
      * @return array{ok:bool, duplicated?:bool, conflict?:bool, code?:string, not_found?:bool}|null
      */
-    public static function begin(?TagIdempotencyStore $store, TagIdempotencyRequest $request): ?array
+    public static function begin(?TagIdempotencyStoreEntity $store, TagIdempotencyRequest $request): ?array
     {
         if (null === $request->idempotencyKey || '' === $request->idempotencyKey || null === $store) {
             return null;

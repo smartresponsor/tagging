@@ -3,16 +3,16 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Ops\Metrics;
+namespace App\Tagging\Ops\Metrics;
 
 final class TagMetrics
 {
-    private static ?PrometheusExporter $exp = null;
+    private static ?TagPrometheusExporter $exp = null;
 
-    public static function exporter(): PrometheusExporter
+    public static function exporter(): TagPrometheusExporter
     {
         if (!self::$exp) {
-            self::$exp = new PrometheusExporter();
+            self::$exp = new TagPrometheusExporter();
             // Counters
             self::$exp->counter('tag_assign_total', 'Tag assignments', ['tenant']);
             self::$exp->counter('tag_unassign_total', 'Tag unassignments', ['tenant']);

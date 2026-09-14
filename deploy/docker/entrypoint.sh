@@ -3,34 +3,28 @@ set -euo pipefail
 
 cd /app
 
-mkdir -p \
-  build/phpstan \
-  report/tag \
-  report/webhook/spool \
-  var/cache/nonce
-
-git config --global --add safe.directory /app || true
-
-if [[ ! -f vendor/autoload.php ]]; then
+if [[ ! -d vendor ]]; then
   composer install --no-interaction --prefer-dist
 fi
 
-if [[ -f package-lock.json ]]; then
-  npm ci
-elif [[ -f package.json ]]; then
-  npm install
-fi
-
-if [[ -f package.json ]] && ! compgen -G "${PLAYWRIGHT_BROWSERS_PATH:-/ms-playwright}/chromium-*" >/dev/null; then
-  npx playwright install chromium
-fi
-
-if [[ "${APP_AUTO_MIGRATE:-1}" == "1" ]]; then
+if [[ "${APP_AUTO_MIGRATE:-0}" == "1" ]]; then
   php tools/db/tag-migrate.php
 fi
 
-if [[ "${APP_AUTO_SEED:-1}" == "1" ]]; then
-  php tools/seed/tag-seed.php
+if [[ "${APP_AUTO_SEED:-0}" == "1" ]]; then
+  php tools/seed/tag-seed.php || true
 fi
 
-exec php -S "${APP_HOST:-0.0.0.0}:${APP_PORT:-8080}" -t public public/index.php
+HOST="${APP_HOST:-0.0.0.0}"
+PORT="${APP_PORT:-8080}"
+
+if [[ -f public/index.php ]]; then
+  exec php -S "${HOST}:${PORT}" -t public
+fi
+
+if [[ -f migration/symfony-native-target/public/index.php ]]; then
+  exec php -S "${HOST}:${PORT}" -t migration/symfony-native-target/public
+fi
+
+echo "No public/index.php runtime entrypoint found." >&2
+exit 1

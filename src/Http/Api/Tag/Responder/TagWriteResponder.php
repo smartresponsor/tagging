@@ -3,18 +3,18 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag\Responder;
+namespace App\Tagging\Http\Api\Tag\Responder;
 
-use App\Application\Write\Tag\Dto\TagError;
-use App\Application\Write\Tag\Dto\TagResult;
+use App\Tagging\Application\Write\Tag\Dto\TagError;
+use App\Tagging\Application\Write\Tag\Dto\TagResult;
 
 final class TagWriteResponder
 {
-    private JsonResponder $json;
+    private TagJsonResponder $json;
 
     public function __construct()
     {
-        $this->json = new JsonResponder();
+        $this->json = new TagJsonResponder();
     }
 
     /** @return array{0:int,1:array<string,string>,2:string} */

@@ -3,7 +3,7 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$root = require __DIR__ . '/../_bootstrap.php';
+$root = require __DIR__ . '/../tag-bootstrap.php';
 $quota = file_get_contents($root . '/config/tag_quota.yaml') ?: '';
 $assignment = file_get_contents($root . '/config/tag_assignment.yaml') ?: '';
 $search = file_get_contents($root . '/config/tag_search.yaml') ?: '';

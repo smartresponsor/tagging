@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tagging\Service\Http\Tag;
+
+use App\Tagging\Service\Core\TagEntityQueryServiceInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+final class TagShowService extends AbstractTagService
+{
+    public function __construct(private TagEntityQueryServiceInterface $query) {}
+
+    public function __invoke(Request $request, ?string $id = null, ?string $slug = null): Response
+    {
+        try {
+            $id ??= $request->attributes->getString('id') ?: null;
+            $slug ??= $request->attributes->getString('slug') ?: null;
+
+            $item = null !== $id
+                ? $this->query->findById($this->tenant($request), $id)
+                : $this->query->findBySlug($this->tenant($request), (string) $slug);
+
+            return null === $item
+                ? $this->json(['ok' => false, 'code' => 'not_found'], 404)
+                : $this->json(['ok' => true, 'item' => $item]);
+        } catch (\Throwable $error) {
+            return $this->failure($error);
+        }
+    }
+}

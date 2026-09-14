@@ -1,11 +1,34 @@
+imports:
+    - { resource: 'services/infrastructure.yaml' }
+    - { resource: 'services/cache.yaml' }
+    - { resource: 'services/read_model.yaml' }
+    - { resource: 'services/application.yaml' }
+    - { resource: 'services/http.yaml' }
+    - { resource: 'services/ops.yaml' }
+    - { resource: 'services/core.yaml' }
+    - { resource: 'services/tagging.yaml' }
+
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
-    App\\:
+    App\Tagging\:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
-            - '../src/Kernel.php'
+            - '../src/Data/Model/Tag/TagEntity.php'
+            - '../src/Form/Config/TaggingPolicyConfigFormType.php'
+            - '../src/RepositoryInterface/'
+            - '../src/Repository/Data/Tag/TagEntityRepository.php'
+            - '../src/Value/'
+            - '../src/Service/Core/TagBulkService.php'
+            - '../src/Tests/'
+
+    App\Tagging\Service\Config\TaggingPolicyConfigService:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $applyService: '@App\Administering\Service\Config\AdministrationConfigApplyService'
+            $fileWriter: '@App\Administering\Service\Config\AdministrationConfigFileWriterService'
+        tags: ['administering.config_tool']

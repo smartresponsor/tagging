@@ -11,8 +11,8 @@ final class TagSdkAndDemoTruthTest extends TestCase
 {
     public function testSdkClientsExposeBulkOperations(): void
     {
-        $phpSdk = file_get_contents(__DIR__ . '/../sdk/php/tag/Client.php');
-        $tsSdk = file_get_contents(__DIR__ . '/../sdk/ts/tag/client.ts');
+        $phpSdk = file_get_contents(__DIR__ . '/../sdk/php/tag/TagClient.php');
+        $tsSdk = file_get_contents(__DIR__ . '/../sdk/ts/tag/tag-client.ts');
 
         self::assertIsString($phpSdk);
         self::assertIsString($tsSdk);

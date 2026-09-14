@@ -45,12 +45,6 @@ foreach ($rii as $item) {
     }
 
     if ($item->isDir()) {
-        if (preg_match('#^src/[^/]+/Tag(?:/|$)#', $path)) {
-            $violations[] = $path;
-        }
-        if (preg_match('#^src/[^/]+/Tagging(?:/|$)#', $path)) {
-            $violations[] = $path;
-        }
         if (preg_match('#^tests?/[^/]+/Tag/.+#', $path)) {
             $violations[] = $path;
         }

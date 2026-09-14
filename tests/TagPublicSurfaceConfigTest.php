@@ -19,11 +19,11 @@ final class TagPublicSurfaceConfigTest extends TestCase
 
         $publicSurface = $runtime['public_surface'] ?? [];
         self::assertContains(
-            ['method' => 'POST', 'path' => '/tag/assignments/bulk', 'name' => 'assignments bulk'],
+            ['method' => 'POST', 'path' => '/tag/assignments/bulk', 'nameEntity' => 'assignments bulk'],
             $publicSurface,
         );
         self::assertContains(
-            ['method' => 'POST', 'path' => '/tag/assignments/bulk-to-entity', 'name' => 'assignments bulk to entity'],
+            ['method' => 'POST', 'path' => '/tag/assignments/bulk-to-entity', 'nameEntity' => 'assignments bulk to entity'],
             $publicSurface,
         );
     }

@@ -1,0 +1,49 @@
+<?php
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
+
+namespace App\Tagging\Http\Api\Tag\Middleware;
+
+use App\Tagging\Http\Api\Tag\Responder\TagJsonResponder;
+use App\Tagging\Service\Core\Authz\TagAuthorizer;
+
+final readonly class TagAuthorizeMiddleware
+{
+    public function __construct(
+        private TagAuthorizer $auth,
+        private array $cfg,
+        private TagJsonResponder $responder = new TagJsonResponder(),
+    ) {}
+
+    /**
+     * Framework-agnostic example:
+     * $request = ['method','path','headers'=>['X-Actor-Id'=>..., 'X-Roles'=>...]]
+     * returns array [code, headers, body] on deny or delegates to $next
+     */
+    public function handle(array $request, callable $next): array
+    {
+        $hdrs = (array) ($request['headers'] ?? []);
+        $hRoles = (string) ($hdrs[$this->hdr()] ?? '');
+
+        $roles = $this->auth->parseRolesFromHeader($hRoles);
+        $op = $this->auth->detectOp((string) ($request['method'] ?? 'GET'), (string) ($request['path'] ?? '/'));
+
+        if (!$this->auth->isAllowed($op, $roles)) {
+            return $this->responder->reject(403, 'forbidden', ['op' => $op], [], false);
+        }
+
+        return $next($request);
+    }
+
+    private function hdr(): string
+    {
+        $h = $this->cfg['headers']['roles'] ?? null;
+
+        return is_string($h) && '' !== $h ? $h : match ('roles') {
+            'actor' => 'X-Actor-Id',
+            'roles' => 'X-Roles',
+            default => 'X-SR-roles',
+        };
+    }
+}

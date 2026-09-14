@@ -3,15 +3,15 @@
 // Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-namespace App\Http\Api\Tag\Responder;
+namespace App\Tagging\Http\Api\Tag\Responder;
 
 final class TagWebhookResponder
 {
-    private JsonResponder $json;
+    private TagJsonResponder $json;
 
     public function __construct()
     {
-        $this->json = new JsonResponder();
+        $this->json = new TagJsonResponder();
     }
 
     /** @return array{int,array<string,string>,string} */

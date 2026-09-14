@@ -4,7 +4,7 @@ Current runtime observability for the shipped Tag slice is centered on middlewar
 
 ## Active runtime observation
 
-- `Observe` wraps live host-minimal dispatch.
+- `TagObserveMiddleware` wraps live host-minimal dispatch.
 - `_status` remains the minimal health/readiness route.
 - `_surface` remains the discovery route for the public shell.
 
@@ -22,7 +22,7 @@ Current runtime observability for the shipped Tag slice is centered on middlewar
 
 ## Host-minimal cleanup
 
-- host-minimal now wraps dispatch through `Observe`, so latency/error metrics and slowlog recording apply on live requests, not only in docs
+- host-minimal now wraps dispatch through `TagObserveMiddleware`, so latency/error metrics and slowlog recording apply on live requests, not only in docs
 - the composition root exports `observeMiddleware` explicitly for isolated testing
 
 ## Operational use

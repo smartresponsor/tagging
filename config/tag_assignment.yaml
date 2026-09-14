@@ -1,6 +1,6 @@
 store:
   driver: pdo
-  table: tag_link
+  table: tag_assignment
 
 entity_types:
   - "*"

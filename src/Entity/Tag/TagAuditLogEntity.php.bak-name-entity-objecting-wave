@@ -1,0 +1,37 @@
+<?php
+
+// Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
+declare(strict_types=1);
+
+namespace App\Tagging\Entity\Tag;
+
+use App\Tagging\Repository\Core\Tag\TagAuditLogRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: TagAuditLogRepository::class)]
+#[ORM\Table(nameEntity: 'tag_audit_log')]
+#[ORM\Index(nameEntity: 'tag_audit_log_tenant_created_idx', columns: ['tenant', 'created_at'])]
+#[ORM\Index(nameEntity: 'tag_audit_log_entity_idx', columns: ['tenant', 'entity_type', 'entity_id'])]
+final class TagAuditLogEntity
+{
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'string')]
+        private string $tenant,
+        #[ORM\Id]
+        #[ORM\Column(type: 'string')]
+        private string $id,
+        #[ORM\Column(type: 'string')]
+        private string $action,
+        #[ORM\Column(nameEntity: 'entity_type', type: 'string')]
+        private string $entityType,
+        #[ORM\Column(nameEntity: 'entity_id', type: 'string')]
+        private string $entityId,
+        #[ORM\Column(type: 'json')]
+        private array $details = [],
+        #[ORM\Column(nameEntity: 'created_at', type: 'datetime_immutable')]
+        private ?\DateTimeImmutable $createdAt = null,
+    ) {
+        $this->createdAt ??= new \DateTimeImmutable();
+    }
+}

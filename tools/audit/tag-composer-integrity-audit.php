@@ -21,20 +21,46 @@ $composerLock = json_decode((string) file_get_contents($composerLockPath), true,
 
 $errors = [];
 
-$autoload = $composerJson['autoload']['psr-4']['App\\'] ?? null;
+$autoload = $composerJson['autoload']['psr-4']['App\Tagging\\'] ?? null;
 if ($autoload !== 'src/') {
-    $errors[] = 'composer.json must map App\\ to src/';
+    $errors[] = 'composer.json must map App\Tagging\\ to src/';
 }
 
+$requiredPackages = array_keys($composerJson['require'] ?? []);
 $requiredDevPackages = array_keys($composerJson['require-dev'] ?? []);
+$lockedPackages = array_map(
+    static fn(array $package): string => (string) ($package['name'] ?? ''),
+    $composerLock['packages'] ?? [],
+);
 $lockedDevPackages = array_map(
     static fn(array $package): string => (string) ($package['name'] ?? ''),
     $composerLock['packages-dev'] ?? [],
 );
+$lockedAllPackages = array_values(array_unique(array_merge($lockedPackages, $lockedDevPackages)));
+
+foreach ($requiredPackages as $packageName) {
+    if ('php' === $packageName || str_starts_with($packageName, 'ext-')) {
+        continue;
+    }
+
+    if (!in_array($packageName, $lockedPackages, true)) {
+        $errors[] = sprintf('composer.lock is missing required package: %s', $packageName);
+    }
+}
 
 foreach ($requiredDevPackages as $packageName) {
-    if (!in_array($packageName, $lockedDevPackages, true)) {
+    if (!in_array($packageName, $lockedAllPackages, true)) {
         $errors[] = sprintf('composer.lock is missing require-dev package: %s', $packageName);
+    }
+}
+
+foreach (['objecting/object', 'cruding/crud', 'viewing/view', 'interfacing/interface'] as $componentPackage) {
+    if (!array_key_exists($componentPackage, $composerJson['require'] ?? [])) {
+        $errors[] = sprintf('composer.json is missing required component package: %s', $componentPackage);
+    }
+
+    if (!in_array($componentPackage, $lockedPackages, true)) {
+        $errors[] = sprintf('composer.lock is missing required component package: %s', $componentPackage);
     }
 }
 

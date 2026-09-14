@@ -19,8 +19,8 @@ The following existing files have prepared target replacements:
 Use:
 
 ```bash
-php tools/migration/apply-symfony-native-target.php --dry-run
-php tools/migration/apply-symfony-native-target.php
+php tools/migration/tag-tag-apply-symfony-native-target.php --dry-run
+php tools/migration/tag-tag-apply-symfony-native-target.php
 ```
 
 ### Options

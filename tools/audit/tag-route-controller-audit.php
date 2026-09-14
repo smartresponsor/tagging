@@ -1,43 +1,38 @@
 <?php
 
-# Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$root = require __DIR__ . '/../_bootstrap.php';
-$catalog = require $root . '/config/tag_route_catalog.php';
-$routes = is_array($catalog['routes'] ?? null) ? $catalog['routes'] : [];
+$root = require __DIR__ . '/../tag-bootstrap.php';
+$composer = json_decode((string) file_get_contents($root . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
 $errors = [];
-foreach ($routes as $route) {
-    if (!is_array($route)) {
-        continue;
-    }
 
-    $controller = trim((string) ($route['controller'] ?? ''));
-    $operation = trim((string) ($route['operation'] ?? 'unknown'));
-    if ('' === $controller) {
-        $errors[] = 'missing controller for operation ' . $operation;
+if (!isset($composer['require']['cruding/crud'])) {
+    $errors[] = 'cruding/crud must be a runtime dependency';
+}
 
-        continue;
-    }
-
-    [$class, $method] = explode('::', $controller, 2);
-    $path = $root . '/src/' . str_replace('App\\', '', $class);
-    $path = str_replace('\\', '/', $path) . '.php';
-    if (!is_file($path)) {
-        $errors[] = 'missing file ' . $path;
-        continue;
-    }
-    require_once $path;
-    if (!class_exists($class)) {
-        $errors[] = 'missing class ' . $class;
-        continue;
-    }
-    if (!method_exists($class, $method)) {
-        $errors[] = 'missing method ' . $controller;
+$forbiddenRouteSources = [
+    'config/component/routes.yaml',
+    'config/platform/routes/crud/tag.yaml',
+];
+foreach ($forbiddenRouteSources as $relativePath) {
+    if (is_file($root . '/' . $relativePath)) {
+        $errors[] = 'local generic CRUD route source remains: ' . $relativePath;
     }
 }
-if ($errors !== []) {
+
+$controllerRoot = $root . '/src/Controller';
+if (is_dir($controllerRoot)) {
+    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($controllerRoot));
+    foreach ($iterator as $file) {
+        if ($file->isFile() && 'php' === strtolower($file->getExtension()) && str_contains($file->getFilename(), 'Crud')) {
+            $errors[] = 'local generic CRUD controller remains: ' . $file->getPathname();
+        }
+    }
+}
+
+if ([] !== $errors) {
     fwrite(STDERR, implode(PHP_EOL, $errors) . PHP_EOL);
     exit(1);
 }
+
 echo "tag-route-controller-audit: ok\n";

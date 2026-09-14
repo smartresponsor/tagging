@@ -3,9 +3,9 @@
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
-$root = require __DIR__ . '/../_bootstrap.php';
-$phpSdk = file_get_contents($root . '/sdk/php/tag/Client.php') ?: '';
-$tsSdk = file_get_contents($root . '/sdk/ts/tag/client.ts') ?: '';
+$root = require __DIR__ . '/../tag-bootstrap.php';
+$phpSdk = file_get_contents($root . '/sdk/php/tag/TagClient.php') ?: '';
+$tsSdk = file_get_contents($root . '/sdk/ts/tag/tag-client.ts') ?: '';
 $sdkReadme = file_get_contents($root . '/sdk/README.md') ?: '';
 $errors = [];
 $required = [

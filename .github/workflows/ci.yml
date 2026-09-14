@@ -158,8 +158,8 @@ jobs:
       - run: composer run -n demo:seed
       - run: composer run -n audit:bootstrap
       - run: composer run -n audit:version
-      - name: Start host-minimal
-        run: php -S 127.0.0.1:8080 host-minimal/index.php > /tmp/tag-host.log 2>&1 &
+      - name: Start Symfony native runtime
+        run: php -S 127.0.0.1:8080 -t public public/index.php > /tmp/tag-symfony.log 2>&1 &
       - name: Wait for status
         run: |
           for i in $(seq 1 30); do
@@ -168,15 +168,15 @@ jobs:
             fi
             sleep 1
           done
-          cat /tmp/tag-host.log || true
+          cat /tmp/tag-symfony.log || true
           exit 1
       - run: composer run -n smoke:runtime
-      - name: Upload host-minimal runtime log on failure
+      - name: Upload Symfony runtime log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: runtime-smoke-host-log
-          path: /tmp/tag-host.log
+          name: runtime-smoke-symfony-log
+          path: /tmp/tag-symfony.log
           if-no-files-found: ignore
 
   e2e-playwright:
@@ -219,8 +219,8 @@ jobs:
       - run: composer run -n db:migrate
       - run: composer run -n demo:seed
       - run: npm run e2e:install
-      - name: Start host-minimal for E2E gate
-        run: php -S 127.0.0.1:8080 host-minimal/index.php > /tmp/tag-host-e2e.log 2>&1 &
+      - name: Start Symfony native runtime for E2E gate
+        run: php -S 127.0.0.1:8080 -t public public/index.php > /tmp/tag-symfony-e2e.log 2>&1 &
       - name: Wait for runtime status
         run: |
           for i in $(seq 1 30); do
@@ -229,7 +229,7 @@ jobs:
             fi
             sleep 1
           done
-          cat /tmp/tag-host-e2e.log || true
+          cat /tmp/tag-symfony-e2e.log || true
           exit 1
       - run: composer run -n test:e2e
       - name: Upload Playwright report on failure
@@ -240,5 +240,5 @@ jobs:
           path: |
             playwright-report
             test-results
-            /tmp/tag-host-e2e.log
+            /tmp/tag-symfony-e2e.log
           if-no-files-found: ignore

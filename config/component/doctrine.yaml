@@ -1,0 +1,17 @@
+# Import this file from the host only when the component owns Doctrine entities.
+# Entity classes remain component-owned and must not be used as external API contracts.
+doctrine:
+  orm:
+    mappings:
+      TaggingEntity:
+        type: attribute
+        is_bundle: false
+        dir: '%kernel.project_dir%/src/Entity'
+        prefix: 'App\Tagging\Entity'
+        alias: TaggingEntity
+      TaggingDataModel:
+        type: attribute
+        is_bundle: false
+        dir: '%kernel.project_dir%/src/Data/Model/Tag'
+        prefix: 'App\Tagging\Data\Model\Tag'
+        alias: TaggingDataModel

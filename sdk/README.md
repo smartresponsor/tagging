@@ -37,7 +37,7 @@ await client.suggest('pri');
 ```php
 use SR\SDK\Tag\Client;
 
-$client = new Client('http://127.0.0.1:8080', ['X-Tenant-Id' => 'demo']);
+$client = new TagClient('http://127.0.0.1:8080', ['X-Tenant-Id' => 'demo']);
 $client->surface();
 $client->bulkAssignments([
     'operations' => [

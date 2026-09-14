@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Tagging\Service\:
+        resource: '../../src/Service/'
+        exclude:
+            - '../../src/Service/Core/TagBulkService.php'

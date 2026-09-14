@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-$root = require __DIR__ . '/../_bootstrap.php';
+$root = require __DIR__ . '/../tag-bootstrap.php';
 $checks = [
     $root . '/tools/audit/tag-surface-audit.php',
     $root . '/tools/audit/tag-contract-audit.php',

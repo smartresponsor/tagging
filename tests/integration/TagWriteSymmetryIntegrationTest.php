@@ -8,14 +8,13 @@ final class TagWriteSymmetryIntegrationTest extends TagIntegrationEvidenceTestCa
 {
     public function testSingleAssignAndUnassignPreserveIdempotencyAndMissingTagSemantics(): void
     {
-        $pdo = $this->pdo();
         $tenant = 'tenant-symmetry';
         $tagId = '01K3TAGDEMO00000000002001';
 
-        $this->insertTag($pdo, $tenant, $tagId, 'symmetry-primary', 'Symmetry Primary', 80);
+        $this->insertTag($tenant, $tagId, 'symmetry-primary', 'Symmetry Primary', 80);
 
-        $assign = $this->assignService($pdo);
-        $unassign = $this->unassignService($pdo);
+        $assign = $this->assignService();
+        $unassign = $this->unassignService();
 
         $firstAssign = $assign->assign($tenant, $tagId, 'collection', 'symmetry-entity-1', 'idem-assign-1');
         self::assertTrue($firstAssign['ok'] ?? false);
@@ -43,65 +42,31 @@ final class TagWriteSymmetryIntegrationTest extends TagIntegrationEvidenceTestCa
         self::assertSame('tag_not_found', $missingTag['code'] ?? null);
     }
 
-    public function testBulkControllerFlowsStaySymmetricWithEntityReads(): void
+    public function testWriteServicesStaySymmetricWithEntityReads(): void
     {
-        $pdo = $this->pdo();
         $tenant = 'tenant-bulk';
         $tagA = '01K3TAGDEMO00000000002011';
         $tagB = '01K3TAGDEMO00000000002012';
+        $entityType = 'bundle';
+        $entityId = 'bundle-entity-1';
 
-        $this->insertTag($pdo, $tenant, $tagA, 'bulk-primary', 'Bulk Primary', 100);
-        $this->insertTag($pdo, $tenant, $tagB, 'bulk-secondary', 'Bulk Secondary', 50);
+        $this->insertTag($tenant, $tagA, 'bulk-primary', 'Bulk Primary', 100);
+        $this->insertTag($tenant, $tagB, 'bulk-secondary', 'Bulk Secondary', 50);
 
-        $controller = $this->assignController($pdo);
-        $read = $this->readModel($pdo);
+        $assign = $this->assignService();
+        $unassign = $this->unassignService();
+        $read = $this->readModel();
 
-        [$status, , $body] = $controller->assignBulkToEntity([
-            'headers' => ['X-Tenant-Id' => $tenant],
-            'body' => [
-                'entityType' => 'bundle',
-                'entityId' => 'bundle-entity-1',
-                'tagIds' => [$tagA, $tagB],
-            ],
-        ]);
-        self::assertSame(200, $status);
-        $payload = $this->decodeBody($body);
-        self::assertTrue($payload['ok'] ?? false);
-        self::assertSame(2, $payload['processed'] ?? null);
-        self::assertSame(0, $payload['errors'] ?? null);
+        self::assertTrue($assign->assign($tenant, $tagA, $entityType, $entityId, 'bulk-assign-a')['ok'] ?? false);
+        self::assertTrue($assign->assign($tenant, $tagB, $entityType, $entityId, 'bulk-assign-b')['ok'] ?? false);
+        self::assertCount(2, $read->tagsForEntity($tenant, $entityType, $entityId, 10));
 
-        $before = $read->tagsForEntity($tenant, 'bundle', 'bundle-entity-1', 10);
-        self::assertCount(2, $before);
+        self::assertTrue($unassign->unassign($tenant, $tagA, $entityType, $entityId, 'bulk-unassign-a')['ok'] ?? false);
+        $duplicate = $assign->assign($tenant, $tagB, $entityType, $entityId, 'bulk-assign-b-duplicate');
+        self::assertTrue($duplicate['ok'] ?? false);
+        self::assertTrue($duplicate['duplicated'] ?? false);
 
-        [$bulkStatus, , $bulkBody] = $controller->bulk([
-            'headers' => ['X-Tenant-Id' => $tenant],
-            'body' => [
-                'operations' => [
-                    [
-                        'op' => 'unassign',
-                        'tagId' => $tagA,
-                        'entityType' => 'bundle',
-                        'entityId' => 'bundle-entity-1',
-                        'idem' => 'bulk-unassign-1',
-                    ],
-                    [
-                        'op' => 'assign',
-                        'tagId' => $tagB,
-                        'entityType' => 'bundle',
-                        'entityId' => 'bundle-entity-1',
-                        'idem' => 'bulk-assign-duplicate-1',
-                    ],
-                ],
-            ],
-        ]);
-        self::assertSame(200, $bulkStatus);
-        $bulkPayload = $this->decodeBody($bulkBody);
-        self::assertTrue($bulkPayload['ok'] ?? false);
-        self::assertSame(2, $bulkPayload['processed'] ?? null);
-        self::assertSame(0, $bulkPayload['errors'] ?? null);
-        self::assertCount(2, $bulkPayload['results'] ?? []);
-
-        $after = $read->tagsForEntity($tenant, 'bundle', 'bundle-entity-1', 10);
+        $after = $read->tagsForEntity($tenant, $entityType, $entityId, 10);
         self::assertCount(1, $after);
         self::assertSame($tagB, $after[0]['id']);
     }

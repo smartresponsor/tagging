@@ -13,9 +13,9 @@ Retired legacy artifacts that are no longer authoritative runtime/demo sources m
 ## Guardrails
 
 - `composer run -n audit:repo-hygiene`
-- `Tests\RepoHygieneAuditTest`
+- `Tests\TagRepoHygieneAuditTest`
 - `composer run -n audit:repo-map-truth`
-- `Tests\RepoMapTruthAuditTest`
+- `Tests\TagRepoMapTruthAuditTest`
 
 ## Failing conditions
 

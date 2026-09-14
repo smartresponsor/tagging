@@ -4,7 +4,7 @@ The protocol audit codifies the current Tagging/Tag canon for the active slice.
 
 Pass conditions:
 
-- `App\ => src/`
+- `App\Tagging\ => src/`
 - no `src/Tag/...`
 - no `src/Tagging/...`
 - no `src/Infra/...`

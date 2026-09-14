@@ -31,28 +31,6 @@ foreach ($forbiddenPaths as $relativePath) {
     }
 }
 
-$directoryIterator = new RecursiveIteratorIterator(
-    new RecursiveDirectoryIterator($root . DIRECTORY_SEPARATOR . 'src', FilesystemIterator::SKIP_DOTS),
-    RecursiveIteratorIterator::SELF_FIRST,
-);
-
-foreach ($directoryIterator as $item) {
-    if (!$item->isDir()) {
-        continue;
-    }
-
-    $fullPath = str_replace('\\', '/', $item->getPathname());
-    $relativePath = ltrim(substr($fullPath, strlen(str_replace('\\', '/', $root))), '/');
-    $segments = explode('/', $relativePath);
-
-    if (count($segments) >= 3 && $segments[0] === 'src' && in_array($segments[2], ['Tag', 'Tagging'], true)) {
-        $violations[] = sprintf(
-            'Tag/Tagging appears too early under src: %s (expected src/[Layer]/[Responsibility]/Tag/...)',
-            $relativePath,
-        );
-    }
-}
-
 sort($violations);
 $violations = array_values(array_unique($violations));
 

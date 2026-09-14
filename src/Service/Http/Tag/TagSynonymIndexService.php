@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagSynonymIndexService extends AbstractTagService
+final class TagSynonymIndexService extends AbstractTagService
 {
     public function __construct(private TagRepositoryInterface $repository) {}
 

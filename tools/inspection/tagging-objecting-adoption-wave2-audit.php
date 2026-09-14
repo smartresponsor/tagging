@@ -40,7 +40,7 @@ foreach ([
     'initializeObjectTitle($label)',
     'setFirstTitle($label)',
     'setObjectSlug($slug)',
-    'touchObject($now)',
+    'touchModified($now)',
 ] as $needle) {
     if (!str_contains($entity, $needle)) {
         $failures[] = 'TagEntity does not contain required Objecting adoption marker: ' . $needle;
@@ -65,8 +65,8 @@ foreach ($scanDirs as $dir) {
         }
         $path = $file->getPathname();
         $contents = file_get_contents($path);
-        if (str_contains($contents, 'nameEntity:')) {
-            $failures[] = 'Doctrine attribute still uses nameEntity: ' . str_replace($root . '/', '', $path);
+        if (str_contains($contents, 'name:')) {
+            $failures[] = 'Doctrine attribute still uses name: ' . str_replace($root . '/', '', $path);
         }
     }
 }

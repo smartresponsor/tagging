@@ -6,16 +6,9 @@ declare(strict_types=1);
 namespace App\Tagging\Repository\Core\Tag;
 
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityRepository;
 
 /**
- * @extends ServiceEntityRepository<TagAssignmentEntity>
+ * @extends EntityRepository<TagAssignmentEntity>
  */
-final class TagAssignmentRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, TagAssignmentEntity::class);
-    }
-}
+final class TagAssignmentRepository extends EntityRepository {}

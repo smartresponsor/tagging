@@ -7,4 +7,3 @@ if (is_file($vendorAutoload)) {
     require_once $vendorAutoload;
 }
 
-require_once __DIR__ . '/config/tag_route_catalog.php';

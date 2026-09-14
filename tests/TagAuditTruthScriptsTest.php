@@ -9,14 +9,17 @@ use PHPUnit\Framework\TestCase;
 
 final class TagAuditTruthScriptsTest extends TestCase
 {
-    public function testPublicRoutePathsAreProjectedFromCanonicalCatalog(): void
+    public function testLocalPublicRouteProjectionIsRetiredAfterCrudingCutover(): void
     {
-        $projection = require __DIR__ . '/../config/tag_public_route_paths.php';
+        $root = dirname(__DIR__);
+        $routes = file_get_contents($root . '/config/routes.yaml');
 
-        self::assertSame('/tag/assignments/bulk', $projection['operations']['assignments_bulk'] ?? null);
-        self::assertSame('/tag/search', $projection['operations']['search'] ?? null);
-        self::assertContains('/tag/assignments/bulk-to-entity', $projection['paths'] ?? []);
-        self::assertNotContains('/tag/_webhooks', $projection['paths'] ?? []);
+        self::assertFileDoesNotExist($root . '/config/tag_public_route_paths.php');
+        self::assertFileDoesNotExist($root . '/config/tag_public_surface.php');
+        self::assertIsString($routes);
+        self::assertStringContainsString('Cruding bundle', $routes);
+        self::assertStringNotContainsString('tagging_native', $routes);
+        self::assertFileDoesNotExist($root . '/config/routes/tagging_native.yaml');
     }
 
     public function testContractAuditScriptUsesCanonicalPublicPaths(): void

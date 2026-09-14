@@ -16,40 +16,16 @@ final class TaggingPolicyConfigFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $booleanChoices = ['Enabled' => '1', 'Disabled' => '0'];
+
         $builder
-            ->add('maxLength', IntegerType::class, [
-                'label' => 'Max length',
-                'required' => true,
-                'help' => 'Maximum allowed slug length.',
-            ])
-            ->add('maxTagsPerEntity', IntegerType::class, [
-                'label' => 'Max tags per entity',
-                'required' => true,
-            ])
-            ->add('lowercaseNormalize', ChoiceType::class, [
-                'label' => 'Lowercase normalize',
-                'choices' => ['Yes' => '1', 'No' => '0'],
-                'required' => true,
-            ])
-            ->add('collapseSpaces', ChoiceType::class, [
-                'label' => 'Collapse spaces',
-                'choices' => ['Yes' => '1', 'No' => '0'],
-                'required' => true,
-            ])
-            ->add('stripSymbols', ChoiceType::class, [
-                'label' => 'Strip symbols',
-                'choices' => ['Yes' => '1', 'No' => '0'],
-                'required' => true,
-            ])
-            ->add('defaultLocale', TextType::class, [
-                'label' => 'Default locale',
-                'required' => true,
-            ])
-            ->add('allowedLocales', TextType::class, [
-                'label' => 'Allowed locales',
-                'required' => true,
-                'help' => 'Comma-separated locale list.',
-            ]);
+            ->add('maxLength', IntegerType::class)
+            ->add('maxTagsPerEntity', IntegerType::class)
+            ->add('lowercaseNormalize', ChoiceType::class, ['choices' => $booleanChoices])
+            ->add('collapseSpaces', ChoiceType::class, ['choices' => $booleanChoices])
+            ->add('stripSymbols', ChoiceType::class, ['choices' => $booleanChoices])
+            ->add('defaultLocale', TextType::class)
+            ->add('allowedLocales', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -57,7 +33,7 @@ final class TaggingPolicyConfigFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => TaggingPolicyConfigData::class,
             'csrf_protection' => true,
-            'label' => false,
+            'allow_extra_fields' => false,
         ]);
     }
 }

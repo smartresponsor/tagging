@@ -5,12 +5,12 @@ declare(strict_types=1);
 
 namespace App\Tagging\Repository\Core\Tag;
 
-use App\Tagging\Entity\Tag\TagEntityClassification;
+use App\Tagging\Entity\Tag\TagClassificationEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<TagClassification>
+ * @extends ServiceEntityRepository<TagClassificationEntity>
  */
 final class TagClassificationRepository extends ServiceEntityRepository
 {

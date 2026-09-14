@@ -48,13 +48,41 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
         );
     }
 
-    public function get(string $tenant, string $id): ?array
+    /** @return list<array<string, mixed>> */
+    public function index(string $tenant, int $limit = 100, int $offset = 0): array
     {
         if ('' === $tenant) {
             throw new \InvalidArgumentException('invalid_tenant');
         }
 
+        $entities = $this->repo->listAllTags($tenant);
+        $entities = array_values(array_filter($entities, static fn($entity): bool => $entity instanceof \App\Tagging\Entity\Tag\TagEntity));
+
+        return array_map(
+            fn(\App\Tagging\Entity\Tag\TagEntity $entity): array => $this->toArray($entity),
+            array_slice($entities, max(0, $offset), max(1, $limit)),
+        );
+    }
+
+    public function findById(string $tenant, string $id): ?array
+    {
         return $this->repo->findById($tenant, $id);
+    }
+
+    public function findBySlug(string $tenant, string $slug): ?array
+    {
+        if ('' === $tenant) {
+            throw new \InvalidArgumentException('invalid_tenant');
+        }
+
+        $entity = $this->repo->getBySlug($tenant, $slug);
+
+        return $entity instanceof \App\Tagging\Entity\Tag\TagEntity ? $this->toArray($entity) : null;
+    }
+
+    public function get(string $tenant, string $id): ?array
+    {
+        return $this->findById($tenant, $id);
     }
 
     /** @param array<string,mixed> $payload */
@@ -87,5 +115,20 @@ final readonly class TagEntityService implements TagEntityQueryServiceInterface
     private function ulid(): string
     {
         return substr(strtoupper(bin2hex(random_bytes(13))), 0, 26);
+    }
+
+    private function toArray(\App\Tagging\Entity\Tag\TagEntity $entity): array
+    {
+        return [
+            'id' => $entity->id(),
+            'slug' => $entity->slug(),
+            'nameEntity' => $entity->label(),
+            'locale' => (string) ($entity->locale() ?? ''),
+            'weight' => $entity->weight(),
+            'required_flag' => $entity->requiredFlag(),
+            'mod_only_flag' => $entity->modOnlyFlag(),
+            'created_at' => $entity->createdAt()->format(DATE_ATOM),
+            'updated_at' => $entity->updatedAt()?->format(DATE_ATOM) ?? '',
+        ];
     }
 }

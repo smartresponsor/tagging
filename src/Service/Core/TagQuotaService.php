@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Data\Model\Tag\TagEntity;
+use App\Tagging\Entity\Tag\TagEntity;
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use Doctrine\ORM\EntityManagerInterface;
 

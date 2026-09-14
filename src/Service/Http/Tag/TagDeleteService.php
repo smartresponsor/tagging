@@ -10,7 +10,7 @@ use App\Tagging\Service\Core\TagEntityQueryServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagDeleteService extends AbstractTagService
+final class TagDeleteService extends AbstractTagService
 {
     public function __construct(
         private TagDeleteUseCaseInterface $useCase,
@@ -20,6 +20,9 @@ final readonly class TagDeleteService extends AbstractTagService
     public function __invoke(Request $request, ?string $id = null, ?string $slug = null): Response
     {
         try {
+            $id ??= $request->attributes->getString('id') ?: null;
+            $slug ??= $request->attributes->getString('slug') ?: null;
+
             $tenant = $this->tenant($request);
             $id ??= (string) ($this->query->findBySlug($tenant, (string) $slug)['id'] ?? '');
 

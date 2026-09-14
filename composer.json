@@ -3,6 +3,8 @@
   "type": "library",
   "license": "proprietary",
   "description": "Tagging process app",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     
     
@@ -19,7 +21,11 @@
     "symfony/http-kernel": "^8.1",
     "symfony/routing": "^8.1",
     "symfony/yaml": "^8.1",
-    "objecting/object": "*@dev"
+    "objecting/object": "dev-master",
+    "cruding/crud": "dev-master",
+    "viewing/view": "dev-master",
+    "interfacing/interface": "dev-master",
+    "administering/administration": "dev-master"
   },
   "require-dev": {
     "doctrine/doctrine-fixtures-bundle": "^4.3",
@@ -105,6 +111,7 @@
     "audit:composer-integrity": "php tools/audit/tag-composer-integrity-audit.php",
     "test": "vendor/bin/phpunit --testsuite unit",
     "test:unit": "vendor/bin/phpunit --testsuite unit",
+    "test:cruding": "vendor/bin/phpunit tests/TagCrudingEntrypointResolutionTest.php",
     "test:integration": "vendor/bin/phpunit --testsuite integration",
     "test:panther": [
       "tools/local/tag-panther-test.sh"
@@ -135,9 +142,77 @@
       "type": "path",
       "url": "../Objecting",
       "options": {
-        "symlink": true
+        "symlink": true,
+        "versions": {
+          "objecting/object": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Cruding",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "cruding/crud": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Collectioning",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "collectioning/collection": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Tabling",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "tabling/table": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Viewing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "viewing/view": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Interfacing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "interfacing/interface": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Administering",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "administering/administration": "dev-master"
+        }
       }
     }
-  ]
+  ],
+  "config": {
+    "allow-plugins": {
+      "symfony/runtime": true
+    }
+  }
 }
 

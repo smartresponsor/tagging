@@ -34,9 +34,10 @@ final class TagSymfonyNativeBootstrapWiringTest extends TestCase
         $routes = file_get_contents($root . '/config/routes.yaml');
         self::assertIsString($routes);
 
-        self::assertStringContainsString('routes/tagging_native.yaml', $routes);
+        self::assertStringContainsString('Cruding bundle', $routes);
+        self::assertStringNotContainsString('routes/tagging_native.yaml', $routes);
         self::assertStringNotContainsString('routes/tagging.yaml', $routes);
-        self::assertFileExists($root . '/config/routes/tagging_native.yaml');
+        self::assertFileDoesNotExist($root . '/config/routes/tagging_native.yaml');
         self::assertFileDoesNotExist($root . '/config/routes/tag.yaml');
     }
 }

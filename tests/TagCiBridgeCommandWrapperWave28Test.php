@@ -20,7 +20,9 @@ final class TagCiBridgeCommandWrapperWave28Test extends TestCase
 
         self::assertStringContainsString('tag-ci-bridge-wave27.php', $psContents);
         self::assertStringContainsString('tag-ci-bridge-wave27.php', $shContents);
-        self::assertStringContainsString('App\\\\Tagging\\\\', $psContents);
-        self::assertStringContainsString('App\\\\Tagging\\\\', $shContents);
+        self::assertStringContainsString('composer.json', $psContents);
+        self::assertStringContainsString('composer.json', $shContents);
+        self::assertStringContainsString('Tagging', $psContents);
+        self::assertStringContainsString('Tagging', $shContents);
     }
 }

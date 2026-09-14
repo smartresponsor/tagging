@@ -5,12 +5,12 @@ declare(strict_types=1);
 
 namespace App\Tagging\Repository\Core\Tag;
 
-use App\Tagging\Entity\Tag\TagEntityAuditLog;
+use App\Tagging\Entity\Tag\TagAuditLogEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<TagAuditLog>
+ * @extends ServiceEntityRepository<TagAuditLogEntity>
  */
 final class TagAuditLogRepository extends ServiceEntityRepository
 {

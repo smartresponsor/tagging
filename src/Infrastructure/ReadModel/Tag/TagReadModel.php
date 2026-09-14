@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Infrastructure\ReadModel\Tag;
 
-use App\Tagging\Data\Model\Tag\TagEntity;
+use App\Tagging\Entity\Tag\TagEntity;
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Service\Core\TagReadModelInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,7 +14,7 @@ final readonly class TagReadModel implements TagReadModelInterface
 {
     public function __construct(private EntityManagerInterface $entityManager) {}
 
-    /** @return array<int, array{id: string, slug: string, nameEntity: string, locale: ?string, weight: int}> */
+    /** @return array<int, array{id: string, slug: string, name: string, locale: ?string, weight: int}> */
     public function search(string $tenant, string $q, int $limit = 20, int $offset = 0): array
     {
         $query = self::normalizedQuery($q);
@@ -26,9 +26,9 @@ final readonly class TagReadModel implements TagReadModelInterface
             ->select('e')
             ->from(TagEntity::class, 'e')
             ->where('e.tenant = :tenant')
-            ->andWhere('LOWER(e.slug) LIKE :query OR LOWER(e.nameEntity) LIKE :query')
+            ->andWhere('LOWER(e.objectIdentity.objectSlug) LIKE :query OR LOWER(e.objectTitle.firstTitle) LIKE :query')
             ->orderBy('e.weight', 'DESC')
-            ->addOrderBy('e.nameEntity', 'ASC')
+            ->addOrderBy('e.objectTitle.firstTitle', 'ASC')
             ->setFirstResult(max(0, $offset))
             ->setMaxResults(max(1, $limit))
             ->setParameter('tenant', $tenant)
@@ -56,14 +56,14 @@ final readonly class TagReadModel implements TagReadModelInterface
             ->select('COUNT(e.id)')
             ->from(TagEntity::class, 'e')
             ->where('e.tenant = :tenant')
-            ->andWhere('LOWER(e.slug) LIKE :query OR LOWER(e.nameEntity) LIKE :query')
+            ->andWhere('LOWER(e.objectIdentity.objectSlug) LIKE :query OR LOWER(e.objectTitle.firstTitle) LIKE :query')
             ->setParameter('tenant', $tenant)
             ->setParameter('query', '%' . $query . '%')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    /** @return array<int, array{slug: string, nameEntity: string}> */
+    /** @return array<int, array{slug: string, name: string}> */
     public function suggest(string $tenant, string $q, int $limit = 10): array
     {
         $query = self::normalizedQuery($q);
@@ -72,12 +72,12 @@ final readonly class TagReadModel implements TagReadModelInterface
         }
 
         $rows = $this->entityManager->createQueryBuilder()
-            ->select('e.slug, e.nameEntity')
+            ->select('e.objectIdentity.objectSlug, e.objectTitle.firstTitle')
             ->from(TagEntity::class, 'e')
             ->where('e.tenant = :tenant')
-            ->andWhere('LOWER(e.slug) LIKE :prefix OR LOWER(e.nameEntity) LIKE :prefix')
+            ->andWhere('LOWER(e.objectIdentity.objectSlug) LIKE :prefix OR LOWER(e.objectTitle.firstTitle) LIKE :prefix')
             ->orderBy('e.weight', 'DESC')
-            ->addOrderBy('e.nameEntity', 'ASC')
+            ->addOrderBy('e.objectTitle.firstTitle', 'ASC')
             ->setMaxResults(max(1, min(50, $limit)))
             ->setParameter('tenant', $tenant)
             ->setParameter('prefix', $query . '%')
@@ -87,7 +87,7 @@ final readonly class TagReadModel implements TagReadModelInterface
         return array_map(self::mapSuggestItem(...), $rows);
     }
 
-    /** @return array{slug: string, nameEntity: string} */
+    /** @return array{slug: string, name: string} */
     private static function mapSuggestItem(array $row): array
     {
         return [
@@ -96,7 +96,7 @@ final readonly class TagReadModel implements TagReadModelInterface
         ];
     }
 
-    /** @return array{id: string, slug: string, nameEntity: string, locale: ?string, weight: int} */
+    /** @return array{id: string, slug: string, name: string, locale: ?string, weight: int} */
     private static function mapTagSummary(array $row): array
     {
         return [
@@ -138,18 +138,18 @@ final readonly class TagReadModel implements TagReadModelInterface
         );
     }
 
-    /** @return array<int, array{id: string, slug: string, nameEntity: string}> */
+    /** @return array<int, array{id: string, slug: string, name: string}> */
     public function tagsForEntity(string $tenant, string $etype, string $eid, int $limit = 100): array
     {
         $rows = $this->entityManager->createQueryBuilder()
-            ->select('e.id AS id, e.slug AS slug, e.nameEntity AS nameEntity')
+            ->select('e.id AS id, e.objectIdentity.objectSlug AS slug, e.objectTitle.firstTitle AS nameEntity')
             ->from(TagAssignmentEntity::class, 'l')
             ->join(TagEntity::class, 'e', 'WITH', 'e.tenant = l.tenant AND e.id = l.tagId')
             ->where('l.tenant = :tenant')
             ->andWhere('l.assignedType = :etype')
             ->andWhere('l.assignedId = :eid')
             ->orderBy('e.weight', 'DESC')
-            ->addOrderBy('e.nameEntity', 'ASC')
+            ->addOrderBy('e.objectTitle.firstTitle', 'ASC')
             ->setMaxResults(max(1, $limit))
             ->setParameter('tenant', $tenant)
             ->setParameter('etype', $etype)

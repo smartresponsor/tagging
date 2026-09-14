@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagUnassignOperationInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagAssignmentUnassignService extends AbstractTagService
+final class TagAssignmentUnassignService extends AbstractTagService
 {
     public function __construct(private TagUnassignOperationInterface $unassign) {}
 

@@ -1,2 +1,0 @@
-tagging_component_routes:
-  resource: '../platform/routes/crud/tag.yaml'

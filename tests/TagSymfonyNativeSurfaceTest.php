@@ -10,11 +10,9 @@ final class TagSymfonyNativeSurfaceTest extends TestCase
 {
     public function testPublicRuntimeTruthIsHostedPackage(): void
     {
-        $tagYaml = file_get_contents(dirname(__DIR__) . '/tag.yaml');
-        self::assertIsString($tagYaml);
-        self::assertStringContainsString('runtime: hosted-package', $tagYaml);
-        self::assertStringNotContainsString('runtime: symfony-native', $tagYaml);
-        self::assertStringNotContainsString('runtime: host-minimal', $tagYaml);
+        $runtime = require dirname(__DIR__) . '/config/tag_runtime.php';
+        self::assertIsArray($runtime);
+        self::assertSame('hosted-package', $runtime['runtime'] ?? null);
     }
 
     public function testStandaloneFrontControllerIsNotPartOfPackageSurface(): void

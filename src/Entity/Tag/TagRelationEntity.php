@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tagging\Entity\Tag;
 
+use App\Objecting\EntityInterface\ObjectRelationEntityInterface;
+use App\Objecting\EntityTrait\Embeddable\ObjectAuditEmbeddableTrait;
 use App\Tagging\Repository\Core\Tag\TagRelationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,8 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'tag_relation_uq', columns: ['tenant', 'from_tag_id', 'to_tag_id', 'type'])]
 #[ORM\Index(name: 'tag_relation_from_tag_idx', columns: ['tenant', 'from_tag_id'])]
 #[ORM\Index(name: 'tag_relation_to_tag_idx', columns: ['tenant', 'to_tag_id'])]
-final class TagRelationEntity
+final class TagRelationEntity implements ObjectRelationEntityInterface
 {
+    use ObjectAuditEmbeddableTrait;
     private const TYPE = [
         'broader',
         'narrower',
@@ -37,8 +40,7 @@ final class TagRelationEntity
         private readonly TagEntity $toTag,
         #[ORM\Column(type: 'string')]
         private readonly string $type,
-        #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
-        private readonly \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
+        ?\DateTimeImmutable $createdAt = null,
     ) {
         if ($fromTag->tenant() !== $toTag->tenant() || $tenant !== $fromTag->tenant()) {
             throw new \InvalidArgumentException('A tag relation cannot cross tenants.');
@@ -51,6 +53,8 @@ final class TagRelationEntity
         if (!in_array($type, self::TYPE, true)) {
             throw new \InvalidArgumentException('Invalid tag relation type.');
         }
+
+        $this->initializeObjectAudit($createdAt);
     }
 
     public static function create(string $id, TagEntity $fromTag, TagEntity $toTag, string $type): self
@@ -101,6 +105,6 @@ final class TagRelationEntity
 
     public function createdAt(): \DateTimeImmutable
     {
-        return $this->createdAt;
+        return $this->getCreatedAt();
     }
 }

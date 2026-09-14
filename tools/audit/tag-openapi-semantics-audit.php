@@ -18,7 +18,7 @@ $businessPaths = [
     '/tag/suggest:',
 ];
 
-if (substr_count($contract, 'nameEntity: X-Tenant-Id') < count($businessPaths)) {
+if (substr_count($contract, 'name: X-Tenant-Id') < count($businessPaths)) {
     $errors[] = 'OpenAPI does not document tenant header across the public business shell.';
 }
 

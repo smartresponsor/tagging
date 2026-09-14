@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagReadModelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagAssignmentIndexService extends AbstractTagService
+final class TagAssignmentIndexService extends AbstractTagService
 {
     public function __construct(private TagReadModelInterface $read) {}
 

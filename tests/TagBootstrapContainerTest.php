@@ -28,13 +28,14 @@ final class TagBootstrapContainerTest extends TestCase
         }
     }
 
-    public function testSymfonyNativeHttpLayerRegistersControllerAndMiddlewareNamespaces(): void
+    public function testSymfonyNativeHttpLayerRegistersServiceAndFormNamespaces(): void
     {
         $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
         self::assertIsString($http);
 
-        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\', $http);
-        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\Responder\\', $http);
-        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\Middleware\\', $http);
+        self::assertStringContainsString('App\Tagging\\Service\\Http\\Tag\\', $http);
+        self::assertStringContainsString("resource: '../../src/Service/Http/Tag/'", $http);
+        self::assertStringContainsString('App\Tagging\\Form\\Tag\\', $http);
+        self::assertStringNotContainsString('App\Tagging\\Http\\Api\\Tag\\', $http);
     }
 }

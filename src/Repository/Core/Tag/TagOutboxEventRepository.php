@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Repository\Core\Tag;
 
-use App\Tagging\Entity\Tag\TagEntityOutboxEvent;
+use App\Tagging\Entity\Tag\TagOutboxEventEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

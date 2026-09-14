@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Infrastructure\Outbox\Tag;
 
-use App\Tagging\Entity\Tag\TagEntityOutboxEvent;
+use App\Tagging\Entity\Tag\TagOutboxEventEntity;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class TagOutboxPublisher

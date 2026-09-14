@@ -10,8 +10,9 @@ final class TagPublicShellReadSurfaceTruthTest extends TestCase
 {
     public function testPublicSurfaceKeepsReadRoutesVisibleAsShippedShell(): void
     {
-        $surface = require __DIR__ . '/../config/tag_public_surface.php';
+        $surface = require __DIR__ . '/../config/tag_runtime.php';
         self::assertIsArray($surface);
+        self::assertFileDoesNotExist(dirname(__DIR__) . '/config/tag_public_surface.php');
 
         $route = $surface['route'] ?? null;
         self::assertIsArray($route);

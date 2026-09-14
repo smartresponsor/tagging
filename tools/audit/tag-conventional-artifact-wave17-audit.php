@@ -31,7 +31,6 @@ $allowedConventionalArtifacts = [
     'config/component/doctrine.yaml',
     'config/component/env.yaml',
     'config/component/messenger.yaml',
-    'config/component/routes.yaml',
     'config/component/security.yaml',
     'config/component/services.yaml',
     'config/component/smoke.yaml',
@@ -46,8 +45,6 @@ $allowedConventionalArtifacts = [
     'docs/admin/README.md',
     'sdk/README.md',
     'public/tag/openapi/index.html',
-    'migration/symfony-native-target/composer.json',
-    'migration/symfony-native-target/public/index.php',
 ];
 
 $forbiddenGenericResidue = [

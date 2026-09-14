@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use App\Tagging\Entity\Tag\TagAssignmentEntity;
+use App\Tagging\Entity\Tag\TagAssignmentEntity as TagLink;
 
 final class TagUnassignTenantIsolationTest extends TagIntegrationEvidenceTestCase
 {
@@ -13,8 +13,8 @@ final class TagUnassignTenantIsolationTest extends TagIntegrationEvidenceTestCas
     {
         $this->insertTag('tenant-a', 'tag-a', 'tag-a', 'A');
         $this->insertTag('tenant-b', 'tag-b', 'tag-b', 'B');
-        $this->entityManager()->persist(new TagLink('tenant-a', 'product', 'p-1', 'tag-a'));
-        $this->entityManager()->persist(new TagLink('tenant-b', 'product', 'p-2', 'tag-b'));
+        $this->entityManager()->persist(TagLink::create('tenant-a', 'assignment-tenant-a', 'tag-a', 'product', 'p-1'));
+        $this->entityManager()->persist(TagLink::create('tenant-b', 'assignment-tenant-b', 'tag-b', 'product', 'p-2'));
         $this->entityManager()->flush();
 
         $service = $this->unassignService();

@@ -6,10 +6,10 @@ declare(strict_types=1);
 namespace App\Tagging\Infrastructure\Persistence\Tag;
 
 use App\Tagging\Entity\Tag\TagEntity;
-use App\Tagging\Entity\Tag\TagEntityAssignment;
-use App\Tagging\Entity\Tag\TagEntityRelation;
-use App\Tagging\Entity\Tag\TagEntityScheme;
-use App\Tagging\Entity\Tag\TagEntitySynonym;
+use App\Tagging\Entity\Tag\TagAssignmentEntity;
+use App\Tagging\Entity\Tag\TagRelationEntity;
+use App\Tagging\Entity\Tag\TagSchemeEntity;
+use App\Tagging\Entity\Tag\TagSynonymEntity;
 use App\Tagging\Service\Core\Record\TagAuditRecord;
 use App\Tagging\Service\Core\Record\TagClassificationRecord;
 use App\Tagging\Service\Core\Record\TagEffectRecord;

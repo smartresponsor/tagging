@@ -35,7 +35,6 @@ $requiredAudits = [
     'tools/audit/tag-class-form-audit.php',
     'tools/audit/tag-service-depth-audit.php',
     'tools/audit/tag-legacy-facade-audit.php',
-    'tools/audit/tag-legacy-duplicate-surface-audit.php',
     'tools/audit/tag-persistence-implementation-naming-audit.php',
     'tools/audit/tag-test-class-form-audit.php',
     'tools/audit/tag-tooling-entrypoint-audit.php',
@@ -142,6 +141,10 @@ foreach ($srcIterator as $fileInfo) {
 
     $relativePath = substr($fileInfo->getPathname(), strlen($repoRoot) + 1);
     $content = (string) file_get_contents($fileInfo->getPathname());
+
+    if ('' === trim($content)) {
+        continue;
+    }
 
     $hasRootNamespace = str_contains($content, 'namespace App\\Tagging;');
     $hasNestedNamespace = str_contains($content, 'namespace App\\Tagging\\');

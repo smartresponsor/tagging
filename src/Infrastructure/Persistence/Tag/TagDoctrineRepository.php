@@ -7,15 +7,14 @@ namespace App\Tagging\Infrastructure\Persistence\Tag;
 
 use App\Tagging\Entity\Projection\Tag\TagAssignmentEffectProjection;
 use App\Tagging\Entity\Tag\TagEntity;
-use App\Tagging\Entity\Tag\TagEntityAssignment;
-use App\Tagging\Entity\Tag\TagEntityAuditLog;
-use App\Tagging\Entity\Tag\TagEntityClassification;
-use App\Tagging\Entity\Tag\TagEntityPolicy;
-use App\Tagging\Entity\Tag\TagEntityProposal;
-use App\Tagging\Entity\Tag\TagEntityRelation;
-use App\Tagging\Entity\Tag\TagEntityScheme;
-use App\Tagging\Entity\Tag\TagEntitySynonym;
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
+use App\Tagging\Entity\Tag\TagAuditLogEntity;
+use App\Tagging\Entity\Tag\TagClassificationEntity;
+use App\Tagging\Entity\Tag\TagPolicyEntity;
+use App\Tagging\Entity\Tag\TagProposalEntity;
+use App\Tagging\Entity\Tag\TagRelationEntity;
+use App\Tagging\Entity\Tag\TagSchemeEntity;
+use App\Tagging\Entity\Tag\TagSynonymEntity;
 use App\Tagging\Service\Core\Record\TagAuditRecord;
 use App\Tagging\Service\Core\Record\TagClassificationRecord;
 use App\Tagging\Service\Core\Record\TagEffectRecord;
@@ -27,7 +26,7 @@ use App\Tagging\Service\Core\TagReadRepositoryInterface;
 use App\Tagging\Service\Core\TagWriteRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class TagDoctrineRepository implements TagRepositoryInterface, TagCrudRepositoryInterface
+final class TagDoctrineRepository implements TagRepositoryInterface, TagCrudRepositoryInterface, TagReadRepositoryInterface, TagWriteRepositoryInterface, TagPolicyRepositoryInterface
 {
     public function __construct(private EntityManagerInterface $entityManager) {}
 
@@ -585,7 +584,7 @@ final class TagDoctrineRepository implements TagRepositoryInterface, TagCrudRepo
      * @return array{
      *     id:string,
      *     slug:string,
-     *     nameEntity:string,
+     *     name:string,
      *     locale:string,
      *     weight:int,
      *     required_flag:bool,

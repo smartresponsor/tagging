@@ -53,11 +53,15 @@ final class TagBootstrapRuntimeCompositionTruthTest extends TestCase
 
     public function testRuntimeTruthNamesHostedPackageAsActiveRuntime(): void
     {
-        $tagYaml = file_get_contents(dirname(__DIR__) . '/tag.yaml');
-        self::assertIsString($tagYaml);
+        $root = dirname(__DIR__);
+        $composer = json_decode((string) file_get_contents($root . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
+        $readme = file_get_contents($root . '/README.md');
 
-        self::assertStringContainsString('runtime: hosted-package', $tagYaml);
-        self::assertStringNotContainsString('runtime: symfony-native', $tagYaml);
-        self::assertStringNotContainsString('runtime: host-minimal', $tagYaml);
+        self::assertSame('library', $composer['type'] ?? null);
+        self::assertIsString($readme);
+        self::assertStringContainsString('Package mode note', $readme);
+        self::assertStringContainsString('does not ship its own Kernel', $readme);
+        self::assertFileDoesNotExist($root . '/tag.yaml');
+        self::assertDirectoryDoesNotExist($root . '/host-minimal');
     }
 }

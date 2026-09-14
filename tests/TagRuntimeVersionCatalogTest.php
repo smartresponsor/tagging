@@ -11,15 +11,15 @@ use PHPUnit\Framework\TestCase;
 
 final class TagRuntimeVersionCatalogTest extends TestCase
 {
-    public function testStatusVersionCanMatchRuntimeCatalog(): void
+    public function testStatusServiceMatchesTheCurrentZeroControllerSurface(): void
     {
         $catalog = TagRuntimeSurfaceCatalog::read();
-        $version = (string) ($catalog['version'] ?? '');
+        $response = (new TagStatusService())();
+        $payload = json_decode((string) $response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        $payload = (new TagStatusService(null, $version))->status();
-
-        self::assertNotSame('', $version);
-        self::assertSame($version, $payload['version']);
+        self::assertNotSame('', (string) ($catalog['version'] ?? ''));
+        self::assertSame('tagging', $payload['service'] ?? null);
+        self::assertSame('zero-controller', $payload['surface'] ?? null);
     }
 
     public function testRuntimeCatalogRoutesExposeStatusAndDiscovery(): void

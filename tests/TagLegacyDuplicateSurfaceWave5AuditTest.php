@@ -6,12 +6,11 @@ use PHPUnit\Framework\TestCase;
 
 final class TagLegacyDuplicateSurfaceWave5AuditTest extends TestCase
 {
-    public function testLegacyDuplicateSurfaceAuditPasses(): void
+    public function testRetiredLegacyDuplicateSurfaceAuditDoesNotReturn(): void
     {
         $root = dirname(__DIR__);
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($root . '/tools/audit/tag-legacy-duplicate-surface-audit.php');
-        exec($command, $output, $exitCode);
 
-        self::assertSame(0, $exitCode, implode(PHP_EOL, $output));
+        self::assertFileDoesNotExist($root . '/tools/audit/tag-legacy-duplicate-surface-audit.php');
+        self::assertDirectoryDoesNotExist($root . '/src/Tagging');
     }
 }

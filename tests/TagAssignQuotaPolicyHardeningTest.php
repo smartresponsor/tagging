@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 final class TagAssignQuotaPolicyHardeningTest extends TestCase
 {
@@ -46,15 +47,21 @@ final class TagAssignQuotaPolicyHardeningTest extends TestCase
                 return ['ok' => true];
             }
         };
-        $controller = new TagAssignmentAssignService($assign, $unassign, ['entity_types' => ['file']]);
+        $service = new TagAssignmentAssignService($assign);
+        $request = Request::create(
+            '/tag/assignment/assign',
+            'POST',
+            server: ['HTTP_X_TENANT_ID' => 'tenant-a', 'CONTENT_TYPE' => 'application/json'],
+            content: json_encode([
+                'tagId' => 'tag-404',
+                'entityType' => 'file',
+                'entityId' => 'file-1',
+            ], JSON_THROW_ON_ERROR),
+        );
+        $response = $service($request);
 
-        [$status, , $body] = $controller->assign([
-            'headers' => ['X-Tenant-Id' => 'tenant-a'],
-            'body' => ['entityType' => 'file', 'entityId' => 'file-1'],
-        ], 'tag-404');
-
-        self::assertSame(404, $status);
-        self::assertSame('tag_not_found', json_decode($body, true, 512, JSON_THROW_ON_ERROR)['code']);
+        self::assertSame(404, $response->getStatusCode());
+        self::assertSame('tag_not_found', json_decode((string) $response->getContent(), true, 512, JSON_THROW_ON_ERROR)['code']);
     }
 
     public function testAssignControllerUses409ForIdempotencyConflict(): void
@@ -82,15 +89,21 @@ final class TagAssignQuotaPolicyHardeningTest extends TestCase
                 return ['ok' => true];
             }
         };
-        $controller = new TagAssignmentAssignService($assign, $unassign, ['entity_types' => ['file']]);
+        $service = new TagAssignmentAssignService($assign);
+        $request = Request::create(
+            '/tag/assignment/assign',
+            'POST',
+            server: ['HTTP_X_TENANT_ID' => 'tenant-a', 'CONTENT_TYPE' => 'application/json'],
+            content: json_encode([
+                'tagId' => 'tag-1',
+                'entityType' => 'file',
+                'entityId' => 'file-1',
+            ], JSON_THROW_ON_ERROR),
+        );
+        $response = $service($request);
 
-        [$status, , $body] = $controller->assign([
-            'headers' => ['x-tenant-id' => 'tenant-a'],
-            'body' => ['entityType' => 'file', 'entityId' => 'file-1'],
-        ], 'tag-1');
-
-        $payload = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-        self::assertSame(409, $status);
+        $payload = json_decode((string) $response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(409, $response->getStatusCode());
         self::assertSame('idempotency_conflict', $payload['code']);
         self::assertTrue($payload['conflict']);
     }

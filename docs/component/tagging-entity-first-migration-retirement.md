@@ -18,7 +18,6 @@ Doctrine entities are now the source of truth.
 
 Existing runtime entities already covered all migration tables:
 
-- `tag_entity` → `App\Tagging\Data\Model\Tag\TagEntity`
 - `tag` → `App\Tagging\Entity\Core\Tag\Tag`
 - `tag_admin_view` → `TagAdminView`
 - `tag_assignment` → `TagAssignment`

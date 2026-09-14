@@ -165,3 +165,7 @@ phpcs.xml
 .commanding/logs/
 .commanding/log/
 .tmp/
+
+# Local governance/runtime copies and one-off recovery helpers
+/.gating/
+/tool/restore-tagging-policy-config.ps1

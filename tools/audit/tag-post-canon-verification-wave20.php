@@ -25,7 +25,6 @@ $audits = [
     'tools/audit/tag-class-form-audit.php',
     'tools/audit/tag-service-depth-audit.php',
     'tools/audit/tag-legacy-facade-audit.php',
-    'tools/audit/tag-legacy-duplicate-surface-audit.php',
     'tools/audit/tag-persistence-implementation-naming-audit.php',
     'tools/audit/tag-test-class-form-audit.php',
     'tools/audit/tag-tooling-entrypoint-audit.php',

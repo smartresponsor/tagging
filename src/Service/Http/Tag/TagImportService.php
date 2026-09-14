@@ -9,7 +9,7 @@ use App\Tagging\Application\Write\Tag\UseCase\TagCreateUseCaseInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagImportService extends AbstractTagService
+final class TagImportService extends AbstractTagService
 {
     public function __construct(private TagCreateUseCaseInterface $create) {}
 

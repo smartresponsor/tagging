@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagAssignOperationInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagAssignmentAssignService extends AbstractTagService
+final class TagAssignmentAssignService extends AbstractTagService
 {
     public function __construct(private TagAssignOperationInterface $assign) {}
 
@@ -32,7 +32,12 @@ final readonly class TagAssignmentAssignService extends AbstractTagService
                 isset($payload['idempotencyKey']) ? (string) $payload['idempotencyKey'] : null,
             );
 
-            return $this->json($result, ($result['ok'] ?? false) ? 200 : 409);
+            $status = match ($result['code'] ?? null) {
+                'tag_not_found' => 404,
+                default => ($result['ok'] ?? false) ? 200 : 409,
+            };
+
+            return $this->json($result, $status);
         } catch (\Throwable $error) {
             return $this->failure($error);
         }

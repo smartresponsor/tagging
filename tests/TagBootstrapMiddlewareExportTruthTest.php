@@ -9,13 +9,14 @@ use PHPUnit\Framework\TestCase;
 
 final class TagBootstrapMiddlewareExportTruthTest extends TestCase
 {
-    public function testSymfonyNativeHttpServiceMapKeepsMiddlewareNamespaceRegistered(): void
+    public function testSymfonyNativeHttpServiceMapDoesNotRegisterRetiredMiddlewareNamespace(): void
     {
         $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
         self::assertIsString($http);
 
-        self::assertStringContainsString('App\Tagging\\Http\\Api\\Tag\\Middleware\\', $http);
-        self::assertStringContainsString('../../src/Http/Api/Tag/Middleware/', $http);
+        self::assertStringContainsString('App\Tagging\\Service\\Http\\Tag\\', $http);
+        self::assertStringNotContainsString('App\Tagging\\Http\\Api\\Tag\\Middleware\\', $http);
+        self::assertStringNotContainsString('../../src/Http/Api/Tag/Middleware/', $http);
     }
 
     public function testSymfonyNativeSecurityConfigFactoryMatchesMiddlewareExpectations(): void

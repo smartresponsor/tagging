@@ -23,7 +23,7 @@ final readonly class TagPolicyService
 
     public function __construct(
         private TagValidator $validator,
-        private array $cfg, // from config/tag_policy.yaml
+        private array $cfg = [], // from config/tag_policy.yaml
     ) {
         $this->allowedPrefixes = $this->stringList('allowed_prefixes');
         $this->deniedPrefixes = $this->stringList('denied_prefixes');

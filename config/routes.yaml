@@ -1,2 +1,1 @@
-imports:
-    - { resource: 'routes/tagging_native.yaml' }
+# Generic CRUD routes are provided by the Cruding bundle.

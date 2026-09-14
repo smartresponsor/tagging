@@ -4,34 +4,38 @@ declare(strict_types=1);
 
 namespace App\Tagging\Entity\Tag;
 
+use App\Objecting\Embeddable\ObjectIdentityEmbeddable;
 use App\Objecting\EntityInterface\ObjectAuditedInterface;
-use App\Objecting\EntityInterface\ObjectIdentifiedInterface;
 use App\Objecting\EntityInterface\ObjectSoftDeletableInterface;
+use App\Objecting\EntityInterface\ObjectStatefulInterface;
 use App\Objecting\EntityInterface\ObjectTitledInterface;
 use App\Objecting\EntityTrait\Embeddable\ObjectAuditEmbeddableTrait;
-use App\Objecting\EntityTrait\Embeddable\ObjectIdentityEmbeddableTrait;
 use App\Objecting\EntityTrait\Embeddable\ObjectSoftDeleteEmbeddableTrait;
+use App\Objecting\EntityTrait\Embeddable\ObjectStateEmbeddableTrait;
 use App\Objecting\EntityTrait\Embeddable\ObjectTitleEmbeddableTrait;
 use App\Tagging\Repository\Core\Tag\TagRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
 #[ORM\Table(name: 'tag')]
-#[ORM\Index(name: 'tag_tenant_created_idx', columns: ['tenant', 'object_created_at'])]
+#[ORM\Index(name: 'tag_tenant_created_idx', columns: ['tenant', 'created_at'])]
 #[ORM\Index(name: 'tag_tenant_weight_idx', columns: ['tenant', 'weight'])]
-#[ORM\UniqueConstraint(name: 'tag_slug_uq', columns: ['tenant', 'object_slug'])]
-#[ORM\UniqueConstraint(name: 'tag_object_uuid_uq', columns: ['object_uuid'])]
-#[ORM\Index(name: 'tag_object_slug_idx', columns: ['object_slug'])]
+#[ORM\UniqueConstraint(name: 'tag_slug_uq', columns: ['tenant', 'slug'])]
+#[ORM\UniqueConstraint(name: 'tag_object_uuid_uq', columns: ['uuid'])]
+#[ORM\Index(name: 'tag_object_slug_idx', columns: ['slug'])]
 final class TagEntity implements
-    ObjectIdentifiedInterface,
     ObjectAuditedInterface,
-    ObjectTitledInterface,
-    ObjectSoftDeletableInterface
+    ObjectSoftDeletableInterface,
+    ObjectStatefulInterface,
+    ObjectTitledInterface
 {
-    use ObjectIdentityEmbeddableTrait;
     use ObjectAuditEmbeddableTrait;
     use ObjectTitleEmbeddableTrait;
+    use ObjectStateEmbeddableTrait;
     use ObjectSoftDeleteEmbeddableTrait;
+
+    #[ORM\Embedded(class: ObjectIdentityEmbeddable::class, columnPrefix: false)]
+    private ObjectIdentityEmbeddable $objectIdentity;
 
     public function __construct(
         #[ORM\Id]
@@ -52,10 +56,11 @@ final class TagEntity implements
     ) {
         $now = new \DateTimeImmutable();
 
-        $this->initializeObjectIdentity(null, self::normalizeRequired($slug, 'slug'));
+        $this->objectIdentity = new ObjectIdentityEmbeddable(objectSlug: self::normalizeRequired($slug, 'slug'));
         $this->initializeObjectAudit($now);
-        $this->touchObject($now);
+        $this->touchModified($now);
         $this->initializeObjectTitle(self::normalizeRequired($label, 'label'));
+        $this->initializeObjectState(objectStatus: 'active');
         $this->initializeObjectSoftDelete();
     }
 
@@ -80,6 +85,21 @@ final class TagEntity implements
     public function id(): string
     {
         return $this->id;
+    }
+
+    public function getObjectUuid(): string
+    {
+        return $this->objectIdentity->getObjectUuid();
+    }
+
+    public function getObjectSlug(): string
+    {
+        return $this->objectIdentity->getObjectSlug();
+    }
+
+    public function setObjectSlug(string $objectSlug): void
+    {
+        $this->objectIdentity->setObjectSlug($objectSlug);
     }
 
     public function tenant(): string
@@ -114,12 +134,12 @@ final class TagEntity implements
 
     public function createdAt(): \DateTimeImmutable
     {
-        return $this->getObjectCreatedAt();
+        return $this->getCreatedAt();
     }
 
     public function updatedAt(): ?\DateTimeImmutable
     {
-        return $this->getObjectUpdatedAt();
+        return $this->getModifiedAt();
     }
 
     public function requiredFlag(): bool
@@ -141,7 +161,7 @@ final class TagEntity implements
         }
 
         $this->setFirstTitle($label);
-        $this->touchObject();
+        $this->touchModified();
     }
 
     public function changeSlug(string $slug): void
@@ -153,7 +173,7 @@ final class TagEntity implements
         }
 
         $this->setObjectSlug($slug);
-        $this->touchObject();
+        $this->touchModified();
     }
 
     public function changeLocale(?string $locale): void
@@ -165,7 +185,7 @@ final class TagEntity implements
         }
 
         $this->locale = $locale;
-        $this->touchObject();
+        $this->touchModified();
     }
 
     public function changeWeight(int $weight): void
@@ -175,7 +195,7 @@ final class TagEntity implements
         }
 
         $this->weight = $weight;
-        $this->touchObject();
+        $this->touchModified();
     }
 
     public function setFlags(bool $requiredFlag, bool $modOnlyFlag): void
@@ -186,7 +206,7 @@ final class TagEntity implements
 
         $this->requiredFlag = $requiredFlag;
         $this->modOnlyFlag = $modOnlyFlag;
-        $this->touchObject();
+        $this->touchModified();
     }
 
     /**

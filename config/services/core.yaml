@@ -5,6 +5,8 @@ services:
 
     App\Tagging\Service\Core\:
         resource: '../../src/Service/Core/'
+        exclude:
+            - '../../src/Service/Core/TagBulkService.php'
 
     App\Tagging\Service\Core\TagLifecycleServiceInterface: '@App\Tagging\Service\Core\TagLifecycleService'
     App\Tagging\Service\Core\TagDuplicateServiceInterface: '@App\Tagging\Service\Core\TagDuplicateService'

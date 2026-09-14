@@ -41,9 +41,9 @@ final class TagClassNamingWave2AuditTest extends TestCase
         $root = dirname(__DIR__);
 
         $files = [
-            'src/Http/Api/Tag/TagAssignmentAssignService.php',
+            'src/Service/Http/Tag/TagAssignmentAssignService.php',
             'src/Http/Api/Tag/Middleware/TagAuthorizeMiddleware.php',
-            'src/Service/Core/Tag/TagAssignService.php',
+            'src/Service/Core/TagAssignService.php',
             'src/Service/Security/TagHmacV2Verifier.php',
         ];
 

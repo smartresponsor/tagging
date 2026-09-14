@@ -11,8 +11,8 @@ final class TagSdkSurfaceTest extends TestCase
 {
     public function testSdkMatchesPublicSurfaceOnly(): void
     {
-        $php = (string) file_get_contents(dirname(__DIR__) . '/sdk/php/tag/TagTagClient.php');
-        $ts = (string) file_get_contents(dirname(__DIR__) . '/sdk/ts/tag/tag-tag-client.ts');
+        $php = (string) file_get_contents(dirname(__DIR__) . '/sdk/php/tag/TagClient.php');
+        $ts = (string) file_get_contents(dirname(__DIR__) . '/sdk/ts/tag/tag-client.ts');
 
         foreach (['/tag/_status', '/tag/_surface', '/tag/search', '/tag/suggest', '/tag/assignments', '/assign', '/unassign'] as $token) {
             self::assertStringContainsString($token, $php);

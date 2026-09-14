@@ -26,7 +26,7 @@ final class TagDemoSurfaceExamplesTest extends TestCase
     public function testDemoHttpExamplesIncludeBulkAndMissingTagFlows(): void
     {
         $tour = file_get_contents(__DIR__ . '/../public/tag/examples/tag-tour-examples.http');
-        $requests = file_get_contents(__DIR__ . '/../public/tag/demo/tag-demo-tag-demo-requests.http');
+        $requests = file_get_contents(__DIR__ . '/../public/tag/demo/tag-demo-requests.http');
 
         self::assertIsString($tour);
         self::assertIsString($requests);

@@ -49,10 +49,9 @@ $forbiddenReferences = [
 ];
 
 foreach ($scanFiles as $file) {
-    $relative = str_replace($root . '/', '', $file);
+    $relative = str_replace('\\', '/', substr($file, strlen($root) + 1));
     if (in_array($relative, [
         'tools/audit/tag-legacy-facade-audit.php',
-        'tools/audit/tag-legacy-duplicate-surface-audit.php',
         'tools/audit/tag-duplicate-residue-audit.php',
         'docs/architecture/tagging-wave4-legacy-facade-retirement.md',
         'docs/architecture/tagging-wave4-legacy-facade-cleanup.md',

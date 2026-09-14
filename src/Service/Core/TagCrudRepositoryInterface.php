@@ -22,7 +22,7 @@ interface TagCrudRepositoryInterface
      * @return array{
      *     id: string,
      *     slug: string,
-     *     nameEntity: string,
+     *     name: string,
      *     locale: string,
      *     weight: int,
      *     required_flag: bool,
@@ -37,7 +37,7 @@ interface TagCrudRepositoryInterface
      * @return array{
      *     id: string,
      *     slug: string,
-     *     nameEntity: string,
+     *     name: string,
      *     locale: string,
      *     weight: int,
      *     required_flag: bool,

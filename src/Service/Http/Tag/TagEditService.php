@@ -9,13 +9,16 @@ use App\Tagging\Service\Core\TagEntityQueryServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagEditService extends AbstractTagService
+final class TagEditService extends AbstractTagService
 {
     public function __construct(private TagEntityQueryServiceInterface $query) {}
 
     public function __invoke(Request $request, ?string $id = null, ?string $slug = null): Response
     {
         try {
+            $id ??= $request->attributes->getString('id') ?: null;
+            $slug ??= $request->attributes->getString('slug') ?: null;
+
             $item = null !== $id
                 ? $this->query->findById($this->tenant($request), $id)
                 : $this->query->findBySlug($this->tenant($request), (string) $slug);

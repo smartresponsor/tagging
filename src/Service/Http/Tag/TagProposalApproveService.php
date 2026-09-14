@@ -8,13 +8,18 @@ use App\Tagging\Service\Core\TagModerationService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagProposalApproveService extends AbstractTagService
+final class TagProposalApproveService extends AbstractTagService
 {
     public function __construct(private TagModerationService $moderation) {}
 
-    public function __invoke(Request $request, string $id): Response
+    public function __invoke(Request $request, ?string $id = null): Response
     {
         try {
+            $id ??= $request->attributes->getString('id') ?: null;
+            if (null === $id) {
+                throw new \InvalidArgumentException('proposal_id_required');
+            }
+
             $decider = trim((string) (
                 $request->attributes->get('actor')
                 ?? $request->headers->get('X-Actor-Id', '')

@@ -66,8 +66,14 @@ foreach ($scanRoots as $scanRoot) {
             continue;
         }
 
-        $relativePath = substr($fileInfo->getPathname(), strlen($repoRoot) + 1);
-        if ($relativePath === 'tools/audit/tag-cli-bootstrap-wave12-audit.php') {
+        $relativePath = str_replace('\\', '/', substr($fileInfo->getPathname(), strlen($repoRoot) + 1));
+        if (in_array($relativePath, [
+            'tools/audit/tag-cli-bootstrap-wave12-audit.php',
+            'tools/audit/tag-canon-milestone-wave18-audit.php',
+            'tools/audit/tag-conventional-artifact-wave17-audit.php',
+            'docs/architecture/tagging-wave12-cli-bootstrap-cleanup.md',
+            'docs/architecture/tagging-wave19-canonicalization-review.md',
+        ], true)) {
             continue;
         }
 

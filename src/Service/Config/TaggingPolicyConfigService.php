@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Config;
 
-use App\Administering\Service\Config\ConfigApplyService;
-use App\Administering\Service\Config\ConfigFileWriterService;
+use App\Administering\Service\Config\AdministrationConfigApplyService;
+use App\Administering\Service\Config\AdministrationConfigFileWriterService;
 use App\Administering\ServiceInterface\Config\AdministrationConfigToolServiceInterface;
 use App\Administering\Value\Config\AdministrationConfigToolDescriptor;
 use App\Tagging\Form\Config\TaggingPolicyConfigFormType;
@@ -16,8 +16,8 @@ final readonly class TaggingPolicyConfigService implements AdministrationConfigT
 {
     public function __construct(
         private string $projectDir,
-        private ConfigApplyService $applyService,
-        private ConfigFileWriterService $fileWriter,
+        private AdministrationConfigApplyService $applyService,
+        private AdministrationConfigFileWriterService $fileWriter,
     ) {}
 
     public function descriptor(): AdministrationConfigToolDescriptor

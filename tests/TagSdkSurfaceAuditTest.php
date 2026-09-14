@@ -13,8 +13,8 @@ final class TagSdkSurfaceAuditTest extends TestCase
     {
         foreach ([
             __DIR__ . '/../sdk/README.md',
-            __DIR__ . '/../sdk/php/tag/TagTagClient.php',
-            __DIR__ . '/../sdk/ts/tag/tag-tag-client.ts',
+            __DIR__ . '/../sdk/php/tag/TagClient.php',
+            __DIR__ . '/../sdk/ts/tag/tag-client.ts',
         ] as $file) {
             $text = (string) file_get_contents($file);
             self::assertStringContainsString('/tag/_surface', $text);

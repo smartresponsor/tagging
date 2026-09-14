@@ -5,3 +5,5 @@ services:
 
     App\Tagging\Service\:
         resource: '../../src/Service/'
+        exclude:
+            - '../../src/Service/Core/TagBulkService.php'

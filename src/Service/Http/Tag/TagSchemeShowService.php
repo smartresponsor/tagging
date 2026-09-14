@@ -8,13 +8,18 @@ use App\Tagging\Service\Core\TagRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagSchemeShowService extends AbstractTagService
+final class TagSchemeShowService extends AbstractTagService
 {
     public function __construct(private TagRepositoryInterface $repository) {}
 
-    public function __invoke(Request $request, string $name): Response
+    public function __invoke(Request $request, ?string $name = null): Response
     {
         try {
+            $name ??= $request->attributes->getString('name') ?: null;
+            if (null === $name) {
+                throw new \InvalidArgumentException('scheme_name_required');
+            }
+
             $tenant = $this->tenant($request);
             $scheme = $this->repository->getSchemeByName($tenant, $name);
 

@@ -9,31 +9,30 @@ use PHPUnit\Framework\TestCase;
 
 final class TagPublicSurfaceConsistencyTest extends TestCase
 {
-    public function testSymfonyNativeRouteDoesNotExposeSynonymOrRedirect(): void
+    public function testCrudingOwnsGenericRoutesAfterLocalProjectionRetirement(): void
     {
-        $route = (string) file_get_contents(__DIR__ . '/../config/routes/tagging_native.yaml');
-        $catalog = (string) file_get_contents(__DIR__ . '/../tag.yaml');
+        $root = dirname(__DIR__);
+        $route = (string) file_get_contents($root . '/config/routes.yaml');
+        $openApi = (string) file_get_contents($root . '/contracts/http/tag-openapi.yaml');
 
-        self::assertStringNotContainsString('/synonym', $route);
-        self::assertStringNotContainsString('/redirect/', $route);
-        self::assertStringNotContainsString('/tag/assign-bulk', $route);
-        self::assertStringNotContainsString('/tag/assignment/bulk', $route);
-        self::assertStringContainsString('/tag/assignments/bulk', $route);
-        self::assertStringContainsString('/tag/assignments/bulk-to-entity', $route);
-
-        self::assertStringContainsString('/tag/_surface', $catalog);
-        self::assertStringContainsString('X-Tag-Surface-Version', $catalog);
+        self::assertStringContainsString('Cruding bundle', $route);
+        self::assertStringNotContainsString('tagging_native', $route);
+        self::assertFileDoesNotExist($root . '/config/routes/tagging_native.yaml');
+        self::assertFileDoesNotExist($root . '/tag.yaml');
+        self::assertStringNotContainsString('/synonym', $openApi);
+        self::assertStringNotContainsString('/redirect/', $openApi);
+        self::assertStringContainsString('/tag/assignments/bulk:', $openApi);
+        self::assertStringContainsString('/tag/assignments/bulk-to-entity:', $openApi);
     }
 
-    public function testSymfonyRouteConfigMatchesPublicSurface(): void
+    public function testOpenApiMatchesThePublicReadAndDiscoverySurface(): void
     {
-        $route = (string) file_get_contents(__DIR__ . '/../config/routes/tagging_native.yaml');
-        self::assertStringNotContainsString('/synonym', $route);
-        self::assertStringNotContainsString('/redirect/', $route);
-        self::assertStringNotContainsString('/tag/assign-bulk', $route);
-        self::assertStringNotContainsString('/tag/assignment/bulk', $route);
-        self::assertStringContainsString('/tag/_surface', $route);
-        self::assertStringContainsString('App\Tagging\\Service\\Http\\Tag\\TagAssignmentAssignService::assign', $route);
-        self::assertStringContainsString('App\Tagging\\Service\\Http\\Tag\\TagSuggestService::get', $route);
+        $openApi = (string) file_get_contents(dirname(__DIR__) . '/contracts/http/tag-openapi.yaml');
+
+        self::assertStringContainsString('/tag/_surface:', $openApi);
+        self::assertStringContainsString('/tag/search:', $openApi);
+        self::assertStringContainsString('/tag/suggest:', $openApi);
+        self::assertStringNotContainsString('/tag/assign-bulk:', $openApi);
+        self::assertStringNotContainsString('/tag/assignment/bulk:', $openApi);
     }
 }

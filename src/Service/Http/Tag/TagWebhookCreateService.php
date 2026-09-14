@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\Webhook\TagWebhookRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagWebhookCreateService extends AbstractTagService
+final class TagWebhookCreateService extends AbstractTagService
 {
     public function __construct(private TagWebhookRegistry $registry) {}
 

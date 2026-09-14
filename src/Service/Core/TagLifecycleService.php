@@ -24,7 +24,7 @@ final readonly class TagLifecycleService implements TagLifecycleServiceInterface
         if (!$entity instanceof TagEntity) {
             throw new \RuntimeException('not_found');
         }
-        $method = $archive ? 'archiveObject' : 'restoreObject';
+        $method = $archive ? 'delete' : 'restore';
         if (!method_exists($entity, $method)) {
             throw new \LogicException('objecting_lifecycle_pack_required');
         }

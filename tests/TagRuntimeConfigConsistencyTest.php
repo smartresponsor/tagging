@@ -9,18 +9,18 @@ use PHPUnit\Framework\TestCase;
 
 final class TagRuntimeConfigConsistencyTest extends TestCase
 {
-    public function testRuntimeConfigIsDerivedFromPublicSurfaceConfig(): void
+    public function testRuntimeConfigIsTheSinglePublicSurfaceSource(): void
     {
         $runtime = require __DIR__ . '/../config/tag_runtime.php';
-        $surface = require __DIR__ . '/../config/tag_public_surface.php';
 
-        self::assertSame($surface['service'], $runtime['service']);
-        self::assertSame($surface['version'], $runtime['version']);
-        self::assertSame($surface['route']['status'] ?? null, $runtime['route']['status'] ?? null);
-        self::assertSame($surface['doc']['sdk'] ?? null, $runtime['doc']['sdk'] ?? null);
+        self::assertSame('tag', $runtime['service'] ?? null);
+        self::assertNotSame('', $runtime['version'] ?? '');
+        self::assertSame('/tag/_status', $runtime['route']['status'] ?? null);
+        self::assertSame('contracts/http/tag-openapi.yaml', $runtime['doc']['openapi'] ?? null);
         self::assertContains(
             ['method' => 'GET', 'path' => '/tag/_surface', 'nameEntity' => 'discovery'],
-            $runtime['public_surface'],
+            $runtime['public_surface'] ?? [],
         );
+        self::assertFileDoesNotExist(__DIR__ . '/../config/tag_public_surface.php');
     }
 }

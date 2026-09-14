@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagEntityQueryServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagExportService extends AbstractTagService
+final class TagExportService extends AbstractTagService
 {
     public function __construct(private TagEntityQueryServiceInterface $query) {}
 

@@ -2,64 +2,51 @@
 
 declare(strict_types=1);
 
-$surface = require __DIR__ . '/tag_public_surface.php';
-if (!is_array($surface)) {
-    return [
-        'service' => 'tag',
-        'runtime' => 'hosted-package',
-        'version' => 'dev',
-        'route' => [],
-        'example' => [],
-        'doc' => [],
-        'public_surface' => [],
-    ];
-}
+$openApiPath = dirname(__DIR__) . '/contracts/http/tag-openapi.yaml';
+$openApi = is_file($openApiPath) ? (string) file_get_contents($openApiPath) : '';
+preg_match_all('/^  (\/tag[^:]*):$/m', $openApi, $matches);
+$paths = array_values(array_unique($matches[1] ?? []));
 
-$routeMap = is_array($surface['route'] ?? null) ? $surface['route'] : [];
-$methodByOperation = [
-    'status' => 'GET',
-    'discovery' => 'GET',
-    'create' => 'POST',
-    'read' => 'GET',
-    'patch' => 'PATCH',
-    'delete' => 'DELETE',
-    'assign' => 'POST',
-    'unassign' => 'POST',
-    'assignments_bulk' => 'POST',
-    'assignments_bulk_to_entity' => 'POST',
-    'assignments' => 'GET',
-    'search' => 'GET',
-    'suggest' => 'GET',
+$operationByPath = [
+    '/tag/_status' => 'status',
+    '/tag/_surface' => 'discovery',
+    '/tag/assignments/bulk' => 'assignments_bulk',
+    '/tag/assignments/bulk-to-entity' => 'assignments_bulk_to_entity',
+    '/tag/search' => 'search',
+    '/tag/suggest' => 'suggest',
+];
+$methodByPath = [
+    '/tag/assignments/bulk' => 'POST',
+    '/tag/assignments/bulk-to-entity' => 'POST',
 ];
 
+$routeMap = [];
 $publicSurface = [];
-foreach ($methodByOperation as $operation => $defaultMethod) {
-    $route = $routeMap[$operation] ?? null;
-    if (!is_string($route) || '' === $route) {
+foreach ($paths as $path) {
+    if ('/tag/_webhooks' === $path) {
         continue;
     }
 
-    $method = $defaultMethod;
-    $path = $route;
+    $method = $methodByPath[$path] ?? 'GET';
+    $operation = $operationByPath[$path] ?? trim(str_replace(['/', '-', '{', '}'], ['_', '_', '', ''], $path), '_');
+    $name = str_replace('_', ' ', $operation);
 
-    if (1 === preg_match('/^([A-Z]+)\s+(.+)$/', $route, $m)) {
-        $method = $m[1];
-        $path = $m[2];
-    }
-
+    $routeMap[$operation] = in_array($operation, ['status', 'discovery'], true)
+        ? $path
+        : $method . ' ' . $path;
     $publicSurface[] = [
         'method' => $method,
         'path' => $path,
-        'nameEntity' => $operation === 'discovery' ? 'discovery' : str_replace('_', ' ', $operation),
+        'nameEntity' => $name,
     ];
 }
 
 return [
-    'service' => (string) ($surface['service'] ?? 'tag'),
-    'runtime' => (string) ($surface['runtime'] ?? 'hosted-package'),
-    'version' => (string) ($surface['version'] ?? 'dev'),
+    'service' => 'tag',
+    'runtime' => 'hosted-package',
+    'version' => 'dev',
     'route' => $routeMap,
-    'example' => is_array($surface['example'] ?? null) ? $surface['example'] : [],
-    'doc' => is_array($surface['doc'] ?? null) ? $surface['doc'] : [],
+    'example' => [],
+    'doc' => ['openapi' => 'contracts/http/tag-openapi.yaml'],
     'public_surface' => $publicSurface,
 ];

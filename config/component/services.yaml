@@ -6,11 +6,6 @@ services:
     autowire: true
     autoconfigure: true
 
-  App\Tagging\Service\Config\TaggingPolicyConfigService:
-    arguments:
-      $projectDir: '%kernel.project_dir%'
-    tags: ['administering.config_tool']
-
   App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository:
     public: true
 
@@ -24,6 +19,9 @@ services:
   App\Tagging\Service\Core\TagCrudRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
   App\Tagging\Service\Core\TagReadModelInterface: '@App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel'
   App\Tagging\Service\Core\TagTransactionRunnerInterface: '@App\Tagging\Service\Core\TagDoctrineTransactionRunner'
+  App\Tagging\Service\Core\Webhook\TagWebhookRegistry:
+    arguments:
+      $path: '%kernel.project_dir%/report/webhook/registry.json'
   App\Tagging\Command\Tag\:
     resource: '../../src/Command/Tag/'
     autowire: true

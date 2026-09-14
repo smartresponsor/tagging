@@ -5,12 +5,12 @@ declare(strict_types=1);
 
 namespace App\Tagging\Repository\Core\Tag;
 
-use App\Tagging\Entity\Tag\TagEntityRelation;
+use App\Tagging\Entity\Tag\TagRelationEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<TagRelation>
+ * @extends ServiceEntityRepository<TagRelationEntity>
  */
 final class TagRelationRepository extends ServiceEntityRepository
 {

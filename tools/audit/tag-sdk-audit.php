@@ -4,8 +4,8 @@
 declare(strict_types=1);
 
 $root = require __DIR__ . '/../tag-bootstrap.php';
-$phpSdk = file_get_contents($root . '/sdk/php/tag/TagTagClient.php') ?: '';
-$tsSdk = file_get_contents($root . '/sdk/ts/tag/tag-tag-client.ts') ?: '';
+$phpSdk = file_get_contents($root . '/sdk/php/tag/TagClient.php') ?: '';
+$tsSdk = file_get_contents($root . '/sdk/ts/tag/tag-client.ts') ?: '';
 $sdkReadme = file_get_contents($root . '/sdk/README.md') ?: '';
 $errors = [];
 $required = [

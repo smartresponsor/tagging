@@ -19,7 +19,7 @@ final readonly class TagAssignService implements TagAssignOperationInterface
         private EntityManagerInterface $entityManager,
         private TagCrudRepositoryInterface $tagEntities,
         private TagOutboxPublisher $outbox,
-        private ?TagIdempotencyStoreEntity $idem = null,
+        private ?TagIdempotencyStore $idem = null,
         TagErrorSink|callable|null $errorSink = null,
     ) {
         $this->errorSink = TagErrorSinkFactory::from($errorSink);

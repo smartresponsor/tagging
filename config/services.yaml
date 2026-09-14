@@ -18,4 +18,17 @@ services:
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
+            - '../src/Data/Model/Tag/TagEntity.php'
+            - '../src/Form/Config/TaggingPolicyConfigFormType.php'
+            - '../src/RepositoryInterface/'
+            - '../src/Repository/Data/Tag/TagEntityRepository.php'
+            - '../src/Value/'
+            - '../src/Service/Core/TagBulkService.php'
             - '../src/Tests/'
+
+    App\Tagging\Service\Config\TaggingPolicyConfigService:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $applyService: '@App\Administering\Service\Config\AdministrationConfigApplyService'
+            $fileWriter: '@App\Administering\Service\Config\AdministrationConfigFileWriterService'
+        tags: ['administering.config_tool']

@@ -19,8 +19,8 @@ foreach ($files as $file => $needles) {
 
     $contents = (string) file_get_contents($file);
 
-    if (str_contains($contents, 'nameEntity:')) {
-        $errors[] = 'Doctrine typo remains in ' . $file . ': nameEntity:';
+    if (str_contains($contents, 'name:')) {
+        $errors[] = 'Doctrine typo remains in ' . $file . ': name:';
     }
 
     foreach ($needles as $needle) {

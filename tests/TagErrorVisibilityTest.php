@@ -19,26 +19,16 @@ use PHPUnit\Framework\TestCase;
 
 final class TagErrorVisibilityTest extends TestCase
 {
-    public function testStatusControllerReportsProbeFailuresToErrorSink(): void
+    public function testStatusServicePublishesZeroControllerRuntimeTruth(): void
     {
-        $errors = [];
-        $controller = new TagStatusService(
-            static function (): bool {
-                throw new \RuntimeException('db down');
-            },
-            'test-version',
-            static function (array $error) use (&$errors): void {
-                $errors[] = $error;
-            },
-        );
+        $response = (new TagStatusService())();
+        $payload = json_decode((string) $response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        $payload = $controller->status();
-
+        self::assertSame(200, $response->getStatusCode());
         self::assertTrue($payload['ok']);
-        self::assertFalse($payload['db']['ok']);
-        self::assertSame('db_unavailable', $payload['db']['error']);
-        self::assertCount(1, $errors);
-        self::assertSame('status.db_probe_failed', $errors[0]['code']);
+        self::assertSame('tagging', $payload['service']);
+        self::assertSame('zero-controller', $payload['surface']);
+        self::assertSame('App\\Tagging\\Entity\\Tag\\TagEntity', $payload['rootEntity']);
     }
 
     public function testQuotaServiceReportsQueryFailuresToErrorSink(): void

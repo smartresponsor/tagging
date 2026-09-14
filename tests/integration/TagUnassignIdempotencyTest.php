@@ -5,14 +5,14 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use App\Tagging\Entity\Tag\TagAssignmentEntity;
+use App\Tagging\Entity\Tag\TagAssignmentEntity as TagLink;
 
 final class TagUnassignIdempotencyTest extends TagIntegrationEvidenceTestCase
 {
     public function testUnassignWithSameIdempotencyKeyIsStableOnRepeat(): void
     {
         $this->insertTag('tenant-unassign-idem', 'tag-unassign-idem', 'idem', 'Idem');
-        $this->entityManager()->persist(new TagLink('tenant-unassign-idem', 'product', 'p-1001', 'tag-unassign-idem'));
+        $this->entityManager()->persist(TagLink::create('tenant-unassign-idem', 'assignment-unassign-idem', 'tag-unassign-idem', 'product', 'p-1001'));
         $this->entityManager()->flush();
 
         $service = $this->unassignService();
@@ -42,7 +42,7 @@ final class TagUnassignIdempotencyTest extends TagIntegrationEvidenceTestCase
     public function testUnassignWithSameIdempotencyKeyAndDifferentPayloadReturnsConflict(): void
     {
         $this->insertTag('tenant-unassign-conflict', 'tag-unassign-conflict', 'idem-conflict', 'Idem Conflict');
-        $this->entityManager()->persist(new TagLink('tenant-unassign-conflict', 'product', 'p-1001', 'tag-unassign-conflict'));
+        $this->entityManager()->persist(TagLink::create('tenant-unassign-conflict', 'assignment-unassign-conflict', 'tag-unassign-conflict', 'product', 'p-1001'));
         $this->entityManager()->flush();
 
         $service = $this->unassignService();

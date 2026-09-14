@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Tag\TagEntityRelation;
+use App\Tagging\Entity\Tag\TagRelationEntity;
 
 final class TagGraph
 {

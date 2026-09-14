@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagSuggestService as TagSuggestOperation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagSuggestService extends AbstractTagService
+final class TagSuggestService extends AbstractTagService
 {
     public function __construct(private TagSuggestOperation $suggest) {}
 

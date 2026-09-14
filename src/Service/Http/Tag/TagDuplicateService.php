@@ -8,13 +8,16 @@ use App\Tagging\Service\Core\TagDuplicateServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class TagDuplicateService extends AbstractTagService
+final class TagDuplicateService extends AbstractTagService
 {
     public function __construct(private TagDuplicateServiceInterface $duplicate) {}
 
     public function __invoke(Request $request, ?string $id = null, ?string $slug = null): Response
     {
         try {
+            $id ??= $request->attributes->getString('id') ?: null;
+            $slug ??= $request->attributes->getString('slug') ?: null;
+
             return $this->json([
                 'ok' => true,
                 'item' => $this->duplicate->duplicate(

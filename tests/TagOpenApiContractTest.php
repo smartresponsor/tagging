@@ -29,7 +29,7 @@ final class TagOpenApiContractTest extends TestCase
         self::assertStringContainsString('/tag/assignments:', $contract);
         self::assertStringContainsString('/tag/search:', $contract);
         self::assertStringContainsString('/tag/suggest:', $contract);
-        self::assertGreaterThanOrEqual(10, substr_count($contract, 'nameEntity: X-Tenant-Id'));
+        self::assertGreaterThanOrEqual(10, substr_count($contract, 'name: X-Tenant-Id'));
         self::assertStringContainsString('including `invalid_tenant` or `validation_failed`', $contract);
         self::assertStringContainsString('including `invalid_tenant`', $contract);
         self::assertStringContainsString('per-item results may include', $contract);

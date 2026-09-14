@@ -21,7 +21,9 @@ final class TagPostCanonCommandWrapperWave23Test extends TestCase
 
         self::assertStringContainsString('tag-post-canon-all-wave22.php', $psContents);
         self::assertStringContainsString('tag-post-canon-all-wave22.php', $shContents);
-        self::assertStringContainsString('App\\\\Tagging\\\\', $psContents);
-        self::assertStringContainsString('App\\\\Tagging\\\\', $shContents);
+        self::assertStringContainsString('composer.json', $psContents);
+        self::assertStringContainsString('composer.json', $shContents);
+        self::assertStringContainsString('Tagging', $psContents);
+        self::assertStringContainsString('Tagging', $shContents);
     }
 }

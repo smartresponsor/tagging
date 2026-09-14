@@ -26,7 +26,7 @@ final readonly class TagReadModel implements TagReadModelInterface
             ->select('e')
             ->from(TagEntity::class, 'e')
             ->where('e.tenant = :tenant')
-            ->andWhere('LOWER(e.objectIdentity.objectSlug) LIKE :query OR LOWER(e.objectTitle.firstTitle) LIKE :query')
+            ->andWhere('LOWER(e.objectIdentity.slug) LIKE :query OR LOWER(e.objectTitle.firstTitle) LIKE :query')
             ->orderBy('e.weight', 'DESC')
             ->addOrderBy('e.objectTitle.firstTitle', 'ASC')
             ->setFirstResult(max(0, $offset))
@@ -56,7 +56,7 @@ final readonly class TagReadModel implements TagReadModelInterface
             ->select('COUNT(e.id)')
             ->from(TagEntity::class, 'e')
             ->where('e.tenant = :tenant')
-            ->andWhere('LOWER(e.objectIdentity.objectSlug) LIKE :query OR LOWER(e.objectTitle.firstTitle) LIKE :query')
+            ->andWhere('LOWER(e.objectIdentity.slug) LIKE :query OR LOWER(e.objectTitle.firstTitle) LIKE :query')
             ->setParameter('tenant', $tenant)
             ->setParameter('query', '%' . $query . '%')
             ->getQuery()
@@ -72,10 +72,10 @@ final readonly class TagReadModel implements TagReadModelInterface
         }
 
         $rows = $this->entityManager->createQueryBuilder()
-            ->select('e.objectIdentity.objectSlug, e.objectTitle.firstTitle')
+            ->select('e.objectIdentity.slug, e.objectTitle.firstTitle')
             ->from(TagEntity::class, 'e')
             ->where('e.tenant = :tenant')
-            ->andWhere('LOWER(e.objectIdentity.objectSlug) LIKE :prefix OR LOWER(e.objectTitle.firstTitle) LIKE :prefix')
+            ->andWhere('LOWER(e.objectIdentity.slug) LIKE :prefix OR LOWER(e.objectTitle.firstTitle) LIKE :prefix')
             ->orderBy('e.weight', 'DESC')
             ->addOrderBy('e.objectTitle.firstTitle', 'ASC')
             ->setMaxResults(max(1, min(50, $limit)))
@@ -142,7 +142,7 @@ final readonly class TagReadModel implements TagReadModelInterface
     public function tagsForEntity(string $tenant, string $etype, string $eid, int $limit = 100): array
     {
         $rows = $this->entityManager->createQueryBuilder()
-            ->select('e.id AS id, e.objectIdentity.objectSlug AS slug, e.objectTitle.firstTitle AS nameEntity')
+            ->select('e.id AS id, e.objectIdentity.slug AS slug, e.objectTitle.firstTitle AS nameEntity')
             ->from(TagAssignmentEntity::class, 'l')
             ->join(TagEntity::class, 'e', 'WITH', 'e.tenant = l.tenant AND e.id = l.tagId')
             ->where('l.tenant = :tenant')

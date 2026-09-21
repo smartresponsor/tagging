@@ -110,3 +110,33 @@
 Что имеем? Прежний RC packaging/version-policy blocker закрыт: канон материализован, executable enforcement существует, Tagging strict Composer validation и полный acceptance contour зелёные.
 
 Что осталось? Только Git integration текущего большого cutover: проверить финальный diff/status, зафиксировать Canonization и Gating как отдельные канонические commits и затем интегрировать Tagging coherently без смешивания с посторонними изменениями.
+
+### 2026-09-20 — current-canon documentation parity pass
+
+- Reconnaissance baseline: branch `fix/symfony-native-cutover-rc-master` was clean at `0a862773a5bd88785f83cb9e878c1bf2c374a2e5`, synchronized with its upstream. GitHub confirms PR #46 already merged that exact tree into protected `master` as `c1d616552dca40cb7225ff0e2d284e53f2d0a272`.
+- Read current Tagging governance, README, Composer metadata, runtime/config surfaces, tests/audits, release/runbook/architecture docs, memory-graph scope, and mandatory dependency contracts from Objecting, Cruding, Viewing, Interfacing, Gating, and Canonization. Tagging has no current `MANIFEST.json`; Objecting, Cruding, Viewing, Gating, and Canonization manifests were inspected where present.
+- Current market/enterprise benchmark: mature tagging systems emphasize stable identifiers, consistent/scoped vocabularies, queryable metadata, governance/enforcement, automation, and interoperability. These are growth criteria, not substitutes for RC correctness.
+- RC-critical work selected: close Canon017 documentation/runtime parity debt left by the completed hosted-package cutover. Active docs still described removed `host-minimal/`, root `tag.yaml`, and standalone startup as current truth while tests prove those runtime surfaces are absent.
+- Growth workstream: taxonomy governance, hierarchy/synonyms, bulk UX, analytics/usage insight, lifecycle/deprecation, and richer interoperability remain post-RC unless required by an existing contract.
+- Canon mapping consulted: Canon000/001/002/003/004/005/006/007/008/009/010/011/012/013/014/015/016/017/018/019/020/021/023/024/025/026/027/029/030/031 plus the repository's already-materialized Canon043 dependency-version and Canon045 repository-closure policy. For this pass, Canon017 is directly actionable; Canon008/021/023/026/029 remain covered by the existing Composer/boundary/quality gates. Canon024/025 conflict with Tagging's explicitly documented package-mode surface and require applicability/profile resolution rather than invented standalone files.
+- Gating executable contour: current sibling Gating supports explicit consumer profiles, but no `tagging.yaml` profile exists. Do not substitute another component's profile; local Tagging audits and direct Canon evidence remain the deterministic evidence until a canonical Tagging consumer profile exists.
+- Material risks: stale active documentation was reinforced by stale truth tests/audits; historical migration ADRs legitimately retain `host-minimal` references and must not be mechanically rewritten as current-state documentation.
+- Gates to run after the parity patch: targeted documentation truth tests/audits, unit suite, PHPStan, canonical stale/structure/core/composer audits, release preflight, strict Composer validation, and final Git status/diff review.
+
+Что имеем? Фактический RC runtime уже интегрирован в master, но текущие operational/release docs содержали подтверждённый Canon017 drift; исправление выполняется внутри Tagging без возврата generic CRUD ownership.
+
+Что осталось? Завершить current-facing documentation cleanup, обновить связанные truth gates, прогнать полный acceptance contour и интегрировать только этот bounded parity patch.
+
+### 2026-09-20 — hosted-package truth acceptance
+
+- Closed the current-facing Canon017 drift across README, HTTP/ops/release/admin/security/Antora/SDK documentation and the matching truth tests/audits. Historical migration material remains historical evidence rather than active runtime guidance.
+- Corrected repository-map truth so current roots are the Symfony bundle, configuration, OpenAPI contract, and Cruding-owned generic CRUD integration; removed executable assumptions about absent root `MANIFEST.json`, root `tag.yaml`, and `host-minimal/`.
+- Corrected public-contract documentation for metrics and purge: neither endpoint is shipped by the current Tagging OpenAPI surface; those capabilities are host-owned/internal rather than package-owned public routes.
+- Reworked CI from an impossible standalone application boot (`public/index.php` is intentionally absent) to deterministic hosted-package verification. `smoke:runtime` now exercises Symfony/package composition directly; `smoke:http` preserves the real HTTP probe for a consuming host.
+- Hardened CI truth enforcement so package CI requires Cruding integration and deterministic package smoke while rejecting reintroduction of a local front controller or package-level Playwright E2E ownership.
+- Final acceptance is green: unit 197 tests / 1475 assertions; integration 10 / 63; Cruding 14 / 27; package smoke 23 / 499; PHPStan 331 files / 0 errors; CS 0 fixable files out of 409; release preflight; CI workflow audit; repo-map truth; canonical stale/structure; core boundary; Composer integrity; repo hygiene; Antora surface; demo truth pack; release-grade portrait; and `composer validate --strict --check-lock`.
+- `PRODUCT_CAPABILITY_AUDIT.adoc` is intentionally excluded from this RC patch because it is an untracked product-analysis artifact from a separate workstream, not part of the bounded runtime/documentation parity change.
+
+Что имеем? Hosted-package runtime, documentation, CI, truth audits, Composer validation, static analysis и test contour согласованы и зелёные.
+
+Что осталось? Только Git integration этого bounded patch и post-integration verification; отдельный product-capability artifact остаётся вне commit scope.

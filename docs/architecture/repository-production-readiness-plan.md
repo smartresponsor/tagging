@@ -2,7 +2,7 @@
 
 ## Scope and current baseline
 
-- The repository is now centered on a shipped `host-minimal` runtime backed by canonical route truth in `tag.yaml`.
+- The repository now ships as a hosted Symfony package; generic CRUD routing belongs to Cruding and the Tagging-owned HTTP contract lives in `contracts/http/tag-openapi.yaml`.
 - Public surface is no longer limited to CRUD + single assignment flows; it includes bulk assignment routes, discovery, health, search, and suggest.
 - CI, smoke, preflight, SDK, demo truth packs, and release-grade docs now exist and are part of the active quality perimeter.
 - Demo/seed truth is anchored in the canonical PHP fixture + catalog path, not in legacy JSON fixture cargo.
@@ -11,7 +11,7 @@
 
 ### What is working now
 
-- Route truth is centralized in `tag.yaml` and projected into `host-minimal/route.php`, public surface config, and route/surface/contract audits.
+- Generic CRUD route truth is supplied by Cruding; Tagging projects its hosted-package surface from `contracts/http/tag-openapi.yaml` through `config/tag_runtime.php` and contract/surface audits.
 - Read paths share one explicit `TagReadModelInterface` and one infrastructure implementation for search, suggest, and assignment reads.
 - Search and suggest use flat payloads, and search now returns authoritative `total` instead of a placeholder value.
 - Assignment flows expose idempotency-aware behavior and distinguish missing tag entities from missing links on unassign.
@@ -19,9 +19,9 @@
 
 ### Remaining structural risks and growth points
 
-1. **Framework gap vs shipped runtime**
-   - The repository is still fundamentally organized around `host-minimal` execution rather than a full Symfony runtime kernel/composition model.
-   - This is acceptable for the current slice, but it remains a medium-term readiness gap for richer policy/middleware/composition evolution.
+1. **Hosted integration boundary**
+   - Tagging is intentionally a reusable Symfony bundle/package rather than a standalone application runtime.
+   - Host-level front controller, generic CRUD routing, and cross-component composition must remain outside the Tagging responsibility boundary.
 
 2. **Broad core service boundaries**
    - Contracts are colocated under `src/Service/Core/Tag`, which is better than parallel interface trees, but the core tag service area still carries multiple concerns.
@@ -41,7 +41,7 @@
 
 ### Remaining code-quality risks
 
-- `host-minimal` remains a hand-built runtime rather than a framework-driven composition root.
+- Hosted-package composition is framework-driven; remaining risk is documentation or test drift that accidentally reintroduces component-local runtime ownership.
 - Some docs and planning artifacts can still lag after active runtime waves if they are not directly guarded by tests or audits.
 - Broad PHP arrays remain the dominant transport/result contract style, which is practical but leaves room for stronger typed DTO/result objects later.
 

@@ -1,6 +1,6 @@
 # Status and surface contract
 
-The host-minimal public meta endpoints are:
+The hosted Tagging public meta endpoints are:
 
 - `GET /tag/_status`
 - `GET /tag/_surface`

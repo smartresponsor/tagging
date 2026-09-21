@@ -7,9 +7,9 @@ This document is the compact release-grade portrait for the current Tagging/Tag 
 The runnable core is limited to the shipped runtime and contract assets:
 
 - `src/`
-- `host-minimal/`
 - `config/`
-- `tag.yaml`
+- `src/TaggingBundle.php`
+- Cruding integration for generic CRUD routing
 - `contracts/http/tag-openapi.yaml`
 - `db/postgres/migrations/`
 

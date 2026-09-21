@@ -4,7 +4,7 @@ Current runtime observability for the shipped Tag slice is centered on middlewar
 
 ## Active runtime observation
 
-- `TagObserveMiddleware` wraps live host-minimal dispatch.
+- `TagObserveMiddleware` remains the Tagging request-observation middleware available to the host composition.
 - `_status` remains the minimal health/readiness route.
 - `_surface` remains the discovery route for the public shell.
 
@@ -20,10 +20,10 @@ Current runtime observability for the shipped Tag slice is centered on middlewar
 - observability is currently middleware/file/config driven, not Prometheus-endpoint driven
 - unpublished internal webhook routes are not part of the public shell
 
-## Host-minimal cleanup
+## Hosted composition
 
-- host-minimal now wraps dispatch through `TagObserveMiddleware`, so latency/error metrics and slowlog recording apply on live requests, not only in docs
-- the composition root exports `observeMiddleware` explicitly for isolated testing
+- the Symfony host composes Tagging middleware and services through the package container wiring
+- Tagging owns the observation behavior while the host owns the front controller and top-level request lifecycle
 
 ## Operational use
 

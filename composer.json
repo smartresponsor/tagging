@@ -79,7 +79,8 @@
     "db:smoke:self-contained": "bash tools/tag-tag-migration-tag-smoke.sh",
     "demo:seed": "php tools/seed/tag-seed.php",
     "demo:clear": "php tools/seed/tag-clear.php",
-    "smoke:runtime": "php tools/smoke/tag-smoke.php",
+    "smoke:runtime": "vendor/bin/phpunit tests/TagSymfonyNativeSurfaceTest.php tests/TagSymfonyNativeContainerSurfaceTest.php tests/TagSymfonyNativeLegacyRuntimeRemovalTest.php tests/TagCrudingEntrypointResolutionTest.php",
+    "smoke:http": "php tools/smoke/tag-smoke.php",
     "audit:canonical-stale": "php tools/audit/tag-canonical-stale-reference-audit.php",
     "audit:canonical-structure": "php tools/audit/tag-canonical-structure-audit.php",
     "audit:ci": [

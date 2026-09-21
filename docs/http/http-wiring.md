@@ -1,6 +1,6 @@
 # HTTP Wiring v2
 
-Public-ready `host-minimal` wiring for the shipped Tag runtime surface.
+Hosted Symfony package wiring for the Tagging public contract.
 
 ## Routed endpoints
 
@@ -20,12 +20,12 @@ Public-ready `host-minimal` wiring for the shipped Tag runtime surface.
 
 ## Route truth
 
-The current route truth is centralized in `tag.yaml` and projected into:
+Generic CRUD route grammar and dispatch are owned by the `cruding/crud` package.
 
-- `host-minimal/route.php`
-- `config/tag_public_surface.php`
-- `config/tag_runtime.php`
-- route/surface/contract audits
+- Tagging does not ship a local generic CRUD route file or generic CRUD controller.
+- `contracts/http/tag-openapi.yaml` is the Tagging-owned public HTTP contract.
+- `config/tag_runtime.php` derives hosted-package surface metadata from the OpenAPI paths.
+- `config/routes.yaml` intentionally contains no generic CRUD declarations.
 
 ## Request headers
 
@@ -45,4 +45,4 @@ The current route truth is centralized in `tag.yaml` and projected into:
 - synonym or redirect routes
 - metrics endpoint
 - unpublished internal webhook management routes
-- HMAC / RBAC / quota middleware chain in `host-minimal`
+- a component-local generic CRUD router or controller

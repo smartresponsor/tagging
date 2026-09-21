@@ -15,11 +15,12 @@ final class TagArchitectureWiringDocsTruthTest extends TestCase
         self::assertIsString($doc);
         self::assertStringContainsString('/tag/assignments/bulk', $doc);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $doc);
-        self::assertStringContainsString('tag.yaml', $doc);
+        self::assertStringContainsString('contracts/http/tag-openapi.yaml', $doc);
+        self::assertStringContainsString('cruding/crud', $doc);
         self::assertStringContainsString('authoritative', $doc);
         self::assertStringContainsString('`total`', $doc);
         self::assertStringContainsString('tag_not_found', $doc);
-        self::assertStringNotContainsString('bulk assignment routes', $doc);
+        self::assertStringNotContainsString('host-minimal', $doc);
     }
 
     public function testPackageHostedDeployExampleUsesSharedReadModelForSuggest(): void

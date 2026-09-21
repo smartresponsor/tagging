@@ -1,12 +1,12 @@
 # Tag Runtime Ops Runbook
 
-This runbook describes how to start, validate, and recover the shipped Tag runtime (`host-minimal`) in a predictable way.
+This runbook describes how to install, validate, and operate Tagging as a hosted Symfony package in a predictable way.
 
 ---
 
 ## 1. Preconditions
 
-- PHP 8.2+
+- PHP 8.4+
 - PostgreSQL 15+
 - Composer installed
 
@@ -56,9 +56,9 @@ Expected:
 
 ## 5. Start runtime
 
-```
-php -S 127.0.0.1:8080 host-minimal/index.php
-```
+Tagging does not ship a standalone front controller. Install `tagging/tag` in the Symfony host, enable `App\\Tagging\\TaggingBundle`, import the component service configuration, and use the host application's normal runtime entrypoint.
+
+Generic CRUD routes are supplied by Cruding; Tagging must not duplicate them locally.
 
 ---
 
@@ -107,8 +107,8 @@ Expected:
 - no transport/runtime errors
 
 If failed:
-- inspect `/tmp/tag-host.log` (CI)
-- or local console output
+- inspect the host application's runtime log
+- inspect the Tagging smoke output and package diagnostics
 
 ---
 
@@ -196,6 +196,6 @@ Before considering environment stable:
 
 ## 14. Notes
 
-- This runbook reflects the current shipped runtime, not a future Symfony-based host.
+- This runbook reflects the current hosted-package runtime contract.
 - Bulk routes and flat payload semantics are part of the contract.
 - Error semantics are defined in `docs/api/error-catalog.md`.

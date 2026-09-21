@@ -25,8 +25,8 @@ $adminGuideText = file_get_contents($adminGuide) ?: '';
 
 $checks = [
     ['docs/release/tag-release-grade-portrait.md', $docText, '`src/`'],
-    ['docs/release/tag-release-grade-portrait.md', $docText, '`host-minimal/`'],
-    ['docs/release/tag-release-grade-portrait.md', $docText, '`tag.yaml`'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, '`src/TaggingBundle.php`'],
+    ['docs/release/tag-release-grade-portrait.md', $docText, 'Cruding integration'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'status.db_probe_failed'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'quota.count_failed'],
     ['docs/release/tag-release-grade-portrait.md', $docText, 'assign_failed'],

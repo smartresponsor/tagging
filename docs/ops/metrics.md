@@ -1,8 +1,8 @@
 # Metrics v1 (Prometheus)
 
-## Endpoint
+## Public endpoint
 
-- GET `/tag/_metrics` → Prometheus text format (0.0.4).
+There is no shipped `/tag/_metrics` route in the current public contract. Metrics support is internal instrumentation that a Symfony host may export through its own observability surface.
 
 ## Metrics
 
@@ -23,12 +23,6 @@ TagMetrics::incSearch($tenantId);
 TagMetrics::observeLatency('/tag/search', microtime(true)-$start);
 ```
 
-## host-minimal wiring
+## Hosted composition
 
-```php
-if ($path === '/tag/_metrics') {
-  $ctl = new App\Tagging\Service\Http\Tag\TagMetricsService();
-  [$code,$hdr,$body] = $ctl->metrics();
-  http_response_code($code); foreach ($hdr as $k=>$v){ header($k.': '.$v); } echo $body; exit;
-}
-```
+Tagging instrumentation is composed through the Symfony service container. A host that exports Prometheus metrics owns that external endpoint and must not imply that `/tag/_metrics` is part of Tagging's shipped HTTP contract.

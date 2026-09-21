@@ -34,12 +34,9 @@ composer run -n db:migrate
 composer run -n demo:seed
 ----
 
-. Start the shipped runtime
+. Integrate the package into the Symfony host
 +
-[source,bash]
-----
-php -S 127.0.0.1:8080 host-minimal/index.php
-----
+Enable `App\\Tagging\\TaggingBundle`, import the component service configuration, and run the host application's normal Symfony runtime. Generic CRUD routes are provided by Cruding.
 
 == Verification
 

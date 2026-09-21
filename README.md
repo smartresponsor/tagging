@@ -6,7 +6,7 @@ Canonical tagging component for any object type: create and manage tags, attach/
 
 ## Runnable core
 
-The current shipped `host-minimal/` runtime is the source of truth for what is actually runnable now:
+The current shipped package surface is the source of truth for what a Symfony host can compose:
 
 - tag CRUD
 - assign / unassign
@@ -17,8 +17,8 @@ The current shipped `host-minimal/` runtime is the source of truth for what is a
 - `GET /tag/_status`
 - `GET /tag/_surface`
 
-Runtime route truth is centralized in `tag.yaml`, then projected into the host router, public surface config, and route-controller audit.
-Canonical public route paths are further projected into contract and surface audits from `config/tag_public_route_paths.php`, so audits do not keep stale hardcoded path lists.
+Generic CRUD routing is owned by Cruding. Tagging contributes its business services, forms, repositories, bundle wiring, runtime metadata, and HTTP contract without shipping a parallel local generic CRUD router.
+Public HTTP contract truth is maintained in `contracts/http/tag-openapi.yaml`; `config/tag_runtime.php` derives the hosted-package surface metadata from that contract.
 
 ## Current contract notes
 
@@ -28,8 +28,9 @@ Canonical public route paths are further projected into contract and surface aud
 Core runtime assets:
 
 - PSR-4 library under `src/`
-- minimal runnable host under `host-minimal/`
-- canonical route catalog under `tag.yaml`
+- Symfony bundle entrypoint under `src/TaggingBundle.php`
+- host-importable service wiring under `config/services.yaml`
+- Cruding-owned generic CRUD route integration
 - database migrations under `db/postgres/migrations/`
 - HTTP contract under `contracts/http/tag-openapi.yaml`
 - config under `config/`
@@ -48,7 +49,7 @@ The following trees belong to delivery, demo, release, or operational support. T
 - `public/`
 - helper scripts under `tools/`
 
-These assets must not redefine the runtime contract. When they disagree with `host-minimal/`, `config/`, `tag.yaml`, or `contracts/http/`, the runnable core wins.
+These assets must not redefine the runtime contract. When they disagree with `src/`, `config/`, Cruding integration, or `contracts/http/`, the hosted package core wins.
 
 Smoke/runtime coverage currently validates bulk assignment endpoints, missing-tag unassign semantics, flat read payloads, and authoritative search totals.
 
@@ -92,11 +93,11 @@ Prereqs:
 
 The app container auto-runs migrations and demo seeding on startup. Set `APP_AUTO_SEED=0` if you want a blank runtime.
 
-## Quickstart (host-minimal)
+## Local package verification
 
 Prereqs:
 
-- PHP 8.2+
+- PHP 8.4+
 - `pdo_pgsql` for a DB-backed Postgres runtime
 - `pdo_sqlite` for SQLite-backed local/test paths
 - Composer
@@ -111,10 +112,11 @@ Prereqs:
 - `php tools/db/tag-migrate.php`
 - or self-contained with Docker-backed test DB: `composer run -n db:smoke:self-contained`
 
-3. Run:
+3. Exercise the package through a Symfony host:
 
-- `php -S 127.0.0.1:8080 host-minimal/index.php`
-- or self-contained host + Docker-backed test DB: `composer run -n host:test-db:serve`
+- enable `App\\Tagging\\TaggingBundle` in the host
+- import the Tagging service configuration and Cruding-owned route surface
+- for the repository's isolated test harness, use `composer run -n host:test-db:serve`
 
 Environment variables used by code:
 

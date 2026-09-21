@@ -25,12 +25,12 @@ This repository uses CI as a canonical guardrail, not only as a test runner.
 - `composer run -n audit:canonical-structure`
 - `composer run -n test:unit`
 - `composer run -n test:integration`
-- `composer run -n smoke:runtime`
-- `composer run -n test:e2e` (Playwright hard gate)
+- `composer run -n test:cruding`
+- `composer run -n smoke:runtime` (deterministic hosted-package smoke)
 
 ## Evidence on failure
 
-`runtime-smoke` uploads the host-minimal runtime log when the job fails so that bootstrap/runtime regressions leave inspectable evidence.
+The package-smoke job runs Symfony package-surface and Cruding integration checks without inventing a component-local front controller. The external-host `composer run -n smoke:http` probe remains available for consuming-host environments, but it is not a Tagging package CI gate.
 
 ## Workflow validity
 

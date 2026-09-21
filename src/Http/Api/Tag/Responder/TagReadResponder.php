@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace App\Tagging\Http\Api\Tag\Responder;
 
 /**
- * Canonical JSON responder for host-minimal read endpoints.
+ * Canonical JSON responder for hosted Tagging read endpoints.
  */
 final class TagReadResponder
 {

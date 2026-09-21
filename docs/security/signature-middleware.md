@@ -1,6 +1,6 @@
 # Signature + middleware contract
 
-The host-minimal entrypoint now applies transport middleware through a small explicit pipeline.
+Tagging provides transport middleware contracts that a Symfony host can compose through the package service wiring.
 
 ## Active middleware order
 

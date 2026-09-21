@@ -10,7 +10,7 @@ See `config/tag_quota.yaml`.
 - **paths**: protect/include and ignore patterns.
 - **retry_after_sec**: hint returned in `Retry-After` header on 429.
 
-## Wiring (host-minimal example)
+## Hosted wiring example
 
 ```php
 $cfg = yaml_parse_file(__DIR__.'/../config/tag_quota.yaml') ?: [];

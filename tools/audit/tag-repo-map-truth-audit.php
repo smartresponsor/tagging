@@ -3,11 +3,7 @@
 declare(strict_types=1);
 
 $repoMapPath = __DIR__ . '/../../repo-map.md';
-$manifestPath = __DIR__ . '/../../MANIFEST.json';
-
 $repoMap = file_get_contents($repoMapPath);
-$manifestRaw = file_get_contents($manifestPath);
-$manifest = json_decode($manifestRaw ?: '', true, 512, JSON_THROW_ON_ERROR);
 
 $forbidden = [
     'host/',
@@ -24,8 +20,8 @@ $forbidden = [
 ];
 
 $required = [
-    'MANIFEST.json',
-    'tag.yaml',
+    'src/TaggingBundle.php',
+    'contracts/http/tag-openapi.yaml',
     'fixtures/',
     'public/',
     'sdk/',
@@ -53,20 +49,6 @@ foreach ($required as $needle) {
     if (!str_contains($repoMap, $needle)) {
         $errors[] = sprintf('repo-map.md misses canonical path: %s', $needle);
     }
-}
-
-if (($manifest['slice'] ?? null) !== 'CUMULATIVE') {
-    $errors[] = 'MANIFEST.json slice must be CUMULATIVE.';
-}
-
-$version = (string) ($manifest['version'] ?? '');
-if ($version === '') {
-    $errors[] = 'MANIFEST.json version must be present.';
-} elseif (!str_contains($version, 'wave-')) {
-    $errors[] = 'MANIFEST.json version must remain wave-labelled.';
-}
-if (($manifest['slice'] ?? null) !== 'CUMULATIVE') {
-    $errors[] = 'MANIFEST.json slice must be CUMULATIVE.';
 }
 
 if ($errors !== []) {

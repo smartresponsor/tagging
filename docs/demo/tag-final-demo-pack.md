@@ -4,11 +4,12 @@ This file is the compact final truth pack for demonstration, fixtures, SDK hando
 
 ## Truth order
 
-1. `host-minimal/`
+1. `src/` and `src/TaggingBundle.php`
 2. `config/`
 3. `contracts/http/tag-openapi.yaml`
-4. runtime-facing tests and audits
-5. docs and SDK examples
+4. Cruding-owned generic CRUD integration
+5. runtime-facing tests and audits
+6. docs and SDK examples
 
 ## Runnable demo flow
 
@@ -57,4 +58,4 @@ The shipped SDK surface is expected to match the current public runtime API, inc
 
 ## Demo promise
 
-The final demo pack documents only the currently runnable core surface. It must not promise routes, assets, SDK methods, or workflows that are absent from `host-minimal/`, `config/`, the shipped SDK clients, or the HTTP contract.
+The final demo pack documents only the currently supported hosted-package surface. It must not promise routes, assets, SDK methods, or workflows that are absent from `src/`, `config/`, Cruding integration, the shipped SDK clients, or the HTTP contract.

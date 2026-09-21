@@ -1,6 +1,6 @@
 # SDK quick usage
 
-The shipped SDK surface matches the runnable `host-minimal` public API only:
+The shipped SDK surface matches the hosted Tagging public HTTP contract:
 
 - `GET /tag/_status` via `status()`
 - `GET /tag/_surface` via `surface()`

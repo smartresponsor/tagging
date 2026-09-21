@@ -15,4 +15,4 @@ What it does not do:
 - purge or metrics panels
 - HMAC signing
 
-Open `admin/index.html` in a browser and point API Base to a running `host-minimal` instance.
+Open `admin/index.html` in a browser and point API Base to a Symfony host with the Tagging package enabled.

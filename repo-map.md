@@ -18,7 +18,6 @@ TREE
 .commanding/test/
 .github/
 .github/workflows/
-MANIFEST.json
 admin/
 config/
 contracts/
@@ -49,7 +48,6 @@ docs/security/
 docs/seed/
 docs/tag/
 fixtures/
-host-minimal/
 public/
 public/tag/
 public/tag/demo/
@@ -94,7 +92,6 @@ src/Service/
 src/Service/Core/
 src/Service/Core/Tag/
 src/Service/Security/
-tag.yaml
 tests/
 tests/integration/
 tools/
@@ -121,11 +118,10 @@ tools/test-db/
 - `src/Service/Core/Tag/...`
 
 ## current runtime and delivery truth roots
-- `tag.yaml`
-- `MANIFEST.json`
-- `host-minimal/`
+- `src/TaggingBundle.php`
 - `config/`
-- `contracts/http/`
+- `contracts/http/tag-openapi.yaml`
+- Cruding-owned generic CRUD integration
 - `fixtures/`
 - `public/tag/...`
 - `sdk/php/tag/...`

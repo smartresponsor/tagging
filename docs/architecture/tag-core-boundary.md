@@ -7,7 +7,7 @@ This component is intentionally small. Its value is a reliable tagging core, not
 Core runtime means the minimum set of files and behaviors that must stay truthful, runnable, and testable:
 
 - `src/`
-- `host-minimal/`
+- `src/TaggingBundle.php`
 - `config/`
 - `contracts/http/`
 - `db/postgres/migrations/`
@@ -42,11 +42,12 @@ Examples:
 
 When assets disagree, use this order:
 
-1. `host-minimal/`
+1. `src/` and `src/TaggingBundle.php`
 2. `config/`
 3. `contracts/http/`
-4. tests that verify runtime and public surface
-5. docs, SDK, release notes, demos, and reports
+4. Cruding-owned generic CRUD integration
+5. tests that verify runtime and public surface
+6. docs, SDK, release notes, demos, and reports
 
 ## Practical rule
 

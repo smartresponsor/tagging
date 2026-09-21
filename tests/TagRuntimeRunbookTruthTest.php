@@ -20,6 +20,6 @@ final class TagRuntimeRunbookTruthTest extends TestCase
         self::assertStringContainsString('404 tag_not_found', $doc);
         self::assertStringContainsString('no `/tag/_metrics` endpoint', $doc);
         self::assertStringContainsString('docs/api/error-catalog.md', $doc);
-        self::assertStringContainsString('current shipped runtime', $doc);
+        self::assertStringContainsString('current hosted-package runtime contract', $doc);
     }
 }

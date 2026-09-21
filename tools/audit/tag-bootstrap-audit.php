@@ -57,4 +57,4 @@ if ([] !== $errors) {
     exit(1);
 }
 
-echo "tag-bootstrap-audit: ok" . PHP_EOL;
+echo 'tag-bootstrap-audit: ok' . PHP_EOL;

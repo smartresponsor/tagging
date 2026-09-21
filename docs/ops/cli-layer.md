@@ -41,4 +41,4 @@ php tools/cli/tag-cli.php assign --tenant demo --tag TAG_ID --entity-type projec
 
 ## Boundary
 
-This CLI is only a thin adapter over the current host-minimal/bootstrap runtime. It is not the source of truth for routing or contracts.
+This CLI is a thin local diagnostic adapter for Tagging. It is not the source of truth for routing or contracts; generic CRUD routing belongs to Cruding and the public HTTP contract lives in `contracts/http/tag-openapi.yaml`.

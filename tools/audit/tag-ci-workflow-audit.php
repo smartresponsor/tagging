@@ -1,4 +1,5 @@
 <?php
+
 # Copyright (c) 2025 Oleksandr Tishchenko / Marketing America Corp
 declare(strict_types=1);
 
@@ -28,15 +29,21 @@ $required = [
     'composer run -n audit:ci-workflow',
     'composer run -n test:unit',
     'composer run -n test:integration',
+    'composer run -n test:cruding',
     'composer run -n smoke:runtime',
-    'composer run -n test:e2e',
-    'uses: actions/upload-artifact@v4',
 ];
 
 foreach ($required as $needle) {
     if (!str_contains($content, $needle)) {
         fwrite(STDERR, "Missing workflow gate: {$needle}
 ");
+        exit(1);
+    }
+}
+
+foreach (['public/index.php', 'composer run -n test:e2e'] as $forbidden) {
+    if (str_contains($content, $forbidden)) {
+        fwrite(STDERR, "Forbidden package-CI runtime ownership: {$forbidden}\n");
         exit(1);
     }
 }

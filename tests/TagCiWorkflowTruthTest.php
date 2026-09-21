@@ -17,7 +17,9 @@ final class TagCiWorkflowTruthTest extends TestCase
         self::assertStringContainsString('composer run -n audit:demo-truth-pack', $workflow);
         self::assertStringContainsString('composer run -n audit:release-grade-portrait', $workflow);
         self::assertStringContainsString('composer run -n smoke:runtime', $workflow);
-        self::assertStringContainsString('uses: actions/upload-artifact@v4', $workflow);
+        self::assertStringContainsString('composer run -n test:cruding', $workflow);
+        self::assertStringNotContainsString('public/index.php', $workflow);
+        self::assertStringNotContainsString('composer run -n test:e2e', $workflow);
     }
 
     public function testCiWorkflowAuditPassesAgainstCurrentWorkflow(): void

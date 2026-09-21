@@ -31,7 +31,7 @@ $seedDoc = file_get_contents($root . '/docs/seed/tag-seed.md') ?: '';
 $sdkReadme = file_get_contents($root . '/sdk/README.md') ?: '';
 
 $checks = [
-    ['docs/demo/tag-final-demo-pack.md', $finalPack, '`host-minimal/`'],
+    ['docs/demo/tag-final-demo-pack.md', $finalPack, '`src/TaggingBundle.php`'],
     ['docs/demo/tag-final-demo-pack.md', $finalPack, '`fixtures/tag-demo-fixture.php`'],
     ['docs/demo/tag-final-demo-pack.md', $finalPack, '`seed/tag/tag-demo.ndjson`'],
     ['docs/demo/tag-final-demo-pack.md', $finalPack, '/tag/_surface'],

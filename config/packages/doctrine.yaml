@@ -1,0 +1,7 @@
+imports:
+    - { resource: '../component/doctrine.yaml' }
+
+doctrine:
+    dbal:
+        url: '%env(default::DATABASE_URL)%'
+

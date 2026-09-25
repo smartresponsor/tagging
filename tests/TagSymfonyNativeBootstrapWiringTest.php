@@ -15,14 +15,14 @@ final class TagSymfonyNativeBootstrapWiringTest extends TestCase
         self::assertIsString($services);
 
         foreach ([
-            'services/infrastructure.yaml',
+            'services/tag_infrastructure.yaml',
             'services/cache.yaml',
-            'services/read_model.yaml',
-            'services/application.yaml',
-            'services/http.yaml',
-            'services/ops.yaml',
-            'services/core.yaml',
-            'services/tagging.yaml',
+            'services/tag_read_model.yaml',
+            'services/tag_application.yaml',
+            'services/tag_http.yaml',
+            'services/tag_ops.yaml',
+            'services/tag_core.yaml',
+            'services/tag_services.yaml',
         ] as $expectedImport) {
             self::assertStringContainsString($expectedImport, $services);
         }

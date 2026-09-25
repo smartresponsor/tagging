@@ -14,22 +14,22 @@ final class TagSymfonyNativeContainerSurfaceTest extends TestCase
         self::assertIsString($services);
 
         self::assertStringNotContainsString('../src/Kernel.php', $services);
-        self::assertStringContainsString('services/infrastructure.yaml', $services);
-        self::assertStringContainsString('services/http.yaml', $services);
+        self::assertStringContainsString('services/tag_infrastructure.yaml', $services);
+        self::assertStringContainsString('services/tag_http.yaml', $services);
     }
 
     public function testActiveServiceMapsDoNotRegisterHostMinimalNamespace(): void
     {
         foreach ([
             'config/services.yaml',
-            'config/services/infrastructure.yaml',
+            'config/services/tag_infrastructure.yaml',
             'config/services/cache.yaml',
-            'config/services/read_model.yaml',
-            'config/services/application.yaml',
-            'config/services/http.yaml',
-            'config/services/ops.yaml',
-            'config/services/core.yaml',
-            'config/services/tagging.yaml',
+            'config/services/tag_read_model.yaml',
+            'config/services/tag_application.yaml',
+            'config/services/tag_http.yaml',
+            'config/services/tag_ops.yaml',
+            'config/services/tag_core.yaml',
+            'config/services/tag_services.yaml',
         ] as $path) {
             $content = file_get_contents(dirname(__DIR__) . '/' . $path);
             self::assertIsString($content);

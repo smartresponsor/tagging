@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Infrastructure\Config\TagRuntimeConfigFactory;
+use App\Tagging\Factory\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
 final class TagSymfonyNativeRuntimeConfigDbResolutionTest extends TestCase

@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagModerationService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagProposalApproveService extends AbstractTagService
+final class TagProposalApproveService extends TagAbstractService
 {
     public function __construct(private TagModerationService $moderation) {}
 

@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagDuplicateServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagDuplicateService extends AbstractTagService
+final class TagDuplicateService extends TagAbstractService
 {
     public function __construct(private TagDuplicateServiceInterface $duplicate) {}
 

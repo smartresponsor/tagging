@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Application\Write\Tag\Dto\TagCreateCommand;
-use App\Tagging\Application\Write\Tag\UseCase\TagCreateUseCaseInterface;
+use App\Tagging\Command\Input\TagCreateCommand;
+use App\Tagging\HandlerInterface\Write\TagCreateHandlerInterface;
 
 final readonly class TagDuplicateService implements TagDuplicateServiceInterface
 {
-    public function __construct(private TagEntityQueryServiceInterface $query, private TagCreateUseCaseInterface $create) {}
+    public function __construct(private TagEntityQueryServiceInterface $query, private TagCreateHandlerInterface $create) {}
     public function duplicate(string $tenant, ?string $id, ?string $slug, array $override = []): array
     {
         $source = null !== $id ? $this->query->findById($tenant, $id) : $this->query->findBySlug($tenant, (string) $slug);

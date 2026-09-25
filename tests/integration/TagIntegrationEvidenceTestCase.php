@@ -8,11 +8,12 @@ use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Entity\Tag\TagEntity;
 use App\Tagging\Entity\Tag\TagIdempotencyStoreEntity;
 use App\Tagging\Entity\Tag\TagOutboxEventEntity;
-use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
-use App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository;
-use App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel;
+use App\Tagging\Repository\Outbox\TagOutboxPublisher;
+use App\Tagging\Repository\Storage\TagDoctrineRepository;
+use App\Tagging\Repository\TagReadModel;
+use App\Tagging\Repository\TagDoctrineTransactionRunner;
 use App\Tagging\Service\Core\TagAssignService;
-use App\Tagging\Service\Core\TagIdempotencyStore;
+use App\Tagging\Repository\TagIdempotencyStore;
 use App\Tagging\Service\Core\TagUnassignService;
 
 abstract class TagIntegrationEvidenceTestCase extends TagIntegrationDbTestCase
@@ -36,9 +37,12 @@ abstract class TagIntegrationEvidenceTestCase extends TagIntegrationDbTestCase
 
     protected function assignService(): TagAssignService
     {
+        $repository = new TagDoctrineRepository($this->entityManager());
+
         return new TagAssignService(
-            $this->entityManager(),
-            new TagDoctrineRepository($this->entityManager()),
+            $repository,
+            $repository,
+            new TagDoctrineTransactionRunner($this->entityManager()),
             new TagOutboxPublisher($this->entityManager()),
             new TagIdempotencyStore($this->entityManager()),
             static function (array $error): never {
@@ -49,9 +53,12 @@ abstract class TagIntegrationEvidenceTestCase extends TagIntegrationDbTestCase
 
     protected function unassignService(): TagUnassignService
     {
+        $repository = new TagDoctrineRepository($this->entityManager());
+
         return new TagUnassignService(
-            $this->entityManager(),
-            new TagDoctrineRepository($this->entityManager()),
+            $repository,
+            $repository,
+            new TagDoctrineTransactionRunner($this->entityManager()),
             new TagOutboxPublisher($this->entityManager()),
             new TagIdempotencyStore($this->entityManager()),
             static function (array $error): never {

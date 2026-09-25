@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Http\Tag;
 
-use App\Tagging\Service\Core\TagReadModelInterface;
+use App\Tagging\RepositoryInterface\TagReadModelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagAssignmentIndexService extends AbstractTagService
+final class TagAssignmentIndexService extends TagAbstractService
 {
     public function __construct(private TagReadModelInterface $read) {}
 

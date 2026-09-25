@@ -25,7 +25,7 @@ final class TagCliCommandLayerTest extends TestCase
 
         self::assertSame(0, $result['exit'], $result['stderr']);
         self::assertStringContainsString('"service": "tag"', $result['stdout']);
-        self::assertStringContainsString('"runtime": "hosted-package"', $result['stdout']);
+        self::assertStringContainsString('"runtime": "dual-mode"', $result['stdout']);
         self::assertStringContainsString('"version":', $result['stdout']);
     }
 

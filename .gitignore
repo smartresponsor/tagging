@@ -168,4 +168,9 @@ phpcs.xml
 
 # Local governance/runtime copies and one-off recovery helpers
 /.gating/
+/.console-mcp/
+/.env.local
+/.env.*.local
+.DS_Store
+Thumbs.db
 /tool/restore-tagging-policy-config.ps1

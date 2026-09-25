@@ -1,4 +1,4 @@
-# SmartResponsor Tag Admin
+# Tagging Admin
 
 Static no-build shell for the minimal public-ready Tag surface.
 

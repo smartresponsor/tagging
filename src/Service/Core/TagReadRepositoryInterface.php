@@ -39,6 +39,10 @@ interface TagReadRepositoryInterface
     /** @return Tag[] */
     public function listAllTags(string $tenantId): array;
 
+    public function countTags(string $tenantId): int;
+
+    public function countAssignments(string $tenantId): int;
+
     /** @return array<int, array{tagId:string, slug:string, label:string, cnt:int}> */
     public function facetTop(string $tenantId, string $assignedType, int $limit): array;
 

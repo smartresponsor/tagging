@@ -8,7 +8,7 @@ Wave 2 deliberately does **not** migrate the component namespace. The canonical 
 App\Tagging\...
 ```
 
-This wave only addresses class/file form problems where names were too generic for Smart Responsor component conventions.
+This wave only addresses class/file form problems where names were too generic for platform component conventions.
 
 ## Applied class-form direction
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Service\Core\TagNormalizer;
+use App\Tagging\Normalizer\Core\TagNormalizer;
 use PHPUnit\Framework\TestCase;
 
 final class TagNormalizationTest extends TestCase

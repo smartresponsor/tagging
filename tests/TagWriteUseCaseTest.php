@@ -5,18 +5,18 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Application\Write\Tag\Dto\TagCreateCommand;
-use App\Tagging\Application\Write\Tag\Dto\TagDeleteCommand;
-use App\Tagging\Application\Write\Tag\Dto\TagPatchCommand;
-use App\Tagging\Application\Write\Tag\UseCase\TagCreateUseCase;
-use App\Tagging\Application\Write\Tag\UseCase\TagDeleteUseCase;
-use App\Tagging\Application\Write\Tag\UseCase\TagPatchUseCase;
-use App\Tagging\Http\Api\Tag\Responder\TagWriteResponder;
+use App\Tagging\Command\Input\TagCreateCommand;
+use App\Tagging\Command\Input\TagDeleteCommand;
+use App\Tagging\Command\Input\TagPatchCommand;
+use App\Tagging\Handler\Write\TagCreateHandler;
+use App\Tagging\Handler\Write\TagDeleteHandler;
+use App\Tagging\Handler\Write\TagPatchHandler;
+use App\Tagging\Responder\Api\TagWriteResponder;
 use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
 use App\Tagging\Service\Core\Slug\TagSlugifier;
-use App\Tagging\Service\Core\Slug\TagSlugPolicy;
+use App\Tagging\Policy\Slug\TagSlugPolicy;
 use App\Tagging\Service\Core\TagCrudRepositoryInterface;
-use App\Tagging\Service\Core\TagTransactionRunnerInterface;
+use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagWriteUseCaseTest extends TestCase
@@ -52,7 +52,7 @@ final class TagWriteUseCaseTest extends TestCase
         };
 
         $policy = new TagSlugPolicy($repo, new TagSlugifier());
-        $useCase = new TagCreateUseCase($repo, $policy, $tx);
+        $useCase = new TagCreateHandler($repo, $policy, $tx);
 
         $result = $useCase->execute(
             new TagCreateCommand('tenant-a', ['nameEntity' => 'Alpha', 'slug' => 'alpha']),
@@ -93,7 +93,7 @@ final class TagWriteUseCaseTest extends TestCase
             }
         };
 
-        $useCase = new TagPatchUseCase($repo, $tx);
+        $useCase = new TagPatchHandler($repo, $tx);
         $result = $useCase->execute(
             new TagPatchCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV', ['nameEntity' => 'Beta']),
         );
@@ -138,7 +138,7 @@ final class TagWriteUseCaseTest extends TestCase
             }
         };
 
-        $useCase = new TagDeleteUseCase($repo, $tx);
+        $useCase = new TagDeleteHandler($repo, $tx);
         $result = $useCase->execute(
             new TagDeleteCommand('tenant-a', '01ARZ3NDEKTSV4RRFFQ69G5FAV'),
         );

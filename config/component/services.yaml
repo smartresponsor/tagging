@@ -6,23 +6,23 @@ services:
     autowire: true
     autoconfigure: true
 
-  App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository:
+  App\Tagging\Repository\Storage\TagDoctrineRepository:
     public: true
 
-  App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel:
+  App\Tagging\Repository\TagReadModel:
     public: true
 
-  App\Tagging\Service\Core\TagRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagReadRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagWriteRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagPolicyRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagCrudRepositoryInterface: '@App\Tagging\Infrastructure\Persistence\Tag\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagReadModelInterface: '@App\Tagging\Infrastructure\ReadModel\Tag\TagReadModel'
-  App\Tagging\Service\Core\TagTransactionRunnerInterface: '@App\Tagging\Service\Core\TagDoctrineTransactionRunner'
+  App\Tagging\Service\Core\TagRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\Service\Core\TagReadRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\Service\Core\TagWriteRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\Service\Core\TagPolicyRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\Service\Core\TagCrudRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\RepositoryInterface\TagReadModelInterface: '@App\Tagging\Repository\TagReadModel'
+  App\Tagging\RepositoryInterface\TagTransactionRunnerInterface: '@App\Tagging\Repository\TagDoctrineTransactionRunner'
   App\Tagging\Service\Core\Webhook\TagWebhookRegistry:
     arguments:
       $path: '%kernel.project_dir%/report/webhook/registry.json'
-  App\Tagging\Command\Tag\:
-    resource: '../../src/Command/Tag/'
+  App\Tagging\Command\Console\:
+    resource: '../../src/Command/Console/'
     autowire: true
     autoconfigure: true

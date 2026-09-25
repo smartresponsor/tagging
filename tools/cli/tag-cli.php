@@ -33,7 +33,7 @@ foreach ($arguments as $argument) {
 $commands = [
     'help' => ['description' => 'Show the local Tagging CLI command catalog.'],
     'list' => ['description' => 'Alias of help; optional filter argument is accepted.'],
-    'status' => ['description' => 'Show hosted-package runtime status metadata.'],
+    'status' => ['description' => 'Show dual-runtime status metadata.'],
     'surface' => ['description' => 'Show the current public surface contract.'],
     'create' => ['description' => 'Create a tag from a JSON payload.', 'implemented' => false],
     'get' => ['description' => 'Read one tag by id or slug.', 'implemented' => false],
@@ -88,7 +88,7 @@ switch ($command) {
         $emitStdout([
             'ok' => true,
             'service' => $runtime['service'] ?? 'tag',
-            'runtime' => $runtime['runtime'] ?? 'hosted-package',
+            'runtime' => $runtime['runtime'] ?? 'dual-mode',
             'version' => $runtime['version'] ?? 'dev',
             'commands' => $filteredCommands,
         ]);
@@ -98,7 +98,7 @@ switch ($command) {
         $emitStdout([
             'ok' => true,
             'service' => $runtime['service'] ?? 'tag',
-            'runtime' => $runtime['runtime'] ?? 'hosted-package',
+            'runtime' => $runtime['runtime'] ?? 'dual-mode',
             'version' => $runtime['version'] ?? 'dev',
             'routes' => $runtime['route'] ?? [],
         ]);
@@ -108,7 +108,7 @@ switch ($command) {
         $emitStdout([
             'ok' => true,
             'service' => $runtime['service'] ?? 'tag',
-            'runtime' => $runtime['runtime'] ?? 'hosted-package',
+            'runtime' => $runtime['runtime'] ?? 'dual-mode',
             'version' => $runtime['version'] ?? 'dev',
             'public_surface' => $runtime['public_surface'] ?? [],
             'route' => $runtime['route'] ?? [],

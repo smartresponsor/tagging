@@ -140,3 +140,34 @@
 Что имеем? Hosted-package runtime, documentation, CI, truth audits, Composer validation, static analysis и test contour согласованы и зелёные.
 
 Что осталось? Только Git integration этого bounded patch и post-integration verification; отдельный product-capability artifact остаётся вне commit scope.
+
+### 2026-09-23 — Gating integration and RC hardening baseline
+
+- Baseline branch: `fix/symfony-native-cutover-rc-master` at `48a19560216c532a7d91450fe624c5ae57248b0b`, one commit ahead of its configured upstream, with five pre-existing worktree changes: `.gating/README.md`, `composer.json`, `composer.lock`, untracked `PRODUCT_CAPABILITY_AUDIT.adoc`, and untracked `composer.prod.json`.
+- Read current Tagging `AGENTS.md`, `README.md`, Composer manifests, product-capability audit, Gating artifact README, prior CMCP journal, dependency-contour contracts from Objecting/Cruding/Viewing/Interfacing, and owner documentation from Gating and Canonization.
+- Consulted authoritative Canonization rules: `Canon019NoAlternativeLayerTaxonomyRule`, `Canon021CrudingOwnsGenericCrudRule`, `Canon023DevelopmentComposerSymlinkRule`, `Canon024ProductionComposerBundleRule`, `Canon033ComposerManifestIdentityParityRule`, `Canon043DevelopmentComposerDependencyVersionRule`, `Canon045DevelopmentComposerRepositoryClosureRule`, `Canon052GatingIntegrationRule`, `Canon053SiblingComposerSymlinkIsolationRule`, and `Canon054DoctrinePhysicalIdentifierNamingRule`.
+- Target mapping: Tagging keeps the role-first `App\\Tagging\\` tree with no alternative Domain/Port/Adapter roots; generic CRUD remains Cruding-owned; development sibling links remain live Composer path symlinks with `dev-master`; production uses `composer.prod.json` without path repositories; Gating is a development dependency and quality entrypoint; consumer `.gating/` stays artifact-only; current Canon053 permits only the explicit eleven helper/infrastructure siblings; Doctrine physical naming remains lower_snake_case and Objecting-controlled identity constraints remain owner-controlled.
+- Market/maturity benchmark: GitHub labels and Contentful tags reinforce a bounded tag vocabulary/assignment responsibility, while Contentful explicitly separates hierarchical taxonomy/search semantics. RC-critical work therefore stays on packaging, executable gate integration, artifact-boundary correctness, and verification; taxonomy hierarchy/synonyms/governance expansion remains a separate growth track.
+- First failure: `composer run gate` could not open `vendor/bin/gating`; the manifest/lock work has not yet been installed into the local vendor graph. Separately, `.gating/README.md` had been replaced with the Gating owner README, violating Canon052's consumer-artifact boundary; that README has now been restored to the artifact-only description.
+- Planned gates after repair: package-scoped Composer synchronization for `gating/gate`, strict Composer validation/lock integrity, Gating, unit/integration/Cruding smoke, PHPStan, CS check, release preflight, core/canonical/repository audits, then final worktree/branch/upstream inspection and coherent Git integration if green.
+
+Что имеем? Актуальный Canon052/053 прочитан буквально; один конкретный artifact-boundary регресс уже исправлен, а причина неработающего Gating сведена к несинхронизированному vendor install.
+
+Что осталось? Установить ровно требуемый Gating dependency graph без расширения package scope, прогнать полный acceptance contour, исправить только доказанные Tagging failures и затем интегрировать подтверждённые ценности.
+
+### 2026-09-24 — role-first dual-runtime RC convergence
+
+- Continued from the large in-progress role-first cutover already present in the worktree; did not rerun the migration script or overwrite unrelated concurrent work.
+- Completed namespace/import repair after the structural move. Final PHPStan acceptance is green across 329 files with 0 errors.
+- Reconciled Tagging with authoritative Canon025 dual-runtime mode: standalone Symfony boot surfaces (`src/Kernel.php`, `config/bundles.php`, `bin/console`) coexist with reusable bundle composition; active runtime metadata now declares `dual-mode`.
+- Closed Doctrine/schema and behavioral tooling requirements: Doctrine migrations tooling is a runtime dependency; BrowserKit/CSS Selector test tooling is declared; strict Composer lock validation is green.
+- Moved Doctrine-owning implementations under `src/Repository/` and persistence contracts under `src/RepositoryInterface/`; removed direct `EntityManagerInterface` dependencies from Assign, Unassign, Lifecycle, and Quota services.
+- Moved HTTP middleware classes to the canonical `src/Middleware/` role root and synchronized namespaces/tests.
+- Verified Canon046 active-runtime vocabulary: no forbidden `tenantId`, `tenant_id`, `TenantId`, or `TenantIdentity` tokens remain under `src/` or `config/`.
+- Applied Canon055 platform/consumer naming separation across current human-facing Tagging documentation and package metadata; Smart Responder/Responsor aliases are no longer promoted as the platform identity.
+- Final executable evidence: unit 197 tests / 1473 assertions; integration 10 / 63; Cruding 14 / 27; runtime smoke 23 / 497; PHPStan 329 files / 0 errors; CS check 0 fixable files / 410; release preflight green; Gating 0 failed / 0 warning with Canon055 passing.
+- Remaining skips are profile-availability skips only in the current Gating surface; no hard or warning findings remain.
+
+Что имеем? Role-first topology, dual-runtime composition, repository-owned Doctrine access, platform identity terminology, static analysis, tests, runtime smoke, formatting, release preflight и Gating согласованы и зелёные.
+
+Что осталось? Только финальная Git integration: проверить status и staged diff, сформировать coherent signed commit, push в configured upstream и подтвердить post-push HEAD/upstream/PR state.

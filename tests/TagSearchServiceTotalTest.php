@@ -7,7 +7,7 @@ namespace Tests;
 
 use App\Tagging\Cache\Store\Tag\TagSearchCache;
 use App\Tagging\Service\Core\TagSearchService;
-use App\Tagging\Service\Core\TagReadModelInterface;
+use App\Tagging\RepositoryInterface\TagReadModelInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagSearchServiceTotalTest extends TestCase

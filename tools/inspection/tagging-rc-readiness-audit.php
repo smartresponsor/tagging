@@ -425,8 +425,8 @@ $servicesContent = '';
 foreach ([
     'config/component/services.yaml',
     'config/services.yaml',
-    'config/services/http.yaml',
-    'config/services/tagging.yaml',
+    'config/services/tag_http.yaml',
+    'config/services/tag_services.yaml',
 ] as $serviceConfig) {
     $servicesContent .= PHP_EOL . $read($serviceConfig);
 }

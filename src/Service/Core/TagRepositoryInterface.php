@@ -72,6 +72,10 @@ interface TagRepositoryInterface
     /** @return Tag[] */
     public function listAllTags(string $tenantId): array;
 
+    public function countTags(string $tenantId): int;
+
+    public function countAssignments(string $tenantId): int;
+
     public function getPolicy(string $tenantId): array;
 
     public function setPolicy(string $tenantId, array $policy): void;

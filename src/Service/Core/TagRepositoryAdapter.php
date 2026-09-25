@@ -161,6 +161,16 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $this->tagReadRepository->listAllTags($tenantId);
     }
 
+    public function countTags(string $tenantId): int
+    {
+        return $this->tagReadRepository->countTags($tenantId);
+    }
+
+    public function countAssignments(string $tenantId): int
+    {
+        return $this->tagReadRepository->countAssignments($tenantId);
+    }
+
     public function getPolicy(string $tenantId): array
     {
         return $this->tagPolicyRepository->getPolicy($tenantId);

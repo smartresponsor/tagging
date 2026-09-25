@@ -49,7 +49,7 @@ $services = '';
 foreach ([
     'config/component/services.yaml',
     'config/services.yaml',
-    'config/services/http.yaml',
+    'config/services/tag_http.yaml',
 ] as $path) {
     if (is_file($root . '/' . $path)) {
         $services .= PHP_EOL . file_get_contents($root . '/' . $path);

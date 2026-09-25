@@ -1,12 +1,12 @@
 imports:
-    - { resource: 'services/infrastructure.yaml' }
+    - { resource: 'services/tag_infrastructure.yaml' }
     - { resource: 'services/cache.yaml' }
-    - { resource: 'services/read_model.yaml' }
-    - { resource: 'services/application.yaml' }
-    - { resource: 'services/http.yaml' }
-    - { resource: 'services/ops.yaml' }
-    - { resource: 'services/core.yaml' }
-    - { resource: 'services/tagging.yaml' }
+    - { resource: 'services/tag_read_model.yaml' }
+    - { resource: 'services/tag_application.yaml' }
+    - { resource: 'services/tag_http.yaml' }
+    - { resource: 'services/tag_ops.yaml' }
+    - { resource: 'services/tag_core.yaml' }
+    - { resource: 'services/tag_services.yaml' }
 
 services:
     _defaults:

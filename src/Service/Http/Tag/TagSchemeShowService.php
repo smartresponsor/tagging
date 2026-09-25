@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagSchemeShowService extends AbstractTagService
+final class TagSchemeShowService extends TagAbstractService
 {
     public function __construct(private TagRepositoryInterface $repository) {}
 

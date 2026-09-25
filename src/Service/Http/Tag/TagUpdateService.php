@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Http\Tag;
 
-use App\Tagging\Application\Write\Tag\Dto\TagPatchCommand;
-use App\Tagging\Application\Write\Tag\UseCase\TagPatchUseCaseInterface;
+use App\Tagging\Command\Input\TagPatchCommand;
+use App\Tagging\HandlerInterface\Write\TagPatchHandlerInterface;
 use App\Tagging\Service\Core\TagEntityQueryServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagUpdateService extends AbstractTagService
+final class TagUpdateService extends TagAbstractService
 {
     public function __construct(
-        private TagPatchUseCaseInterface $useCase,
+        private TagPatchHandlerInterface $useCase,
         private TagEntityQueryServiceInterface $query,
     ) {}
 

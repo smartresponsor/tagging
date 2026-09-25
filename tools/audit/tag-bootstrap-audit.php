@@ -10,21 +10,21 @@ foreach ([
     'config/services.yaml',
     'config/routes.yaml',
     'src/TaggingBundle.php',
+    'src/Kernel.php',
+    'config/bundles.php',
+    'bin/console',
 ] as $path) {
     if (!is_file($root . '/' . $path)) {
-        $errors[] = 'missing hosted-package bootstrap file ' . $path;
+        $errors[] = 'missing dual-runtime bootstrap file ' . $path;
     }
 }
 
 foreach ([
-    'src/Kernel.php',
     'config/bootstrap.php',
-    'config/bundles.php',
     'public/index.php',
-    'bin/console',
 ] as $path) {
     if (is_file($root . '/' . $path)) {
-        $errors[] = 'retired standalone runtime file must be removed: ' . $path;
+        $errors[] = 'non-canonical standalone runtime file must be removed: ' . $path;
     }
 }
 
@@ -33,14 +33,14 @@ if (!is_string($services)) {
     $errors[] = 'missing config/services.yaml';
 } else {
     foreach ([
-        'services/infrastructure.yaml',
+        'services/tag_infrastructure.yaml',
         'services/cache.yaml',
-        'services/read_model.yaml',
-        'services/application.yaml',
-        'services/http.yaml',
-        'services/ops.yaml',
-        'services/core.yaml',
-        'services/tagging.yaml',
+        'services/tag_read_model.yaml',
+        'services/tag_application.yaml',
+        'services/tag_http.yaml',
+        'services/tag_ops.yaml',
+        'services/tag_core.yaml',
+        'services/tag_services.yaml',
     ] as $import) {
         if (!str_contains($services, $import)) {
             $errors[] = 'missing service import ' . $import;

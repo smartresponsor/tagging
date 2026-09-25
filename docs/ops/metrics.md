@@ -15,7 +15,7 @@ There is no shipped `/tag/_metrics` route in the current public contract. Metric
 ## Instrumentation (example)
 
 ```php
-use App\Tagging\Ops\Metrics\TagMetrics;
+use App\Tagging\Recorder\Metrics\TagMetrics;
 
 $start = microtime(true);
 // ... handle request /tag/search

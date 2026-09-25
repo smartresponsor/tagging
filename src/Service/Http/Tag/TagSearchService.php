@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagSearchService as TagSearchOperation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagSearchService extends AbstractTagService
+final class TagSearchService extends TagAbstractService
 {
     public function __construct(private TagSearchOperation $search) {}
 

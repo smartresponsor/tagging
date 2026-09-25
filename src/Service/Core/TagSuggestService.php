@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Cache\Store\Tag\TagSuggestCache;
+use App\Tagging\RepositoryInterface\TagReadModelInterface;
 
 /**
  * Host-minimal suggest read service backed by the tag read-model.

@@ -1,6 +1,6 @@
-> Package mode note: this component is hosted by a Symfony ecosystem application and does not ship its own Kernel, front controller, or standalone bin/console surface.
+> Dual-runtime mode: this component boots as a standalone Symfony application for verification/debugging and also integrates as a reusable Symfony bundle in a host application.
 
-# Smartresponsor Tag (Tagging)
+# Tagging
 
 Canonical tagging component for any object type: create and manage tags, attach/detach them to entities, and expose a stable API for CRUD, assignment, search, suggest, status, and surface discovery.
 
@@ -18,7 +18,7 @@ The current shipped package surface is the source of truth for what a Symfony ho
 - `GET /tag/_surface`
 
 Generic CRUD routing is owned by Cruding. Tagging contributes its business services, forms, repositories, bundle wiring, runtime metadata, and HTTP contract without shipping a parallel local generic CRUD router.
-Public HTTP contract truth is maintained in `contracts/http/tag-openapi.yaml`; `config/tag_runtime.php` derives the hosted-package surface metadata from that contract.
+Public HTTP contract truth is maintained in `contracts/http/tag-openapi.yaml`; `config/tag_runtime.php` derives the dual-runtime surface metadata from that contract.
 
 ## Current contract notes
 

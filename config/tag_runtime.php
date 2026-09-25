@@ -43,7 +43,7 @@ foreach ($paths as $path) {
 
 return [
     'service' => 'tag',
-    'runtime' => 'hosted-package',
+    'runtime' => 'dual-mode',
     'version' => 'dev',
     'route' => $routeMap,
     'example' => [],

@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagLifecycleServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagRestoreService extends AbstractTagService
+final class TagRestoreService extends TagAbstractService
 {
     public function __construct(private TagLifecycleServiceInterface $lifecycle) {}
 

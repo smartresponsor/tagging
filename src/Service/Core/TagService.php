@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Entity\Tag\TagEntity;
+use App\Tagging\Normalizer\Core\TagNormalizer;
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Entity\Tag\TagRelationEntity;
 use App\Tagging\Entity\Tag\TagSchemeEntity;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
+use App\Tagging\Repository\TagIdempotencyStore;
+
 final class TagIdempotencyHelper
 {
     private function __construct() {}

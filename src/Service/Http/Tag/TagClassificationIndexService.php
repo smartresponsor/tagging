@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagClassificationIndexService extends AbstractTagService
+final class TagClassificationIndexService extends TagAbstractService
 {
     public function __construct(private TagRepositoryInterface $repository) {}
 

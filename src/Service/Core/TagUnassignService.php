@@ -6,8 +6,10 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
-use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Tagging\Factory\Error\TagErrorSinkFactory;
+use App\Tagging\Repository\Outbox\TagOutboxPublisher;
+use App\Tagging\Repository\TagIdempotencyStore;
+use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 
 final readonly class TagUnassignService implements TagUnassignOperationInterface
 {
@@ -16,8 +18,9 @@ final readonly class TagUnassignService implements TagUnassignOperationInterface
     private TagErrorSink $errorSink;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private TagRepositoryInterface $repository,
         private TagCrudRepositoryInterface $tagEntities,
+        private TagTransactionRunnerInterface $transaction,
         private TagOutboxPublisher $outbox,
         private ?TagIdempotencyStore $idem = null,
         TagErrorSink|callable|null $errorSink = null,
@@ -38,45 +41,35 @@ final readonly class TagUnassignService implements TagUnassignOperationInterface
             return $idempotencyDecision;
         }
 
-        $this->entityManager->beginTransaction();
         try {
-            if (!$this->tagExists($tenant, $tagId)) {
-                $this->entityManager->rollback();
-                $result = ['ok' => false, 'code' => 'tag_not_found'];
+            return $this->transaction->run(function () use ($tenant, $tagId, $entityType, $entityId, $idemKey): array {
+                if (!$this->tagExists($tenant, $tagId)) {
+                    $result = ['ok' => false, 'code' => 'tag_not_found'];
+                    $this->completeIdempotency($tenant, $idemKey, $result);
+
+                    return $result;
+                }
+
+                $links = $this->repository->listAssignments($tenant, $tagId, $entityType, $entityId);
+                $link = $links[0] ?? null;
+                $deleted = $link instanceof TagAssignmentEntity;
+                if ($deleted) {
+                    $this->repository->deleteAssignment($tenant, $link->id());
+                    $this->outbox->publish($tenant, 'tag.unassigned', [
+                        'tenant' => $tenant,
+                        'tag_id' => $tagId,
+                        'entity_type' => $entityType,
+                        'entity_id' => $entityId,
+                        'at' => new \DateTimeImmutable()->format(DATE_ATOM),
+                    ]);
+                }
+
+                $result = ['ok' => true, 'not_found' => !$deleted];
                 $this->completeIdempotency($tenant, $idemKey, $result);
 
                 return $result;
-            }
-
-            $link = $this->entityManager->getRepository(TagAssignmentEntity::class)->findOneBy([
-                'tenant' => $tenant,
-                'assignedType' => $entityType,
-                'assignedId' => $entityId,
-                'tagId' => $tagId,
-            ]);
-            $deleted = $link instanceof TagAssignmentEntity;
-            if ($deleted) {
-                $this->entityManager->remove($link);
-                $this->outbox->publish($tenant, 'tag.unassigned', [
-                    'tenant' => $tenant,
-                    'tag_id' => $tagId,
-                    'entity_type' => $entityType,
-                    'entity_id' => $entityId,
-                    'at' => new \DateTimeImmutable()->format(DATE_ATOM),
-                ]);
-            }
-
-            $result = ['ok' => true, 'not_found' => !$deleted];
-
-            $this->entityManager->flush();
-            $this->entityManager->commit();
-            $this->completeIdempotency($tenant, $idemKey, $result);
-
-            return $result;
+            });
         } catch (\Throwable $e) {
-            if ($this->entityManager->getConnection()->isTransactionActive()) {
-                $this->entityManager->rollback();
-            }
             $this->report($e, [
                 'tenant' => $tenant,
                 'tag_id' => $tagId,

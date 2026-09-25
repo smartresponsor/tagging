@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Http\Tag;
 
-use App\Tagging\Application\Write\Tag\Dto\TagCreateCommand;
-use App\Tagging\Application\Write\Tag\UseCase\TagCreateUseCaseInterface;
+use App\Tagging\Command\Input\TagCreateCommand;
+use App\Tagging\HandlerInterface\Write\TagCreateHandlerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagCreateService extends AbstractTagService
+final class TagCreateService extends TagAbstractService
 {
-    public function __construct(private TagCreateUseCaseInterface $useCase) {}
+    public function __construct(private TagCreateHandlerInterface $useCase) {}
 
     public function __invoke(Request $request): Response
     {

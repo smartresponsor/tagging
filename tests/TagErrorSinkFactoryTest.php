@@ -8,7 +8,7 @@ namespace Tests;
 use App\Tagging\Service\Core\TagCallableErrorSink;
 use App\Tagging\Service\Core\TagNullErrorSink;
 use App\Tagging\Service\Core\TagErrorSink;
-use App\Tagging\Service\Core\TagErrorSinkFactory;
+use App\Tagging\Factory\Error\TagErrorSinkFactory;
 use PHPUnit\Framework\TestCase;
 
 final class TagErrorSinkFactoryTest extends TestCase

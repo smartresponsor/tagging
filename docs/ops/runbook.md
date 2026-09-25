@@ -1,6 +1,6 @@
 # Tag Runtime Ops Runbook
 
-This runbook describes how to install, validate, and operate Tagging as a hosted Symfony package in a predictable way.
+This runbook describes how to install, validate, and operate Tagging in dual-runtime Symfony mode in a predictable way.
 
 ---
 
@@ -56,7 +56,7 @@ Expected:
 
 ## 5. Start runtime
 
-Tagging does not ship a standalone front controller. Install `tagging/tag` in the Symfony host, enable `App\\Tagging\\TaggingBundle`, import the component service configuration, and use the host application's normal runtime entrypoint.
+Tagging supports both standalone verification and host composition. Use `bin/console` with `App\\Tagging\\Kernel` for standalone Symfony verification, or install `tagging/tag` in a Symfony host, enable `App\\Tagging\\TaggingBundle`, and import the component service configuration.
 
 Generic CRUD routes are supplied by Cruding; Tagging must not duplicate them locally.
 
@@ -196,6 +196,6 @@ Before considering environment stable:
 
 ## 14. Notes
 
-- This runbook reflects the current hosted-package runtime contract.
+- This runbook reflects the current dual-runtime contract.
 - Bulk routes and flat payload semantics are part of the contract.
 - Error semantics are defined in `docs/api/error-catalog.md`.

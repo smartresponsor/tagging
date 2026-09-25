@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Cache\Store\Tag\TagSearchCache;
+use App\Tagging\RepositoryInterface\TagReadModelInterface;
 
 final readonly class TagSearchService
 {

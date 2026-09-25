@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Infrastructure\Config\TagRuntimeConfigFactory;
+use App\Tagging\Factory\Config\TagRuntimeConfigFactory;
 use PHPUnit\Framework\TestCase;
 
 final class TagBootstrapMiddlewareExportTruthTest extends TestCase
 {
     public function testSymfonyNativeHttpServiceMapDoesNotRegisterRetiredMiddlewareNamespace(): void
     {
-        $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
+        $http = file_get_contents(dirname(__DIR__) . '/config/services/tag_http.yaml');
         self::assertIsString($http);
 
         self::assertStringContainsString('App\Tagging\\Service\\Http\\Tag\\', $http);

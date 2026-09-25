@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Tagging\Repository\Storage\:
+        resource: '../../src/Repository/Storage/'
+
+    App\Tagging\Reader\Model\:
+        resource: '../../src/Reader/Model/'
+
+    App\Tagging\Publisher\Outbox\:
+        resource: '../../src/Publisher/Outbox/'
+
+    App\Tagging\Factory\Config\:
+        resource: '../../src/Factory/Config/'

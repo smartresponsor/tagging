@@ -1,16 +1,16 @@
 {
   "name": "tagging/tag",
   "type": "library",
-  "license": "proprietary",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "description": "Tagging process app",
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    
-    
-    
-    
-    "symfony/console": "^8.1","symfony/options-resolver": "^8.1","symfony/validator": "^8.1","symfony/form": "^8.1","php": "^8.4",
+    "symfony/console": "^8.1",
+    "symfony/options-resolver": "^8.1",
+    "symfony/validator": "^8.1",
+    "symfony/form": "^8.1",
+    "php": "^8.4",
     "ext-pdo": "*",
     "ext-curl": "*",
     "ext-mbstring": "*",
@@ -21,21 +21,30 @@
     "symfony/http-kernel": "^8.1",
     "symfony/routing": "^8.1",
     "symfony/yaml": "^8.1",
+    "symfony/framework-bundle": "^8.1",
+    "doctrine/doctrine-bundle": "^3.3",
+    "doctrine/orm": "^3.7",
+    "doctrine/doctrine-migrations-bundle": "^4.0",
+    "easycorp/easyadmin-bundle": "^5.6",
     "objecting/object": "dev-master",
     "cruding/crud": "dev-master",
+    "collectioning/collection": "dev-master",
+    "tabling/table": "dev-master",
     "viewing/view": "dev-master",
     "interfacing/interface": "dev-master",
     "administering/administration": "dev-master"
   },
   "require-dev": {
     "doctrine/doctrine-fixtures-bundle": "^4.3",
-    "doctrine/doctrine-migrations-bundle": "^4.0",
     "friendsofphp/php-cs-fixer": "^3.94",
+    "symfony/browser-kit": "^8.1",
+    "symfony/css-selector": "^8.1",
     "phpmd/phpmd": "3.x-dev",
     "pdepend/pdepend": "3.x-dev",
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^10.5",
-    "symfony/panther": "^2.2"
+    "symfony/panther": "^2.2",
+    "gating/gate": "dev-master"
   },
   "autoload": {
     "psr-4": {
@@ -73,6 +82,8 @@
     "audit:antora-surface": "php tools/audit/tag-antora-surface-audit.php",
     "release:preflight": "php tools/release/tag-preflight.php",
     "db:migrate": "php tools/db/tag-migrate.php",
+    "schema:validate": "php bin/console doctrine:schema:validate",
+    "schema:parity": ["php bin/console doctrine:schema:validate", "php bin/console doctrine:migrations:up-to-date"],
     "db:smoke": "bash tools/db/tag-tag-migration-tag-smoke.sh",
     "db:test:start": "bash tools/tag-tag-test-db-start.sh",
     "db:test:stop": "bash tools/tag-tag-test-db-stop.sh",
@@ -131,12 +142,22 @@
     "audit:repo-map-truth": "php tools/audit/tag-repo-map-truth-audit.php",
     "audit:ci-workflow": "php tools/audit/tag-ci-workflow-audit.php",
     "test:all": "vendor/bin/phpunit",
+    "test:coverage": "vendor/bin/phpunit --testsuite unit --coverage-text=var/coverage/coverage.txt --coverage-filter=src --path-coverage",
     "audit:core-boundary": "php tools/audit/tag-core-boundary-audit.php",
     "audit:demo-truth-pack": "php tools/audit/tag-demo-truth-pack-audit.php",
     "audit:release-grade-portrait": "php tools/audit/tag-release-grade-portrait-audit.php",
     "audit:assessment-surface": "php tools/audit/tag-assessment-surface-audit.php",
     "hook:install": "php tools/git/tag-install-hooks.php",
-    "audit:tooling-entrypoint": "php tools/audit/tag-tooling-entrypoint-audit.php"
+    "audit:tooling-entrypoint": "php tools/audit/tag-tooling-entrypoint-audit.php",
+    "cmcp:topology-migrate": "@php tools/local/tag-role-first-migrate.php",
+    "cmcp:rc-structural-migrate": "@php tools/local/tag-rc-structural-migrate.php",
+    "gate": "@php vendor/bin/gating check --target=.",
+    "quality": [
+      "@cs:check",
+      "@phpstan",
+      "@test",
+      "@gate"
+    ]
   },
   "repositories": [
     {
@@ -208,6 +229,16 @@
           "administering/administration": "dev-master"
         }
       }
+    },
+    {
+      "type": "path",
+      "url": "../Gating",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "gating/gate": "dev-master"
+        }
+      }
     }
   ],
   "config": {
@@ -216,4 +247,3 @@
     }
   }
 }
-

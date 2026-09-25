@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 final class TagBootstrapRuntimeCompositionTruthTest extends TestCase
 {
-    public function testPackageHostedCompositionRootDoesNotShipStandaloneAppSurface(): void
+    public function testDualRuntimeCompositionRootShipsStandaloneAndBundleSurfaces(): void
     {
         $root = dirname(__DIR__);
 
@@ -16,16 +16,16 @@ final class TagBootstrapRuntimeCompositionTruthTest extends TestCase
             'config/services.yaml',
             'config/routes.yaml',
             'src/TaggingBundle.php',
+            'src/Kernel.php',
+            'config/bundles.php',
+            'bin/console',
         ] as $path) {
             self::assertFileExists($root . '/' . $path);
         }
 
         foreach ([
-            'src/Kernel.php',
             'config/bootstrap.php',
-            'config/bundles.php',
             'public/index.php',
-            'bin/console',
             'host-minimal',
         ] as $path) {
             self::assertFileDoesNotExist($root . '/' . $path);
@@ -38,20 +38,20 @@ final class TagBootstrapRuntimeCompositionTruthTest extends TestCase
         self::assertIsString($services);
 
         foreach ([
-            'services/infrastructure.yaml',
+            'services/tag_infrastructure.yaml',
             'services/cache.yaml',
-            'services/read_model.yaml',
-            'services/application.yaml',
-            'services/http.yaml',
-            'services/ops.yaml',
-            'services/core.yaml',
-            'services/tagging.yaml',
+            'services/tag_read_model.yaml',
+            'services/tag_application.yaml',
+            'services/tag_http.yaml',
+            'services/tag_ops.yaml',
+            'services/tag_core.yaml',
+            'services/tag_services.yaml',
         ] as $layer) {
             self::assertStringContainsString($layer, $services);
         }
     }
 
-    public function testRuntimeTruthNamesHostedPackageAsActiveRuntime(): void
+    public function testRuntimeTruthNamesDualModeAsActiveRuntime(): void
     {
         $root = dirname(__DIR__);
         $composer = json_decode((string) file_get_contents($root . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
@@ -59,8 +59,8 @@ final class TagBootstrapRuntimeCompositionTruthTest extends TestCase
 
         self::assertSame('library', $composer['type'] ?? null);
         self::assertIsString($readme);
-        self::assertStringContainsString('Package mode note', $readme);
-        self::assertStringContainsString('does not ship its own Kernel', $readme);
+        self::assertStringContainsString('Dual-runtime mode', $readme);
+        self::assertStringContainsString('standalone Symfony application', $readme);
         self::assertFileDoesNotExist($root . '/tag.yaml');
         self::assertDirectoryDoesNotExist($root . '/host-minimal');
     }

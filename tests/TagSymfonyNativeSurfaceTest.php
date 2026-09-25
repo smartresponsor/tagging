@@ -8,17 +8,19 @@ use PHPUnit\Framework\TestCase;
 
 final class TagSymfonyNativeSurfaceTest extends TestCase
 {
-    public function testPublicRuntimeTruthIsHostedPackage(): void
+    public function testPublicRuntimeTruthIsDualMode(): void
     {
         $runtime = require dirname(__DIR__) . '/config/tag_runtime.php';
         self::assertIsArray($runtime);
-        self::assertSame('hosted-package', $runtime['runtime'] ?? null);
+        self::assertSame('dual-mode', $runtime['runtime'] ?? null);
     }
 
-    public function testStandaloneFrontControllerIsNotPartOfPackageSurface(): void
+    public function testStandaloneConsoleAndKernelArePartOfComponentSurface(): void
     {
         self::assertFileDoesNotExist(dirname(__DIR__) . '/public/index.php');
-        self::assertFileDoesNotExist(dirname(__DIR__) . '/bin/console');
+        self::assertFileExists(dirname(__DIR__) . '/bin/console');
+        self::assertFileExists(dirname(__DIR__) . '/src/Kernel.php');
+        self::assertFileExists(dirname(__DIR__) . '/config/bundles.php');
         self::assertFileDoesNotExist(dirname(__DIR__) . '/config/bootstrap.php');
     }
 

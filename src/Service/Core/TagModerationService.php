@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
+use App\Tagging\Normalizer\Core\TagNormalizer;
 use App\Tagging\Service\Core\Record\TagAuditRecord;
 use App\Tagging\Service\Core\TagRepositoryInterface as TagRepositoryContract;
 use Random\RandomException;

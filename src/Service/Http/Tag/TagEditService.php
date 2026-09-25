@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Http\Tag;
 
-use App\Tagging\Form\Tag\TagUpdateType;
+use App\Tagging\Form\Type\TagUpdateType;
 use App\Tagging\Service\Core\TagEntityQueryServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagEditService extends AbstractTagService
+final class TagEditService extends TagAbstractService
 {
     public function __construct(private TagEntityQueryServiceInterface $query) {}
 

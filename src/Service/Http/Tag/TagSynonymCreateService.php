@@ -10,7 +10,7 @@ use App\Tagging\Service\Core\TagUlidGenerator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagSynonymCreateService extends AbstractTagService
+final class TagSynonymCreateService extends TagAbstractService
 {
     public function __construct(private TagRepositoryInterface $repository) {}
 

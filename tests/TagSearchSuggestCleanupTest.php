@@ -9,7 +9,7 @@ use App\Tagging\Cache\Store\Tag\TagSearchCache;
 use App\Tagging\Cache\Store\Tag\TagSuggestCache;
 use App\Tagging\Service\Core\TagSearchService;
 use App\Tagging\Service\Core\TagSuggestService;
-use App\Tagging\Service\Core\TagReadModelInterface;
+use App\Tagging\RepositoryInterface\TagReadModelInterface;
 use PHPUnit\Framework\TestCase;
 
 final class TagSearchSuggestCleanupTest extends TestCase

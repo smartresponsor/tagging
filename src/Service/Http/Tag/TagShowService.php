@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagEntityQueryServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagShowService extends AbstractTagService
+final class TagShowService extends TagAbstractService
 {
     public function __construct(private TagEntityQueryServiceInterface $query) {}
 

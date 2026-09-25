@@ -9,7 +9,7 @@ use App\Tagging\Service\Core\TagUnassignOperationInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagBulkService extends AbstractTagService
+final class TagBulkService extends TagAbstractService
 {
     public function __construct(
         private TagAssignOperationInterface $assign,

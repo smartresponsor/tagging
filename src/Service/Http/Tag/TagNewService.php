@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Http\Tag;
 
-use App\Tagging\Form\Tag\TagCreateType;
+use App\Tagging\Form\Type\TagCreateType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 final readonly class TagNewService

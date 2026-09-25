@@ -5,16 +5,14 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Entity\Tag\TagEntity;
-use App\Tagging\Entity\Tag\TagAssignmentEntity;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Tagging\Factory\Error\TagErrorSinkFactory;
 
 final readonly class TagQuotaService
 {
     private TagErrorSink $errorSink;
 
     public function __construct(
-        private ?EntityManagerInterface $entityManager = null,
+        private ?TagRepositoryInterface $repository = null,
         private array $cfg = [],
         TagErrorSink|callable|null $errorSink = null,
     ) {
@@ -27,14 +25,7 @@ final readonly class TagQuotaService
             $tenantId,
             (int) ($this->cfg['quotas']['max_tags'] ?? 0),
             'quota_tags_exceeded',
-            static fn(EntityManagerInterface $entityManager, string $tenantId): int => (int) $entityManager
-                ->createQueryBuilder()
-                ->select('COUNT(e.id)')
-                ->from(TagEntity::class, 'e')
-                ->where('e.tenant = :tenant')
-                ->setParameter('tenant', $tenantId)
-                ->getQuery()
-                ->getSingleScalarResult(),
+            fn(string $id): int => $this->repository?->countTags($id) ?? 0,
         );
     }
 
@@ -44,14 +35,7 @@ final readonly class TagQuotaService
             $tenantId,
             (int) ($this->cfg['quotas']['max_assignments'] ?? 0),
             'quota_assignments_exceeded',
-            static fn(EntityManagerInterface $entityManager, string $tenantId): int => (int) $entityManager
-                ->createQueryBuilder()
-                ->select('COUNT(l.tenant)')
-                ->from(TagAssignmentEntity::class, 'l')
-                ->where('l.tenant = :tenant')
-                ->setParameter('tenant', $tenantId)
-                ->getQuery()
-                ->getSingleScalarResult(),
+            fn(string $id): int => $this->repository?->countAssignments($id) ?? 0,
         );
     }
 
@@ -66,7 +50,7 @@ final readonly class TagQuotaService
     }
 
     /**
-     * @param callable(EntityManagerInterface,string):int $counter
+     * @param callable(string):int $counter
      */
     private function quotaResult(string $tenantId, int $max, string $code, callable $counter): array
     {
@@ -96,16 +80,12 @@ final readonly class TagQuotaService
     }
 
     /**
-     * @param callable(EntityManagerInterface,string):int $counter
+     * @param callable(string):int $counter
      */
     private function countByCounter(callable $counter, string $tenantId): int
     {
-        if (null === $this->entityManager) {
-            return 0;
-        }
-
         try {
-            return $counter($this->entityManager, $tenantId);
+            return $counter($tenantId);
         } catch (\Throwable $e) {
             $this->report($e, ['tenant' => $tenantId]);
 

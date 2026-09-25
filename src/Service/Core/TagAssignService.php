@@ -6,8 +6,10 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
-use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Tagging\Factory\Error\TagErrorSinkFactory;
+use App\Tagging\Repository\Outbox\TagOutboxPublisher;
+use App\Tagging\Repository\TagIdempotencyStore;
+use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 
 final readonly class TagAssignService implements TagAssignOperationInterface
 {
@@ -16,8 +18,9 @@ final readonly class TagAssignService implements TagAssignOperationInterface
     private TagErrorSink $errorSink;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private TagRepositoryInterface $repository,
         private TagCrudRepositoryInterface $tagEntities,
+        private TagTransactionRunnerInterface $transaction,
         private TagOutboxPublisher $outbox,
         private ?TagIdempotencyStore $idem = null,
         TagErrorSink|callable|null $errorSink = null,
@@ -38,31 +41,23 @@ final readonly class TagAssignService implements TagAssignOperationInterface
             return $idempotencyDecision;
         }
 
-        $this->entityManager->beginTransaction();
         try {
-            if (!$this->tagExists($tenant, $tagId)) {
-                $this->entityManager->rollback();
+            return $this->transaction->run(function () use ($tenant, $tagId, $entityType, $entityId, $idemKey): array {
+                if (!$this->tagExists($tenant, $tagId)) {
+                    return ['ok' => false, 'code' => 'tag_not_found'];
+                }
 
-                return ['ok' => false, 'code' => 'tag_not_found'];
-            }
+                $created = $this->insertAssignment($tenant, $tagId, $entityType, $entityId);
+                if ($created) {
+                    $this->publishAssignedEvent($tenant, $tagId, $entityType, $entityId);
+                }
 
-            $created = $this->insertAssignment($tenant, $tagId, $entityType, $entityId);
+                $result = $this->assignmentResult($created);
+                $this->completeIdempotency($tenant, $idemKey, $result);
 
-            if ($created) {
-                $this->publishAssignedEvent($tenant, $tagId, $entityType, $entityId);
-            }
-
-            $result = $this->assignmentResult($created);
-
-            $this->entityManager->flush();
-            $this->entityManager->commit();
-            $this->completeIdempotency($tenant, $idemKey, $result);
-
-            return $result;
+                return $result;
+            });
         } catch (\Throwable $e) {
-            if ($this->entityManager->getConnection()->isTransactionActive()) {
-                $this->entityManager->rollback();
-            }
             $this->report($e, [
                 'tenant' => $tenant,
                 'tag_id' => $tagId,
@@ -106,18 +101,21 @@ final readonly class TagAssignService implements TagAssignOperationInterface
 
     private function insertAssignment(string $tenant, string $tagId, string $entityType, string $entityId): bool
     {
-        /** @var TagAssignmentEntity|null $existing */
-        $existing = $this->entityManager->getRepository(TagAssignmentEntity::class)->findOneBy([
-            'tenant' => $tenant,
-            'assignedType' => $entityType,
-            'assignedId' => $entityId,
-            'tagId' => $tagId,
-        ]);
-        if ($existing instanceof TagAssignmentEntity) {
+        $existing = $this->repository->listAssignments($tenant, $tagId, $entityType, $entityId);
+        if ([] !== $existing) {
             return false;
         }
 
-        $this->entityManager->persist(TagAssignmentEntity::create($tenant, self::assignmentId($tenant, $tagId, $entityType, $entityId), $tagId, $entityType, $entityId));
+        $this->repository->saveAssignment(
+            $tenant,
+            TagAssignmentEntity::create(
+                $tenant,
+                self::assignmentId($tenant, $tagId, $entityType, $entityId),
+                $tagId,
+                $entityType,
+                $entityId,
+            ),
+        );
 
         return true;
     }

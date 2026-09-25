@@ -8,7 +8,7 @@ namespace Tests;
 use App\Tagging\Service\Http\Tag\TagAssignmentAssignService;
 use App\Tagging\Service\Core\TagAssignOperationInterface;
 use App\Tagging\Service\Core\TagQuotaService;
-use App\Tagging\Service\Core\TagPolicyService;
+use App\Tagging\Service\Core\TagPolicyManagementService;
 use App\Tagging\Service\Core\TagRepositoryInterface;
 use App\Tagging\Service\Core\TagValidator;
 use App\Tagging\Service\Core\TagUnassignOperationInterface;
@@ -110,7 +110,9 @@ final class TagAssignQuotaPolicyHardeningTest extends TestCase
 
     public function testQuotaServiceProvidesRemainingAndThrowsOnExceeded(): void
     {
-        $service = new TagQuotaService($this->quotaEntityManager(2), ['quotas' => ['max_assignments' => 2]]);
+        $repository = $this->createMock(TagRepositoryInterface::class);
+        $repository->method('countAssignments')->with('tenant-a')->willReturn(2);
+        $service = new TagQuotaService($repository, ['quotas' => ['max_assignments' => 2]]);
         $result = $service->canAssign('tenant-a');
 
         self::assertFalse($result['ok']);
@@ -127,7 +129,7 @@ final class TagAssignQuotaPolicyHardeningTest extends TestCase
     public function testPolicyServiceAppliesAllowedAndDeniedRules(): void
     {
         $validator = new TagValidator();
-        $policy = new TagPolicyService($validator, [
+        $policy = new TagPolicyManagementService($validator, [
             'allowed_prefixes' => ['prod-'],
             'denied_prefixes' => ['prod-bad-'],
             'allowed_regex' => ['^prod-[a-z0-9-]+$'],

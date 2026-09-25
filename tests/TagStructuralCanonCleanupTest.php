@@ -13,6 +13,6 @@ final class TagStructuralCanonCleanupTest extends TestCase
         self::assertDirectoryDoesNotExist(dirname(__DIR__) . '/src/ServiceInterface');
         self::assertFileExists(dirname(__DIR__) . '/src/Service/Core/TagRepositoryInterface.php');
         self::assertFileExists(dirname(__DIR__) . '/src/Service/Core/TagCrudRepositoryInterface.php');
-        self::assertFileExists(dirname(__DIR__) . '/src/Service/Core/TagTransactionRunnerInterface.php');
+        self::assertFileExists(dirname(__DIR__) . '/src/RepositoryInterface/TagTransactionRunnerInterface.php');
     }
 }

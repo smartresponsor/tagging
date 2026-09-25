@@ -6,9 +6,11 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
-use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
+use App\Tagging\Repository\Outbox\TagOutboxPublisher;
 use App\Tagging\Service\Core\TagCrudRepositoryInterface;
+use App\Tagging\Service\Core\TagRepositoryInterface;
 use App\Tagging\Service\Core\TagUnassignService;
+use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\DBAL\Connection;
@@ -22,7 +24,9 @@ final class TagUnassignServiceTest extends TestCase
         $tagRepo = $this->createMock(TagCrudRepositoryInterface::class);
         $tagRepo->method('findById')->willReturn(null);
 
-        $service = new TagUnassignService($entityManager, $tagRepo, new TagOutboxPublisher($entityManager));
+        $repository = $this->createMock(TagRepositoryInterface::class);
+        $transaction = $this->transactionRunner();
+        $service = new TagUnassignService($repository, $tagRepo, $transaction, new TagOutboxPublisher($entityManager));
 
         $result = $service->unassign('demo', 'missing-tag', 'product', 'p-1');
 
@@ -44,10 +48,22 @@ final class TagUnassignServiceTest extends TestCase
         ])->willReturn(null);
         $entityManager->method('getRepository')->with(TagAssignmentEntity::class)->willReturn($repo);
 
-        $service = new TagUnassignService($entityManager, $tagRepo, new TagOutboxPublisher($entityManager));
+        $repository = $this->createMock(TagRepositoryInterface::class);
+        $transaction = $this->transactionRunner();
+        $service = new TagUnassignService($repository, $tagRepo, $transaction, new TagOutboxPublisher($entityManager));
         $result = $service->unassign('demo', 'tag-1', 'product', 'p-1');
 
         self::assertSame(['ok' => true, 'not_found' => true], $result);
+    }
+
+    private function transactionRunner(): TagTransactionRunnerInterface
+    {
+        return new class implements TagTransactionRunnerInterface {
+            public function run(callable $callback): mixed
+            {
+                return $callback();
+            }
+        };
     }
 
     private function entityManagerMock(): EntityManagerInterface

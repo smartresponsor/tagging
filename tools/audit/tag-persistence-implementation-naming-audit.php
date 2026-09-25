@@ -12,9 +12,8 @@ $forbidden = [
 ];
 
 $required = [
-    'src/Infrastructure/Persistence/Tag/TagDoctrineRepository.php',
-    'src/Infrastructure/Persistence/Tag/TagDoctrineRepository.php',
-    'src/Infrastructure/Persistence/Tag/TagInMemoryRepository.php',
+    'src/Repository/Storage/TagDoctrineRepository.php',
+    'src/Repository/Storage/TagInMemoryRepository.php',
 ];
 
 $errors = [];

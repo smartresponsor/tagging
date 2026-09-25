@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Tagging\Http\Api\Tag\TagRuntimeSurfaceCatalog;
+use App\Tagging\Provider\Runtime\TagRuntimeSurfaceCatalog;
 use App\Tagging\Service\Http\Tag\TagStatusService;
 use PHPUnit\Framework\TestCase;
 

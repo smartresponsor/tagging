@@ -6,11 +6,13 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Tagging\Service\Http\Tag\TagStatusService;
-use App\Tagging\Infrastructure\Outbox\Tag\TagOutboxPublisher;
+use App\Tagging\Repository\Outbox\TagOutboxPublisher;
 use App\Tagging\Service\Core\TagAssignService;
 use App\Tagging\Service\Core\TagQuotaService;
 use App\Tagging\Service\Core\TagCrudRepositoryInterface;
+use App\Tagging\Service\Core\TagRepositoryInterface;
 use App\Tagging\Service\Core\TagUnassignService;
+use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -34,9 +36,10 @@ final class TagErrorVisibilityTest extends TestCase
     public function testQuotaServiceReportsQueryFailuresToErrorSink(): void
     {
         $errors = [];
-        $entityManager = $this->quotaEntityManagerMock();
+        $repository = $this->createMock(TagRepositoryInterface::class);
+        $repository->method('countTags')->willThrowException(new \RuntimeException('db error'));
         $service = new TagQuotaService(
-            $entityManager,
+            $repository,
             ['quotas' => ['max_tags' => 5]],
             static function (array $error) use (&$errors): void {
                 $errors[] = $error;
@@ -58,9 +61,11 @@ final class TagErrorVisibilityTest extends TestCase
         $entityManager = $this->failingEntityManager();
         $tagRepo = $this->createMock(TagCrudRepositoryInterface::class);
         $tagRepo->method('findById')->willThrowException(new \RuntimeException('boom'));
+        $repository = $this->createMock(TagRepositoryInterface::class);
         $service = new TagAssignService(
-            $entityManager,
+            $repository,
             $tagRepo,
+            $this->transactionRunner(),
             new TagOutboxPublisher($entityManager),
             null,
             static function (array $error) use (&$errors): void {
@@ -82,9 +87,11 @@ final class TagErrorVisibilityTest extends TestCase
         $entityManager = $this->failingEntityManager();
         $tagRepo = $this->createMock(TagCrudRepositoryInterface::class);
         $tagRepo->method('findById')->willThrowException(new \RuntimeException('boom'));
+        $repository = $this->createMock(TagRepositoryInterface::class);
         $service = new TagUnassignService(
-            $entityManager,
+            $repository,
             $tagRepo,
+            $this->transactionRunner(),
             new TagOutboxPublisher($entityManager),
             null,
             static function (array $error) use (&$errors): void {
@@ -98,6 +105,16 @@ final class TagErrorVisibilityTest extends TestCase
         self::assertSame('unassign_failed', $result['code']);
         self::assertCount(1, $errors);
         self::assertSame('tag.unassign_failed', $errors[0]['code']);
+    }
+
+    private function transactionRunner(): TagTransactionRunnerInterface
+    {
+        return new class implements TagTransactionRunnerInterface {
+            public function run(callable $callback): mixed
+            {
+                return $callback();
+            }
+        };
     }
 
     private function failingEntityManager(): EntityManagerInterface

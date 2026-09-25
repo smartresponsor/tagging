@@ -15,14 +15,14 @@ final class TagBootstrapContainerTest extends TestCase
         self::assertIsString($services);
 
         foreach ([
-            'services/infrastructure.yaml',
+            'services/tag_infrastructure.yaml',
             'services/cache.yaml',
-            'services/read_model.yaml',
-            'services/application.yaml',
-            'services/http.yaml',
-            'services/ops.yaml',
-            'services/core.yaml',
-            'services/tagging.yaml',
+            'services/tag_read_model.yaml',
+            'services/tag_application.yaml',
+            'services/tag_http.yaml',
+            'services/tag_ops.yaml',
+            'services/tag_core.yaml',
+            'services/tag_services.yaml',
         ] as $layer) {
             self::assertStringContainsString($layer, $services);
         }
@@ -30,12 +30,12 @@ final class TagBootstrapContainerTest extends TestCase
 
     public function testSymfonyNativeHttpLayerRegistersServiceAndFormNamespaces(): void
     {
-        $http = file_get_contents(dirname(__DIR__) . '/config/services/http.yaml');
+        $http = file_get_contents(dirname(__DIR__) . '/config/services/tag_http.yaml');
         self::assertIsString($http);
 
         self::assertStringContainsString('App\Tagging\\Service\\Http\\Tag\\', $http);
         self::assertStringContainsString("resource: '../../src/Service/Http/Tag/'", $http);
-        self::assertStringContainsString('App\Tagging\\Form\\Tag\\', $http);
+        self::assertStringContainsString('App\Tagging\\Form\\Type\\', $http);
         self::assertStringNotContainsString('App\Tagging\\Http\\Api\\Tag\\', $http);
     }
 }

@@ -8,7 +8,7 @@ use App\Tagging\Service\Core\TagAssignOperationInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TagAssignmentAssignService extends AbstractTagService
+final class TagAssignmentAssignService extends TagAbstractService
 {
     public function __construct(private TagAssignOperationInterface $assign) {}
 

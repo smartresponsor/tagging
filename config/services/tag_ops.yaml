@@ -3,5 +3,11 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Tagging\Ops\:
-        resource: '../../src/Ops/'
+    App\Tagging\Cache\Security\:
+        resource: '../../src/Cache/Security/'
+
+    App\Tagging\Recorder\Metrics\:
+        resource: '../../src/Recorder/Metrics/'
+
+    App\Tagging\Reporter\Metrics\:
+        resource: '../../src/Reporter/Metrics/'

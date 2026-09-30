@@ -26,7 +26,7 @@ The following are canonical sources of truth:
 
 - `src/` for business/application/infrastructure code
 - `tag.yaml` for route truth
-- `contracts/http/tag-openapi.yaml` for shipped HTTP contract expectations
+- `config/openapi/tag_openapi.yaml` for shipped HTTP contract expectations
 
 `host-minimal` may compose and expose those truths, but it must not silently redefine them.
 

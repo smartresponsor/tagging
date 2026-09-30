@@ -8,7 +8,7 @@ $requiredFiles = [
     $root . '/docs/ops/quality-atlas.md',
     $root . '/docs/public/index.md',
     $root . '/docs/release/rc-checklist.md',
-    $root . '/contracts/http/tag-openapi.yaml',
+    $root . '/config/openapi/tag_openapi.yaml',
     $root . '/public/tag/openapi/index.html',
 ];
 

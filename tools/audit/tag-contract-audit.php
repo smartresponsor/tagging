@@ -4,7 +4,7 @@
 declare(strict_types=1);
 
 $root = require __DIR__ . '/../tag-bootstrap.php';
-$openapi = file_get_contents($root . '/contracts/http/tag-openapi.yaml');
+$openapi = file_get_contents($root . '/config/openapi/tag_openapi.yaml');
 preg_match_all('/^  (\/tag[^:]*):$/m', (string) $openapi, $matches);
 $paths = array_values(array_unique($matches[1] ?? []));
 $required = [

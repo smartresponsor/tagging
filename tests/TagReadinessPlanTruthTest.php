@@ -13,7 +13,7 @@ final class TagReadinessPlanTruthTest extends TestCase
         $doc = file_get_contents(__DIR__ . '/../docs/architecture/repository-production-readiness-plan.md');
         self::assertIsString($doc);
 
-        self::assertStringContainsString('contracts/http/tag-openapi.yaml', $doc);
+        self::assertStringContainsString('config/openapi/tag_openapi.yaml', $doc);
         self::assertStringContainsString('Cruding', $doc);
         self::assertStringContainsString('bulk assignment routes', $doc);
         self::assertStringContainsString('authoritative', $doc);

@@ -13,7 +13,7 @@ The assessment lane exists to make release posture, documentation wiring, and ru
 - public publication index: `docs/public/index.md`
 - RC checklist: `docs/release/rc-checklist.md`
 - release workflow: `.github/workflows/release-rc.yml`
-- OpenAPI source contract: `contracts/http/tag-openapi.yaml`
+- OpenAPI source contract: `config/openapi/tag_openapi.yaml`
 - generated OpenAPI surface: `public/tag/openapi/`
 
 ## Assessment contract
@@ -38,7 +38,7 @@ For external reviewers or automated assessment tooling, the recommended order is
 2. `docs/public/index.md`
 3. `docs/release/rc-checklist.md`
 4. `docs/ops/quality-atlas.md`
-5. `contracts/http/tag-openapi.yaml`
+5. `config/openapi/tag_openapi.yaml`
 6. `public/tag/openapi/`
 
 ## Boundary

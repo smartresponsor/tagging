@@ -4,7 +4,7 @@ This page is the Antora entry point for the repository's API and reference surfa
 
 == Canonical API sources in the repository
 
-* OpenAPI source contract: `contracts/http/tag-openapi.yaml`
+* OpenAPI source contract: `config/openapi/tag_openapi.yaml`
 * generated Swagger/OpenAPI surface: `public/tag/openapi/`
 * error semantics: `docs/api/error-catalog.md`
 * status and surface semantics: `docs/api/status-surface.md`
@@ -20,7 +20,7 @@ Instead, it gives the central Antora site a stable entry point into the API/refe
 
 == Generated artifact policy
 
-* The source contract stays in `contracts/http/tag-openapi.yaml`.
+* The source contract stays in `config/openapi/tag_openapi.yaml`.
 * The generated static Swagger/OpenAPI viewer lives under `public/tag/openapi/`.
 * Generated/reference assets remain separate from narrative pages and are linked, not copied into Antora narrative content.
 * If a generated code-reference surface is introduced later, it should live under `public/tag/api-reference/` (or another explicitly generated reference root), and Antora should link to it instead of copying it.

@@ -37,7 +37,7 @@ The Antora pages in this module are thin entry points and wrappers, not a second
 
 These stay separate from narrative pages:
 
-* OpenAPI source contract: `contracts/http/tag-openapi.yaml`
+* OpenAPI source contract: `config/openapi/tag_openapi.yaml`
 * generated Swagger/OpenAPI surface: `public/tag/openapi/`
 * SDK usage/reference surface: `sdk/README.md`
 * release-frozen reference artifacts: `release/tag-rc5/docs/`

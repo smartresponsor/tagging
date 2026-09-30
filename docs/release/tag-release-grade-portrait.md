@@ -10,7 +10,7 @@ The runnable core is limited to the shipped runtime and contract assets:
 - `config/`
 - `src/TaggingBundle.php`
 - Cruding integration for generic CRUD routing
-- `contracts/http/tag-openapi.yaml`
+- `config/openapi/tag_openapi.yaml`
 - `db/postgres/migrations/`
 
 ## Current public shell

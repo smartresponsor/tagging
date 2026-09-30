@@ -120,7 +120,7 @@ tools/test-db/
 ## current runtime and delivery truth roots
 - `src/TaggingBundle.php`
 - `config/`
-- `contracts/http/tag-openapi.yaml`
+- `config/openapi/tag_openapi.yaml`
 - Cruding-owned generic CRUD integration
 - `fixtures/`
 - `public/tag/...`

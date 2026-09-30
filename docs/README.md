@@ -38,7 +38,7 @@ They exist so an external central documentation aggregator can discover this rep
 
 Generated and reference artifacts stay separate from hand-written narrative docs:
 
-- OpenAPI source contract: `contracts/http/tag-openapi.yaml`
+- OpenAPI source contract: `config/openapi/tag_openapi.yaml`
 - generated static OpenAPI viewer: `public/tag/openapi/`
 - SDK reference / usage surface: `sdk/README.md`
 - release-frozen reference artifacts: `release/tag-rc5/docs/`

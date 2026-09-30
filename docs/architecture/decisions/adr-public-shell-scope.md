@@ -22,7 +22,7 @@ Public-shell confidence must be grounded in:
 
 - `tag.yaml`
 - `config/tag_public_surface.php`
-- `contracts/http/tag-openapi.yaml`
+- `config/openapi/tag_openapi.yaml`
 - runtime smoke and truth tests
 
 Private webhook-management operations are not part of the current public shell, even if they exist in runtime/catalog form.

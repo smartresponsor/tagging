@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
-$source = $root . '/contracts/http/tag-openapi.yaml';
-$generated = $root . '/public/tag/openapi/tag-openapi.yaml';
+$source = $root . '/config/openapi/tag_openapi.yaml';
+$generated = $root . '/public/tag/openapi/tag-api.yaml';
 $index = $root . '/public/tag/openapi/index.html';
 
 foreach ([$source, $generated, $index] as $file) {
@@ -24,7 +24,7 @@ if ($sourceText !== $generatedText) {
     exit(1);
 }
 
-foreach (['./tag-openapi.yaml', 'swagger-ui-bundle.js', 'SwaggerUIBundle'] as $needle) {
+foreach (['./tag-api.yaml', 'swagger-ui-bundle.js', 'SwaggerUIBundle'] as $needle) {
     if (!str_contains($indexText, $needle)) {
         fwrite(STDERR, 'Generated OpenAPI index is missing: ' . $needle . PHP_EOL);
         exit(1);

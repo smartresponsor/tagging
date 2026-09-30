@@ -42,7 +42,7 @@ final class TagPublicShellReadSurfaceTruthTest extends TestCase
 
     public function testOpenApiStillDescribesFlatReadPayloads(): void
     {
-        $openApi = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
+        $openApi = file_get_contents(__DIR__ . '/../config/openapi/tag_openapi.yaml');
         self::assertIsString($openApi);
 
         self::assertStringContainsString('/tag/search:', $openApi);

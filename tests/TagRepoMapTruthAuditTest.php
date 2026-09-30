@@ -14,7 +14,7 @@ final class TagRepoMapTruthAuditTest extends TestCase
         self::assertIsString($repoMap);
 
         self::assertStringContainsString('src/TaggingBundle.php', $repoMap);
-        self::assertStringContainsString('contracts/http/tag-openapi.yaml', $repoMap);
+        self::assertStringContainsString('config/openapi/tag_openapi.yaml', $repoMap);
         self::assertStringNotContainsString("\nMANIFEST.json\n", $repoMap);
         self::assertStringNotContainsString("\ntag.yaml\n", $repoMap);
         self::assertStringContainsString('fixtures/', $repoMap);

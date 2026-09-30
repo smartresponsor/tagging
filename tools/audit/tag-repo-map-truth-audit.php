@@ -21,7 +21,7 @@ $forbidden = [
 
 $required = [
     'src/TaggingBundle.php',
-    'contracts/http/tag-openapi.yaml',
+    'config/openapi/tag_openapi.yaml',
     'fixtures/',
     'public/',
     'sdk/',

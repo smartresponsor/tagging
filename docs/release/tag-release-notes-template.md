@@ -16,7 +16,7 @@ Audience: Platform / Integrators / Ops
 
 ## Compatibility
 
-- API contract: `contracts/http/tag-openapi.yaml`
+- API contract: `config/openapi/tag_openapi.yaml`
 - Runtime mode: hosted Symfony package (`src/TaggingBundle.php`)
 - Demo/admin assets: `admin/`, `public/tag/examples/`
 - Database migrations: list new migration files:

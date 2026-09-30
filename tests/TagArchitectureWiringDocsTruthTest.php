@@ -15,7 +15,7 @@ final class TagArchitectureWiringDocsTruthTest extends TestCase
         self::assertIsString($doc);
         self::assertStringContainsString('/tag/assignments/bulk', $doc);
         self::assertStringContainsString('/tag/assignments/bulk-to-entity', $doc);
-        self::assertStringContainsString('contracts/http/tag-openapi.yaml', $doc);
+        self::assertStringContainsString('config/openapi/tag_openapi.yaml', $doc);
         self::assertStringContainsString('cruding/crud', $doc);
         self::assertStringContainsString('authoritative', $doc);
         self::assertStringContainsString('`total`', $doc);

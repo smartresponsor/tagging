@@ -16,7 +16,7 @@ final class TagRuntimeConfigConsistencyTest extends TestCase
         self::assertSame('tag', $runtime['service'] ?? null);
         self::assertNotSame('', $runtime['version'] ?? '');
         self::assertSame('/tag/_status', $runtime['route']['status'] ?? null);
-        self::assertSame('contracts/http/tag-openapi.yaml', $runtime['doc']['openapi'] ?? null);
+        self::assertSame('config/openapi/tag_openapi.yaml', $runtime['doc']['openapi'] ?? null);
         self::assertContains(
             ['method' => 'GET', 'path' => '/tag/_surface', 'nameEntity' => 'discovery'],
             $runtime['public_surface'] ?? [],

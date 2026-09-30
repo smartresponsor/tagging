@@ -11,13 +11,13 @@ final class TagGeneratedOpenApiSurfaceTest extends TestCase
     public function testGeneratedSwaggerSurfaceExistsAndPointsToPublishedOpenApiArtifact(): void
     {
         $index = file_get_contents(__DIR__ . '/../public/tag/openapi/index.html');
-        $generated = file_get_contents(__DIR__ . '/../public/tag/openapi/tag-openapi.yaml');
-        $source = file_get_contents(__DIR__ . '/../contracts/http/tag-openapi.yaml');
+        $generated = file_get_contents(__DIR__ . '/../public/tag/openapi/tag-api.yaml');
+        $source = file_get_contents(__DIR__ . '/../config/openapi/tag_openapi.yaml');
 
         self::assertIsString($index);
         self::assertIsString($generated);
         self::assertIsString($source);
-        self::assertStringContainsString('./tag-openapi.yaml', $index);
+        self::assertStringContainsString('./tag-api.yaml', $index);
         self::assertStringContainsString('SwaggerUIBundle', $index);
         self::assertSame($source, $generated);
     }

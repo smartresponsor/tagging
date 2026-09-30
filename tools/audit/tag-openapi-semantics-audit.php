@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
-$contract = file_get_contents($root . '/contracts/http/tag-openapi.yaml') ?: '';
+$contract = file_get_contents($root . '/config/openapi/tag_openapi.yaml') ?: '';
 $errors = [];
 
 $businessPaths = [

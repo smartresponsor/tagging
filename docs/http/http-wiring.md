@@ -23,7 +23,7 @@ Hosted Symfony package wiring for the Tagging public contract.
 Generic CRUD route grammar and dispatch are owned by the `cruding/crud` package.
 
 - Tagging does not ship a local generic CRUD route file or generic CRUD controller.
-- `contracts/http/tag-openapi.yaml` is the Tagging-owned public HTTP contract.
+- `config/openapi/tag_openapi.yaml` is the Tagging-owned public HTTP contract.
 - `config/tag_runtime.php` derives hosted-package surface metadata from the OpenAPI paths.
 - `config/routes.yaml` intentionally contains no generic CRUD declarations.
 

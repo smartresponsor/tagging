@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 $root = require __DIR__ . '/../tag-bootstrap.php';
-$source = $root . '/contracts/http/tag-openapi.yaml';
+$source = $root . '/config/openapi/tag_openapi.yaml';
 $targetDir = $root . '/public/tag/openapi';
-$target = $targetDir . '/tag-openapi.yaml';
+$target = $targetDir . '/tag-api.yaml';
 
 if (!is_file($source)) {
     fwrite(STDERR, "Missing source OpenAPI contract.\n");

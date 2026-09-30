@@ -51,7 +51,7 @@ Integration evidence now explicitly includes:
 
 - Antora producer surface is available under `docs/modules/ROOT/`
 - generated Swagger/OpenAPI surface is published under `public/tag/openapi/`
-- source contract remains `contracts/http/tag-openapi.yaml`
+- source contract remains `config/openapi/tag_openapi.yaml`
 
 ## Known non-goals for this RC
 

@@ -10,7 +10,7 @@ This is the compact publication entrypoint for the current shipped Tagging compo
 - SDK usage: `sdk/README.md`
 - ops runbook: `docs/ops/runbook.md`
 - API error catalog: `docs/api/error-catalog.md`
-- OpenAPI source contract: `contracts/http/tag-openapi.yaml`
+- OpenAPI source contract: `config/openapi/tag_openapi.yaml`
 - generated Swagger/OpenAPI surface: `public/tag/openapi/`
 - RC checklist: `docs/release/rc-checklist.md`
 - Quality Atlas assessment surface: `docs/ops/quality-atlas.md`

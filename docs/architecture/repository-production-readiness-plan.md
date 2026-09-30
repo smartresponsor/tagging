@@ -2,7 +2,7 @@
 
 ## Scope and current baseline
 
-- The repository now ships as a hosted Symfony package; generic CRUD routing belongs to Cruding and the Tagging-owned HTTP contract lives in `contracts/http/tag-openapi.yaml`.
+- The repository now ships as a hosted Symfony package; generic CRUD routing belongs to Cruding and the Tagging-owned HTTP contract lives in `config/openapi/tag_openapi.yaml`.
 - Public surface is no longer limited to CRUD + single assignment flows; it includes bulk assignment routes, discovery, health, search, and suggest.
 - CI, smoke, preflight, SDK, demo truth packs, and release-grade docs now exist and are part of the active quality perimeter.
 - Demo/seed truth is anchored in the canonical PHP fixture + catalog path, not in legacy JSON fixture cargo.
@@ -11,7 +11,7 @@
 
 ### What is working now
 
-- Generic CRUD route truth is supplied by Cruding; Tagging projects its hosted-package surface from `contracts/http/tag-openapi.yaml` through `config/tag_runtime.php` and contract/surface audits.
+- Generic CRUD route truth is supplied by Cruding; Tagging projects its hosted-package surface from `config/openapi/tag_openapi.yaml` through `config/tag_runtime.php` and contract/surface audits.
 - Read paths share one explicit `TagReadModelInterface` and one infrastructure implementation for search, suggest, and assignment reads.
 - Search and suggest use flat payloads, and search now returns authoritative `total` instead of a placeholder value.
 - Assignment flows expose idempotency-aware behavior and distinguish missing tag entities from missing links on unassign.

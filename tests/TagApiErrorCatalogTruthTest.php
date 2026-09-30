@@ -20,6 +20,6 @@ final class TagApiErrorCatalogTruthTest extends TestCase
         self::assertStringContainsString('`assign_failed`', $doc);
         self::assertStringContainsString('`unassign_failed`', $doc);
         self::assertStringContainsString('If the tag exists but the entity link is already absent', $doc);
-        self::assertStringContainsString('contracts/http/tag-openapi.yaml', $doc);
+        self::assertStringContainsString('config/openapi/tag_openapi.yaml', $doc);
     }
 }

@@ -26,7 +26,7 @@ final class TagSymfonyNativeSurfaceTest extends TestCase
 
     public function testContractStillDocumentsStatusAndSurfaceRoutes(): void
     {
-        $contract = file_get_contents(dirname(__DIR__) . '/contracts/http/tag-openapi.yaml');
+        $contract = file_get_contents(dirname(__DIR__) . '/config/openapi/tag_openapi.yaml');
         self::assertIsString($contract);
         self::assertStringContainsString('/tag/_status', $contract);
         self::assertStringContainsString('/tag/_surface', $contract);

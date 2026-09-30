@@ -6,7 +6,7 @@ This component uses semantic versioning.
 
 Public compatibility is defined by:
 
-- HTTP contract: `contracts/http/tag-openapi.yaml`
+- HTTP contract: `config/openapi/tag_openapi.yaml`
 - Database schema via migrations: `db/postgres/migrations/*`
 - Event/webhook payloads (if consumed externally)
 

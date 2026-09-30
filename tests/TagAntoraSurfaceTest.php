@@ -22,7 +22,7 @@ final class TagAntoraSurfaceTest extends TestCase
         self::assertStringContainsString('GitHub-facing repository docs', $index);
         self::assertStringContainsString('Hand-written narrative docs', $index);
         self::assertStringContainsString('Generated or reference surfaces', $index);
-        self::assertStringContainsString('contracts/http/tag-openapi.yaml', $api);
+        self::assertStringContainsString('config/openapi/tag_openapi.yaml', $api);
         self::assertStringContainsString('public/tag/openapi/', $api);
         self::assertStringContainsString('generated static Swagger/OpenAPI surface is shipped separately from narrative docs', $api);
     }

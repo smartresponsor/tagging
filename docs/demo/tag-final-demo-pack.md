@@ -6,7 +6,7 @@ This file is the compact final truth pack for demonstration, fixtures, SDK hando
 
 1. `src/` and `src/TaggingBundle.php`
 2. `config/`
-3. `contracts/http/tag-openapi.yaml`
+3. `config/openapi/tag_openapi.yaml`
 4. Cruding-owned generic CRUD integration
 5. runtime-facing tests and audits
 6. docs and SDK examples

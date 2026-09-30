@@ -14,4 +14,4 @@ The same shared read model also supports bulk assignments and related projection
 
 ## Operational note
 
-HTTP contract truth remains authoritative in `contracts/http/tag-openapi.yaml`, and a host application should import `config/routes.yaml` plus service maps from `config/services.yaml`.
+HTTP contract truth remains authoritative in `config/openapi/tag_openapi.yaml`, and a host application should import `config/routes.yaml` plus service maps from `config/services.yaml`.

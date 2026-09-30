@@ -18,7 +18,7 @@ The current shipped package surface is the source of truth for what a Symfony ho
 - `GET /tag/_surface`
 
 Generic CRUD routing is owned by Cruding. Tagging contributes its business services, forms, repositories, bundle wiring, runtime metadata, and HTTP contract without shipping a parallel local generic CRUD router.
-Public HTTP contract truth is maintained in `contracts/http/tag-openapi.yaml`; `config/tag_runtime.php` derives the dual-runtime surface metadata from that contract.
+Public HTTP contract truth is maintained in `config/openapi/tag_openapi.yaml`; `config/tag_runtime.php` derives the dual-runtime surface metadata from that contract.
 
 ## Current contract notes
 
@@ -32,7 +32,7 @@ Core runtime assets:
 - host-importable service wiring under `config/services.yaml`
 - Cruding-owned generic CRUD route integration
 - database migrations under `db/postgres/migrations/`
-- HTTP contract under `contracts/http/tag-openapi.yaml`
+- HTTP contract under `config/openapi/tag_openapi.yaml`
 - config under `config/`
 - fixtures / seed used by demo and validation
 

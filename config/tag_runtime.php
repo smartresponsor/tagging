@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-$openApiPath = dirname(__DIR__) . '/contracts/http/tag-openapi.yaml';
+$openApiPath = dirname(__DIR__) . '/config/openapi/tag_openapi.yaml';
 $openApi = is_file($openApiPath) ? (string) file_get_contents($openApiPath) : '';
 preg_match_all('/^  (\/tag[^:]*):$/m', $openApi, $matches);
 $paths = array_values(array_unique($matches[1] ?? []));
@@ -47,6 +47,6 @@ return [
     'version' => 'dev',
     'route' => $routeMap,
     'example' => [],
-    'doc' => ['openapi' => 'contracts/http/tag-openapi.yaml'],
+    'doc' => ['openapi' => 'config/openapi/tag_openapi.yaml'],
     'public_surface' => $publicSurface,
 ];

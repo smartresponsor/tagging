@@ -13,7 +13,7 @@ final class TagPublicSurfaceConsistencyTest extends TestCase
     {
         $root = dirname(__DIR__);
         $route = (string) file_get_contents($root . '/config/routes.yaml');
-        $openApi = (string) file_get_contents($root . '/contracts/http/tag-openapi.yaml');
+        $openApi = (string) file_get_contents($root . '/config/openapi/tag_openapi.yaml');
 
         self::assertStringContainsString('Cruding bundle', $route);
         self::assertStringNotContainsString('tagging_native', $route);
@@ -27,7 +27,7 @@ final class TagPublicSurfaceConsistencyTest extends TestCase
 
     public function testOpenApiMatchesThePublicReadAndDiscoverySurface(): void
     {
-        $openApi = (string) file_get_contents(dirname(__DIR__) . '/contracts/http/tag-openapi.yaml');
+        $openApi = (string) file_get_contents(dirname(__DIR__) . '/config/openapi/tag_openapi.yaml');
 
         self::assertStringContainsString('/tag/_surface:', $openApi);
         self::assertStringContainsString('/tag/search:', $openApi);

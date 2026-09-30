@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace App\Tagging\Policy\Slug;
 
 use App\Tagging\Service\Core\Slug\TagSlugifier;
-use App\Tagging\Service\Core\TagCrudRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagCrudRepositoryInterface;
 
 final readonly class TagSlugPolicy
 {

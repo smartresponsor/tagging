@@ -5,9 +5,10 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
+use App\Tagging\DTO\Write\TagEntityCreateRecord;
 use App\Tagging\Normalizer\Core\TagEntityPayloadNormalizer;
 use App\Tagging\Policy\Slug\TagSlugPolicy;
+use App\Tagging\RepositoryInterface\TagCrudRepositoryInterface;
 use Random\RandomException;
 
 final readonly class TagEntityService implements TagEntityQueryServiceInterface

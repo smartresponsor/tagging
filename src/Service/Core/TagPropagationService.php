@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Service\Core\Record\TagClassificationRecord;
-use App\Tagging\Service\Core\Record\TagEffectRecord;
-use App\Tagging\Service\Core\TagRepositoryInterface as TagRepositoryContract;
+use App\Tagging\DTO\Write\TagClassificationRecord;
+use App\Tagging\DTO\Write\TagEffectRecord;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface as TagRepositoryContract;
 use Random\RandomException;
 
 final readonly class TagPropagationService
@@ -17,10 +17,10 @@ final readonly class TagPropagationService
     /**
      * @throws RandomException
      */
-    public function putClassificationForTag(string $tenantId, string $tagId, string $key, string $value): void
+    public function putClassificationForTag(string $vendorId, string $tagId, string $key, string $value): void
     {
         $this->repo->putClassification(
-            $tenantId,
+            $vendorId,
             new TagClassificationRecord(TagUlidGenerator::generate(), 'tag', $tagId, $key, $value),
         );
     }
@@ -28,10 +28,10 @@ final readonly class TagPropagationService
     /**
      * @throws RandomException
      */
-    public function putClassificationForScheme(string $tenantId, string $schemeName, string $key, string $value): void
+    public function putClassificationForScheme(string $vendorId, string $schemeName, string $key, string $value): void
     {
         $this->repo->putClassification(
-            $tenantId,
+            $vendorId,
             new TagClassificationRecord(TagUlidGenerator::generate(), 'scheme', $schemeName, $key, $value),
         );
     }
@@ -39,19 +39,19 @@ final readonly class TagPropagationService
     /**
      * @throws RandomException
      */
-    public function replayForTag(string $tenantId, string $tagId): int
+    public function replayForTag(string $vendorId, string $tagId): int
     {
-        $this->repo->clearEffectsForSource($tenantId, 'tag', $tagId);
-        $class = $this->repo->listClassifications($tenantId, 'tag', $tagId);
+        $this->repo->clearEffectsForSource($vendorId, 'tag', $tagId);
+        $class = $this->repo->listClassifications($vendorId, 'tag', $tagId);
         if (!$class) {
             return 0;
         }
-        $pairs = $this->repo->listAssignmentsByTag($tenantId, $tagId);
+        $pairs = $this->repo->listAssignmentsByTag($vendorId, $tagId);
         $n = 0;
         foreach ($pairs as $p) {
             foreach ($class as $c) {
                 $this->repo->putEffect(
-                    $tenantId,
+                    $vendorId,
                     new TagEffectRecord(
                         TagUlidGenerator::generate(),
                         $p['assigned_type'],
@@ -72,21 +72,21 @@ final readonly class TagPropagationService
     /**
      * @throws RandomException
      */
-    public function replayForScheme(string $tenantId, string $schemeName): int
+    public function replayForScheme(string $vendorId, string $schemeName): int
     {
-        $this->repo->clearEffectsForSource($tenantId, 'scheme', $schemeName);
-        $class = $this->repo->listClassifications($tenantId, 'scheme', $schemeName);
+        $this->repo->clearEffectsForSource($vendorId, 'scheme', $schemeName);
+        $class = $this->repo->listClassifications($vendorId, 'scheme', $schemeName);
         if (!$class) {
             return 0;
         }
-        $tags = $this->repo->listTagsByScheme($tenantId, $schemeName);
+        $tags = $this->repo->listTagsByScheme($vendorId, $schemeName);
         $n = 0;
         foreach ($tags as $t) {
-            $pairs = $this->repo->listAssignmentsByTag($tenantId, $t['tag_id']);
+            $pairs = $this->repo->listAssignmentsByTag($vendorId, $t['tag_id']);
             foreach ($pairs as $p) {
                 foreach ($class as $c) {
                     $this->repo->putEffect(
-                        $tenantId,
+                        $vendorId,
                         new TagEffectRecord(
                             TagUlidGenerator::generate(),
                             $p['assigned_type'],
@@ -105,10 +105,10 @@ final readonly class TagPropagationService
         return $n;
     }
 
-    public function dryRunForTag(string $tenantId, string $tagId): array
+    public function dryRunForTag(string $vendorId, string $tagId): array
     {
-        $class = $this->repo->listClassifications($tenantId, 'tag', $tagId);
-        $pairs = $this->repo->listAssignmentsByTag($tenantId, $tagId);
+        $class = $this->repo->listClassifications($vendorId, 'tag', $tagId);
+        $pairs = $this->repo->listAssignmentsByTag($vendorId, $tagId);
         $out = [];
         foreach ($pairs as $p) {
             foreach ($class as $c) {

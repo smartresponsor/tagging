@@ -11,7 +11,7 @@ use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Entity\Tag\TagRelationEntity;
 use App\Tagging\Entity\Tag\TagSchemeEntity;
 use App\Tagging\Entity\Tag\TagSynonymEntity;
-use App\Tagging\Service\Core\TagRepositoryInterface as TagRepositoryContract;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface as TagRepositoryContract;
 use Random\RandomException;
 
 final readonly class TagService
@@ -24,40 +24,40 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function create(string $tenantId, ?string $slugOrNull, string $label): TagEntity
+    public function create(string $vendorId, ?string $slugOrNull, string $label): TagEntity
     {
         $label = TagNormalizer::normalizeLabel($label);
         $slug = ('' === $slugOrNull || null === $slugOrNull)
             ? TagNormalizer::slugify($label)
             : TagNormalizer::slugify($slugOrNull);
         $this->validateLengths($slug, $label);
-        if ($this->repo->getBySlug($tenantId, $slug)) {
+        if ($this->repo->getBySlug($vendorId, $slug)) {
             throw new \InvalidArgumentException('Slug already exists');
         }
-        $tag = TagEntity::create($tenantId, TagUlidGenerator::generate(), $slug, $label);
-        $this->repo->saveTag($tenantId, $tag);
+        $tag = TagEntity::create($vendorId, TagUlidGenerator::generate(), $slug, $label);
+        $this->repo->saveTag($vendorId, $tag);
 
         return $tag;
     }
 
-    public function list(string $tenantId, ?string $q, int $limit = 20, int $offset = 0): array
+    public function list(string $vendorId, ?string $q, int $limit = 20, int $offset = 0): array
     {
-        return $this->repo->search($tenantId, $q, $limit, $offset);
+        return $this->repo->search($vendorId, $q, $limit, $offset);
     }
 
-    public function delete(string $tenantId, string $id): void
+    public function delete(string $vendorId, string $id): void
     {
-        $this->repo->deleteTag($tenantId, $id);
+        $this->repo->deleteTag($vendorId, $id);
     }
 
     /**
      * @throws RandomException
      */
-    public function assign(string $tenantId, string $tagId, string $type, string $assignedId): TagAssignmentEntity
+    public function assign(string $vendorId, string $tagId, string $type, string $assignedId): TagAssignmentEntity
     {
-        $this->enforceCaps($tenantId, $tagId, $type, $assignedId);
-        $a = TagAssignmentEntity::create($tenantId, TagUlidGenerator::generate(), $tagId, $type, $assignedId);
-        $this->repo->saveAssignment($tenantId, $a);
+        $this->enforceCaps($vendorId, $tagId, $type, $assignedId);
+        $a = TagAssignmentEntity::create($vendorId, TagUlidGenerator::generate(), $tagId, $type, $assignedId);
+        $this->repo->saveAssignment($vendorId, $a);
 
         return $a;
     }
@@ -65,11 +65,11 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function addSynonym(string $tenantId, string $tagId, string $label): TagSynonymEntity
+    public function addSynonym(string $vendorId, string $tagId, string $label): TagSynonymEntity
     {
         $label = TagNormalizer::normalizeLabel($label);
-        $s = TagSynonymEntity::create($tenantId, TagUlidGenerator::generate(), $tagId, $label);
-        $this->repo->saveSynonym($tenantId, $s);
+        $s = TagSynonymEntity::create($vendorId, TagUlidGenerator::generate(), $tagId, $label);
+        $this->repo->saveSynonym($vendorId, $s);
 
         return $s;
     }
@@ -77,18 +77,18 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function addRelation(string $tenantId, string $fromTagId, string $toTagId, string $type): TagRelationEntity
+    public function addRelation(string $vendorId, string $fromTagId, string $toTagId, string $type): TagRelationEntity
     {
         if ('broader' === $type) {
             $adj = [];
-            $all = $this->repo->listRelations($tenantId, $toTagId, 'broader');
+            $all = $this->repo->listRelations($vendorId, $toTagId, 'broader');
             $adj[$toTagId] = $all;
             if (TagGraph::wouldCreateCycle($fromTagId, $toTagId, $adj)) {
                 throw new \InvalidArgumentException('broader cycle');
             }
         }
-        $r = TagRelationEntity::create($tenantId, TagUlidGenerator::generate(), $fromTagId, $toTagId, $type);
-        $this->repo->saveRelation($tenantId, $r);
+        $r = TagRelationEntity::create($vendorId, TagUlidGenerator::generate(), $fromTagId, $toTagId, $type);
+        $this->repo->saveRelation($vendorId, $r);
 
         return $r;
     }
@@ -96,13 +96,13 @@ final readonly class TagService
     /**
      * @throws RandomException
      */
-    public function createScheme(string $tenantId, string $nameEntity, ?string $locale): TagSchemeEntity
+    public function createScheme(string $vendorId, string $nameEntity, ?string $locale): TagSchemeEntity
     {
-        if ($this->repo->getSchemeByName($tenantId, $nameEntity)) {
+        if ($this->repo->getSchemeByName($vendorId, $nameEntity)) {
             throw new \InvalidArgumentException('scheme exists');
         }
-        $s = TagSchemeEntity::create($tenantId, TagUlidGenerator::generate(), $nameEntity, $locale);
-        $this->repo->saveScheme($tenantId, $s);
+        $s = TagSchemeEntity::create($vendorId, TagUlidGenerator::generate(), $nameEntity, $locale);
+        $this->repo->saveScheme($vendorId, $s);
 
         return $s;
     }
@@ -120,9 +120,9 @@ final readonly class TagService
         }
     }
 
-    private function enforceCaps(string $tenantId, string $tagId, string $type, string $assignedId): void
+    private function enforceCaps(string $vendorId, string $tagId, string $type, string $assignedId): void
     {
-        $current = $this->repo->listAssignments($tenantId, $tagId, $type, $assignedId);
+        $current = $this->repo->listAssignments($vendorId, $tagId, $type, $assignedId);
         if (count($current) >= 1) {
             throw new \InvalidArgumentException('assignment_exists');
         }

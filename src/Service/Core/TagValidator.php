@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Service\Core\TagRepositoryInterface as TagRepositoryContract;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface as TagRepositoryContract;
 
 final class TagValidator
 {
@@ -50,12 +50,12 @@ final class TagValidator
      * Repository must provide 'existsSlug' and 'i18nSlugExists' checks.
      */
     public function ensureUniqueness(
-        string $tenantId,
+        string $vendorId,
         TagRepositoryContract $repo,
         string $slug,
         ?string $tagId = null,
     ): void {
-        if ($repo->existsSlug($tenantId, $slug, $tagId)) {
+        if ($repo->existsSlug($vendorId, $slug, $tagId)) {
             throw new \RuntimeException('slug_conflict');
         }
     }

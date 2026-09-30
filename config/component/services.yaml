@@ -12,11 +12,11 @@ services:
   App\Tagging\Repository\TagReadModel:
     public: true
 
-  App\Tagging\Service\Core\TagRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagReadRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagWriteRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagPolicyRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
-  App\Tagging\Service\Core\TagCrudRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\RepositoryInterface\TagRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\RepositoryInterface\TagReadRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\RepositoryInterface\TagWriteRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\RepositoryInterface\TagPolicyRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
+  App\Tagging\RepositoryInterface\TagCrudRepositoryInterface: '@App\Tagging\Repository\Storage\TagDoctrineRepository'
   App\Tagging\RepositoryInterface\TagReadModelInterface: '@App\Tagging\Repository\TagReadModel'
   App\Tagging\RepositoryInterface\TagTransactionRunnerInterface: '@App\Tagging\Repository\TagDoctrineTransactionRunner'
   App\Tagging\Service\Core\Webhook\TagWebhookRegistry:

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tagging\Command\Console;
 
 use App\Tagging\Entity\Tag\TagRelationEntity;
-use App\Tagging\Service\Core\TagRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface;
 use App\Tagging\Service\Core\TagUlidGenerator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;

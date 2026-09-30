@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Factory\Error\TagErrorSinkFactory;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface;
 
 final readonly class TagQuotaService
 {
@@ -19,46 +20,46 @@ final readonly class TagQuotaService
         $this->errorSink = TagErrorSinkFactory::from($errorSink);
     }
 
-    public function canCreateTag(string $tenantId): array
+    public function canCreateTag(string $vendorId): array
     {
         return $this->quotaResult(
-            $tenantId,
+            $vendorId,
             (int) ($this->cfg['quotas']['max_tags'] ?? 0),
             'quota_tags_exceeded',
             fn(string $id): int => $this->repository?->countTags($id) ?? 0,
         );
     }
 
-    public function canAssign(string $tenantId): array
+    public function canAssign(string $vendorId): array
     {
         return $this->quotaResult(
-            $tenantId,
+            $vendorId,
             (int) ($this->cfg['quotas']['max_assignments'] ?? 0),
             'quota_assignments_exceeded',
             fn(string $id): int => $this->repository?->countAssignments($id) ?? 0,
         );
     }
 
-    public function assertCanCreateTag(string $tenantId): void
+    public function assertCanCreateTag(string $vendorId): void
     {
-        $this->assertAllowed($this->canCreateTag($tenantId));
+        $this->assertAllowed($this->canCreateTag($vendorId));
     }
 
-    public function assertCanAssign(string $tenantId): void
+    public function assertCanAssign(string $vendorId): void
     {
-        $this->assertAllowed($this->canAssign($tenantId));
+        $this->assertAllowed($this->canAssign($vendorId));
     }
 
     /**
      * @param callable(string):int $counter
      */
-    private function quotaResult(string $tenantId, int $max, string $code, callable $counter): array
+    private function quotaResult(string $vendorId, int $max, string $code, callable $counter): array
     {
         if ($max <= 0) {
             return ['ok' => true, 'used' => 0, 'max' => 0, 'remaining' => null, 'code' => null];
         }
 
-        $count = $this->countByCounter($counter, $tenantId);
+        $count = $this->countByCounter($counter, $vendorId);
         $ok = $count < $max;
 
         return [
@@ -82,12 +83,12 @@ final readonly class TagQuotaService
     /**
      * @param callable(string):int $counter
      */
-    private function countByCounter(callable $counter, string $tenantId): int
+    private function countByCounter(callable $counter, string $vendorId): int
     {
         try {
-            return $counter($tenantId);
+            return $counter($vendorId);
         } catch (\Throwable $e) {
-            $this->report($e, ['tenant' => $tenantId]);
+            $this->report($e, ['tenant' => $vendorId]);
 
             return 0;
         }

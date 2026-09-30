@@ -12,7 +12,7 @@ use App\Tagging\HandlerInterface\Write\TagPatchHandlerInterface;
 use App\Tagging\Cache\Store\Tag\TagSearchCache;
 use App\Tagging\Cache\Store\Tag\TagSuggestCache;
 use App\Tagging\Cache\Store\Tag\TagQueryCacheInvalidator;
-use App\Tagging\Service\Core\TagCrudRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagCrudRepositoryInterface;
 use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 
 final readonly class TagPatchHandler implements TagPatchHandlerInterface

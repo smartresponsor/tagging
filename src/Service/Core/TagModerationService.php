@@ -6,8 +6,8 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Normalizer\Core\TagNormalizer;
-use App\Tagging\Service\Core\Record\TagAuditRecord;
-use App\Tagging\Service\Core\TagRepositoryInterface as TagRepositoryContract;
+use App\Tagging\DTO\Write\TagAuditRecord;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface as TagRepositoryContract;
 use Random\RandomException;
 
 final readonly class TagModerationService
@@ -18,12 +18,12 @@ final readonly class TagModerationService
      * @throws \JsonException
      * @throws RandomException
      */
-    public function propose(string $tenantId, string $type, array $payload): string
+    public function propose(string $vendorId, string $type, array $payload): string
     {
         $id = TagUlidGenerator::generate();
-        $this->repo->insertProposal($tenantId, $id, $type, json_encode($payload, JSON_THROW_ON_ERROR));
+        $this->repo->insertProposal($vendorId, $id, $type, json_encode($payload, JSON_THROW_ON_ERROR));
         $this->repo->insertAudit(
-            $tenantId,
+            $vendorId,
             new TagAuditRecord(
                 TagUlidGenerator::generate(),
                 'proposal.create',
@@ -36,21 +36,21 @@ final readonly class TagModerationService
         return $id;
     }
 
-    public function approve(string $tenantId, string $id, string $decider): void
+    public function approve(string $vendorId, string $id, string $decider): void
     {
-        $this->repo->updateProposalStatus($tenantId, $id, 'approved', $decider);
+        $this->repo->updateProposalStatus($vendorId, $id, 'approved', $decider);
     }
 
     /**
      * @throws \JsonException
      * @throws RandomException
      */
-    public function mergeTags(string $tenantId, string $fromTagId, string $toTagId): void
+    public function mergeTags(string $vendorId, string $fromTagId, string $toTagId): void
     {
-        $this->repo->reassignAssignments($tenantId, $fromTagId, $toTagId);
-        $this->repo->deleteTag($tenantId, $fromTagId);
+        $this->repo->reassignAssignments($vendorId, $fromTagId, $toTagId);
+        $this->repo->deleteTag($vendorId, $fromTagId);
         $this->repo->insertAudit(
-            $tenantId,
+            $vendorId,
             new TagAuditRecord(
                 TagUlidGenerator::generate(),
                 'tag.merge',
@@ -68,12 +68,12 @@ final readonly class TagModerationService
      * @throws \JsonException
      * @throws RandomException
      */
-    public function renameTag(string $tenantId, string $tagId, string $newLabel): void
+    public function renameTag(string $vendorId, string $tagId, string $newLabel): void
     {
         $slug = TagNormalizer::slugify($newLabel);
-        $this->repo->renameTag($tenantId, $tagId, $newLabel, $slug);
+        $this->repo->renameTag($vendorId, $tagId, $newLabel, $slug);
         $this->repo->insertAudit(
-            $tenantId,
+            $vendorId,
             new TagAuditRecord(
                 TagUlidGenerator::generate(),
                 'tag.rename',
@@ -88,11 +88,11 @@ final readonly class TagModerationService
      * @throws \JsonException
      * @throws RandomException
      */
-    public function setFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void
+    public function setFlags(string $vendorId, string $tagId, bool $required, bool $modOnly): void
     {
-        $this->repo->setTagFlags($tenantId, $tagId, $required, $modOnly);
+        $this->repo->setTagFlags($vendorId, $tagId, $required, $modOnly);
         $this->repo->insertAudit(
-            $tenantId,
+            $vendorId,
             new TagAuditRecord(
                 TagUlidGenerator::generate(),
                 'tag.flags',

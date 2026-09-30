@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tagging\Service\Core;
 
 use App\Tagging\Entity\Tag\TagEntity;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface;
 
 final readonly class TagLifecycleService implements TagLifecycleServiceInterface
 {

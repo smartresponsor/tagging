@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tagging\Service\Core\Record;
+namespace App\Tagging\DTO\Write;
 
 final readonly class TagEntityCreateRecord
 {

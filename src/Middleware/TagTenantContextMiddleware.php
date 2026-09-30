@@ -16,7 +16,7 @@ final readonly class TagTenantContextMiddleware
     {
         $tenant = $this->guard->requireTenant($req['headers'] ?? []);
         // Inject tenant in request for downstream handlers
-        $req['tenantId'] = $tenant;
+        $req['vendorId'] = $tenant;
 
         return $next($req);
     }

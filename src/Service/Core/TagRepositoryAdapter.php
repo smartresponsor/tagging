@@ -10,9 +10,13 @@ use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Entity\Tag\TagRelationEntity;
 use App\Tagging\Entity\Tag\TagSchemeEntity;
 use App\Tagging\Entity\Tag\TagSynonymEntity;
-use App\Tagging\Service\Core\Record\TagAuditRecord;
-use App\Tagging\Service\Core\Record\TagClassificationRecord;
-use App\Tagging\Service\Core\Record\TagEffectRecord;
+use App\Tagging\DTO\Write\TagAuditRecord;
+use App\Tagging\DTO\Write\TagClassificationRecord;
+use App\Tagging\DTO\Write\TagEffectRecord;
+use App\Tagging\RepositoryInterface\TagPolicyRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagReadRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagWriteRepositoryInterface;
 
 final readonly class TagRepositoryAdapter implements TagRepositoryInterface
 {
@@ -22,24 +26,24 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         private TagPolicyRepositoryInterface $tagPolicyRepository,
     ) {}
 
-    public function saveTag(string $tenantId, TagEntity $tag): void
+    public function saveTag(string $vendorId, TagEntity $tag): void
     {
-        $this->tagWriteRepository->saveTag($tenantId, $tag);
+        $this->tagWriteRepository->saveTag($vendorId, $tag);
     }
 
-    public function getById(string $tenantId, string $id): ?TagEntity
+    public function getById(string $vendorId, string $id): ?TagEntity
     {
-        return $this->tagReadRepository->getById($tenantId, $id);
+        return $this->tagReadRepository->getById($vendorId, $id);
     }
 
-    public function getBySlug(string $tenantId, string $slug): ?TagEntity
+    public function getBySlug(string $vendorId, string $slug): ?TagEntity
     {
-        return $this->tagReadRepository->getBySlug($tenantId, $slug);
+        return $this->tagReadRepository->getBySlug($vendorId, $slug);
     }
 
-    public function existsSlug(string $tenantId, string $slug, ?string $excludeTagId = null): bool
+    public function existsSlug(string $vendorId, string $slug, ?string $excludeTagId = null): bool
     {
-        $existing = $this->tagReadRepository->getBySlug($tenantId, $slug);
+        $existing = $this->tagReadRepository->getBySlug($vendorId, $slug);
         if (null === $existing) {
             return false;
         }
@@ -47,192 +51,192 @@ final readonly class TagRepositoryAdapter implements TagRepositoryInterface
         return $existing->id() !== $excludeTagId;
     }
 
-    public function i18nSlugExists(string $tenantId, string $locale, string $slug, ?string $excludeTagId = null): bool
+    public function i18nSlugExists(string $vendorId, string $locale, string $slug, ?string $excludeTagId = null): bool
     {
-        return $this->existsSlug($tenantId, $slug, $excludeTagId);
+        return $this->existsSlug($vendorId, $slug, $excludeTagId);
     }
 
     /**
      * @return array|Tag[]
      */
-    public function search(string $tenantId, ?string $query, int $limit, int $offset): array
+    public function search(string $vendorId, ?string $query, int $limit, int $offset): array
     {
-        return $this->tagReadRepository->search($tenantId, $query, $limit, $offset);
+        return $this->tagReadRepository->search($vendorId, $query, $limit, $offset);
     }
 
-    public function deleteTag(string $tenantId, string $id): void
+    public function deleteTag(string $vendorId, string $id): void
     {
-        $this->tagWriteRepository->deleteTag($tenantId, $id);
+        $this->tagWriteRepository->deleteTag($vendorId, $id);
     }
 
-    public function saveAssignment(string $tenantId, TagAssignmentEntity $a): void
+    public function saveAssignment(string $vendorId, TagAssignmentEntity $a): void
     {
-        $this->tagWriteRepository->saveAssignment($tenantId, $a);
+        $this->tagWriteRepository->saveAssignment($vendorId, $a);
     }
 
-    public function deleteAssignment(string $tenantId, string $assignmentId): void
+    public function deleteAssignment(string $vendorId, string $assignmentId): void
     {
-        $this->tagWriteRepository->deleteAssignment($tenantId, $assignmentId);
+        $this->tagWriteRepository->deleteAssignment($vendorId, $assignmentId);
     }
 
     /**
      * @return array|TagAssignment[]
      */
     public function listAssignments(
-        string $tenantId,
+        string $vendorId,
         string $tagId,
         ?string $type = null,
         ?string $assignedId = null,
     ): array {
-        return $this->tagReadRepository->listAssignments($tenantId, $tagId, $type, $assignedId);
+        return $this->tagReadRepository->listAssignments($vendorId, $tagId, $type, $assignedId);
     }
 
-    public function saveSynonym(string $tenantId, TagSynonymEntity $s): void
+    public function saveSynonym(string $vendorId, TagSynonymEntity $s): void
     {
-        $this->tagWriteRepository->saveSynonym($tenantId, $s);
+        $this->tagWriteRepository->saveSynonym($vendorId, $s);
     }
 
     /**
      * @return array|TagSynonym[]
      */
-    public function listSynonyms(string $tenantId, string $tagId): array
+    public function listSynonyms(string $vendorId, string $tagId): array
     {
-        return $this->tagReadRepository->listSynonyms($tenantId, $tagId);
+        return $this->tagReadRepository->listSynonyms($vendorId, $tagId);
     }
 
-    public function saveRelation(string $tenantId, TagRelationEntity $r): void
+    public function saveRelation(string $vendorId, TagRelationEntity $r): void
     {
-        $this->tagWriteRepository->saveRelation($tenantId, $r);
+        $this->tagWriteRepository->saveRelation($vendorId, $r);
     }
 
     /**
      * @return array|TagRelation[]
      */
-    public function listRelations(string $tenantId, string $tagId, ?string $type = null): array
+    public function listRelations(string $vendorId, string $tagId, ?string $type = null): array
     {
-        return $this->tagReadRepository->listRelations($tenantId, $tagId, $type);
+        return $this->tagReadRepository->listRelations($vendorId, $tagId, $type);
     }
 
-    public function saveScheme(string $tenantId, TagSchemeEntity $s): void
+    public function saveScheme(string $vendorId, TagSchemeEntity $s): void
     {
-        $this->tagWriteRepository->saveScheme($tenantId, $s);
+        $this->tagWriteRepository->saveScheme($vendorId, $s);
     }
 
-    public function getSchemeByName(string $tenantId, string $nameEntity): ?TagSchemeEntity
+    public function getSchemeByName(string $vendorId, string $nameEntity): ?TagSchemeEntity
     {
-        return $this->tagReadRepository->getSchemeByName($tenantId, $nameEntity);
+        return $this->tagReadRepository->getSchemeByName($vendorId, $nameEntity);
     }
 
-    public function reassignAssignments(string $tenantId, string $fromTagId, string $toTagId): void
+    public function reassignAssignments(string $vendorId, string $fromTagId, string $toTagId): void
     {
-        $this->tagWriteRepository->reassignAssignments($tenantId, $fromTagId, $toTagId);
+        $this->tagWriteRepository->reassignAssignments($vendorId, $fromTagId, $toTagId);
     }
 
-    public function setTagFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void
+    public function setTagFlags(string $vendorId, string $tagId, bool $required, bool $modOnly): void
     {
-        $this->tagPolicyRepository->setTagFlags($tenantId, $tagId, $required, $modOnly);
+        $this->tagPolicyRepository->setTagFlags($vendorId, $tagId, $required, $modOnly);
     }
 
-    public function renameTag(string $tenantId, string $tagId, string $newLabel, string $newSlug): void
+    public function renameTag(string $vendorId, string $tagId, string $newLabel, string $newSlug): void
     {
-        $this->tagWriteRepository->renameTag($tenantId, $tagId, $newLabel, $newSlug);
+        $this->tagWriteRepository->renameTag($vendorId, $tagId, $newLabel, $newSlug);
     }
 
-    public function insertProposal(string $tenantId, string $id, string $type, string $payloadJson): void
+    public function insertProposal(string $vendorId, string $id, string $type, string $payloadJson): void
     {
-        $this->tagWriteRepository->insertProposal($tenantId, $id, $type, $payloadJson);
+        $this->tagWriteRepository->insertProposal($vendorId, $id, $type, $payloadJson);
     }
 
-    public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void
+    public function updateProposalStatus(string $vendorId, string $id, string $status, ?string $decidedBy): void
     {
-        $this->tagWriteRepository->updateProposalStatus($tenantId, $id, $status, $decidedBy);
+        $this->tagWriteRepository->updateProposalStatus($vendorId, $id, $status, $decidedBy);
     }
 
-    public function insertAudit(string $tenantId, TagAuditRecord $record): void
+    public function insertAudit(string $vendorId, TagAuditRecord $record): void
     {
-        $this->tagWriteRepository->insertAudit($tenantId, $record);
+        $this->tagWriteRepository->insertAudit($vendorId, $record);
     }
 
     /**
      * @return array|Tag[]
      */
-    public function listAllTags(string $tenantId): array
+    public function listAllTags(string $vendorId): array
     {
-        return $this->tagReadRepository->listAllTags($tenantId);
+        return $this->tagReadRepository->listAllTags($vendorId);
     }
 
-    public function countTags(string $tenantId): int
+    public function countTags(string $vendorId): int
     {
-        return $this->tagReadRepository->countTags($tenantId);
+        return $this->tagReadRepository->countTags($vendorId);
     }
 
-    public function countAssignments(string $tenantId): int
+    public function countAssignments(string $vendorId): int
     {
-        return $this->tagReadRepository->countAssignments($tenantId);
+        return $this->tagReadRepository->countAssignments($vendorId);
     }
 
-    public function getPolicy(string $tenantId): array
+    public function getPolicy(string $vendorId): array
     {
-        return $this->tagPolicyRepository->getPolicy($tenantId);
+        return $this->tagPolicyRepository->getPolicy($vendorId);
     }
 
-    public function setPolicy(string $tenantId, array $policy): void
+    public function setPolicy(string $vendorId, array $policy): void
     {
-        $this->tagPolicyRepository->setPolicy($tenantId, $policy);
-    }
-
-    /**
-     * @return array|array[]
-     */
-    public function facetTop(string $tenantId, string $assignedType, int $limit): array
-    {
-        return $this->tagReadRepository->facetTop($tenantId, $assignedType, $limit);
+        $this->tagPolicyRepository->setPolicy($vendorId, $policy);
     }
 
     /**
      * @return array|array[]
      */
-    public function tagCloud(string $tenantId, int $limit): array
+    public function facetTop(string $vendorId, string $assignedType, int $limit): array
     {
-        return $this->tagReadRepository->tagCloud($tenantId, $limit);
-    }
-
-    public function putClassification(string $tenantId, TagClassificationRecord $record): void
-    {
-        $this->tagWriteRepository->putClassification($tenantId, $record);
+        return $this->tagReadRepository->facetTop($vendorId, $assignedType, $limit);
     }
 
     /**
      * @return array|array[]
      */
-    public function listClassifications(string $tenantId, string $scope, string $refId): array
+    public function tagCloud(string $vendorId, int $limit): array
     {
-        return $this->tagReadRepository->listClassifications($tenantId, $scope, $refId);
+        return $this->tagReadRepository->tagCloud($vendorId, $limit);
     }
 
-    public function putEffect(string $tenantId, TagEffectRecord $record): void
+    public function putClassification(string $vendorId, TagClassificationRecord $record): void
     {
-        $this->tagWriteRepository->putEffect($tenantId, $record);
-    }
-
-    public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void
-    {
-        $this->tagWriteRepository->clearEffectsForSource($tenantId, $sourceScope, $sourceId);
+        $this->tagWriteRepository->putClassification($vendorId, $record);
     }
 
     /**
      * @return array|array[]
      */
-    public function listAssignmentsByTag(string $tenantId, string $tagId): array
+    public function listClassifications(string $vendorId, string $scope, string $refId): array
     {
-        return $this->tagReadRepository->listAssignmentsByTag($tenantId, $tagId);
+        return $this->tagReadRepository->listClassifications($vendorId, $scope, $refId);
+    }
+
+    public function putEffect(string $vendorId, TagEffectRecord $record): void
+    {
+        $this->tagWriteRepository->putEffect($vendorId, $record);
+    }
+
+    public function clearEffectsForSource(string $vendorId, string $sourceScope, string $sourceId): void
+    {
+        $this->tagWriteRepository->clearEffectsForSource($vendorId, $sourceScope, $sourceId);
     }
 
     /**
      * @return array|array[]
      */
-    public function listTagsByScheme(string $tenantId, string $schemeName): array
+    public function listAssignmentsByTag(string $vendorId, string $tagId): array
     {
-        return $this->tagReadRepository->listTagsByScheme($tenantId, $schemeName);
+        return $this->tagReadRepository->listAssignmentsByTag($vendorId, $tagId);
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function listTagsByScheme(string $vendorId, string $schemeName): array
+    {
+        return $this->tagReadRepository->listTagsByScheme($vendorId, $schemeName);
     }
 }

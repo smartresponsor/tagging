@@ -9,6 +9,8 @@ use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Factory\Error\TagErrorSinkFactory;
 use App\Tagging\Repository\Outbox\TagOutboxPublisher;
 use App\Tagging\Repository\TagIdempotencyStore;
+use App\Tagging\RepositoryInterface\TagCrudRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface;
 use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 
 final readonly class TagAssignService implements TagAssignOperationInterface

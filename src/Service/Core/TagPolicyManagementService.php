@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Tagging\Service\Core;
 
-use App\Tagging\Service\Core\TagRepositoryInterface as TagRepositoryContract;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface as TagRepositoryContract;
 
 final readonly class TagPolicyManagementService
 {
@@ -53,7 +53,7 @@ final readonly class TagPolicyManagementService
     }
 
     public function validateBeforeCreate(
-        string $tenantId,
+        string $vendorId,
         TagRepositoryContract $repo,
         string $label,
         ?string $slug = null,
@@ -61,11 +61,11 @@ final readonly class TagPolicyManagementService
         $slug = null !== $slug && '' !== $slug ? $this->normalizeSlug($slug) : $this->slugForLabel($label);
         $this->applyRules($slug);
         $this->validator->validateSlug($slug);
-        $this->validator->ensureUniqueness($tenantId, $repo, $slug);
+        $this->validator->ensureUniqueness($vendorId, $repo, $slug);
     }
 
     public function validateBeforeUpdate(
-        string $tenantId,
+        string $vendorId,
         TagRepositoryContract $repo,
         string $tagId,
         string $label,
@@ -76,7 +76,7 @@ final readonly class TagPolicyManagementService
             $slug = $this->normalizeSlug($slug);
             $this->applyRules($slug);
             $this->validator->validateSlug($slug);
-            $this->validator->ensureUniqueness($tenantId, $repo, $slug, $tagId);
+            $this->validator->ensureUniqueness($vendorId, $repo, $slug, $tagId);
         }
     }
 

@@ -12,9 +12,9 @@ use App\Tagging\HandlerInterface\Write\TagCreateHandlerInterface;
 use App\Tagging\Cache\Store\Tag\TagSearchCache;
 use App\Tagging\Cache\Store\Tag\TagSuggestCache;
 use App\Tagging\Cache\Store\Tag\TagQueryCacheInvalidator;
-use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
+use App\Tagging\DTO\Write\TagEntityCreateRecord;
 use App\Tagging\Policy\Slug\TagSlugPolicy;
-use App\Tagging\Service\Core\TagCrudRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagCrudRepositoryInterface;
 use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 use Random\RandomException;
 

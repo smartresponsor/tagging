@@ -10,10 +10,10 @@ use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Entity\Tag\TagRelationEntity;
 use App\Tagging\Entity\Tag\TagSchemeEntity;
 use App\Tagging\Entity\Tag\TagSynonymEntity;
-use App\Tagging\Service\Core\Record\TagAuditRecord;
-use App\Tagging\Service\Core\Record\TagClassificationRecord;
-use App\Tagging\Service\Core\Record\TagEffectRecord;
-use App\Tagging\Service\Core\TagRepositoryInterface;
+use App\Tagging\DTO\Write\TagAuditRecord;
+use App\Tagging\DTO\Write\TagClassificationRecord;
+use App\Tagging\DTO\Write\TagEffectRecord;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface;
 
 final class TagInMemoryRepository implements TagRepositoryInterface
 {
@@ -26,24 +26,24 @@ final class TagInMemoryRepository implements TagRepositoryInterface
     private array $class = [];
     private array $effects = [];
 
-    public function saveTag(string $tenantId, TagEntity $tag): void
+    public function saveTag(string $vendorId, TagEntity $tag): void
     {
-        $this->tags[$tenantId][$tag->id()] = $tag;
+        $this->tags[$vendorId][$tag->id()] = $tag;
     }
 
-    public function getById(string $tenantId, string $id): ?TagEntity
+    public function getById(string $vendorId, string $id): ?TagEntity
     {
-        return $this->tags[$tenantId][$id] ?? null;
+        return $this->tags[$vendorId][$id] ?? null;
     }
 
-    public function getBySlug(string $tenantId, string $slug): ?TagEntity
+    public function getBySlug(string $vendorId, string $slug): ?TagEntity
     {
-        return array_find($this->tags[$tenantId] ?? [], fn($t) => $t->slug() === $slug);
+        return array_find($this->tags[$vendorId] ?? [], fn($t) => $t->slug() === $slug);
     }
 
-    public function existsSlug(string $tenantId, string $slug, ?string $excludeTagId = null): bool
+    public function existsSlug(string $vendorId, string $slug, ?string $excludeTagId = null): bool
     {
-        foreach (($this->tags[$tenantId] ?? []) as $tag) {
+        foreach (($this->tags[$vendorId] ?? []) as $tag) {
             if (null !== $excludeTagId && $tag->id() === $excludeTagId) {
                 continue;
             }
@@ -55,17 +55,17 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         return false;
     }
 
-    public function i18nSlugExists(string $tenantId, string $locale, string $slug, ?string $excludeTagId = null): bool
+    public function i18nSlugExists(string $vendorId, string $locale, string $slug, ?string $excludeTagId = null): bool
     {
-        return $this->existsSlug($tenantId, $slug, $excludeTagId);
+        return $this->existsSlug($vendorId, $slug, $excludeTagId);
     }
 
     /**
      * @return array|Tag[]
      */
-    public function search(string $tenantId, ?string $query, int $limit, int $offset): array
+    public function search(string $vendorId, ?string $query, int $limit, int $offset): array
     {
-        $all = array_values($this->tags[$tenantId] ?? []);
+        $all = array_values($this->tags[$vendorId] ?? []);
         if ($query) {
             $q = mb_strtolower($query);
             $all = array_filter(
@@ -78,32 +78,32 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         return array_slice(array_values($all), $offset, $limit);
     }
 
-    public function deleteTag(string $tenantId, string $id): void
+    public function deleteTag(string $vendorId, string $id): void
     {
-        unset($this->tags[$tenantId][$id]);
+        unset($this->tags[$vendorId][$id]);
     }
 
-    public function saveAssignment(string $tenantId, TagAssignmentEntity $a): void
+    public function saveAssignment(string $vendorId, TagAssignmentEntity $a): void
     {
-        $this->assignments[$tenantId][$a->id()] = $a;
+        $this->assignments[$vendorId][$a->id()] = $a;
     }
 
-    public function deleteAssignment(string $tenantId, string $assignmentId): void
+    public function deleteAssignment(string $vendorId, string $assignmentId): void
     {
-        unset($this->assignments[$tenantId][$assignmentId]);
+        unset($this->assignments[$vendorId][$assignmentId]);
     }
 
     /**
      * @return array|TagAssignment[]
      */
     public function listAssignments(
-        string $tenantId,
+        string $vendorId,
         string $tagId,
         ?string $type = null,
         ?string $assignedId = null,
     ): array {
         return array_values(array_filter(
-            $this->assignments[$tenantId] ?? [],
+            $this->assignments[$vendorId] ?? [],
             function (TagAssignmentEntity $x) use ($tagId, $type, $assignedId) {
                 if ($x->tagId() !== $tagId) {
                     return false;
@@ -120,40 +120,40 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         ));
     }
 
-    public function saveSynonym(string $tenantId, TagSynonymEntity $s): void {}
+    public function saveSynonym(string $vendorId, TagSynonymEntity $s): void {}
 
     /**
      * @return array|TagSynonym[]
      */
-    public function listSynonyms(string $tenantId, string $tagId): array
+    public function listSynonyms(string $vendorId, string $tagId): array
     {
         return [];
     }
 
-    public function saveRelation(string $tenantId, TagRelationEntity $r): void {}
+    public function saveRelation(string $vendorId, TagRelationEntity $r): void {}
 
     /**
      * @return array|TagRelation[]
      */
-    public function listRelations(string $tenantId, string $tagId, ?string $type = null): array
+    public function listRelations(string $vendorId, string $tagId, ?string $type = null): array
     {
         return [];
     }
 
-    public function saveScheme(string $tenantId, TagSchemeEntity $s): void {}
+    public function saveScheme(string $vendorId, TagSchemeEntity $s): void {}
 
-    public function getSchemeByName(string $tenantId, string $nameEntity): ?TagSchemeEntity
+    public function getSchemeByName(string $vendorId, string $nameEntity): ?TagSchemeEntity
     {
         return null;
     }
 
-    public function reassignAssignments(string $tenantId, string $fromTagId, string $toTagId): void
+    public function reassignAssignments(string $vendorId, string $fromTagId, string $toTagId): void
     {
-        foreach (($this->assignments[$tenantId] ?? []) as $k => $a) {
+        foreach (($this->assignments[$vendorId] ?? []) as $k => $a) {
             if ($a->tagId() === $fromTagId) {
-                $this->assignments[$tenantId][$k] = new TagAssignmentEntity(
+                $this->assignments[$vendorId][$k] = new TagAssignmentEntity(
                     $a->id(),
-                    $tenantId,
+                    $vendorId,
                     $toTagId,
                     $a->assignedType(),
                     $a->assignedId(),
@@ -163,77 +163,77 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         }
     }
 
-    public function setTagFlags(string $tenantId, string $tagId, bool $required, bool $modOnly): void {}
+    public function setTagFlags(string $vendorId, string $tagId, bool $required, bool $modOnly): void {}
 
-    public function renameTag(string $tenantId, string $tagId, string $newLabel, string $newSlug): void
+    public function renameTag(string $vendorId, string $tagId, string $newLabel, string $newSlug): void
     {
-        if (!isset($this->tags[$tenantId][$tagId])) {
+        if (!isset($this->tags[$vendorId][$tagId])) {
             return;
         }
-        $t = $this->tags[$tenantId][$tagId];
-        $this->tags[$tenantId][$tagId] = new TagEntity($t->id(), $tenantId, $newSlug, $newLabel, $t->createdAt());
+        $t = $this->tags[$vendorId][$tagId];
+        $this->tags[$vendorId][$tagId] = new TagEntity($t->id(), $vendorId, $newSlug, $newLabel, $t->createdAt());
     }
 
-    public function insertProposal(string $tenantId, string $id, string $type, string $payloadJson): void {}
+    public function insertProposal(string $vendorId, string $id, string $type, string $payloadJson): void {}
 
-    public function updateProposalStatus(string $tenantId, string $id, string $status, ?string $decidedBy): void {}
+    public function updateProposalStatus(string $vendorId, string $id, string $status, ?string $decidedBy): void {}
 
-    public function insertAudit(string $tenantId, TagAuditRecord $record): void {}
+    public function insertAudit(string $vendorId, TagAuditRecord $record): void {}
 
     /**
      * @return array|Tag[]
      */
-    public function listAllTags(string $tenantId): array
+    public function listAllTags(string $vendorId): array
     {
-        return array_values($this->tags[$tenantId] ?? []);
+        return array_values($this->tags[$vendorId] ?? []);
     }
 
-    public function countTags(string $tenantId): int
+    public function countTags(string $vendorId): int
     {
-        return count($this->tags[$tenantId] ?? []);
+        return count($this->tags[$vendorId] ?? []);
     }
 
-    public function countAssignments(string $tenantId): int
+    public function countAssignments(string $vendorId): int
     {
-        return count($this->assignments[$tenantId] ?? []);
+        return count($this->assignments[$vendorId] ?? []);
     }
 
-    public function getPolicy(string $tenantId): array
+    public function getPolicy(string $vendorId): array
     {
-        return $this->policy[$tenantId] ?? [];
+        return $this->policy[$vendorId] ?? [];
     }
 
-    public function setPolicy(string $tenantId, array $policy): void
+    public function setPolicy(string $vendorId, array $policy): void
     {
-        $this->policy[$tenantId] = $policy;
+        $this->policy[$vendorId] = $policy;
     }
 
     /**
      * @return array|array[]
      */
-    public function facetTop(string $tenantId, string $assignedType, int $limit): array
+    public function facetTop(string $vendorId, string $assignedType, int $limit): array
     {
         $cnt = [];
-        foreach (($this->assignments[$tenantId] ?? []) as $a) {
+        foreach (($this->assignments[$vendorId] ?? []) as $a) {
             if ($a->assignedType() === $assignedType) {
                 $cnt[$a->tagId()] = ($cnt[$a->tagId()] ?? 0) + 1;
             }
         }
 
-        return $this->topTagEntries($tenantId, $cnt, $limit);
+        return $this->topTagEntries($vendorId, $cnt, $limit);
     }
 
     /**
      * @return array|array[]
      */
-    public function tagCloud(string $tenantId, int $limit): array
+    public function tagCloud(string $vendorId, int $limit): array
     {
         $cnt = [];
-        foreach (($this->assignments[$tenantId] ?? []) as $a) {
+        foreach (($this->assignments[$vendorId] ?? []) as $a) {
             $cnt[$a->tagId()] = ($cnt[$a->tagId()] ?? 0) + 1;
         }
 
-        return $this->topTagEntries($tenantId, $cnt, $limit);
+        return $this->topTagEntries($vendorId, $cnt, $limit);
     }
 
     /**
@@ -241,12 +241,12 @@ final class TagInMemoryRepository implements TagRepositoryInterface
      *
      * @return array<int,array<string,int|string>>
      */
-    private function topTagEntries(string $tenantId, array $counts, int $limit): array
+    private function topTagEntries(string $vendorId, array $counts, int $limit): array
     {
         arsort($counts);
         $out = [];
         foreach (array_slice(array_keys($counts), 0, $limit) as $tagId) {
-            $tag = $this->tags[$tenantId][$tagId] ?? null;
+            $tag = $this->tags[$vendorId][$tagId] ?? null;
             if (!$tag) {
                 continue;
             }
@@ -256,9 +256,9 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         return $out;
     }
 
-    public function putClassification(string $tenantId, TagClassificationRecord $record): void
+    public function putClassification(string $vendorId, TagClassificationRecord $record): void
     {
-        $k = $tenantId . '|' . $record->scope . '|' . $record->refId;
+        $k = $vendorId . '|' . $record->scope . '|' . $record->refId;
         $this->class[$k] = $this->class[$k] ?? [];
         $this->class[$k][] = ['key' => $record->key, 'value' => $record->value];
     }
@@ -266,14 +266,14 @@ final class TagInMemoryRepository implements TagRepositoryInterface
     /**
      * @return array|array[]
      */
-    public function listClassifications(string $tenantId, string $scope, string $refId): array
+    public function listClassifications(string $vendorId, string $scope, string $refId): array
     {
-        return $this->class[$tenantId . '|' . $scope . '|' . $refId] ?? [];
+        return $this->class[$vendorId . '|' . $scope . '|' . $refId] ?? [];
     }
 
-    public function putEffect(string $tenantId, TagEffectRecord $record): void
+    public function putEffect(string $vendorId, TagEffectRecord $record): void
     {
-        $k = $tenantId . '|' . $record->sourceScope . '|' . $record->sourceId;
+        $k = $vendorId . '|' . $record->sourceScope . '|' . $record->sourceId;
         $this->effects[$k] = $this->effects[$k] ?? [];
         $this->effects[$k][] = [
             'assigned_type' => $record->assignedType,
@@ -283,18 +283,18 @@ final class TagInMemoryRepository implements TagRepositoryInterface
         ];
     }
 
-    public function clearEffectsForSource(string $tenantId, string $sourceScope, string $sourceId): void
+    public function clearEffectsForSource(string $vendorId, string $sourceScope, string $sourceId): void
     {
-        unset($this->effects[$tenantId . '|' . $sourceScope . '|' . $sourceId]);
+        unset($this->effects[$vendorId . '|' . $sourceScope . '|' . $sourceId]);
     }
 
     /**
      * @return array|array[]
      */
-    public function listAssignmentsByTag(string $tenantId, string $tagId): array
+    public function listAssignmentsByTag(string $vendorId, string $tagId): array
     {
         $out = [];
-        foreach (($this->assignments[$tenantId] ?? []) as $a) {
+        foreach (($this->assignments[$vendorId] ?? []) as $a) {
             if ($a->tagId() === $tagId) {
                 $out[] = ['assigned_type' => $a->assignedType(), 'assigned_id' => $a->assignedId()];
             }
@@ -306,10 +306,10 @@ final class TagInMemoryRepository implements TagRepositoryInterface
     /**
      * @return array|array[]
      */
-    public function listTagsByScheme(string $tenantId, string $schemeName): array
+    public function listTagsByScheme(string $vendorId, string $schemeName): array
     {
         $out = [];
-        foreach (($this->tags[$tenantId] ?? []) as $t) {
+        foreach (($this->tags[$vendorId] ?? []) as $t) {
             $out[] = ['tag_id' => $t->id()];
         }
 

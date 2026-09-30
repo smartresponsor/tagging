@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tagging\Service\Core;
+namespace App\Tagging\RepositoryInterface;
 
-use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
+use App\Tagging\DTO\Write\TagEntityCreateRecord;
 
 /**
  * CRUD application gateway for TagEntity.

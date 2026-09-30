@@ -13,10 +13,10 @@ use App\Tagging\Handler\Write\TagDeleteHandler;
 use App\Tagging\Handler\Write\TagPatchHandler;
 use App\Tagging\Cache\Store\Tag\TagSearchCache;
 use App\Tagging\Cache\Store\Tag\TagSuggestCache;
-use App\Tagging\Service\Core\Record\TagEntityCreateRecord;
+use App\Tagging\DTO\Write\TagEntityCreateRecord;
 use App\Tagging\Service\Core\Slug\TagSlugifier;
 use App\Tagging\Policy\Slug\TagSlugPolicy;
-use App\Tagging\Service\Core\TagCrudRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagCrudRepositoryInterface;
 use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 use PHPUnit\Framework\TestCase;
 

@@ -7,8 +7,8 @@ namespace Tests;
 
 use App\Tagging\Entity\Tag\TagAssignmentEntity;
 use App\Tagging\Repository\Outbox\TagOutboxPublisher;
-use App\Tagging\Service\Core\TagCrudRepositoryInterface;
-use App\Tagging\Service\Core\TagRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagCrudRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface;
 use App\Tagging\Service\Core\TagUnassignService;
 use App\Tagging\RepositoryInterface\TagTransactionRunnerInterface;
 use Doctrine\ORM\EntityManagerInterface;

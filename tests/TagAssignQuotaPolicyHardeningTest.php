@@ -9,7 +9,7 @@ use App\Tagging\Service\Http\Tag\TagAssignmentAssignService;
 use App\Tagging\Service\Core\TagAssignOperationInterface;
 use App\Tagging\Service\Core\TagQuotaService;
 use App\Tagging\Service\Core\TagPolicyManagementService;
-use App\Tagging\Service\Core\TagRepositoryInterface;
+use App\Tagging\RepositoryInterface\TagRepositoryInterface;
 use App\Tagging\Service\Core\TagValidator;
 use App\Tagging\Service\Core\TagUnassignOperationInterface;
 use Doctrine\ORM\EntityManagerInterface;

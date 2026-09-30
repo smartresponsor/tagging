@@ -171,3 +171,48 @@
 Что имеем? Role-first topology, dual-runtime composition, repository-owned Doctrine access, platform identity terminology, static analysis, tests, runtime smoke, formatting, release preflight и Gating согласованы и зелёные.
 
 Что осталось? Только финальная Git integration: проверить status и staged diff, сформировать coherent signed commit, push в configured upstream и подтвердить post-push HEAD/upstream/PR state.
+
+### 2026-09-29 — CanonScanning RED reconciliation baseline
+
+- Task baseline: branch `fix/symfony-native-cutover-rc-master` at `e0551f8a261f86217af4afe2f98783eddd00473f`, synchronized with its upstream before this pass. Preserved pre-existing dirty state: modified `.gating/README.md`, untracked `PRODUCT_CAPABILITY_AUDIT.adoc`, and untracked `tool/`.
+- Consumed the fresh CanonScanning reports for fingerprint `f9cacb26d9689dd20445b0e7a0a7a1fc27c8ca91c96b797cd0449abac45645fe`. Gating is RED on Canon001, Canon046, Canon051, Canon052, and Canon058. Inspecting contributes 15 medium maintainability/design observations; these remain review evidence rather than automatic RC blockers.
+- Re-read Tagging `AGENTS.md`, `README.md`, development/production Composer surfaces, mandatory Objecting/Cruding/Viewing/Interfacing contracts, Gating owner guidance, and authoritative Canonization rules Canon001, Canon046, Canon051, Canon052, and Canon058.
+- Target→canon mapping: `TagMiddlewarePipeline` must leave the `Middleware` role root because it is a pipeline rather than middleware; Vendor identity uses `vendorId`/Vendor rather than `tenantId`; repository contracts must live outside Service orchestration namespaces; consumer `.gating/` must remain generated artifact state only; canonical OpenAPI source belongs under `config/openapi/tag_openapi.yaml`.
+- Market/maturity benchmark: mature tagging systems converge on standardized key/value vocabulary, consistent casing/naming, machine-enforced tag policy, search/filter automation, governance ownership, and explicit protection against sensitive data in tag values. RC-critical work here is architecture/canon correctness and deterministic verification; richer taxonomy governance, analytics, hierarchy, synonyms, and UI/DX remain a separate growth workstream unless an existing Tagging contract requires them.
+- Material risk: Canon052 currently requires removal or relocation of copied executable Gating content from consumer `.gating/`; destructive deletion is forbidden by the execution envelope, so this rule may remain a factual policy blocker after all non-destructive remediation is exhausted.
+- Planned deterministic gates after mutation: affected Canon/Gating check, Composer validate, PHP lint/static analysis/unit/integration/runtime smoke as applicable, OpenAPI audits, and final Git status/diff/upstream review.
+
+Что имеем? Fresh RED evidence has been reconciled against current source rather than the older green journal narrative; four canon fronts are safely remediable without destructive cleanup, while Canon052 has a policy-envelope conflict to prove or close.
+
+Что осталось? Apply bounded non-destructive remediation, rerun the executable canon and quality gates, repair any in-scope regressions, then perform only Git integration that is factually safe under the preserved dirty state.
+
+### 2026-09-30 — updated Gating rules and acceptance closure
+
+- Re-read the current authoritative Canonization rules and their live Gating mirrors for Canon001, Canon046, Canon051, Canon052, and Canon058 after the user reported the Gating contract had been updated.
+- Reconciled the implementation against the updated executable semantics rather than the stale CanonScanning RED snapshot.
+- Canon001 remediation: moved `TagMiddlewarePipeline` from the middleware role root to `src/Handler/` and updated its namespace/callers.
+- Canon046 remediation: removed active `tenantId` identity aliases from `src/` in favor of canonical `vendorId` vocabulary.
+- Canon051 remediation: moved persistence repository contracts to `src/RepositoryInterface/` and persistence data carriers to `src/DTO/Write/`; repository implementations no longer import project `Service` orchestration types.
+- Canon058 current-state verification: canonical source already exists at `config/openapi/tag_openapi.yaml`; the earlier `contracts/http/tag-openapi*.yaml` RED evidence is stale relative to the current tree.
+- Updated Gating execution is green: 9 applicable/default rules, 0 failed, 0 warning, 2 skipped due to no explicit profile.
+- Deterministic acceptance is green: PHPStan 329 files / 0 errors; unit 197 tests / 1473 assertions; integration 10 / 63; runtime smoke 23 / 497; CS check 410 files / 0 fixable; Composer strict validation/lock check; Composer integrity; canonical structure; canonical stale-reference; OpenAPI semantics; release preflight.
+- Pre-existing unrelated work remains intentionally excluded from integration scope: modified `.gating/README.md`, untracked `PRODUCT_CAPABILITY_AUDIT.adoc`, and untracked `tool/`.
+
+Что имеем? Updated Gating rules are satisfied by the current Tagging remediation and the acceptance contour is green.
+
+Что осталось? Final Git diff/status review, coherent commit of only this bounded remediation, push to the configured upstream, and post-push verification.
+
+### 2026-09-30 — worktree reconciliation and RC integration
+
+- Reconciled the previously mixed 113-path worktree after confirming there were no active parallel chat writers.
+- Integrated runtime canonization as signed commit `bf97c6e` (`refactor(tagging): align runtime with canonical roles`).
+- Integrated matching runtime contract tests as signed commit `422b1d8` (`test(tagging): align canonical runtime contracts`).
+- Integrated Canon058/OpenAPI source relocation, published artifact rename, docs, workflows, audits, and truth tests as signed commit `e6451be` (`refactor(tagging): canonicalize OpenAPI source surface`).
+- Integrated Gating consumer governance and the Tagging RC rule-set surface as signed commit `dd70874` (`chore(tagging): align Gating consumer governance`).
+- Integrated the previously separate product capability audit as signed commit `40950e7` (`docs(tagging): add product capability audit`).
+- Reclassified the stale OpenAPI draft as explicitly legacy/non-canonical and moved ad-hoc PowerShell helpers into the canonical `tools/local/` surface; integrated them as signed commit `2ab24f3` (`chore(tagging): preserve migration tooling artifacts`).
+- Final acceptance on the integrated tree is green: quality (CS 410 files / 0 fixable, PHPStan 329 files / 0 errors, unit 197 tests / 1473 assertions, Gating 0 failed / 0 warning), integration 10 tests / 63 assertions, runtime smoke 23 tests / 497 assertions, release preflight, canonical structure, canonical stale-reference, OpenAPI semantics, repository hygiene, and tooling-entrypoint audit all PASS.
+
+Что имеем? Все ранее незакоммиченные изменения осмыслены, разделены на логические signed commits и текущий acceptance contour полностью GREEN.
+
+Что осталось? Зафиксировать этот journal checkpoint, push текущей ветки в configured upstream и подтвердить post-push HEAD/upstream/worktree clean.

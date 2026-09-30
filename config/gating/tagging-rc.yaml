@@ -1,0 +1,9 @@
+rule_set:
+  name: tagging-rc
+  description: CanonScanning remediation front for Tagging RC convergence.
+  rules:
+    - canon.001.technical_role_first
+    - canon.046.vendor_identity
+    - canon.051.repository_has_no_orchestration_dependency
+    - canon.052.gating_integration
+    - canon.058.canonical_openapi_source

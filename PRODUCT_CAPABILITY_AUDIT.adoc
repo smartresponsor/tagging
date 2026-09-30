@@ -1,0 +1,35 @@
+= Product Capability Audit: Tagging
+:revdate: 2026-09-20
+
+== Boundary verdict
+
+Tagging owns reusable tag vocabulary and assignment semantics. It must remain a generic classification signal, not become taxonomy, facets, search ranking or catalog ownership.
+
+== Capability matrix
+
+[cols="3,1,4",options="header"]
+|===
+|Capability |Status |Audit
+|Tag identity |PARITY |Core persisted tag model exists.
+|Tag lifecycle |PARITY |Business operations and persistence are present.
+|Assignment/unassignment |PARITY |Primary domain responsibility.
+|Normalized unique names/slugs |PARTIAL |Need one canonical collision/normalization policy.
+|Scoped tag namespaces |PARTIAL |Useful to prevent global vocabulary collisions.
+|Bulk assignment |PARTIAL |Operational baseline for catalog/admin use.
+|Suggestion/autocomplete |PARITY |Shared read-model/suggest work is evidenced.
+|Usage counts |PARTIAL |Useful read projection; do not make it a search engine.
+|Synonyms/aliases |PARTIAL |Can support controlled vocabulary without absorbing Searching.
+|Governance/quota policy |PARITY |Existing quota-policy hardening is a useful differentiator.
+|===
+
+== Boundary risks
+
+* Taxonomy trees belong to Cataloging; facetable definitions to Faceting.
+* Search ranking/query semantics belong to Searching.
+
+== Milestone direction
+
+M1: normalize identity, namespaces and alias semantics.
+M2: bulk assignment and usage projections.
+M3: cross-component tag contracts for Cataloging/Searching.
+

@@ -216,3 +216,32 @@
 Что имеем? Все ранее незакоммиченные изменения осмыслены, разделены на логические signed commits и текущий acceptance contour полностью GREEN.
 
 Что осталось? Зафиксировать этот journal checkpoint, push текущей ветки в configured upstream и подтвердить post-push HEAD/upstream/worktree clean.
+
+### 2026-10-03 — engine-20261004040724-tagging-e2de82 reconnaissance and baseline
+
+- Re-read the authoritative execution specification and resolved the live Tagging workspace exclusively through Console MCP at `D:\PhpstormProjects\www\Tagging`.
+- Baseline branch: `fix/symfony-native-cutover-rc-master`; preserved the pre-existing modified `AGENTS.md` as unrelated work pending semantic ownership review.
+- Consumed the supplied CanonScanning RED report and Inspecting report for fingerprint `f9cacb26d9689dd20445b0e7a0a7a1fc27c8ca91c96b797cd0449abac45645fe`. The RED findings are historical relative to the current tree; the prior 2026-09-30 integration journal records remediation and green acceptance.
+- Re-read mandatory dependency contracts for Objecting, Cruding, Viewing, and Interfacing and confirmed the application dependencies in the Tagging development manifest. Interfacing has no current `MANIFEST.json`; that absence was established by Console MCP rather than inferred.
+- Re-read Gating owner guidance and authoritative Canonization rules Canon001, Canon021, Canon046, Canon051, Canon052, and Canon058. Current target mapping: technical-role-first source placement, Cruding-owned generic CRUD, Vendor identity for internal ownership, repository isolation from orchestration, artifact-only consumer `.gating/`, and `config/openapi/tag_openapi.yaml` as the canonical OpenAPI source.
+- Market/maturity benchmark: mature tagging systems emphasize standardized controlled vocabulary, governance/ownership, automation, search/filterability, permissions/visibility, and protection against sensitive data in tags. Taxonomy hierarchy/synonyms/analytics remain growth work and are not RC blockers for this bounded component.
+- Current executable Gating baseline is green: 10 rules evaluated, 0 failed, 0 warning, 3 profile-dependent skips.
+- Selected RC-critical workstream: close factual current-documentation/runtime drift without reopening already-remediated architectural migrations. `docs/http/middleware.md` still claimed `tenantId` injection while `TagTenantContextMiddleware` writes canonical `vendorId`; documentation was corrected to match runtime truth.
+- Separate growth workstream: controlled vocabularies/taxonomy governance, hierarchy/synonyms, richer analytics and UX remain post-RC unless a current contract makes them correctness-critical.
+- Gates to run after this bounded mutation: strict Composer validation, CS check, PHPStan, unit/integration/runtime smoke, release preflight, canonical structure/stale/OpenAPI audits, Gating, then final Git status/diff/upstream inspection.
+
+Что имеем? Live executable Gating is green and the stale CanonScanning RED backlog has been reconciled against the current integrated tree; one concrete Canon017 documentation drift was fixed without changing runtime behavior.
+
+Что осталось? Run the full deterministic acceptance contour, repair only evidence-backed in-scope failures, then reconcile Git state and publish only the bounded safe scope when authorized and green.
+
+### 2026-10-03 — bounded parity acceptance and integration readiness
+
+- Closed the selected RC-critical documentation/runtime parity defect: `docs/http/middleware.md` now documents the canonical `vendorId` injected by `TagTenantContextMiddleware` instead of the retired internal `tenantId` vocabulary.
+- Deterministic acceptance is GREEN: strict Composer validation/lock integrity; CS check (410 files, 0 fixable); PHPStan (329 files, 0 errors); unit suite (197 tests, 1473 assertions); integration suite (10 tests, 63 assertions); runtime smoke (23 tests, 497 assertions); release preflight; Composer integrity; canonical structure; canonical stale-reference; OpenAPI semantics; generated OpenAPI surface; core boundary; repository hygiene; and post-mutation Gating (10 rules, 0 failed, 0 warning, 3 profile-dependent skips).
+- Behavioral browser/mobile verification and visual screenshots are not applicable to this change because the bounded mutation changes repository documentation only and does not alter browser/mobile UI, navigation, forms, interactions, or runtime behavior.
+- Git reconciliation: current branch `fix/symfony-native-cutover-rc-master` was aligned with `origin/fix/symfony-native-cutover-rc-master` before integration (`ahead=0`, `behind=0`). The pre-existing modified `AGENTS.md` is semantically related platform guidance but predates this execution window; it is preserved and excluded from this bounded commit to avoid silently absorbing concurrent/user-owned work.
+- Integration scope is therefore limited to `CMCP_CHANGELOG.md` and `docs/http/middleware.md`.
+
+Что имеем? Выбранный RC-critical parity defect закрыт, полный применимый acceptance contour GREEN, а чужое pre-existing изменение `AGENTS.md` сохранено без смешивания.
+
+Что осталось? Создать coherent signed commit только из bounded scope, push текущей ветки и подтвердить post-push HEAD/upstream; после этого для этого execution objective авторизованный in-scope tail отсутствует.

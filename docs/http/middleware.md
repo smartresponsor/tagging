@@ -4,6 +4,6 @@ Recommended chain:
 
 1) TagObserveMiddleware (latency/error/slowlog)
 2) TagVerifySignatureMiddleware (HMAC/nonce/timestamp)
-3) TagTenantContextMiddleware (inject tenantId)
+3) TagTenantContextMiddleware (inject canonical vendorId)
 4) TagAuthorizeMiddleware (roles/gate)
 5) Handler
